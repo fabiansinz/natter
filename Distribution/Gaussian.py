@@ -4,6 +4,7 @@ from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, w
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
 from Data import Data
+from Auxiliary.Errors import AbstractError
 
 class Gaussian(Distribution.Distribution):
     """
@@ -96,6 +97,9 @@ class Gaussian(Distribution.Distribution):
         n,m = dat.size()
         if 'mu' in self.primary:
             ret = hstack((ret, squeeze(sum( dot(inv(self.param['sigma']), dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))),1))  ))
+
+        if 'sigma' in self.primary:
+            raise AbstractError('dldsigma is not implemented! Set p.primary = [\'mu\']!')
         return ret
 
    
