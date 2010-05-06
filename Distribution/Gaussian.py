@@ -1,6 +1,6 @@
 from __future__ import division
 import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
 from Data import Data
@@ -27,7 +27,8 @@ class Gaussian(Distribution.Distribution):
         if not param.has_key('mu'):
             self.param['mu'] = zeros((self.param['n'],))
 
-    
+        self.primary = ['mu','sigma']
+        self.I =  where(triu(ones((self.param['n'],self.param['n'])))>0)
         
     def sample(self,m):
         '''
@@ -70,7 +71,32 @@ class Gaussian(Distribution.Distribution):
         return exp(self.loglik(dat))
     
 
+#     def tri2flat(self, A = None):
+#         if A == None:
+#             A = self.C.copy()
+#         return np.squeeze(A[self.I])
+        
+#     def flat2tri(self,a,A=None):
+#         if A == None:
+#             A = self.C.copy()
+       
+#         A[self.I] = a
+#         A = np.triu(A) + np.triu(A,1).transpose()
+#         return A
+        
 
+
+    def primary2array(self):
+        ret = array([])
+        if self.primary.count('mu') > 0:
+            ret = hstack((ret,self.param['mu'].copy()))
+        if self.primary.count('sigma') > 0:
+            ret = hstack((ret,squeeze(self.param['sigma'][self.I])))
+        return ret
+
+
+    def array2primary(self):
+        pass
 
 #     def dldx(self,dat):
 #         """

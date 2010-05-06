@@ -14,6 +14,11 @@ if __name__=="__main__":
     print p.loglik(dat)
     print p.pdf(dat)
 
-    p2 = Distribution.Gaussian({'n':1})
-    dat = p2.sample(100000)
-    p2.histogram(dat)
+
+    print p.primary2array()
+
+
+
+#     p2 = Distribution.Gaussian({'n':1})
+#     dat = p2.sample(100000)
+#     p2.histogram(dat)
