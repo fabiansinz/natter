@@ -72,16 +72,16 @@ class Gaussian(Distribution.Distribution):
     
     def primary2array(self):
         ret = array([])
-        if self.primary.count('mu') > 0:
+        if 'mu' in self.primary:
             ret = hstack((ret,self.param['mu'].copy()))
-        if self.primary.count('sigma') > 0:
+        if 'sigma' in self.primary:
             ret = hstack((ret,squeeze(self.param['sigma'][self.I])))
         return ret
 
 
     def array2primary(self,pr):
         n = self.param['n']
-        if self.primary.count('mu') > 0:
+        if 'mu' in self.primary:
             self.param['mu'] = pr[:n]
             pr = pr[n:]
         if 'sigma' in self.primary:
@@ -92,7 +92,7 @@ class Gaussian(Distribution.Distribution):
 
 
     def dldtheta(self,dat):
-        
+        pass
 
 
 #     def dldx(self,dat):
