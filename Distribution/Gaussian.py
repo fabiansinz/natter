@@ -103,7 +103,7 @@ class Gaussian(Distribution.Distribution):
         if self.primary.count('sigma') > 0:
             C = zeros((n,n))
             C[self.I] = pr
-            C = triu(C) + np.triu(C,1).transpose()
+            C = triu(C) + triu(C,1).transpose()
             self.param['sigma'] = C
 
 
