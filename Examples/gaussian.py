@@ -16,8 +16,10 @@ if __name__=="__main__":
 
 
     print p.primary2array()
-
-
+    dummy = randn(9)
+    print dummy
+    p.array2primary(dummy)
+    print p
 
 #     p2 = Distribution.Gaussian({'n':1})
 #     dat = p2.sample(100000)

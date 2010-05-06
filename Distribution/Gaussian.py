@@ -95,8 +95,18 @@ class Gaussian(Distribution.Distribution):
         return ret
 
 
-    def array2primary(self):
-        pass
+    def array2primary(self,pr):
+        n = self.param['n']
+        if self.primary.count('mu') > 0:
+            self.param['mu'] = pr[:n]
+            pr = pr[n:]
+        if self.primary.count('sigma') > 0:
+            C = zeros((n,n))
+            C[self.I] = pr
+            C = triu(C) + np.triu(C,1).transpose()
+            self.param['sigma'] = C
+
+
 
 #     def dldx(self,dat):
 #         """
