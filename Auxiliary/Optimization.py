@@ -1,5 +1,5 @@
 from sys import stdout 
-from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, max, dot, real
+from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, max, dot, real,sin
 from numpy.linalg import svd
 from scipy.optimize import fminbound
 from scipy.optimize import fmin
