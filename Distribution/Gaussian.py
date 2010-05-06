@@ -70,22 +70,6 @@ class Gaussian(Distribution.Distribution):
         '''
         return exp(self.loglik(dat))
     
-
-#     def tri2flat(self, A = None):
-#         if A == None:
-#             A = self.C.copy()
-#         return np.squeeze(A[self.I])
-        
-#     def flat2tri(self,a,A=None):
-#         if A == None:
-#             A = self.C.copy()
-       
-#         A[self.I] = a
-#         A = np.triu(A) + np.triu(A,1).transpose()
-#         return A
-        
-
-
     def primary2array(self):
         ret = array([])
         if self.primary.count('mu') > 0:
@@ -100,12 +84,15 @@ class Gaussian(Distribution.Distribution):
         if self.primary.count('mu') > 0:
             self.param['mu'] = pr[:n]
             pr = pr[n:]
-        if self.primary.count('sigma') > 0:
+        if 'sigma' in self.primary:
             C = zeros((n,n))
             C[self.I] = pr
             C = triu(C) + triu(C,1).transpose()
             self.param['sigma'] = C
 
+
+    def dldtheta(self,dat):
+        
 
 
 #     def dldx(self,dat):
