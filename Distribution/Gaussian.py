@@ -1,7 +1,7 @@
 from __future__ import division
 import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log
-from numpy.linalg import cholesky
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp
+from numpy.linalg import cholesky, inv
 from numpy.random import randn
 from Data import Data
 
@@ -52,53 +52,24 @@ class Gaussian(Distribution.Distribution):
         '''
 
         n = self.param['n']
-        C = self.param['C']
+        m = dat.size(1)
+        C = self.param['sigma']
         mu = self.param['mu']
-        X = dat.X
-        return 
+        X = dat.X - kron(reshape(mu,(n,1)),ones((1,m)))
+        return -n/2*log(2*pi) -sum(log(diag(cholesky(C)))) - .5* sum(X*dot(inv(C),X),0)
 
-        return (self.param['u']-1.0) * np.log(dat.X)   \
-               - dat.X/self.param['s']\
-               - self.param['u'] * np.log(self.param['s']) -  special.gammaln(self.param['u']) 
-
-
-#     def pdf(self,dat):
-#         '''
-
-#            pdf(dat)
+    def pdf(self,dat):
+        '''
         
-#            returns the probability of the data points in dat under the
-#            model. The parameter dat must be a Data.Data object
-           
-#         '''
-#         return np.exp(self.loglik(dat))
+        pdf(dat)
         
-
-#     def cdf(self,dat):
-#         '''
-
-#            cdf(dat)
+        returns the probability of the data points in dat under the
+        model. The parameter dat must be a Data.Data object
         
-#            returns the values of the cumulative distribution function
-#            of the data points in dat under the model. The parameter
-#            dat must be a Data.Data object
-           
-#         '''
-#         return gamma.cdf(dat.X,self.param['u'],scale=self.param['s'])
+        '''
+        return exp(self.loglik(dat))
+    
 
-
-#     def ppf(self,X):
-#         '''
-
-#            ppf(X)
-        
-#            returns the values of the inverse cumulative distribution
-#            function of the percentile points X under the model. The
-#            parameter X must be a numpy array. ppf returns a Data.Data
-#            object.
-           
-#         '''
-#         return Data.Data(gamma.ppf(X,self.param['u'],scale=self.param['s']))
 
 
 #     def dldx(self,dat):
