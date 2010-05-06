@@ -6,7 +6,6 @@ import Auxiliary
 from scipy import io
 import mdp
 
-
 class TestfminboundnD(unittest.TestCase):
     tol = 5.0*1e-2
     
