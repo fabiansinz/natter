@@ -1,6 +1,6 @@
 import unittest
 import Distribution
-ximport sys
+import sys
 from numpy.random import randn, rand
 from numpy import max, abs, size, array
 
