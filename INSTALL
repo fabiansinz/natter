@@ -1,0 +1,8 @@
+
+* include startup.py into .ipython/ipythonrc
+* add paths in the startup.py
+* needs scipy, numpy and matplotlin
+* needs unittest (python-sptest)
+* set PYTHONPATH in bashrc
+* python-mdp
+* python-happydoc

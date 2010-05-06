@@ -1,0 +1,15 @@
+High Priority:
+- implement image sample functions
+
+Features:
+
+Code improvement:
+- insert golden search from numpy.optimize
+
+
+Sanity Check:
+- Write test for normalization constant 
+
+
+Questions:
+- how to set the noise level in the overcomplete linear model
