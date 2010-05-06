@@ -1,5 +1,6 @@
+from __future__ import division
 from sys import stdout 
-from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, max, dot, real,sin
+from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, max, dot, real,sin, sum, min,array
 from numpy.linalg import svd
 from scipy.optimize import fminbound
 from scipy.optimize import fmin
@@ -59,7 +60,7 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
                 x0u[k] = pi/2
             else:
                 x0u[k] = 2*(x0[i] - LB[i])/(UB[i]-LB[i]) - 1.0
-                x0u[k] = 2.0*pi+arcsin(max(-1.0,min(1.0,x0u[k])))
+                x0u[k] = 2.0*pi+arcsin(max(array([-1.0,min(array([1.0,x0u[k]]))])))
             k+=1
         elif BoundClass[i] == 0:
             x0u[k] = x0[i]
@@ -111,7 +112,7 @@ def xtransform(x,LB,UB,BoundClass,n):
             xtrans[i] = (sin(x[k])+1.0)/2.0
             xtrans[i] = xtrans[i]*(UB[i] - LB[i]) + LB[i]
             # just in case of any floating point problems
-            xtrans[i] = max(LB[i],min(UB[i],xtrans[i]))
+            xtrans[i] = max(array([LB[i],min(array([UB[i],xtrans[i]]))]))
             k+=1
         elif BoundClass[i] == 4:
             # fixed variable, bounds are equal, set it at either bound

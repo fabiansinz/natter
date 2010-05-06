@@ -1,4 +1,4 @@
-
+* mpmath
 * include startup.py into .ipython/ipythonrc
 * add paths in the startup.py
 * needs scipy, numpy and matplotlin

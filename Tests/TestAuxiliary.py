@@ -42,7 +42,9 @@ class TestfminboundnD(unittest.TestCase):
             f = lambda x: np.sum((x-mu)**2)
 
             xstar = Auxiliary.Optimization.fminboundnD(f,x0,LB,UB,1e-10)
-            self.assertAlmostEqual(np.max(np.abs(xstar-xt)),0.0,2,'Solution of bounded Nelder-Mead deviates more than ' + str(self.tol) + ' form the optimal value')
+            print np.max(np.abs(xstar-xt))
+            self.assertTrue(np.max(np.abs(xstar-xt)) < self.tol ,'Solution of bounded Nelder-Mead deviates more than ' + str(self.tol) + ' form the optimal value')
+
 
 
 class TestStGradient(unittest.TestCase):
