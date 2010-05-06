@@ -23,10 +23,11 @@ class Distribution:
 
     param = {}
     name = 'Abstract Distribution'
-
+    primary = [] # contains the names of the primary parameters
 
     def __init__(self,param):
         self.param = {}
+        
 
     def setParam(self,key,value):
         self.param[key] = value
@@ -64,8 +65,27 @@ class Distribution:
     def dldtheta(self,dat,which=(None,)):
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
+    def primary2array(self):
+        raise Errors.AbstractError('Abstract method primary2array not implemented in ' + self.name)
+
+    def array2primary(self):
+        raise Errors.AbstractError('Abstract method array2primary not implemented in ' + self.name)
+        
+
     def estimate(self,dat,which=None):
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
+
+    def score(self, param, dat, compute_derivative=False):
+        """
+        score(param,dat, compute_derivative=False)
+
+        must exhibit the following behaviour:
+
+        1) if compute_derivative ==False, it returns the value of the score function at param and dat
+        2) if compute_derivative ==False, it returns the derivative w.r.t the primary parameters of the score function at param and dat
+        
+        """
+        raise Errors.AbstractError('Abstract method score not implemented in ' + self.name)
 
     def copy(self):
         return copy.deepcopy(self)

@@ -9,6 +9,7 @@ from LpGeneralizedNormal import LpGeneralizedNormal
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from GammaP import GammaP
+from Gaussian import Gaussian
 from ExponentialPower import ExponentialPower
 from LogNormal import LogNormal
 from ProductOfExperts import ProductOfExperts

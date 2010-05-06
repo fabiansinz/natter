@@ -140,6 +140,10 @@ class Data:
             self.history.append('made whitening volume conserving with method "' + method + '"')
         return D
 
+
+    def cov(self):
+        return np.cov(self.X)
+
     def dnormdx(self,p=2.0):
         p =float(p)
         r = (self.norm(p).X)**(1-p)

@@ -63,15 +63,15 @@ class ProductOfExperts(Distribution):
             
             if estimate_W:
                 print "\testimating W ..."; stdout.flush()
-                wobjective = lambda Wt, derivative: ( -self.score(alpha,Wt.transpose(),dat.X,"score"),) if derivative == 1 \
-                             else  ( -self.score(alpha,Wt.transpose(),dat.X,"score"), -self.score(alpha,Wt.transpose(),dat.X,"dW").transpose())
+                wobjective = lambda Wt, derivative: ( -self.__myscore(alpha,Wt.transpose(),dat.X,"score"),) if derivative == 1 \
+                             else  ( -self.__myscore(alpha,Wt.transpose(),dat.X,"score"), -self.__myscore(alpha,Wt.transpose(),dat.X,"dW").transpose())
                 (W,fval,param) = StGradient(wobjective, W.transpose())
                 W = W.transpose()
 
             if estimate_alpha:
                 print "\testimating alpha ..."; stdout.flush()
-                af = lambda a: self.score(a,W,dat.X,"score")
-                afprime = lambda a: self.score(a,W,dat.X,"dalpha")
+                af = lambda a: self.__myscore(a,W,dat.X,"score")
+                afprime = lambda a: self.__myscore(a,W,dat.X,"dalpha")
                 bounds = [(1e-12, Inf) for dummy in xrange(self.param['N'])]
                 alpha = fmin_l_bfgs_b(af,alpha,afprime,bounds=bounds)[0]
 
@@ -85,7 +85,7 @@ class ProductOfExperts(Distribution):
                 alpha_old = alpha.copy()
 
                 
-    def score(self,alpha,W,X,otype):
+    def __myscore(self,alpha,W,X,otype):
         Y = Data.Data(dot(W,X))
         n,m = shape(X); m = float(m); 
         N = self.param['N']
