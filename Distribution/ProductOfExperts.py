@@ -86,7 +86,6 @@ class ProductOfExperts(Distribution):
 
                 
     def score(self,alpha,W,X,otype):
-        W = array(W)
         Y = Data.Data(dot(W,X))
         n,m = shape(X); m = float(m); 
         N = self.param['N']
