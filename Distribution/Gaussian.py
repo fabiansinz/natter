@@ -92,53 +92,12 @@ class Gaussian(Distribution.Distribution):
 
 
     def dldtheta(self,dat):
-        pass
+        ret = array([])
+        n,m = dat.size()
+        if 'mu' in self.primary:
+            ret = hstack((ret, squeeze(sum( dot(inv(self.param['sigma']), dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))),1))  ))
+        return ret
 
-
-#     def dldx(self,dat):
-#         """
-
-#         dldx(dat)
-
-#         returns the derivative of the log-likelihood of the gamma
-#         distribution w.r.t. the data in dat. The parameter dat must be
-#         a Data.Data object.
-        
-#         """
-#         return (self.param['u']-1.0)/dat.X  - 1.0/self.param['s']
-        
-
-#     def estimate(self,dat,which = None):
-#         '''
-
-#         estimate(dat[, which=self.param.keys()])
-        
-#         estimates the parameters from the data in dat (Data.Data
-#         object). The optional second argument specifys a list of
-#         parameters (list of strings) that should be estimated.
-#         '''
-
-#         if which == None:
-#             which = self.param.keys()
-
-#         logmean = np.log(np.mean(dat.X))
-#         meanlog = np.mean(np.log(dat.X))
-#         u=2.0
-
-#         if ( which.count('u') > 0): # if we want to estimate u
-#             for k in range(self.maxCount):
-#                 unew= 1/u + (meanlog - logmean + np.log(u) - float(special.polygamma(0,u)))/ \
-#                       (u**2  * (1/u - float(special.polygamma(1,u))))
-#                 unew = 1/unew
-#                 if (unew-u)**2 < self.Tol:
-#                     u=unew
-#                     break
-#                 u=unew
-            
-#             self.param['u'] = unew;
-
-#         if which.count('s') > 0:
-#             self.param['s'] = np.exp(logmean)/self.param['u'];
    
     
     

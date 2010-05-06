@@ -21,6 +21,9 @@ if __name__=="__main__":
     p.array2primary(dummy)
     print p
 
+    p.primary = ['mu']
+    print p.dldtheta(dat)
+
 #     p2 = Distribution.Gaussian({'n':1})
 #     dat = p2.sample(100000)
 #     p2.histogram(dat)
