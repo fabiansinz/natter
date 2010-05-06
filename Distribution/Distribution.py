@@ -163,6 +163,18 @@ class Distribution:
     def save(self,filename):
         Auxiliary.save(self,filename)
 
+
+    def __call__(self,dat,pa=None):
+        if pa == None:
+            return self.loglik(dat)
+        else:
+            pold = self.primary2array()
+            self.array2primary(pa)
+            ret = self.loglik(dat)
+            self.array2primary(pold)
+            return ret
+            
+
 def load(path):
     f = open(path,'r')
     ret = pickle.load(f)
