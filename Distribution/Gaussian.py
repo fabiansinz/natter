@@ -99,9 +99,7 @@ class Gaussian(Distribution.Distribution):
             ret = hstack((ret, squeeze(sum( dot(inv(self.param['sigma']), dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))),1))  ))
 
         if 'sigma' in self.primary:
-            C = self.param['sigma'].copy()
-            C = inv(C)
-            
+            C = inv(self.param['sigma'])
             X = dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))
             X = dot(X,X.transpose())
             C = -m*C + dot(dot(C,X),C)
