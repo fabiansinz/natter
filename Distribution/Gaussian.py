@@ -3,7 +3,7 @@ import Distribution
 from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
-from Data import Data
+import Data 
 from Auxiliary.Errors import AbstractError
 
 class Gaussian(Distribution.Distribution):
@@ -39,7 +39,7 @@ class Gaussian(Distribution.Distribution):
         samples m examples from the gamma distribution.
     
         '''
-        return Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
+        return Data.Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
                     str(m) + " samples from a " + str(self.param['n']) + "-dimensional Gaussian")
         
 

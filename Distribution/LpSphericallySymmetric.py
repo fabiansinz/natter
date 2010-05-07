@@ -1,8 +1,8 @@
 import Distribution
 import Data
-import numpy as np
-import scipy as sp
-from scipy import special
+from numpy import log, abs, sign
+from numpy.random import gamma, randn
+from scipy.special import gammaln
 import Auxiliary
 import Gamma
 
@@ -25,15 +25,16 @@ class LpSphericallySymmetric(Distribution.Distribution):
                 self.param[k] = param[k]
         self.param['p'] = float(self.param['p']) # make sure it is a float
         self.prange = (.1,2.0)
+        self.primary = ['rp','p']
 
     def logSurfacePSphere(self):
-        return self.param['n']*np.log(2) + self.param['n']*special.gammaln(1/self.param['p']) \
-               - special.gammaln(self.param['n']/self.param['p']) - (self.param['n']-1)*np.log(self.param['p']);
+        return self.param['n']*log(2) + self.param['n']*gammaln(1/self.param['p']) \
+               - gammaln(self.param['n']/self.param['p']) - (self.param['n']-1)*log(self.param['p']);
 
     def loglik(self,dat):
         r = dat.norm(self.param['p'])
         return self.param['rp'].loglik(r) \
-               - self.logSurfacePSphere() - (self.param['n']-1)*np.log(r.X)
+               - self.logSurfacePSphere() - (self.param['n']-1)*log(r.X)
 
     def dldx(self,dat):
         """
@@ -48,22 +49,19 @@ class LpSphericallySymmetric(Distribution.Distribution):
             drdx[k] *= tmp
         return drdx
         
-    def estimate(self,dat,which=None,prange=None):
-        '''ESTIMATE(DAT[, WHICH=SELF.PARAM.KEYS(),[PRANGE=(.1,5.0)]])
+    def estimate(self,dat,prange=None):
+        '''ESTIMATE(DAT[, [PRANGE=(.1,5.0)]])
         
-        estimates the parameters from the data in DAT. The optional
-        second argument specifys a list of parameters that should be
-        estimated. PRANGE, when specified, defines the search range for p.
+        estimates the parameters from the data in DAT. PRANGE, when
+        specified, defines the search range for p.
         '''
         if not prange:
             prange = self.prange
-        if which == None:
-            which = self.param.keys()
-        if which.count('p') > 0:
+        if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
             bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
-        if which.count('rp') > 0:
+        if 'rp' in self.primary:
             self.param['rp'].estimate(dat.norm(self.param['p']))
         self.prange = (self.param['p']-.5,self.param['p']+.5)
             
@@ -78,9 +76,9 @@ class LpSphericallySymmetric(Distribution.Distribution):
            samples M examples from the distribution.
         '''
         # sample from a p-generlized normal with scale 1
-        z = np.random.gamma(1/self.param['p'],1.0,(self.param['n'],m))
-        z = np.abs(z)**(1/self.param['p'])
-        dat =  Data.Data(z * np.sign(np.random.randn(self.param['n'],m)),'Samples from ' + self.name, \
+        z = gamma(1/self.param['p'],1.0,(self.param['n'],m))
+        z = abs(z)**(1/self.param['p'])
+        dat =  Data.Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
                       ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
         # normalize the samples to get a uniform distribution.
         dat.normalize(self.param['p'])

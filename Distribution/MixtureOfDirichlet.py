@@ -44,6 +44,7 @@ class MixtureOfDirichlet(Distribution.Distribution):
         if not self.param.has_key('pi'):
             self.param['pi'] = rand(self.param['K'])
             self.param['pi']  = self.param['pi']/ sum(self.param['pi'])
+        self.primary = ['pi','alpha']
         
         
     def sample(self,m):

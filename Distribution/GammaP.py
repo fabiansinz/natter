@@ -1,8 +1,6 @@
 import Distribution
 import Data
-import numpy as np
-import scipy as sp
-from scipy import special
+from numpy import log, exp, mean
 import Gamma
 import Auxiliary
 from scipy.stats import gamma
@@ -30,6 +28,7 @@ class GammaP(Gamma.Gamma):
         if param!=None:
             for k in param.keys():
                 self.param[k] = float(param[k])
+        self.primary = ['p','s','u']
         
     def loglik(self,dat):
         '''
@@ -40,7 +39,7 @@ class GammaP(Gamma.Gamma):
            parameter dat must be a Data.Data object.
            
         '''
-        return Gamma.Gamma.loglik(self,dat**self.param['p']) + np.log(self.param['p']) + (self.param['p']-1)*np.log(dat.X) 
+        return Gamma.Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) 
 
     def dldx(self,dat):
         """
@@ -65,7 +64,7 @@ class GammaP(Gamma.Gamma):
            model. The parameter dat must be a Data.Data object
            
         '''
-        return np.exp(self.loglik(dat))
+        return exp(self.loglik(dat))
        
 
     def cdf(self,dat):
@@ -106,28 +105,32 @@ class GammaP(Gamma.Gamma):
         dat.setHistory([])
         return dat
 
-    def estimate(self,dat,which = None,prange=(.1,5.0)):
+    def estimate(self,dat,prange=(.1,5.0)):
         '''
 
-        estimate(dat[, which=self.param.keys(),[prange=(.1,5.0)]])
+        estimate(dat[,[prange=(.1,5.0)]])
         
         estimates the parameters from the data in dat (Data.Data
         object). The optional second argument specifys a list of
         parameters (list of strings) that should be estimated. prange,
         when specified, defines the search range for p.
         '''
-        if which==None:
-            which = self.param.keys()
-        if which.count('p') > 0:
+        if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
             bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
-        Gamma.Gamma.estimate(self,dat**self.param['p'],which)
+        Gamma.Gamma.estimate(self,dat**self.param['p'])
 
     def __pALL(self,p,dat):
         self.param['p'] = p
-        self.estimate(dat,['u','s'])
-        return -np.mean(self.loglik(dat))
+        pold = list(self.primary)
+        pr= list(pold)
+        if 'p' in pr:
+            pr.remove('p')
+        self.primary = pr
+        self.estimate(dat)
+        self.primary = pold
+        return -mean(self.loglik(dat))
 
 
 

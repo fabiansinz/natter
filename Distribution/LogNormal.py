@@ -1,9 +1,7 @@
 import Distribution
 import Data
-import numpy as np
-import scipy as sp
-from scipy import special
-import mpmath
+from numpy import exp, log, pi, mean, std
+from numpy.random import randn
 from scipy.stats import norm
 
 class LogNormal(Distribution.Distribution):
@@ -27,17 +25,22 @@ class LogNormal(Distribution.Distribution):
         if param != None:
             for k in param.keys():
                 self.param[k] = float(param[k])
+        self.primary = ['mu','s']
 
+
+    
+        
         
     def sample(self,m):
-        '''
+        """
+        samples m examples from the log-normal distribution.
+        
+        Arguments:
+        - `m`: number of examples to sample.
+        """
+        
 
-           sample(m)
-
-           samples M examples from the gamma distribution.
-           
-        '''
-        return Data.Data(np.exp(np.random.randn(1,m)*self.param['s'] + self.param['mu']) ,str(m) + ' samples from ' + self.name)
+        return Data.Data(exp(randn(1,m)*self.param['s'] + self.param['mu']) ,str(m) + ' samples from ' + self.name)
         
 
     def loglik(self,dat):
@@ -49,8 +52,8 @@ class LogNormal(Distribution.Distribution):
            parameter dat must be a Data.Data object.
            
         '''
-        return -np.log(dat.X) - .5*np.log(np.pi*2.0) - np.log(self.param['s']) \
-               - .5 / self.param['s']**2.0 * (np.log(dat.X) - self.param['mu'])**2
+        return -log(dat.X) - .5*log(pi*2.0) - log(self.param['s']) \
+               - .5 / self.param['s']**2.0 * (log(dat.X) - self.param['mu'])**2
 
 
     def pdf(self,dat):
@@ -62,7 +65,7 @@ class LogNormal(Distribution.Distribution):
            model. The parameter dat must be a Data.Data object
            
         '''
-        return np.exp(self.loglik(dat))
+        return exp(self.loglik(dat))
         
 
     def cdf(self,dat):
@@ -75,7 +78,7 @@ class LogNormal(Distribution.Distribution):
            dat must be a Data.Data object
            
         '''
-        return norm.cdf(np.log(dat.X),loc=self.param['mu'],scale=self.param['s'])
+        return norm.cdf(log(dat.X),loc=self.param['mu'],scale=self.param['s'])
 
 
     def ppf(self,X):
@@ -89,7 +92,7 @@ class LogNormal(Distribution.Distribution):
            object.
            
         '''
-        return Data.Data(np.exp(norm.ppf(X,loc=self.param['mu'],scale=self.param['s'])))
+        return Data.Data(exp(norm.ppf(X,loc=self.param['mu'],scale=self.param['s'])))
 
 
     def dldx(self,dat):
@@ -102,26 +105,23 @@ class LogNormal(Distribution.Distribution):
         a Data.Data object.
         
         """
-        return -1.0/dat.X  - 1.0 / self.param['s']**2.0 * (np.log(dat.X) - self.param['mu']) / dat.X
+        return -1.0/dat.X  - 1.0 / self.param['s']**2.0 * (log(dat.X) - self.param['mu']) / dat.X
         
 
-    def estimate(self,dat,which = None):
+    def estimate(self,dat):
         '''
 
-        estimate(dat[, which=self.param.keys()])
+        estimate(dat)
         
         estimates the parameters from the data in dat (Data.Data
-        object). The optional second argument specifys a list of
-        parameters (list of strings) that should be estimated.
+        object). 
         '''
 
-        if which == None:
-            which = self.param.keys()
 
-        if which.count('mu') > 0:
-            self.param['mu'] = np.mean(np.log(dat.X))
+        if 'mu' in self.primary:
+            self.param['mu'] = mean(log(dat.X))
     
 
-        if which.count('s') > 0:
-            self.param['s'] = np.std(np.log(dat.X))
+        if 's' in self.primary:
+            self.param['s'] = std(log(dat.X))
 

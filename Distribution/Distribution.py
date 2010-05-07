@@ -23,7 +23,7 @@ class Distribution:
 
     param = {}
     name = 'Abstract Distribution'
-    primary = [] # contains the names of the primary parameters
+    primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted
 
     def __init__(self,param):
         self.param = {}
@@ -62,7 +62,7 @@ class Distribution:
     def dldx2dtheta(self,dat):
         raise Errors.AbstractError('Abstract method dldx2dtheta not implemented in ' + self.name)
 
-    def dldtheta(self,dat,which=(None,)):
+    def dldtheta(self,dat):
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
     def primary2array(self):
@@ -72,7 +72,7 @@ class Distribution:
         raise Errors.AbstractError('Abstract method array2primary not implemented in ' + self.name)
         
 
-    def estimate(self,dat,which=None):
+    def estimate(self,dat):
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
 
     def score(self, param, dat, compute_derivative=False):

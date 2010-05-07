@@ -26,7 +26,7 @@ class ProductOfExponentialPowerDistributions(Distribution.Distribution):
             self.param['n'] = len(P)
         else:
             self.param['P'] = [ExponentialPower() for i in range(self.param['n'])]
-            
+        self.primary = ['P']
 
     def sample(self,m):
         X = zeros((self.param['n'],m))
@@ -34,18 +34,14 @@ class ProductOfExponentialPowerDistributions(Distribution.Distribution):
             X[i,:] = self.param['P'][i].sample(m).X
         return Data.Data(X,str(m) + ' samples from a ' + self.name)
 
-    def estimate(self,dat,which=None):
-        if which == None:
-            which = ['p','s']
-        elif which.count('P') > 0:
-            which.remove('P')
-            which.append('p')
+    def estimate(self,dat):
             
         print "Fitting Product of Exponential Power distributions ..."
         for i in xrange(self.param['n']):
             print "\r\tDistribution %d ...                 "  % (i,) ,
             sys.stdout.flush()
-            self.param['P'][i].estimate(dat[i,:],which)
+            self.param['P'][i].primary = ['p','s']
+            self.param['P'][i].estimate(dat[i,:])
         print "[Done]"
 
         

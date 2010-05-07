@@ -1,13 +1,11 @@
 import Distribution
 import Data
 import Filter
-import numpy as np
-import scipy as sp
-from scipy import special
+from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff, sum, log
 import GammaP
 import LpSphericallySymmetric
 import Auxiliary
-import mdp
+from mdp.utils import random_rot
 import types
 
 class CompleteLinearModel(Distribution.Distribution):
@@ -39,8 +37,10 @@ class CompleteLinearModel(Distribution.Distribution):
                not isinstance(param['W'],Filter.LinearFilter) and \
                isinstance(param['q'],Distribution.Distribution) and \
                param['q'].param.has_key('n'):
-            self.param['W'] = Filter.LinearFilter(mdp.utils.random_rot(param['q'].param['n']),\
+            self.param['W'] = Filter.LinearFilter(random_rot(param['q'].param['n']),\
                                                       'Random rotation matrix',['sampled from Haar distribution'])
+
+        self.primary = ['q','W']
             
     def loglik(self,dat):
         # the determinant of W is not part here since W is in SO(n)
@@ -57,8 +57,8 @@ class CompleteLinearModel(Distribution.Distribution):
             for k in param0.keys():
                 param[k] = param0[k]
 
-        dAngle = np.array([np.Inf for dummy in range(param['maxiter']+2)])
-        fRec = np.array([np.Inf for dummy in range(param['maxiter']+2)])
+        dAngle = array([Inf for dummy in range(param['maxiter']+2)])
+        fRec = array([Inf for dummy in range(param['maxiter']+2)])
 
         iter = 0
         loop = True
@@ -81,13 +81,13 @@ class CompleteLinearModel(Distribution.Distribution):
             # estimating the filter matrix
             (Wnew,fval,param) = Auxiliary.Optimization.StGradient(self.objective, W, \
                                                                    param, dat,q)
-            dAngle[iter] = np.real(np.max(np.arccos(np.diag(np.dot(W,Wnew.transpose()))) \
-                                              /2/np.pi*360.0))
+            dAngle[iter] = real(max(arccos(diag(dot(W,Wnew.transpose()))) \
+                                              /2/pi*360.0))
             fRec[iter] = fval[0]
             W = Wnew
             # check stopping criterion
             if iter > param['maxiter'] or \
-                    (iter > 1 and np.mean(np.abs(np.diff(fRec[iter-2:iter+1]))) < 1e-4 and dAngle[iter] < 1):
+                    (iter > 1 and mean(abs(diff(fRec[iter-2:iter+1]))) < 1e-4 and dAngle[iter] < 1):
                 print "\t Optimization terminated! [Exiting]"
                 loop = False
             iter +=1
@@ -108,10 +108,10 @@ class CompleteLinearModel(Distribution.Distribution):
         """
         (n,m) = dat.size()
         if nargout == 1:
-            return (np.sum(q.loglik(Data.Data(np.array(np.dot(W,dat.X)))))/m/n/np.log(2),)
+            return (sum(q.loglik(Data.Data(array(dot(W,dat.X)))))/m/n/log(2),)
         else:
-            return (np.sum(q.loglik(Data.Data(np.array(np.dot(W,dat.X)))))/m/n/np.log(2), \
-                        np.dot(q.dldx(Data.Data(np.array(np.dot(W,dat.X)))),\
-                                   dat.X.transpose())/m/n/np.log(2))
+            return (sum(q.loglik(Data.Data(array(dot(W,dat.X)))))/m/n/log(2), \
+                        dot(q.dldx(Data.Data(array(dot(W,dat.X)))),\
+                                   dat.X.transpose())/m/n/log(2))
 
         

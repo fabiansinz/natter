@@ -1,8 +1,7 @@
 import Distribution
 import Data
-import numpy as np
-import scipy as sp
-from scipy import special
+from numpy import mean, sum, abs, sign
+from numpy.random import gamma, randn
 import GammaP
 import LpSphericallySymmetric
 import Auxiliary
@@ -24,22 +23,21 @@ class LpGeneralizedNormal(LpSphericallySymmetric.LpSphericallySymmetric):
             for k in param.keys():
                 self.param[k] = float(param[k])
         self.param['rp'] = GammaP.GammaP({'u':(self.param['n']/self.param['p']),'s':self.param['s'],'p':self.param['p']})
+        self.primary = ['p','s']
 
-    def estimate(self,dat,which=None,prange=(.1,5.0)):
-        '''ESTIMATE(DAT[, WHICH=SELF.PARAM.KEYS(),[PRANGE=(.1,5.0)]])
+    def estimate(self,dat,prange=(.1,5.0)):
+        '''ESTIMATE(DAT,[PRANGE=(.1,5.0)]])
         
         estimates the parameters from the data in DAT. The optional
         second argument specifys a list of parameters that should be
         estimated. PRANGE, when specified, defines the search range for p.
         '''
-        if which == None:
-            which = self.param.keys()
-        if which.count('p') > 0:
+        if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
             bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
 
-        self.param['s'] = self.param['p']*np.mean(np.sum(np.abs(dat.X)**self.param['p'],0))  / self.param['n']
+        self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']
         self.param['rp'].param['s'] = self.param['s']
         self.param['rp'].param['u'] = self.param['n']/self.param['p']
         
@@ -48,13 +46,19 @@ class LpGeneralizedNormal(LpSphericallySymmetric.LpSphericallySymmetric):
 
            samples M examples from the distribution.
         '''
-        z = np.random.gamma(1/self.param['p'],self.param['s'],(self.param['n'],m))
-        z = np.abs(z)**(1/self.param['p'])
-        return Data.Data(z * np.sign(np.random.randn(self.param['n'],m)),'Samples from ' + self.name, \
+        z = gamma(1/self.param['p'],self.param['s'],(self.param['n'],m))
+        z = abs(z)**(1/self.param['p'])
+        return Data.Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
                       ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
 
     def __pALL(self,p,dat):
         self.param['p'] = p
         self.param['rp'].param['p'] = p
-        self.estimate(dat,['s'])
+        pold = list(self.primary)
+        pr = list(pold)
+        if 'p' in pr:
+            pr.remove('p')
+        self.primary = pr
+        self.estimate(dat)
+        self.primary = pold
         return self.all(dat)

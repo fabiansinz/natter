@@ -1,9 +1,10 @@
 import Distribution
 import Data
-import numpy as np
-import scipy as sp
-from scipy import special
-from scipy.stats import gamma
+from numpy import log, exp, mean
+from numpy.random import gamma
+from scipy.special import gammaln, polygamma
+from scipy.stats import gamma as gammastats
+
 
 class Gamma(Distribution.Distribution):
     """
@@ -23,7 +24,7 @@ class Gamma(Distribution.Distribution):
         if param != None:
             for k in param.keys():
                 self.param[k] = float(param[k])
-
+        self.primary = ['u','s']
         
     def sample(self,m):
         '''
@@ -33,7 +34,7 @@ class Gamma(Distribution.Distribution):
            samples M examples from the gamma distribution.
            
         '''
-        return Data.Data(np.random.gamma(self.param['u'],self.param['s'],(1,m)) \
+        return Data.Data(gamma(self.param['u'],self.param['s'],(1,m)) \
                          ,str(m) + ' samples from ' + self.name)
         
 
@@ -46,9 +47,9 @@ class Gamma(Distribution.Distribution):
            parameter dat must be a Data.Data object.
            
         '''
-        return (self.param['u']-1.0) * np.log(dat.X)   \
+        return (self.param['u']-1.0) * log(dat.X)   \
                - dat.X/self.param['s']\
-               - self.param['u'] * np.log(self.param['s']) -  special.gammaln(self.param['u']) 
+               - self.param['u'] * log(self.param['s']) -  gammaln(self.param['u']) 
 
 
     def pdf(self,dat):
@@ -60,7 +61,7 @@ class Gamma(Distribution.Distribution):
            model. The parameter dat must be a Data.Data object
            
         '''
-        return np.exp(self.loglik(dat))
+        return exp(self.loglik(dat))
         
 
     def cdf(self,dat):
@@ -73,7 +74,7 @@ class Gamma(Distribution.Distribution):
            dat must be a Data.Data object
            
         '''
-        return gamma.cdf(dat.X,self.param['u'],scale=self.param['s'])
+        return gammastats.cdf(dat.X,self.param['u'],scale=self.param['s'])
 
 
     def ppf(self,X):
@@ -87,7 +88,7 @@ class Gamma(Distribution.Distribution):
            object.
            
         '''
-        return Data.Data(gamma.ppf(X,self.param['u'],scale=self.param['s']))
+        return Data.Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
 
 
     def dldx(self,dat):
@@ -103,27 +104,24 @@ class Gamma(Distribution.Distribution):
         return (self.param['u']-1.0)/dat.X  - 1.0/self.param['s']
         
 
-    def estimate(self,dat,which = None):
+    def estimate(self,dat):
         '''
 
-        estimate(dat[, which=self.param.keys()])
+        estimate(dat)
         
         estimates the parameters from the data in dat (Data.Data
         object). The optional second argument specifys a list of
         parameters (list of strings) that should be estimated.
         '''
 
-        if which == None:
-            which = self.param.keys()
-
-        logmean = np.log(np.mean(dat.X))
-        meanlog = np.mean(np.log(dat.X))
+        logmean = log(mean(dat.X))
+        meanlog = mean(log(dat.X))
         u=2.0
 
-        if ( which.count('u') > 0): # if we want to estimate u
+        if 'u' in self.primary: # if we want to estimate u
             for k in range(self.maxCount):
-                unew= 1/u + (meanlog - logmean + np.log(u) - float(special.polygamma(0,u)))/ \
-                      (u**2  * (1/u - float(special.polygamma(1,u))))
+                unew= 1/u + (meanlog - logmean + log(u) - float(polygamma(0,u)))/ \
+                      (u**2  * (1/u - float(polygamma(1,u))))
                 unew = 1/unew
                 if (unew-u)**2 < self.Tol:
                     u=unew
@@ -132,8 +130,8 @@ class Gamma(Distribution.Distribution):
             
             self.param['u'] = unew;
 
-        if which.count('s') > 0:
-            self.param['s'] = np.exp(logmean)/self.param['u'];
+        if 'u' in self.primary:
+            self.param['s'] = exp(logmean)/self.param['u'];
    
     
     

@@ -43,10 +43,9 @@ class ProductOfExperts(Distribution):
             self.param['alpha'] = ones((self.param['N'],))
         if param0 == None or not param0.has_key('potentials'):
             self.param['potentials'] = [Potential('studentt') for i in xrange(self.param['N'])]
+        self.primary = ['potentials','W','alpha']
 
-    def estimate(self,dat,which=None):
-        if which == None:
-            which = ['W','alpha']
+    def estimate(self,dat):
 
         print "\tEstimating parameters of Product of Experts...\n"
         stdout.flush()
@@ -54,8 +53,8 @@ class ProductOfExperts(Distribution):
         alpha = self.param['alpha'].copy()
         W = array(self.param['W'].W.copy())
 
-        estimate_alpha = which.count('alpha') > 0
-        estimate_W = which.count('W') > 0
+        estimate_alpha = 'alpha' in self.primary
+        estimate_W = 'W' in self.primary
 
         W_old = Inf*W
         alpha_old = Inf*alpha
@@ -63,15 +62,15 @@ class ProductOfExperts(Distribution):
             
             if estimate_W:
                 print "\testimating W ..."; stdout.flush()
-                wobjective = lambda Wt, derivative: ( -self.__myscore(alpha,Wt.transpose(),dat.X,"score"),) if derivative == 1 \
-                             else  ( -self.__myscore(alpha,Wt.transpose(),dat.X,"score"), -self.__myscore(alpha,Wt.transpose(),dat.X,"dW").transpose())
+                wobjective = lambda Wt, derivative: ( -self.myscore(alpha,Wt.transpose(),dat.X,"score"),) if derivative == 1 \
+                             else  ( -self.myscore(alpha,Wt.transpose(),dat.X,"score"), -self.myscore(alpha,Wt.transpose(),dat.X,"dW").transpose())
                 (W,fval,param) = StGradient(wobjective, W.transpose())
                 W = W.transpose()
 
             if estimate_alpha:
                 print "\testimating alpha ..."; stdout.flush()
-                af = lambda a: self.__myscore(a,W,dat.X,"score")
-                afprime = lambda a: self.__myscore(a,W,dat.X,"dalpha")
+                af = lambda a: self.myscore(a,W,dat.X,"score")
+                afprime = lambda a: self.myscore(a,W,dat.X,"dalpha")
                 bounds = [(1e-12, Inf) for dummy in xrange(self.param['N'])]
                 alpha = fmin_l_bfgs_b(af,alpha,afprime,bounds=bounds)[0]
 
@@ -85,7 +84,7 @@ class ProductOfExperts(Distribution):
                 alpha_old = alpha.copy()
 
                 
-    def __myscore(self,alpha,W,X,otype):
+    def myscore(self,alpha,W,X,otype):
         Y = Data.Data(dot(W,X))
         n,m = shape(X); m = float(m); 
         N = self.param['N']
