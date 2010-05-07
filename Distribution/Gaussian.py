@@ -99,7 +99,14 @@ class Gaussian(Distribution.Distribution):
             ret = hstack((ret, squeeze(sum( dot(inv(self.param['sigma']), dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))),1))  ))
 
         if 'sigma' in self.primary:
-            raise AbstractError('dldsigma is not implemented! Set p.primary = [\'mu\']!')
+            C = self.param['sigma'].copy()
+            C = inv(C)
+            
+            X = dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))
+            X = dot(X,X.transpose())
+            C = -m*C + dot(dot(C,X),C)
+            C = C - .5 * diag(diag(C))
+            ret = hstack((ret, C[self.I] ))
         return ret
 
    

@@ -21,7 +21,7 @@ if __name__=="__main__":
 #     p.array2primary(dummy)
 #     print p
 
-    p.primary = ['mu']
+    p.primary = ['mu','sigma']
     print p.dldtheta(dat)
 
 
