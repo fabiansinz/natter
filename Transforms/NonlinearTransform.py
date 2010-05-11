@@ -1,5 +1,5 @@
-from Transform import Transform
-from LinearTransform import LinearTransform
+import Transform
+import LinearTransform
 import numpy as np
 import string
 from Auxiliary import Errors
@@ -7,7 +7,7 @@ from DataModule import Data
 import types
 import copy
 
-class NonlinearTransform(Transform):
+class NonlinearTransform(Transform.Transform):
     '''
     NONLINEARTRANSFORM class representing nonlinear transformations.
 

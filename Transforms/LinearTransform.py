@@ -1,5 +1,5 @@
-from Transform import Transform
-from NonlinearTransform import NonlinearTransform
+import Transform
+import NonlinearTransform
 import string
 from numpy.linalg import inv, det
 from Auxiliary import Errors, Plotting
@@ -7,7 +7,7 @@ from DataModule import Data
 import types
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
 
-class LinearTransform(Transform):
+class LinearTransform(Transform.Transform):
     '''
     LINEARTRANSFORM class representing linear filters.
 
