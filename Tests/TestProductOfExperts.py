@@ -1,5 +1,5 @@
 import unittest
-import Distribution
+import Distributions
 import sys
 from numpy.random import randn, rand
 from numpy import max, abs, size, array
@@ -13,7 +13,7 @@ class TestProductOfExperts(unittest.TestCase):
         sys.stdout.flush()
         
         X = randn(5,100)
-        p = Distribution.ProductOfExperts({'n':5})
+        p = Distributions.ProductOfExperts({'n':5})
         
         alpha0 = rand(p.param['N'])
     
