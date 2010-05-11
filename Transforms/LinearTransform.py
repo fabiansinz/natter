@@ -1,9 +1,8 @@
 from Transforms import Transform, NonlinearTransform
 import string
 from numpy.linalg import inv, det
-from Auxiliary import Errors
-from Auxiliary import Plotting
-import Data
+from Auxiliary import Errors, Plotting
+from DataModule import Data
 import types
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
 
@@ -54,14 +53,14 @@ class LinearTransform(Transform):
         return LinearTransform(array(self.W).transpose(),self.name,tmp)
 
     def apply(self,O):
-        if isinstance(O,Data.Data):
+        if isinstance(O,Data):
 
             # copy other history and add own 
             tmp = list(O.history)
             tmp.append('multiplied with Transform "' + self.name + '"')
             tmp.append(list(self.history))
             # compute function
-            return Data.Data(array(dot(self.W,O.X)),O.name,tmp)
+            return Data(array(dot(self.W,O.X)),O.name,tmp)
 
         elif isinstance(O,LinearTransform):
             # cooy other history and add own
@@ -88,7 +87,7 @@ class LinearTransform(Transform):
             return NonlinearTransform.NonlinearTransform(g,Ocpy.name,tmp, logdetJ=gdet )
             
         else:
-            raise TypeError('Transform.__mult__(): Transforms can only be multiplied with Data.Data or Transform.LinearTransform objects')
+            raise TypeError('Transform.__mult__(): Transforms can only be multiplied with Data or Transform.LinearTransform objects')
             
         return self
 

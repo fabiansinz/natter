@@ -2,7 +2,7 @@ from Transforms import Transform, LinearTransform
 import numpy as np
 import string
 from Auxiliary import Errors
-import Data
+from DataModule import Data
 import types
 import copy
 
@@ -24,7 +24,7 @@ class NonlinearTransform(Transform):
 
 
     def apply(self,O):
-        if isinstance(O,Data.Data):
+        if isinstance(O,Data):
             # copy other history 
             tmp = list(O.history)
             tmp.append('Applied non-linear filter "' + self.name + '"')
@@ -61,7 +61,7 @@ class NonlinearTransform(Transform):
                 gdet = lambda y: Scpy.logdetJ(Ocpy.f(y)) + Ocpy.logdetJ(y)
             return NonlinearTransform(g,O.name,tmp, logdetJ=gdet )
         else:
-            raise TypeError('Transform.NoninearTransform.__mult__(): Transforms can only be multiplied with Data.Data, Transform.LinearTransform or Transform.NonlinearTransform objects')
+            raise TypeError('Transform.NoninearTransform.__mult__(): Transforms can only be multiplied with Data, Transform.LinearTransform or Transform.NonlinearTransform objects')
         return self
 
 
