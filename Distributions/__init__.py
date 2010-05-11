@@ -1,5 +1,5 @@
-from Gamma import Gamma
 from Distribution import Distribution
+from Gamma import Gamma
 from Dirichlet import Dirichlet
 from MixtureOfDirichlet import MixtureOfDirichlet
 from MixtureOfGaussians import MixtureOfGaussians

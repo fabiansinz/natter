@@ -1,14 +1,12 @@
-import Distribution
+from Distributions import Distribution
 import Data
 import Filter
 from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff, sum, log
-import GammaP
-import LpSphericallySymmetric
 import Auxiliary
 from mdp.utils import random_rot
 import types
 
-class CompleteLinearModel(Distribution.Distribution):
+class CompleteLinearModel(Distribution):
     '''
       COMPLETE LINEAR MODEL
 
@@ -35,7 +33,7 @@ class CompleteLinearModel(Distribution.Distribution):
         self.param = param
         if not param.has_key('W') or \
                not isinstance(param['W'],Filter.LinearFilter) and \
-               isinstance(param['q'],Distribution.Distribution) and \
+               isinstance(param['q'],Distribution) and \
                param['q'].param.has_key('n'):
             self.param['W'] = Filter.LinearFilter(random_rot(param['q'].param['n']),\
                                                       'Random rotation matrix',['sampled from Haar distribution'])
