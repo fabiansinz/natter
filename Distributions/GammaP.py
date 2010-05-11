@@ -1,5 +1,5 @@
-from Distributions import Distribution, Gamma
-import Data
+from Distributions import  Gamma
+from DataModule import Data
 from numpy import log, exp, mean
 import Auxiliary
 from scipy.stats import gamma
@@ -38,7 +38,7 @@ class GammaP(Gamma):
            parameter dat must be a Data.Data object.
            
         '''
-        return Gamma.Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) 
+        return Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) 
 
     def dldx(self,dat):
         """
@@ -50,7 +50,7 @@ class GammaP(Gamma):
         a Data.Data object.
         
         """
-        return Gamma.Gamma.dldx(self,dat**self.param['p'])*self.param['p']*dat.X**(self.param['p']-1.0) \
+        return Gamma.dldx(self,dat**self.param['p'])*self.param['p']*dat.X**(self.param['p']-1.0) \
                +(self.param['p']-1)/dat.X
     
 
@@ -89,7 +89,7 @@ class GammaP(Gamma):
            object.
            
         '''
-        return Data.Data(gamma.ppf(U,self.param['u'],scale=self.param['s'])**(1/self.param['p']))
+        return Data(gamma.ppf(U,self.param['u'],scale=self.param['s'])**(1/self.param['p']))
 
 
     def sample(self,m):
@@ -100,7 +100,7 @@ class GammaP(Gamma):
            samples M examples from the gamma distribution.
            
         '''
-        dat = (Gamma.Gamma.sample(self,m))**(1/self.param['p'])
+        dat = (Gamma.sample(self,m))**(1/self.param['p'])
         dat.setHistory([])
         return dat
 
@@ -118,7 +118,7 @@ class GammaP(Gamma):
             f = lambda t: self.__pALL(t,dat)
             bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
-        Gamma.Gamma.estimate(self,dat**self.param['p'])
+        Gamma.estimate(self,dat**self.param['p'])
 
     def __pALL(self,p,dat):
         self.param['p'] = p

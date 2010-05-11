@@ -1,6 +1,6 @@
 from Distributions import Distribution
-import Data
-import Filter
+from DataModule import Data
+from Transforms import LinearTransform
 from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff, sum, log
 import Auxiliary
 from mdp.utils import random_rot
@@ -32,10 +32,10 @@ class CompleteLinearModel(Distribution):
         self.name = 'Complete Linear Model'
         self.param = param
         if not param.has_key('W') or \
-               not isinstance(param['W'],Filter.LinearFilter) and \
+               not isinstance(param['W'],LinearTransform) and \
                isinstance(param['q'],Distribution) and \
                param['q'].param.has_key('n'):
-            self.param['W'] = Filter.LinearFilter(random_rot(param['q'].param['n']),\
+            self.param['W'] = LinearTransform(random_rot(param['q'].param['n']),\
                                                       'Random rotation matrix',['sampled from Haar distribution'])
 
         self.primary = ['q','W']
@@ -67,9 +67,9 @@ class CompleteLinearModel(Distribution):
             # estimating the base distribution
             print "\tEstimating Base Distribution ..."
             if param.has_key('args'):
-                q.estimate(Filter.LinearFilter(W)*dat,*param['args'])
+                q.estimate(LinearTransform(W)*dat,*param['args'])
             else:
-                q.estimate(Filter.LinearFilter(W)*dat)
+                q.estimate(LinearTransform(W)*dat)
                 
             self.param['q'] = q
             print "\t[Done]"
@@ -106,10 +106,10 @@ class CompleteLinearModel(Distribution):
         """
         (n,m) = dat.size()
         if nargout == 1:
-            return (sum(q.loglik(Data.Data(array(dot(W,dat.X)))))/m/n/log(2),)
+            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2),)
         else:
-            return (sum(q.loglik(Data.Data(array(dot(W,dat.X)))))/m/n/log(2), \
-                        dot(q.dldx(Data.Data(array(dot(W,dat.X)))),\
+            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2), \
+                        dot(q.dldx(Data(array(dot(W,dat.X)))),\
                                    dat.X.transpose())/m/n/log(2))
 
         

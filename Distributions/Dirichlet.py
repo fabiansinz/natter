@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import dot, log, sum, mean, ones, shape, abs, exp, where, max, median
 from numpy.random import rand
 from numpy.random.mtrand import dirichlet
@@ -38,7 +38,7 @@ class Dirichlet(Distribution):
            samples M examples from the gamma distribution.
            
         '''
-        return Data.Data(dirichlet(tuple(self.param['alpha']),m).transpose(),str(m) + ' samples from ' + self.name)
+        return Data(dirichlet(tuple(self.param['alpha']),m).transpose(),str(m) + ' samples from ' + self.name)
         
 
     def loglik(self,dat):

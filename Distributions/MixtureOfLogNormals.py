@@ -1,5 +1,5 @@
 from Distributions import Distribution, MixtureOfGaussians
-import Data
+from DataModule import Data
 from numpy import array, sum,cumsum, exp, log, zeros, squeeze, pi
 from numpy.random import randn, rand
 from scipy.stats import norm
@@ -50,7 +50,7 @@ class MixtureOfLogNormals(Distribution):
                     k[i] = j
                     break
         k = tuple(k)
-        return Data.Data(exp(randn(m)*self.param['s'].take(k) + self.param['mu'].take(k)),str(m) + ' sample from ' + self.name)
+        return Data(exp(randn(m)*self.param['s'].take(k) + self.param['mu'].take(k)),str(m) + ' sample from ' + self.name)
                 
 
     def pdf(self,dat):
@@ -93,7 +93,7 @@ class MixtureOfLogNormals(Distribution):
     def estimate(self,dat, errTol=1e-4,maxiter=1000):
         dummy = MixtureOfGaussians.MixtureOfGaussians(self.param)
         dummy.primary = self.primary
-        dummy.estimate(Data.Data(log(dat.X)), errTol, maxiter)
+        dummy.estimate(Data(log(dat.X)), errTol, maxiter)
         self.param = dummy.param
 
         

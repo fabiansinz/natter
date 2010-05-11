@@ -2,7 +2,7 @@ import numpy as np
 from  Auxiliary import  Errors, Plotting, save
 import matplotlib as mpl
 import pylab as pl
-from  Transforms import TransformFactory
+#from  Transforms import TransformFactory
 from numpy import linalg
 import types
 import pickle
@@ -129,7 +129,7 @@ class Data:
     def makeWhiteningVolumeConserving(self,method='project',D=None):
         if method == 'project':
             if D == None:
-                F = TransformFactory.DCnonDC(self)
+#                F = TransformFactory.DCnonDC(self)
                 F = F[1:,:]
                 C = np.cov((F*self).X)
                 (U,D,V) = linalg.svd(C)

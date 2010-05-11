@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import zeros
 from ExponentialPower import ExponentialPower
 import sys
@@ -32,7 +32,7 @@ class ProductOfExponentialPowerDistributions(Distribution):
         X = zeros((self.param['n'],m))
         for i in xrange(self.param['n']):
             X[i,:] = self.param['P'][i].sample(m).X
-        return Data.Data(X,str(m) + ' samples from a ' + self.name)
+        return Data(X,str(m) + ' samples from a ' + self.name)
 
     def estimate(self,dat):
             

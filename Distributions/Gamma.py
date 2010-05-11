@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import log, exp, mean
 from numpy.random import gamma
 from scipy.special import gammaln, polygamma
@@ -34,7 +34,7 @@ class Gamma(Distribution):
            samples M examples from the gamma distribution.
            
         '''
-        return Data.Data(gamma(self.param['u'],self.param['s'],(1,m)) \
+        return Data(gamma(self.param['u'],self.param['s'],(1,m)) \
                          ,str(m) + ' samples from ' + self.name)
         
 
@@ -88,7 +88,7 @@ class Gamma(Distribution):
            object.
            
         '''
-        return Data.Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
+        return Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
 
 
     def dldx(self,dat):

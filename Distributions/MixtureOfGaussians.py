@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import sum, cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs
 from numpy.random import rand, randn 
 from scipy import stats
@@ -51,7 +51,7 @@ class MixtureOfGaussians(Distribution):
                     k[i] = j
                     break
         k = tuple(k)
-        return Data.Data(randn(m)*self.param['s'].take(k) + self.param['mu'].take(k),str(m) + ' sample from ' + self.name)
+        return Data(randn(m)*self.param['s'].take(k) + self.param['mu'].take(k),str(m) + ' sample from ' + self.name)
                 
 
     def pdf(self,dat):

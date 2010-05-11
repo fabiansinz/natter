@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import where, zeros, sum, cumsum, array, size, float64, dot, reshape, log, exp
 from numpy import ones, kron, shape, squeeze, Inf, argmax, mean, abs, median, all
 from numpy.random import rand
@@ -68,7 +68,7 @@ class MixtureOfDirichlet(Distribution):
         for i in range(self.param['K']):
             I = where(k == i)[0]
             X[:,I] = dirichlet(self.param['alpha'][:,i],len(I)).transpose()
-        return Data.Data(X,str(m) + ' samples from a mixture of ' + str(self.param['K']) + ' Dirichlet distributions.')
+        return Data(X,str(m) + ' samples from a mixture of ' + str(self.param['K']) + ' Dirichlet distributions.')
     
     def loglik(self,dat):
         ret = zeros((self.param['K'],dat.size(1)))

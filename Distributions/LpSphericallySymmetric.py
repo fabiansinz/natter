@@ -1,5 +1,5 @@
 from Distributions import Distribution, Gamma
-import Data
+from DataModule import Data
 from numpy import log, abs, sign
 from numpy.random import gamma, randn
 from scipy.special import gammaln
@@ -77,7 +77,7 @@ class LpSphericallySymmetric(Distribution):
         # sample from a p-generlized normal with scale 1
         z = gamma(1/self.param['p'],1.0,(self.param['n'],m))
         z = abs(z)**(1/self.param['p'])
-        dat =  Data.Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
+        dat =  Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
                       ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
         # normalize the samples to get a uniform distribution.
         dat.normalize(self.param['p'])

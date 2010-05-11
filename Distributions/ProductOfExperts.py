@@ -1,11 +1,11 @@
 from __future__ import division
 from Auxiliary import Potential
 from Auxiliary.Optimization import StGradient
-from Distributions  from Distribution import Distribution 
+from Distribution import Distribution 
 from numpy import ones, size, max, zeros, sum, array, kron, reshape,dot,shape,squeeze, Inf
 from numpy.random import randn
-import Filter
-import Data
+from Transforms import TransformFactory, LinearTransform
+from DataModule import Data
 from sys import stdout
 from scipy.optimize import fmin_l_bfgs_b
 
@@ -37,8 +37,8 @@ class ProductOfExperts(Distribution):
         self.name = 'Product of Experts'
         if param0==None or not param0.has_key('N'):
             self.param['N'] = 2*self.param['n']
-        if param0==None or not param0.has_key('W') or not isinstance(param0['W'],Filter.LinearFilter):
-            self.param['W'] = Filter.FilterFactory.stRND( (self.param['N'],self.param['n']) )
+        if param0==None or not param0.has_key('W') or not isinstance(param0['W'],LinearTransform):
+            self.param['W'] = TransformFactory.stRND( (self.param['N'],self.param['n']) )
         if param0 == None or not param0.has_key('alpha'):
             self.param['alpha'] = ones((self.param['N'],))
         if param0 == None or not param0.has_key('potentials'):
@@ -85,7 +85,7 @@ class ProductOfExperts(Distribution):
 
                 
     def myscore(self,alpha,W,X,otype):
-        Y = Data.Data(dot(W,X))
+        Y = Data(dot(W,X))
         n,m = shape(X); m = float(m); 
         N = self.param['N']
         pot = self.param['potentials']

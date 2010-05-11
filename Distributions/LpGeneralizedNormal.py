@@ -1,5 +1,5 @@
 from Distributions import Distribution, GammaP, LpSphericallySymmetric
-import Data
+from DataModule import Data
 from numpy import mean, sum, abs, sign
 from numpy.random import gamma, randn
 import Auxiliary
@@ -46,7 +46,7 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
         '''
         z = gamma(1/self.param['p'],self.param['s'],(self.param['n'],m))
         z = abs(z)**(1/self.param['p'])
-        return Data.Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
+        return Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
                       ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
 
     def __pALL(self,p,dat):

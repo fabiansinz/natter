@@ -2,7 +2,7 @@ from Auxiliary import Errors
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-import Data
+from DataModule import Data
 import copy
 import numpy as np
 import pickle
@@ -143,11 +143,11 @@ class Distribution:
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
 
-        y = self.pdf( Data.Data(bincenters))
+        y = self.pdf( Data(bincenters))
         l = ax.plot(bincenters, y, 'k--', linewidth=2)
 
         if hasattr(self,'cdf') and cdf:
-            z = self.cdf( Data.Data(bincenters))
+            z = self.cdf( Data(bincenters))
             l = ax.plot(bincenters, z, 'k.-', linewidth=2)
             plt.legend( ('p.d.f.','c.d.f.','Histogram') )
         else:

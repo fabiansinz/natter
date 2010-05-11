@@ -1,5 +1,5 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import exp, log, pi, mean, std
 from numpy.random import randn
 from scipy.stats import norm
@@ -40,7 +40,7 @@ class LogNormal(Distribution):
         """
         
 
-        return Data.Data(exp(randn(1,m)*self.param['s'] + self.param['mu']) ,str(m) + ' samples from ' + self.name)
+        return Data(exp(randn(1,m)*self.param['s'] + self.param['mu']) ,str(m) + ' samples from ' + self.name)
         
 
     def loglik(self,dat):
@@ -92,7 +92,7 @@ class LogNormal(Distribution):
            object.
            
         '''
-        return Data.Data(exp(norm.ppf(X,loc=self.param['mu'],scale=self.param['s'])))
+        return Data(exp(norm.ppf(X,loc=self.param['mu'],scale=self.param['s'])))
 
 
     def dldx(self,dat):

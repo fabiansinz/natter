@@ -1,12 +1,12 @@
 from Distributions import Distribution
-import Data
+from DataModule import Data
 from numpy import log, abs, sign, exp, mean, abs
 from numpy.random import gamma, randn
 #from scipy.stats import gamma as statsgamma
 from scipy.special import gammaln
 from scipy.optimize import fminbound
 
-class ExponentialPower(Distributions.Distribution):
+class ExponentialPower(Distribution):
     """
       Exponential Power Distribution
 
@@ -66,7 +66,7 @@ class ExponentialPower(Distributions.Distribution):
         
         """
         z = gamma(1.0/self.param['p'],self.param['s'],(1,m))**(1.0/self.param['p'])
-        return Data.Data(sign(randn(1,m))*z, str(m) + ' samples from an exponential power distribution.')
+        return Data(sign(randn(1,m))*z, str(m) + ' samples from an exponential power distribution.')
         
     
 

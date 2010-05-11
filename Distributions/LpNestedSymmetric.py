@@ -1,5 +1,5 @@
 from Distributions import Distribution, Gamma
-import Data
+from DataModule import Data
 from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign
 from numpy.random import beta, dirichlet, rand
 import Auxiliary
@@ -37,7 +37,7 @@ class LpNestedSymmetric(Distribution):
         r = beta(float(self.param['f'].n[()]),1.0,(1,m))
         recsample((),r,self.param['f'],m,ret)
         
-        ret = Data.Data(ret,'Samples from ' + self.name)
+        ret = Data(ret,'Samples from ' + self.name)
         ret.scale(self.param['rp'].sample(m).X/self.param['f'].f(ret).X)
 
         return ret
