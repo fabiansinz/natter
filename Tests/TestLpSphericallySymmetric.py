@@ -1,10 +1,8 @@
 import Distributions
-import Data
+from DataModule import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
 from scipy import io
-import Auxiliary
 import sys
 class TestLpSphericallySymmetric(unittest.TestCase):
 
@@ -27,7 +25,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
         for k in range(n):
             y = np.array(dat.X)
             y[k,:] += h
-            df2[k,:] = (p.loglik(Data.Data(y)) - p.loglik(dat))/h
+            df2[k,:] = (p.loglik(Data(y)) - p.loglik(dat))/h
         self.assertFalse(np.max(np.abs(df-df2).flatten()) > self.llTol,\
            'Difference ' + str(np.max(np.abs(df-df2).flatten())) + ' in derivative of log-likelihood for p-spherically symmetric greater than ' + str(self.llTol))
 
@@ -42,7 +40,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             truell = dat['ll']
             p = Distributions.LpSphericallySymmetric({'p':dat['p'],'n':dat['n'],'rp':Distributions.Gamma({'s':dat['s'],'u':dat['u']})})
-            dat = Data.Data(dat['X'])
+            dat = Data(dat['X'])
             ll = p.loglik(dat)
             for i in range(len(ll)):
                 self.assertFalse(np.abs(ll[0,i]-truell[0,i]) > self.Tol,\
@@ -57,7 +55,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             trueparam = {'s':dat['s'],'p':dat['p'],'u':dat['u']}
             p = Distributions.LpSphericallySymmetric({'n':dat['n']})
-            dat = Data.Data(dat['X'])
+            dat = Data(dat['X'])
             p.estimate(dat,prange=(.1,4.0))
 
             self.assertFalse(np.abs(trueparam['p'] -  p.param['p']) > self.TolParam['p'],\

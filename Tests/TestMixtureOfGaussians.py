@@ -1,10 +1,8 @@
 import Distributions
-import Data
+from DataModule import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
 from scipy import io
-import Auxiliary
 import sys
 
 class TestMixtureOfGaussians(unittest.TestCase):
@@ -20,7 +18,7 @@ class TestMixtureOfGaussians(unittest.TestCase):
         tol = 1e-6
         y = np.array(dat.X) + h
         df = p.dldx(dat)
-        df2 = (p.loglik(Data.Data(y)) - p.loglik(dat))/h
+        df2 = (p.loglik(Data(y)) - p.loglik(dat))/h
         self.assertFalse(np.max(np.abs(df-df2)) > tol,\
             'Difference ' +str(np.max(np.abs(df-df2))) +' in derivative of log-likelihood for MixtureOfGaussians greater than ' + str(tol))
 

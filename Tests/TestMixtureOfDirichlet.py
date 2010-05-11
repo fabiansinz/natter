@@ -1,10 +1,7 @@
 import Distributions
-import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
 from scipy import io
-import Auxiliary
 import sys
 
 class TestMixtureOfDirichlet(unittest.TestCase):

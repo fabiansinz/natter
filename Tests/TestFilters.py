@@ -2,10 +2,10 @@ from numpy import linalg
 import numpy as np
 from Auxiliary import Errors
 import unittest
-import Filter
+from Transforms import Transform, LinearTransform, NonlinearTransform, TransformFactory
 from numpy import linalg
 import Distributions
-import Data
+from DataModule import Data
 import sys
 
 class TestFilter(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestFilter(unittest.TestCase):
     detTol = 1e-4
 
     def test_basics(self):
-        W = Filter.LinearFilter(np.random.randn(10,10))
+        W = LinearTransform(np.random.randn(10,10))
         print "Testing basic properties of filter:"
         print "\tMultiplication..."
         sys.stdout.flush()
@@ -46,7 +46,7 @@ class TestFilter(unittest.TestCase):
         # target distribution
         ptarget = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
         # create Filter
-        F = Filter.FilterFactory.RadialTransformation(psource,ptarget)
+        F = TransformFactory.RadialTransformation(psource,ptarget)
         # sample data from source distribution
         dat = psource.sample(100)
     
@@ -58,11 +58,11 @@ class TestFilter(unittest.TestCase):
 
         h = 1e-8
 
-        tmp = Data.Data(dat.X.copy())
+        tmp = Data(dat.X.copy())
         tmp.X[0,:] += h
         W1 = ((F*tmp).X-dat2.X)/h
         
-        tmp = Data.Data(dat.X.copy())
+        tmp = Data(dat.X.copy())
         tmp.X[1,:] += h
         W2 = ((F*tmp).X-dat2.X)/h
             

@@ -1,12 +1,10 @@
 from numpy import linalg
 import numpy as np
 import Auxiliary
-from Auxiliary import Errors
 import unittest
-import Filter
+import Transforms import TransformFactory, LinearTransform
 from numpy import linalg
 import Distributions
-import Data
 import sys
 
 class TestNonlinearFilter(unittest.TestCase):
@@ -19,7 +17,7 @@ class TestNonlinearFilter(unittest.TestCase):
         L = Auxiliary.LpNestedFunction()
         p = Distributions.LpNestedSymmetric({'f':L})
         dat = p.sample(10)
-        F = Filter.FilterFactory.LpNestedNonLinearICA(p)
+        F = TransformFactory.LpNestedNonLinearICA(p)
         n,m = dat.size()
         h = 1e-7
         logdetJ = F.logDetJacobian(dat)
@@ -40,9 +38,9 @@ class TestNonlinearFilter(unittest.TestCase):
         L = Auxiliary.LpNestedFunction()
         p = Distributions.LpNestedSymmetric({'f':L})
         dat = p.sample(10)
-        Flin1 = Filter.FilterFactory.oRND(dat)
-        Flin2 = Filter.LinearFilter(np.random.randn(dat.size(0),dat.size(0))+0.1*np.eye(dat.size(0)))
-        Fnl = Filter.FilterFactory.LpNestedNonLinearICA(p)
+        Flin1 = TransformFactory.oRND(dat)
+        Flin2 = LinearTransform(np.random.randn(dat.size(0),dat.size(0))+0.1*np.eye(dat.size(0)))
+        Fnl = TransformFactory.LpNestedNonLinearICA(p)
 
         Fd = {}
         Fd['NL'] = Fnl

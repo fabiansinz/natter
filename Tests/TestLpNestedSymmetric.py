@@ -1,8 +1,7 @@
 import Distributions
-import Data
+from DataModule import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
 from scipy import io
 import Auxiliary
 import sys
@@ -37,7 +36,7 @@ class TestLpNestedSymmetric(unittest.TestCase):
         for k in range(n):
             y = np.array(dat.X)
             y[k,:] += h
-            df2[k,:] = (p.loglik(Data.Data(y)) - p.loglik(dat))/h
+            df2[k,:] = (p.loglik(Data(y)) - p.loglik(dat))/h
         self.assertFalse(np.max(np.abs(df-df2).flatten()) > self.llTol,\
             'Difference in derivative of log-likelihood for p-nested symmetric greater than ' + str(self.llTol))
 

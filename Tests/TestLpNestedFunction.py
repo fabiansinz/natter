@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
-import Auxiliary
-import Data
+from  Auxiliary import LpNestedFunction
+from DataModule import Data
 import sys
 
 
@@ -29,7 +29,7 @@ class TestLpNestedFunction(unittest.TestCase):
         X = np.random.randn(6,100)
         p = np.random.rand(3) + 1.0
         L = Auxiliary.LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
-        dat = Data.Data(X)
+        dat = Data(X)
         tmp = np.sum(np.abs(X[4:6,:])**p[2],0)**(1/p[2])
         
         tmp = (tmp**p[1] + np.sum(np.abs(X[2:4,:])**p[1],0))**(1/p[1])
@@ -45,8 +45,8 @@ class TestLpNestedFunction(unittest.TestCase):
         p = np.random.rand(3) + 1.0
         L = Auxiliary.LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
         a = np.random.randn()*10
-        dat = Data.Data(X)
-        dat2 = Data.Data(a*X)
+        dat = Data(X)
+        dat2 = Data(a*X)
         tmp = L.f(dat)
         tmp2 = L.f(dat2)
         self.assertFalse(np.max(np.abs(np.abs(a)*tmp.X-tmp2.X)) > self.Tol,\
@@ -57,14 +57,14 @@ class TestLpNestedFunction(unittest.TestCase):
         print "Testing derivative for p-nested function ... "
         sys.stdout.flush()
         L = Auxiliary.LpNestedFunction()
-        dat = Data.Data(np.random.randn(25,100)*5.0)
+        dat = Data(np.random.randn(25,100)*5.0)
         df = L.dfdx(dat)
         df2 = np.Inf*df
         h = 1e-8
         for k in range(dat.size(0)):
             Y = dat.X.copy()
             Y[k,:] += h
-            dat2 = Data.Data(Y)
+            dat2 = Data(Y)
             df2[k,:] = (L.f(dat2).X - L.f(dat).X)/h
         self.assertFalse(np.max(np.abs( (df2-df).flatten() )) > self.derTol,\
             'Derivatives of Lp-nested function deviate with ' + str(np.max(np.abs( (df2-df).flatten() ))) + ' by more that ' + str(self.derTol) + '!')

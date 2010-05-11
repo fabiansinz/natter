@@ -1,5 +1,5 @@
 import Distributions
-import Data
+from DataModule import Data
 import numpy as np
 import unittest
 from Auxiliary import Errors
@@ -20,7 +20,7 @@ class TestMixtureOfLogNormals(unittest.TestCase):
         tol = 1e-4
         y = np.array(dat.X) + h
         df = p.dldx(dat)
-        df2 = (p.loglik(Data.Data(y)) - p.loglik(dat))/h
+        df2 = (p.loglik(Data(y)) - p.loglik(dat))/h
 
         prot = {}
         prot['message'] = 'Difference in derivative of log-likelihood for MixtureOfLogNormals greater than ' + str(tol)

@@ -1,5 +1,5 @@
 import Distributions
-import Data
+from DataModule import Data
 import numpy as np
 import unittest
 from Auxiliary import Errors
@@ -9,7 +9,7 @@ import sys
 
 class TestGamma(unittest.TestCase):
 
-    X = Data.Data(np.array([13.335074,2.9860291,8.7888861,2.664027,5.0230222,1.9783488,1.4536823,5.0162746,8.5239465,19.658945]))
+    X = Data(np.array([13.335074,2.9860291,8.7888861,2.664027,5.0230222,1.9783488,1.4536823,5.0162746,8.5239465,19.658945]))
     LL = np.array([-4.0518515,-2.0986232,-2.9533653,-2.1053947,-2.2575335,-2.1744116,-2.3076855,-2.2566286,-2.8956606,-5.7716738])
     Tol = 1e-7
     TolParam = 5*1e-2
@@ -47,7 +47,7 @@ class TestGamma(unittest.TestCase):
         tol = 1e-4
         y = np.array(dat.X) + h
         df = p.dldx(dat)
-        df2 = (p.loglik(Data.Data(y)) - p.loglik(dat))/h
+        df2 = (p.loglik(Data(y)) - p.loglik(dat))/h
         self.assertFalse(np.max(np.abs(df-df2)) > tol,\
                          'Difference ' + str(np.max(np.abs(df-df2)))+ 'in derivative of log-likelihood for Gamma greater than ' + str(tol))
 
