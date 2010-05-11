@@ -9,7 +9,7 @@ from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
 
 class LinearTransform(Transform):
     '''
-    LINEARFILTER class representing linear filters.
+    LINEARTRANSFORM class representing linear filters.
 
     Each object stores a numpy array W represening a array.
     '''

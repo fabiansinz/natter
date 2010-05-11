@@ -8,7 +8,7 @@ import copy
 
 class NonlinearTransform(Transform):
     '''
-    NONLINEARFILTER class representing nonlinear filters.
+    NONLINEARTRANSFORM class representing nonlinear transformations.
 
     Each object stores a function f representing the transformation.
     '''
