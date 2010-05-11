@@ -18,7 +18,7 @@ class LpSphericallySymmetric(Distribution):
     def __init__(self,param=None):
 
         self.name = 'Lp-Spherically Symmetric Distribution'
-        self.param = {'n':2, 'rp':Gamma.Gamma(),'p':2.0}
+        self.param = {'n':2, 'rp':Gamma(),'p':2.0}
         if param != None: 
             for k in param.keys():
                 self.param[k] = param[k]

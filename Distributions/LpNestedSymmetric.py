@@ -19,7 +19,7 @@ class LpNestedSymmetric(Distribution):
 
     def __init__(self,param=None):
         self.name = 'Lp-Nested Symmetric Distribution'
-        self.param = {'n':2, 'rp':Gamma.Gamma(),'f':Auxiliary.LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
+        self.param = {'n':2, 'rp':Gamma(),'f':Auxiliary.LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
 
         if param != None:
             for k in param.keys():

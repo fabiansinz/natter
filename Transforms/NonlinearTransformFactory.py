@@ -1,3 +1,4 @@
+import numpy as np
 from NonlinearTransform import NonlinearTransform
 from numpy import linalg
 from scipy import special

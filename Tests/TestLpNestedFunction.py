@@ -28,7 +28,7 @@ class TestLpNestedFunction(unittest.TestCase):
         sys.stdout.flush()
         X = np.random.randn(6,100)
         p = np.random.rand(3) + 1.0
-        L = Auxiliary.LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
+        L = LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
         dat = Data(X)
         tmp = np.sum(np.abs(X[4:6,:])**p[2],0)**(1/p[2])
         
@@ -43,7 +43,7 @@ class TestLpNestedFunction(unittest.TestCase):
         sys.stdout.flush()
         X = np.random.randn(6,100)
         p = np.random.rand(3) + 1.0
-        L = Auxiliary.LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
+        L = LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)))',p)
         a = np.random.randn()*10
         dat = Data(X)
         dat2 = Data(a*X)
@@ -56,7 +56,7 @@ class TestLpNestedFunction(unittest.TestCase):
     def test_derivatives(self):
         print "Testing derivative for p-nested function ... "
         sys.stdout.flush()
-        L = Auxiliary.LpNestedFunction()
+        L = LpNestedFunction()
         dat = Data(np.random.randn(25,100)*5.0)
         df = L.dfdx(dat)
         df2 = np.Inf*df
@@ -73,7 +73,7 @@ class TestLpNestedFunction(unittest.TestCase):
     def test_logSurface(self):
         print "Testing log-surface for p-nested function ..."
         sys.stdout.flush()
-        L = Auxiliary.LpNestedFunction('(0, 0, (1, 1, (3, 2, 3, 4, 5), 6, 7), 8, 9, 10, 11, (2, 12, 13, 14, 15, 16, (4, 17, 18, 19, 20, 21, 22), 23), 24)')
+        L = LpNestedFunction('(0, 0, (1, 1, (3, 2, 3, 4, 5), 6, 7), 8, 9, 10, 11, (2, 12, 13, 14, 15, 16, (4, 17, 18, 19, 20, 21, 22), 23), 24)')
         for k in range(len(self.surf)):
             L.p = self.p[k]
             self.assertFalse(np.abs(L.logSurface()-self.surf[k]) > self.surfTol,\
