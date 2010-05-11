@@ -1,3 +1,5 @@
+import pickle
+
 
 def save(o,filename):
     tmp = filename.split('.')

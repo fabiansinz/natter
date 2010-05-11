@@ -1,4 +1,5 @@
-from Filter import Filter, NonlinearFilter
+from Filter import Filter
+from NonlinearFilter import NonlinearFilter
 import string
 from numpy.linalg import inv, det
 from Auxiliary import Errors, Plotting

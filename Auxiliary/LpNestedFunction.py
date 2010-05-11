@@ -2,7 +2,7 @@ import types
 import numpy as np
 from scipy import special
 import string
-import Data
+from  Data import Data
 import copy
 import matplotlib as mpl
 from matplotlib.patches import Ellipse
@@ -36,7 +36,7 @@ class LpNestedFunction:
 
         computes the value of the Lp-nested funtion at the vectors in dat.
         """
-        return Data.Data(computerec(self.tree,dat.X,self.p))
+        return Data(computerec(self.tree,dat.X,self.p))
 
     def dfdx(self,dat):
         """

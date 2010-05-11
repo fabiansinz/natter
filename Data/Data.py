@@ -1,8 +1,8 @@
 import numpy as np
-import Auxiliary
+from  Auxiliary import  Errors, Plotting, save
 import matplotlib as mpl
 import pylab as pl
-import Filter
+from  Filter import FilterFactory
 from numpy import linalg
 import types
 import pickle
@@ -63,7 +63,7 @@ class Data:
 
     def plot(self):
         if not len(self.X) == 2:
-            raise Auxiliary.Errors.DimensionalityError('Data object must have dimension 2 for plotting!')
+            raise Errors.DimensionalityError('Data object must have dimension 2 for plotting!')
         else:
             h = mpl.pyplot.scatter(self.X[0],self.X[1],color='black',s=.5)
             pl.show()
@@ -114,7 +114,7 @@ class Data:
             m = self.size(1)
         nx = np.ceil(np.sqrt(m))
         ptchSz = int(np.sqrt(np.size(self.X,0)))
-        Auxiliary.Plotting.plotPatches(self.X[:,:m],nx,ptchSz)
+        Plotting.plotPatches(self.X[:,:m],nx,ptchSz)
 
     def var(self):
         return np.var(self.X,1)
@@ -129,7 +129,7 @@ class Data:
     def makeWhiteningVolumeConserving(self,method='project',D=None):
         if method == 'project':
             if D == None:
-                F = Filter.FilterFactory.DCnonDC(self)
+                F = FilterFactory.DCnonDC(self)
                 F = F[1:,:]
                 C = np.cov((F*self).X)
                 (U,D,V) = linalg.svd(C)
@@ -169,13 +169,13 @@ class Data:
             else:
                 return sh[dim]
         else:
-            raise Auxiliary.Errors.DimensionalityError('Data matrices cannot have more than two dimensions!')
+            raise Errors.DimensionalityError('Data matrices cannot have more than two dimensions!')
         
     def copy(self):
         return Data(self.X.copy(),self.name,list(self.history))
 
     def save(self,filename):
-        Auxiliary.save(self,filename)
+        save(self,filename)
 
 def displayHistoryRec(h,recDepth=0):
     s = ""

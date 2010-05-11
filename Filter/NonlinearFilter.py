@@ -1,4 +1,5 @@
-from Filter import Filter,LinearFilter
+from Filter import Filter
+import LinearFilter as LF
 import numpy as np
 import string
 from Auxiliary import Errors
@@ -34,7 +35,7 @@ class NonlinearFilter(Filter):
             ret = self.f(O)
             ret.history.append(tmp)
             return ret
-        elif isinstance(O,LinearFilter):
+        elif isinstance(O,LF.LinearFilter):
             # copy other history and add own
             tmp = list(O.history)
             tmp.append('multiplied with Filter "' + self.name + '"')
