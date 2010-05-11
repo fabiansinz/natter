@@ -2,7 +2,7 @@ import unittest
 import Distributions
 import sys
 import Auxiliary
-from Transforms import TransformFactory
+from Transforms import NonlinearTransformFactory
 import numpy as np
 import sys
 
@@ -18,7 +18,7 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
 
         dat = pnd.sample(100000)
         
-        F = TransformFactory.LpNestedNonLinearICA(pnd)
+        F = NonlinearTransformFactory.LpNestedNonLinearICA(pnd)
         dat2 = F*dat
         ica = Distributions.ProductOfExponentialPowerDistributionss({'n':pnd.param['f'].n[()]})
         ica.estimate(dat2)

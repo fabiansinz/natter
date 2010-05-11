@@ -5,9 +5,6 @@ import Auxiliary
 from scipy.stats import gamma
 
 
-
-
-
 class GammaP(Gamma):
     '''
       P-Gamma Distribution
