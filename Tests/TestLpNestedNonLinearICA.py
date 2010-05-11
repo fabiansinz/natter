@@ -20,7 +20,7 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
         
         F = NonlinearTransformFactory.LpNestedNonLinearICA(pnd)
         dat2 = F*dat
-        ica = Distributions.ProductOfExponentialPowerDistributionss({'n':pnd.param['f'].n[()]})
+        ica = Distributions.ProductOfExponentialPowerDistributions({'n':pnd.param['f'].n[()]})
         ica.estimate(dat2)
         ld = F.logDetJacobian(dat)
         ld = np.mean(np.abs(ld)) / dat.size(0) / np.log(2)
