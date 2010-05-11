@@ -2,9 +2,9 @@ import pickle
 import Auxiliary
 import types
 
-class Filter:
+class Transform:
     '''
-    FILTER representing abstract filters
+    TRANSFORM representing abstract transforms
 
     '''
 
