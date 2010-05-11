@@ -1,10 +1,10 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import exp, log, pi, mean, std
 from numpy.random import randn
 from scipy.stats import norm
 
-class LogNormal(Distribution.Distribution):
+class LogNormal(Distribution):
     """
       LogNormal Distribution
 

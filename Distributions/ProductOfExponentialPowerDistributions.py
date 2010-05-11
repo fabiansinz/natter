@@ -1,10 +1,10 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import zeros
 from ExponentialPower import ExponentialPower
 import sys
 
-class ProductOfExponentialPowerDistributions(Distribution.Distribution):
+class ProductOfExponentialPowerDistributions(Distribution):
     """
       Product of Exponential Power Distributions
 

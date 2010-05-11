@@ -1,4 +1,4 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import where, zeros, sum, cumsum, array, size, float64, dot, reshape, log, exp
 from numpy import ones, kron, shape, squeeze, Inf, argmax, mean, abs, median, all
@@ -12,7 +12,7 @@ import types
 import sys
 from Dirichlet import dirichlet_fit_m, dirichlet_fit_s, dirichletMomentMatch
 
-class MixtureOfDirichlet(Distribution.Distribution):
+class MixtureOfDirichlet(Distribution):
     """
       Mixture Of Dirichlet Distributions
 

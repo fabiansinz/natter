@@ -1,20 +1,19 @@
-import Distribution
+from Distributions import Distribution, Gamma
 import Data
 from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign
 from numpy.random import beta, dirichlet, rand
 import Auxiliary
-import Gamma
 import sys
 from scipy.optimize import fminbound
 
 
-class LpNestedSymmetric(Distribution.Distribution):
+class LpNestedSymmetric(Distribution):
     '''
       Lp-Nested Symmetric Distribution
 
       Parameters and their defaults are:
          n:  dimensionality (default n=3)
-         rp: radial distribution (default rp=Distribution.Gamma())
+         rp: radial distribution (default rp=Gamma())
          f:  Lp-nested function object (default f=Auxiliary.LpNestedFunction('(0,0,(1,1:2))',[.5,1.0]))
     '''
 

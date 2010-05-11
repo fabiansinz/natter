@@ -1,7 +1,7 @@
 from __future__ import division
 from Auxiliary import Potential
 from Auxiliary.Optimization import StGradient
-from Distribution import Distribution 
+from Distributions  from Distribution import Distribution 
 from numpy import ones, size, max, zeros, sum, array, kron, reshape,dot,shape,squeeze, Inf
 from numpy.random import randn
 import Filter

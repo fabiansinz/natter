@@ -1,5 +1,5 @@
 import unittest
-import Distribution
+import Distributions
 import sys
 import Auxiliary
 import Filter
@@ -14,13 +14,13 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
         print "Comparing ALL before and after Nonlinear transformation ..."
         sys.stdout.flush()
         L = Auxiliary.LpNestedFunction()
-        pnd = Distribution.LpNestedSymmetric({'f':L})
+        pnd = Distributions.LpNestedSymmetric({'f':L})
 
         dat = pnd.sample(100000)
         
         F = Filter.FilterFactory.LpNestedNonLinearICA(pnd)
         dat2 = F*dat
-        ica = Distribution.ProductOfExponentialPowerDistributions({'n':pnd.param['f'].n[()]})
+        ica = Distributions.ProductOfExponentialPowerDistributionss({'n':pnd.param['f'].n[()]})
         ica.estimate(dat2)
         ld = F.logDetJacobian(dat)
         ld = np.mean(np.abs(ld)) / dat.size(0) / np.log(2)

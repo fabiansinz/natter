@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -18,9 +18,9 @@ class TestLogNormal(unittest.TestCase):
         sys.stdout.flush()
         myu = 10*np.random.rand(1)[0]
         mys = 10*np.random.rand(1)[0]
-        p = Distribution.LogNormal({'mu':myu ,'s':mys})
+        p = Distributions.LogNormal({'mu':myu ,'s':mys})
         dat = p.sample(1000000)
-        p = Distribution.LogNormal()
+        p = Distributions.LogNormal()
         p.estimate(dat)
         
         self.assertFalse( np.abs(p.param['mu'] - myu) > self.TolParam,\
@@ -33,7 +33,7 @@ class TestLogNormal(unittest.TestCase):
         sys.stdout.flush()
         myu = 3.0*np.random.rand(1)[0] + 1.0
         mys = 3.0*np.random.rand(1)[0] + 1.0
-        p = Distribution.LogNormal({'mu':myu ,'s':mys})
+        p = Distributions.LogNormal({'mu':myu ,'s':mys})
         dat = p.sample(100)
         h = 1e-7
         tol = 1e-4

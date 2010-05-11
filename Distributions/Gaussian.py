@@ -1,12 +1,12 @@
 from __future__ import division
-import Distribution
+from Distributions import Distribution
 from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
 import Data 
 from Auxiliary.Errors import AbstractError
 
-class Gaussian(Distribution.Distribution):
+class Gaussian(Distribution):
     """
       Gaussian Distribution
 

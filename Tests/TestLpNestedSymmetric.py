@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -29,7 +29,7 @@ class TestLpNestedSymmetric(unittest.TestCase):
         myp = 2*np.random.rand(1)[0]+.5
         n = 10
         L = Auxiliary.LpNestedFunction('(0,0,(1,1:4),4,(1,5:8),8:10)')
-        p = Distribution.LpNestedSymmetric({'f':L,'n':n,'rp':Distribution.Gamma({'s':mys,'u':myu})})
+        p = Distributions.LpNestedSymmetric({'f':L,'n':n,'rp':Distributions.Gamma({'s':mys,'u':myu})})
         dat = p.sample(50)
         df = p.dldx(dat)
         h = 1e-8
@@ -52,12 +52,12 @@ class TestLpNestedSymmetric(unittest.TestCase):
         sys.stdout.flush()
         L =Auxiliary.LpNestedFunction('(0,0,(1,1:3),3,(1,4:7))')
         L.p = np.random.rand(2)*1.5+.5
-        d = Distribution.LpNestedSymmetric({'f':L,'n':L.n[()]})
+        d = Distributions.LpNestedSymmetric({'f':L,'n':L.n[()]})
         L2 =Auxiliary.LpNestedFunction('(0,0,(1,1:3),3,(1,4:7))')
         L2.p = np.random.rand(2)*1.5+.5
-        rd2 = Distribution.Gamma({'u':5*np.random.rand(),'s':10*np.random.rand()})
-        # create Distribution object and sample
-        d2 = Distribution.LpNestedSymmetric({'f':L2,'n':L2.n[()],'rp':rd2})
+        rd2 = Distributions.Gamma({'u':5*np.random.rand(),'s':10*np.random.rand()})
+        # create Distributions object and sample
+        d2 = Distributions.LpNestedSymmetric({'f':L2,'n':L2.n[()],'rp':rd2})
         print "\t ... checking greedy method"
         sys.stdout.flush()
         dat = d2.sample(50000)
@@ -72,7 +72,7 @@ class TestLpNestedSymmetric(unittest.TestCase):
         
         print "\t ... checking Nelder-Mead method"
         sys.stdout.flush()
-        d = Distribution.LpNestedSymmetric({'f':L,'n':L.n[()]})
+        d = Distributions.LpNestedSymmetric({'f':L,'n':L.n[()]})
         d.estimate(dat,method="neldermead")
         
         self.assertFalse( np.max(np.abs(d.param['f'].p - d2.param['f'].p)) > self.TolParam['p'],\

@@ -1,4 +1,4 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import log, exp, mean
 from numpy.random import gamma
@@ -6,7 +6,7 @@ from scipy.special import gammaln, polygamma
 from scipy.stats import gamma as gammastats
 
 
-class Gamma(Distribution.Distribution):
+class Gamma(Distribution):
     """
       Gamma Distribution
 

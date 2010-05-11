@@ -1,18 +1,17 @@
-import Distribution
+from Distributions import Distribution, Gamma
 import Data
 from numpy import log, abs, sign
 from numpy.random import gamma, randn
 from scipy.special import gammaln
 import Auxiliary
-import Gamma
 
-class LpSphericallySymmetric(Distribution.Distribution):
+class LpSphericallySymmetric(Distribution):
     '''
       Lp-Spherically Symmetric Distribution
 
       Parameters and their defaults are:
          n:  dimensionality (default n=2)
-         rp: radial distribution (default rp=Distribution.Gamma())
+         rp: radial distribution (default rp=Gamma())
          p:  exponent for the p-norm (default p=2)
     '''
 

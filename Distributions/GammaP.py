@@ -1,7 +1,6 @@
-import Distribution
+from Distributions import Distribution, Gamma
 import Data
 from numpy import log, exp, mean
-import Gamma
 import Auxiliary
 from scipy.stats import gamma
 
@@ -9,7 +8,7 @@ from scipy.stats import gamma
 
 
 
-class GammaP(Gamma.Gamma):
+class GammaP(Gamma):
     '''
       P-Gamma Distribution
 

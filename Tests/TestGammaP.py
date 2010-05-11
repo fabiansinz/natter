@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -17,9 +17,9 @@ class TestGammaP(unittest.TestCase):
         myu = 10*np.random.rand(1)[0]
         mys = 10*np.random.rand(1)[0]
         myp = 1.5*np.random.rand()+.5
-        p = Distribution.GammaP({'u':myu ,'s':mys,'p':myp})
+        p = Distributions.GammaP({'u':myu ,'s':mys,'p':myp})
         dat = p.sample(10000)
-        p = Distribution.GammaP()
+        p = Distributions.GammaP()
         p.estimate(dat)
 
         
@@ -36,7 +36,7 @@ class TestGammaP(unittest.TestCase):
         myu = 10*np.random.rand(1)[0]
         mys = 10*np.random.rand(1)[0]
         myp = 1.5*np.random.rand()+.5
-        p = Distribution.GammaP({'u':myu ,'s':mys,'p':myp})
+        p = Distributions.GammaP({'u':myu ,'s':mys,'p':myp})
         dat = p.sample(100)
         h = 1e-8
         tol = 1e-4

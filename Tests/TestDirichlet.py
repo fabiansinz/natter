@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -18,7 +18,7 @@ class TestDirichlet(unittest.TestCase):
     def test_loglik(self):
         print "Testing log-likelihood of Dirichlet distribution ... "
         sys.stdout.flush()
-        p = Distribution.Dirichlet({'alpha':self.alpha})
+        p = Distributions.Dirichlet({'alpha':self.alpha})
         l = p.loglik(self.X)
         for k in range(len(self.LL)):
             self.assertTrue(np.abs(l[k]- self.LL[k]) < self.Tol,'Difference in log-likelihood for Dirichlet greater than ' + str(self.Tol))
@@ -28,9 +28,9 @@ class TestDirichlet(unittest.TestCase):
         print "Testing parameter estimation of Dirichlet distribution ..."
         sys.stdout.flush()
         myalpha = 10.0*np.random.rand(10)
-        p = Distribution.Dirichlet({'alpha':myalpha})
+        p = Distributions.Dirichlet({'alpha':myalpha})
         dat = p.sample(50000)
-        p = Distribution.Dirichlet({'alpha':np.random.rand(10)})
+        p = Distributions.Dirichlet({'alpha':np.random.rand(10)})
         p.estimate(dat)
         alpha = p.param['alpha']
         

@@ -1,4 +1,4 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import dot, log, sum, mean, ones, shape, abs, exp, where, max, median
 from numpy.random import rand
@@ -8,7 +8,7 @@ from Auxiliary import Errors
 from Auxiliary.Numerics import inv_digamma, digamma, trigamma
 from scipy.special import gammaln
 
-class Dirichlet(Distribution.Distribution):
+class Dirichlet(Distribution):
     """
       Dirichlet Distribution
 

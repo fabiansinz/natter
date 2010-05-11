@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest

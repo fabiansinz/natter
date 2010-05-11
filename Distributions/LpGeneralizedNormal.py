@@ -1,12 +1,10 @@
-import Distribution
+from Distributions import Distribution, GammaP, LpSphericallySymmetric
 import Data
 from numpy import mean, sum, abs, sign
 from numpy.random import gamma, randn
-import GammaP
-import LpSphericallySymmetric
 import Auxiliary
 
-class LpGeneralizedNormal(LpSphericallySymmetric.LpSphericallySymmetric):
+class LpGeneralizedNormal(LpSphericallySymmetric):
     '''
       Lp-Generalized Normal Distribution
 

@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -14,7 +14,7 @@ class TestMixtureOfGaussians(unittest.TestCase):
     def test_derivatives(self):
         print "Testing derivatives w.r.t. data ... "
         sys.stdout.flush()
-        p = Distribution.MixtureOfGaussians({'K':5})
+        p = Distributions.MixtureOfGaussians({'K':5})
         dat = p.sample(100)
         h = 1e-7
         tol = 1e-6

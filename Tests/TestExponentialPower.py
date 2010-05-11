@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -17,7 +17,7 @@ class TestExponentialPower(unittest.TestCase):
         sys.stdout.flush()
         myp = 2.0*np.random.rand(1)[0] + .5
         mys = 10.0*np.random.rand(1)[0]
-        p1 = Distribution.ExponentialPower({'p':myp ,'s':mys})
+        p1 = Distributions.ExponentialPower({'p':myp ,'s':mys})
 
         dat = p1.sample(50000)
 
@@ -25,7 +25,7 @@ class TestExponentialPower(unittest.TestCase):
         myp = 2.0*np.random.rand(1)[0] + .5
         
         mys = 10.0*np.random.rand(1)[0]
-        p2 = Distribution.ExponentialPower({'p':myp ,'s':mys})
+        p2 = Distributions.ExponentialPower({'p':myp ,'s':mys})
         
 
         p2.estimate(dat)
@@ -46,7 +46,7 @@ class TestExponentialPower(unittest.TestCase):
         sys.stdout.flush()
         myp = 2.0*np.random.rand(1)[0] + .5
         mys = 3.0*np.random.rand(1)[0] + 1.0
-        p = Distribution.ExponentialPower({'p':myp ,'s':mys})
+        p = Distributions.ExponentialPower({'p':myp ,'s':mys})
         dat = p.sample(100)
         h = 1e-7
         tol = 1e-4

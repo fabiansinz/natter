@@ -1,5 +1,5 @@
 from Auxiliary.Estimation import noiseContrastive
-from Distribution import Gaussian
+from Distributions import Gaussian
 from numpy import zeros,eye,ones
 from numpy.random import randn
 from numpy.linalg import norm

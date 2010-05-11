@@ -5,7 +5,7 @@ from Auxiliary import Errors
 import unittest
 import Filter
 from numpy import linalg
-import Distribution
+import Distributions
 import Data
 import sys
 
@@ -17,7 +17,7 @@ class TestNonlinearFilter(unittest.TestCase):
         print "Testing Log-Determinant of Nonlinear Lp-nested ICA ..."
         sys.stdout.flush()
         L = Auxiliary.LpNestedFunction()
-        p = Distribution.LpNestedSymmetric({'f':L})
+        p = Distributions.LpNestedSymmetric({'f':L})
         dat = p.sample(10)
         F = Filter.FilterFactory.LpNestedNonLinearICA(p)
         n,m = dat.size()
@@ -38,7 +38,7 @@ class TestNonlinearFilter(unittest.TestCase):
         print "Testing Log-Determinant of Nonlinear Lp-nested ICA in combination with linear filters..."
         sys.stdout.flush()
         L = Auxiliary.LpNestedFunction()
-        p = Distribution.LpNestedSymmetric({'f':L})
+        p = Distributions.LpNestedSymmetric({'f':L})
         dat = p.sample(10)
         Flin1 = Filter.FilterFactory.oRND(dat)
         Flin2 = Filter.LinearFilter(np.random.randn(dat.size(0),dat.size(0))+0.1*np.eye(dat.size(0)))

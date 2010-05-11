@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -37,9 +37,9 @@ class TestMixtureOfDirichlet(unittest.TestCase):
         pi2 = pi1+pi2
         
 
-        p = Distribution.MixtureOfDirichlet({'K':2, 'alpha':a1,'pi':pi1})
-        #        p2 = Distribution.MixtureOfDirichlet({'K':2, 'alpha':a2,'pi':pi2})
-        p2 = Distribution.MixtureOfDirichlet({'K':2,'n':4})
+        p = Distributions.MixtureOfDirichlet({'K':2, 'alpha':a1,'pi':pi1})
+        #        p2 = Distributions.MixtureOfDirichlet({'K':2, 'alpha':a2,'pi':pi2})
+        p2 = Distributions.MixtureOfDirichlet({'K':2,'n':4})
 
 
         dat = p.sample(100000)

@@ -4,7 +4,7 @@ from Auxiliary import Errors
 import unittest
 import Filter
 from numpy import linalg
-import Distribution
+import Distributions
 import Data
 import sys
 
@@ -42,9 +42,9 @@ class TestFilter(unittest.TestCase):
         sys.stdout.flush()
         p = np.random.rand()*1.5+.5
         # source distribution
-        psource = Distribution.LpSphericallySymmetric({'p':p})
+        psource = Distributions.LpSphericallySymmetric({'p':p})
         # target distribution
-        ptarget = Distribution.LpSphericallySymmetric({'p':p,'rp':Distribution.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
+        ptarget = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
         # create Filter
         F = Filter.FilterFactory.RadialTransformation(psource,ptarget)
         # sample data from source distribution

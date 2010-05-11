@@ -1,4 +1,4 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import log, abs, sign, exp, mean, abs
 from numpy.random import gamma, randn
@@ -6,7 +6,7 @@ from numpy.random import gamma, randn
 from scipy.special import gammaln
 from scipy.optimize import fminbound
 
-class ExponentialPower(Distribution.Distribution):
+class ExponentialPower(Distributions.Distribution):
     """
       Exponential Power Distribution
 

@@ -1,4 +1,4 @@
-import Distribution
+from Distributions import Distribution
 import Data
 from numpy import sum, cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs
 from numpy.random import rand, randn 
@@ -6,7 +6,7 @@ from scipy import stats
 import sys
 from Auxiliary.Numerics import logsumexp
 
-class MixtureOfGaussians(Distribution.Distribution):
+class MixtureOfGaussians(Distribution):
     '''
       Mixture Of Gaussians
 

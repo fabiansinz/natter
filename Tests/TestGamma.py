@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -17,7 +17,7 @@ class TestGamma(unittest.TestCase):
     def test_loglik(self):
         print "Testing log-likelihood of Gamma distribution ... "
         sys.stdout.flush()
-        p = Distribution.Gamma({'u':2.0,'s':3.0})
+        p = Distributions.Gamma({'u':2.0,'s':3.0})
         l = p.loglik(self.X)
         for k in range(len(self.LL)):
             self.assertFalse(np.abs(l[k] - self.LL[k]) > self.Tol,\
@@ -29,9 +29,9 @@ class TestGamma(unittest.TestCase):
         sys.stdout.flush()
         myu = 10*np.random.rand(1)[0]
         mys = 10*np.random.rand(1)[0]
-        p = Distribution.Gamma({'u':myu ,'s':mys})
+        p = Distributions.Gamma({'u':myu ,'s':mys})
         dat = p.sample(1000000)
-        p = Distribution.Gamma()
+        p = Distributions.Gamma()
         p.estimate(dat)
         self.assertFalse(np.abs(p.param['u'] - myu) > self.TolParam,'Difference in Shape parameter for Gamma distribution greater than ' + str(self.TolParam))
         self.assertFalse(np.abs(p.param['s'] - mys) > self.TolParam,'Difference in Scale parameter for Gamma distribution greater than ' + str(self.TolParam))
@@ -41,7 +41,7 @@ class TestGamma(unittest.TestCase):
         sys.stdout.flush()
         myu = 3.0*np.random.rand(1)[0] + 1.0
         mys = 3.0*np.random.rand(1)[0] + 1.0
-        p = Distribution.Gamma({'u':myu ,'s':mys})
+        p = Distributions.Gamma({'u':myu ,'s':mys})
         dat = p.sample(100)
         h = 1e-7
         tol = 1e-4

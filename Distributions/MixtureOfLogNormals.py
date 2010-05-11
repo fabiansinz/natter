@@ -1,13 +1,12 @@
-import Distribution
+from Distributions import Distribution, MixtureOfGaussians
 import Data
 from numpy import array, sum,cumsum, exp, log, zeros, squeeze, pi
 from numpy.random import randn, rand
 from scipy.stats import norm
 import sys
-import MixtureOfGaussians
 from Auxiliary.Numerics import logsumexp
 
-class MixtureOfLogNormals(Distribution.Distribution):
+class MixtureOfLogNormals(Distribution):
     '''
       Mixture Of LogNormals
 

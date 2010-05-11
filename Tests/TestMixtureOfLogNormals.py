@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -14,7 +14,7 @@ class TestMixtureOfLogNormals(unittest.TestCase):
     def test_derivatives(self):
         print "Testing derivatives w.r.t. data ... "
         sys.stdout.flush()
-        p = Distribution.MixtureOfLogNormals({'K':5})
+        p = Distributions.MixtureOfLogNormals({'K':5})
         dat = p.sample(100)
         h = 1e-8
         tol = 1e-4
@@ -33,7 +33,7 @@ class TestMixtureOfLogNormals(unittest.TestCase):
         print "Testing consistency of pdf and loglik  ... "
         sys.stdout.flush()
 
-        p = Distribution.MixtureOfLogNormals({'K':5})
+        p = Distributions.MixtureOfLogNormals({'K':5})
         dat = p.sample(100)
         
         tol = 1e-6

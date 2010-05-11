@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -20,7 +20,7 @@ class TestLpGeneralizedNormal(unittest.TestCase):
             print '\t--> test case ' + str(k)
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
             truell = dat['ll']
-            p = Distribution.LpGeneralizedNormal({'s':2*dat['s'],'p':dat['p'],'n':dat['n']})
+            p = Distributions.LpGeneralizedNormal({'s':2*dat['s'],'p':dat['p'],'n':dat['n']})
             dat = Data.Data(dat['X'])
             ll = p.loglik(dat)
             for i in range(len(ll)):
@@ -34,7 +34,7 @@ class TestLpGeneralizedNormal(unittest.TestCase):
             print '\t--> test case ' + str(k)
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
             trueparam = {'s':2*dat['s'],'p':dat['p'],'n':dat['n']}
-            p = Distribution.LpGeneralizedNormal({'n':dat['n']})
+            p = Distributions.LpGeneralizedNormal({'n':dat['n']})
             dat = Data.Data(dat['X'])
             p.estimate(dat)
             for ke in trueparam.keys():

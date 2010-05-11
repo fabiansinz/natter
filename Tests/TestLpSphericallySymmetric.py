@@ -1,4 +1,4 @@
-import Distribution
+import Distributions
 import Data
 import numpy as np
 import unittest
@@ -19,7 +19,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
         mys = 3.0*np.random.rand(1)[0]+1.0
         myp = 2*np.random.rand(1)[0]+.5
         n = 4
-        p = Distribution.LpSphericallySymmetric({'p':myp,'n':n,'rp':Distribution.Gamma({'s':mys,'u':myu})})
+        p = Distributions.LpSphericallySymmetric({'p':myp,'n':n,'rp':Distributions.Gamma({'s':mys,'u':myu})})
         dat = p.sample(50)
         df = p.dldx(dat)
         h = 1e-8
@@ -41,7 +41,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
             print '\t--> test case ' + str(k)
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             truell = dat['ll']
-            p = Distribution.LpSphericallySymmetric({'p':dat['p'],'n':dat['n'],'rp':Distribution.Gamma({'s':dat['s'],'u':dat['u']})})
+            p = Distributions.LpSphericallySymmetric({'p':dat['p'],'n':dat['n'],'rp':Distributions.Gamma({'s':dat['s'],'u':dat['u']})})
             dat = Data.Data(dat['X'])
             ll = p.loglik(dat)
             for i in range(len(ll)):
@@ -56,7 +56,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
             sys.stdout.flush()
             dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             trueparam = {'s':dat['s'],'p':dat['p'],'u':dat['u']}
-            p = Distribution.LpSphericallySymmetric({'n':dat['n']})
+            p = Distributions.LpSphericallySymmetric({'n':dat['n']})
             dat = Data.Data(dat['X'])
             p.estimate(dat,prange=(.1,4.0))
 
