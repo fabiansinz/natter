@@ -1,10 +1,10 @@
-from Distributions import Distribution, GammaP, LpSphericallySymmetric
+import Distributions
 from DataModule import Data
 from numpy import mean, sum, abs, sign
 from numpy.random import gamma, randn
 import Auxiliary
 
-class LpGeneralizedNormal(LpSphericallySymmetric):
+class LpGeneralizedNormal(Distributions.LpSphericallySymmetric):
     '''
       Lp-Generalized Normal Distribution
 
@@ -20,7 +20,7 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
         if param != None:
             for k in param.keys():
                 self.param[k] = float(param[k])
-        self.param['rp'] = GammaP.GammaP({'u':(self.param['n']/self.param['p']),'s':self.param['s'],'p':self.param['p']})
+        self.param['rp'] = Distributions.GammaP({'u':(self.param['n']/self.param['p']),'s':self.param['s'],'p':self.param['p']})
         self.primary = ['p','s']
 
     def estimate(self,dat,prange=(.1,5.0)):
