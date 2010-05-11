@@ -1,5 +1,4 @@
-import Filter
-import LinearFilter
+from Transforms import Transform, LinearTransform
 import numpy as np
 import string
 from Auxiliary import Errors
@@ -7,7 +6,7 @@ import Data
 import types
 import copy
 
-class NonlinearFilter(Filter.Filter):
+class NonlinearTransform(Transform):
     '''
     NONLINEARFILTER class representing nonlinear filters.
 
@@ -35,10 +34,10 @@ class NonlinearFilter(Filter.Filter):
             ret = self.f(O)
             ret.history.append(tmp)
             return ret
-        elif isinstance(O,LinearFilter.LinearFilter):
+        elif isinstance(O,LinearTransform.LinearTransform):
             # copy other history and add own
             tmp = list(O.history)
-            tmp.append('multiplied with Filter "' + self.name + '"')
+            tmp.append('multiplied with Transform "' + self.name + '"')
             tmp.append(list(self.history))
 
             Ocpy = O.copy()
@@ -47,8 +46,8 @@ class NonlinearFilter(Filter.Filter):
             gdet = None
             if Scpy.logdetJ != None:
                 gdet = lambda y: self.logdetJ(Ocpy.apply(y)) + Ocpy.logDetJacobian()
-            return NonlinearFilter(g,O.name,tmp, logdetJ=gdet )
-        elif isinstance(O,NonlinearFilter):
+            return NonlinearTransform(g,O.name,tmp, logdetJ=gdet )
+        elif isinstance(O,NonlinearTransform):
             # copy other history and add own
             tmp = list(O.history)
             tmp.append('composed with "' + self.name + '"')
@@ -60,9 +59,9 @@ class NonlinearFilter(Filter.Filter):
             gdet = None
             if self.logdetJ != None and O.logdetJ != None:
                 gdet = lambda y: Scpy.logdetJ(Ocpy.f(y)) + Ocpy.logdetJ(y)
-            return NonlinearFilter(g,O.name,tmp, logdetJ=gdet )
+            return NonlinearTransform(g,O.name,tmp, logdetJ=gdet )
         else:
-            raise TypeError('Filter.NoninearFilter.__mult__(): Filters can only be multiplied with Data.Data, Filter.LinearFilter or Filter.NonlinearFilter objects')
+            raise TypeError('Transform.NoninearTransform.__mult__(): Transforms can only be multiplied with Data.Data, Transform.LinearTransform or Transform.NonlinearTransform objects')
         return self
 
 
@@ -78,9 +77,9 @@ class NonlinearFilter(Filter.Filter):
     def __str__(self):
                 
         s = 30*'-'
-        s += '\nNonlinear Filter: ' + self.name + '\n'
+        s += '\nNonlinear Transform: ' + self.name + '\n'
         if len(self.history) > 0:
-            s += Filter.displayHistoryRec(self.history,1)
+            s += Transform.displayHistoryRec(self.history,1)
         s += 30*'-'
         
         return s

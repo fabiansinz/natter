@@ -1,8 +1,7 @@
 from __future__ import division
 import numpy as np
 import mdp
-import LinearFilter
-import NonlinearFilter
+from Transforms import LinearTransform, NonlinearTransform
 from numpy import linalg
 from scipy import special
 import Distribution
@@ -23,7 +22,7 @@ def fastICA(dat,whitened=True):
     ICA.whitened = whitened
     ICA.verbose = True
     ICA.train(dat.X.transpose())
-    return LinearFilter.LinearFilter(ICA.get_projmatrix().transpose(),'fast ICA filter computed on ' + dat.name)
+    return LinearTransform(ICA.get_projmatrix().transpose(),'fast ICA filter computed on ' + dat.name)
     
     
 
@@ -31,7 +30,7 @@ def wPCA(dat):
     wPCA = mdp.nodes.WhiteningNode(input_dim=dat.size(0),output_dim=dat.size(0))
     wPCA.verbose=True
     wPCA.train(dat.X.transpose())
-    return LinearFilter.LinearFilter(wPCA.get_projmatrix().transpose(),'Whitening PCA filter computed on ' + dat.name)
+    return LinearTransform(wPCA.get_projmatrix().transpose(),'Whitening PCA filter computed on ' + dat.name)
     
 
 def DCnonDC(dat):
@@ -39,20 +38,20 @@ def DCnonDC(dat):
     P = np.eye(n)
     P[:,0] = 1
     (Q,R) = linalg.qr(P)
-    return LinearFilter.LinearFilter(Q.transpose(),'DC|nonDC filter in ' + str(n) + ' dimensions')
+    return LinearTransform(Q.transpose(),'DC|nonDC filter in ' + str(n) + ' dimensions')
 
 def SYM(dat):
     C = np.cov(dat.X)
     (V,U) = linalg.eig(C)
     V = np.diag( V**(-.5))
-    return LinearFilter.LinearFilter(np.dot(U,np.dot(V,U.transpose())),'Symmetric whitening filter computed on ' + dat.name)
+    return LinearTransform(np.dot(U,np.dot(V,U.transpose())),'Symmetric whitening filter computed on ' + dat.name)
 
 def oRND(dat):
-    return LinearFilter.LinearFilter(mdp.utils.random_rot(dat.size(0)),'Random rotation matrix',['sampled from a Haar distribution'])
+    return LinearTransform(mdp.utils.random_rot(dat.size(0)),'Random rotation matrix',['sampled from a Haar distribution'])
 
 
 def stRND(sh):
-    return LinearFilter.LinearFilter( Auxiliary.Optimization.projectOntoSt(np.random.randn(sh[0],sh[1])),'Random Stiefel Matrix')
+    return LinearTransform( Auxiliary.Optimization.projectOntoSt(np.random.randn(sh[0],sh[1])),'Random Stiefel Matrix')
     
             
 def DCT2(sh):
@@ -73,7 +72,7 @@ def DCT2(sh):
             tmp = np.zeros((N1,N2))
             tmp = np.dot(cos(pi/N1 * (x +.5)* i), cos(pi/N2 * (y + .5) * j))
             F[i*N1 + j,:] = tmp.copy().flatten() / sqrt(sum(tmp.flatten()**2))
-    return LinearFilter.LinearFilter(F, str(N1) + 'X' + str(N2) + ' 2D-DCT orthonormal Basis')
+    return LinearTransform(F, str(N1) + 'X' + str(N2) + ' 2D-DCT orthonormal Basis')
             
     
 
@@ -82,7 +81,7 @@ def DCT2(sh):
 
 def RadialFactorization(psource):
     if not isinstance(psource,Distribution.LpSphericallySymmetric):
-        raise TypeError('Filter.FilterFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
+        raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
     ptarget = Distribution.LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0),\
                                                 'p':psource.param['p']})
     print ptarget
@@ -92,12 +91,12 @@ def RadialTransformation(psource,ptarget):
     if ptarget.param['p'] != psource.param['p']:
         raise Errors.ValueError('Values of p must agree')
     p = ptarget.param['p']
-    name = 'Radial Factorization Filter ' + psource.name + ' (' + psource.param['rp'].name + ') --> ' + ptarget.name + ' (' + ptarget.param['rp'].name + ')'
+    name = 'Radial Factorization Transform ' + psource.name + ' (' + psource.param['rp'].name + ') --> ' + ptarget.name + ' (' + ptarget.param['rp'].name + ')'
     psource = psource.param['rp'].copy()
     ptarget = ptarget.param['rp'].copy()
     g = lambda x: x.scaleCopy( ptarget.ppf(psource.cdf(x.norm(p))).X / x.norm(p).X)
     gdet = lambda y: logDetJacobianRadialTransform(y,psource,ptarget,p)
-    return NonlinearFilter.NonlinearFilter(g,name,logdetJ=gdet)
+    return NonlinearTransform(g,name,logdetJ=gdet)
 
 def logDetJacobianRadialTransform(dat,psource,ptarget,p):
     r = dat.norm(p)
@@ -120,7 +119,7 @@ def getLpNestedNonLinearICARec(rp,L,mind):
     rptarget = Distribution.GammaP({'u':float(L.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
     g = lambda x: x.scaleCopy( rptarget.ppf(rp.cdf(L(x))).X / L(x).X, L.iByI[()])
     gdet = lambda y: logDetJacobianLpNestedTransform(y,rp,rptarget,L)
-    F = NonlinearFilter.NonlinearFilter(g,'Rescaling of ' + str(mind),logdetJ=gdet)
+    F = NonlinearTransform(g,'Rescaling of ' + str(mind),logdetJ=gdet)
 
     for k in range(L.l[()]):
         if L.n[(k,)] > 1:

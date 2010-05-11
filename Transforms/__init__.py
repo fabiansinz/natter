@@ -1,4 +1,4 @@
-from Filter import Filter,load
-from LinearFilter import LinearFilter
-from NonlinearFilter import NonlinearFilter
-import FilterFactory
+from Transform import Transform,load
+from LinearTransform import LinearTransform
+from NonlinearTransform import NonlinearTransform
+import TransformFactory
