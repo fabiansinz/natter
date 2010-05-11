@@ -1,5 +1,5 @@
 import pickle
-import Auxiliary
+from  Auxiliary import Errors,save
 import types
 
 class Filter:

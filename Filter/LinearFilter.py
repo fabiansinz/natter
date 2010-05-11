@@ -1,14 +1,12 @@
-import Filter
+from Filter import Filter, NonlinearFilter
 import string
 from numpy.linalg import inv, det
-from Auxiliary import Errors
-from Auxiliary import Plotting
+from Auxiliary import Errors, Plotting
 import Data
 import types
-import NonlinearFilter
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
 
-class LinearFilter(Filter.Filter):
+class LinearFilter(Filter):
     '''
     LINEARFILTER class representing linear filters.
 
@@ -73,7 +71,7 @@ class LinearFilter(Filter.Filter):
             # multiply both filters
             return LinearFilter(dot(self.W,O.W),O.name,tmp)
         
-        elif isinstance(O,NonlinearFilter.NonlinearFilter):
+        elif isinstance(O,NonlinearFilter):
             # copy other history and add own
             tmp = list(O.history)
             tmp.append('multiplied with Filter "' + self.name + '"')
@@ -86,7 +84,7 @@ class LinearFilter(Filter.Filter):
             gdet = None
             if Ocpy.logdetJ != None:
                 gdet = lambda y: Ocpy.logdetJ(y) + Scpy.logDetJacobian()
-            return NonlinearFilter.NonlinearFilter(g,Ocpy.name,tmp, logdetJ=gdet )
+            return NonlinearFilter(g,Ocpy.name,tmp, logdetJ=gdet )
             
         else:
             raise TypeError('Filter.LinearFilter.__mult__(): Filters can only be multiplied with Data.Data or Filter.LinearFilter objects')
