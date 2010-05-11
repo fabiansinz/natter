@@ -1,5 +1,4 @@
 from __future__ import division
-import Data
 from numpy import sign, exp, abs
 
 class Potential:

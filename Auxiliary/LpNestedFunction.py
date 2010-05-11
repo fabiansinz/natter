@@ -2,7 +2,7 @@ import types
 import numpy as np
 from scipy import special
 import string
-from  Data import Data
+from  DataModule import Data
 import copy
 import matplotlib as mpl
 from matplotlib.patches import Ellipse
