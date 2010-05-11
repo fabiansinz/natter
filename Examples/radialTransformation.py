@@ -1,16 +1,16 @@
 import numpy as np
-import Filter
-import Distribution
-import Data
+import Transform
+import Distributions
+from DataModule import Data
 
 if __name__=="__main__":
-    p = Distribution.LpSphericallySymmetric({'p':1.0})
+    p = Distributions.LpSphericallySymmetric({'p':1.0})
     # source distribution
-    psource = Distribution.LpSphericallySymmetric({'p':1.0})
+    psource = Distributions.LpSphericallySymmetric({'p':1.0})
     # target distribution
-    ptarget = Distribution.LpSphericallySymmetric({'p':1.0,'rp':Distribution.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
-    # create Filter
-    F = Filter.FilterFactory.RadialTransformation(psource,ptarget)
+    ptarget = Distributions.LpSphericallySymmetric({'p':1.0,'rp':Distributions.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
+    # create Transform
+    F = Transform.TransformFactory.RadialTransformation(psource,ptarget)
     # sample data from source distribution
     dat = psource.sample(10)
     
@@ -22,11 +22,11 @@ if __name__=="__main__":
 
     h = 1e-6
 
-    tmp = Data.Data(dat.X.copy())
+    tmp = Data(dat.X.copy())
     tmp.X[0,:] += h
     W1 = ((F*tmp).X-dat2.X)/h
 
-    tmp = Data.Data(dat.X.copy())
+    tmp = Data(dat.X.copy())
     tmp.X[1,:] += h
     W2 = ((F*tmp).X-dat2.X)/h
             

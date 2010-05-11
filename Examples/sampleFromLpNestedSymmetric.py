@@ -1,5 +1,5 @@
 import Auxiliary
-import Distribution
+import Distributions
 import pylab as pl
 import  numpy as np
 if __name__=="__main__":
@@ -7,8 +7,8 @@ if __name__=="__main__":
     L =Auxiliary.LpNestedFunction('(0,0,(1,1:3),3)')
     L.p = np.random.rand(2)*2.0
     print L
-    # create Distribution object and sample
-    d = Distribution.LpNestedSymmetric({'f':L,'n':L.n[()]})
+    # create Distributions object and sample
+    d = Distributions.LpNestedSymmetric({'f':L,'n':L.n[()]})
 
     plrange = 2*np.array([-1,1,-1,1])
     # plot samples

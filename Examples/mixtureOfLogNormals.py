@@ -1,14 +1,14 @@
-import Distribution
+import Distributions
 
 if __name__=="__main__":
-    p = Distribution.MixtureOfLogNormals()
+    p = Distributions.MixtureOfLogNormals()
 
     print p
 
     
     dat = p.sample(50000)
     
-    p = Distribution.MixtureOfLogNormals()
+    p = Distributions.MixtureOfLogNormals()
     p.histogram(dat)
     p.estimate(dat)
     p.histogram(dat,cdf=True)

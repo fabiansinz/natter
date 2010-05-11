@@ -1,13 +1,13 @@
 import numpy as np
-import Filter
-import Distribution
-import Data
+import Transforms
+import Distributions
+from DataModule import Data
 
 if __name__=="__main__":
     # source distribution
-    psource = Distribution.LpSphericallySymmetric({'p':1.0})
-    # create Filter
-    F = Filter.FilterFactory.RadialFactorization(psource)
+    psource = Distributions.LpSphericallySymmetric({'p':1.0})
+    # create Transform
+    F = Transform.TransformFactory.RadialFactorization(psource)
     # sample data from source distribution
     dat = psource.sample(100000)
     
