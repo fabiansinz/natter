@@ -1,6 +1,6 @@
 from __future__ import division
 import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
 import Data 
@@ -27,9 +27,10 @@ class Gaussian(Distribution.Distribution):
             self.param['sigma'] = eye(self.param['n'])
         if not param.has_key('mu'):
             self.param['mu'] = zeros((self.param['n'],))
-
+        
         self.primary = ['mu','sigma']
-        self.I =  where(triu(ones((self.param['n'],self.param['n'])))>0)
+        self.I =  where(tril(ones((self.param['n'],self.param['n'])))>0)
+        self.cholP = cholesky(inv(self.param['sigma']))
         
     def sample(self,m):
         '''
@@ -96,15 +97,18 @@ class Gaussian(Distribution.Distribution):
         ret = array([])
         n,m = dat.size()
         if 'mu' in self.primary:
-            ret = hstack((ret, squeeze(sum( dot(inv(self.param['sigma']), dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))),1))  ))
+            ret = dot(inv(self.param['sigma']),dat.X - reshape(self.param['mu'],(n,1)))
 
         if 'sigma' in self.primary:
-            C = inv(self.param['sigma'])
-            X = dat.X - kron(reshape(self.param['mu'],(n,1)),ones((1,m)))
-            X = dot(X,X.transpose())
-            C = -m*C + dot(dot(C,X),C)
-            C = C - .5 * diag(diag(C))
-            ret = hstack((ret, C[self.I] ))
+            CI = inv(self.param['sigma'])
+            retC = zeros((len(self.I[0]),m));
+            for i,x in enumerate(dat.X.T):
+                X = x - self.param['mu']
+                X = outer(X,X)
+                C = -CI + dot(dot(CI,X),CI)
+                C = C - .5 * diag(diag(C))
+                retC[:,i] = C[self.I] 
+            ret = vstack((ret,retC))
         return ret
 
    

@@ -20,7 +20,7 @@ class UnnormalizedGaussian(Gaussian):
     def __init__(self,param=None):
         Gaussian.__init__(self,param)
         self.name = "Unnormalized Gaussian"
-        self.param['Z'] = 1.0;
+        self.param['Z'] = 10.0;
         if param.has_key('Z'):
             self.param['Z'] = param['Z']
         self.primary = ['Z']
@@ -33,3 +33,5 @@ class UnnormalizedGaussian(Gaussian):
             raise DimensionalityError("Normalization constant has to be scalar!")
         self.param['Z']= arr[0]
     
+    def dldtheta(self,data):
+        
