@@ -12,7 +12,7 @@ if __name__=='__main__':
     L = Auxiliary.LpNestedFunction()
     p = Distributions.LpNestedSymmetric({'f':L})
     dat = p.sample(50000)
-    F = Transform.TransformFactory.LpNestedNonLinearICA(p,dat)
+    F = Transform.NonlinearTransformFactory.LpNestedNonLinearICA(p,dat)
     print p
     print F
     dat2 = F*dat

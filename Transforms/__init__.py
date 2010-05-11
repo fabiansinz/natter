@@ -1,4 +1,5 @@
 from Transform import Transform,load
 from LinearTransform import LinearTransform
 from NonlinearTransform import NonlinearTransform
-import TransformFactory
+import LinearTransformFactory
+import NonlinearTransformFactory

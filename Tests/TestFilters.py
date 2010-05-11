@@ -2,7 +2,7 @@ from numpy import linalg
 import numpy as np
 from Auxiliary import Errors
 import unittest
-from Transforms import Transform, LinearTransform, NonlinearTransform, TransformFactory
+from Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
 from numpy import linalg
 import Distributions
 from DataModule import Data
@@ -46,7 +46,7 @@ class TestFilter(unittest.TestCase):
         # target distribution
         ptarget = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':np.random.rand()*3.0,'s':np.random.rand()*2.0})})
         # create Filter
-        F = TransformFactory.RadialTransformation(psource,ptarget)
+        F = NonlinearTransformFactory.RadialTransformation(psource,ptarget)
         # sample data from source distribution
         dat = psource.sample(100)
     

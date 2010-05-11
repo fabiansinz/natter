@@ -4,7 +4,7 @@ from Auxiliary.Optimization import StGradient
 from Distribution import Distribution 
 from numpy import ones, size, max, zeros, sum, array, kron, reshape,dot,shape,squeeze, Inf
 from numpy.random import randn
-from Transforms import TransformFactory, LinearTransform
+from Transforms import LinearTransformFactory, LinearTransform
 from DataModule import Data
 from sys import stdout
 from scipy.optimize import fmin_l_bfgs_b
@@ -38,7 +38,7 @@ class ProductOfExperts(Distribution):
         if param0==None or not param0.has_key('N'):
             self.param['N'] = 2*self.param['n']
         if param0==None or not param0.has_key('W') or not isinstance(param0['W'],LinearTransform):
-            self.param['W'] = TransformFactory.stRND( (self.param['N'],self.param['n']) )
+            self.param['W'] = LinearTransformFactory.stRND( (self.param['N'],self.param['n']) )
         if param0 == None or not param0.has_key('alpha'):
             self.param['alpha'] = ones((self.param['N'],))
         if param0 == None or not param0.has_key('potentials'):
