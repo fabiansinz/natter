@@ -11,12 +11,12 @@ def noiseContrastive(modelDistribution,
                      noiseDistribution=None,
                      verbosity=-1):
     """
-    Implementation of the noise-contrastive estimation algorithm by Hutmann & Hyvärinen.
+    Implementation of the noise-contrastive estimation algorithm by Hutmann & Hyvaerinen.
 
     If no noise distribution is given a standard Gaussian is used as a noise contrastive.
     
     References:
-    Gutmann, M. and Hyvärinen, A. (2010) Noise-contrastive
+    Gutmann, M. and Hyvaerinen, A. (2010) Noise-contrastive
     estimation: A new estimation principle for unnormalized
     statistical models. (AISTATS)
     """
@@ -58,7 +58,7 @@ def noiseContrastiveObjective(modelDistribution,noiseDistribution,dataModel,data
 
     hx =  logistic(modelDistribution.loglik(dataModel) -noiseDistribution.loglik(dataModel))
     hy =  logistic(modelDistribution.loglik(dataNoise) -noiseDistribution.loglik(dataNoise))
-    J = -1/(2*dataModel.size())*sum(log(hx) + log(1-hy))
+    J = -1/(2*dataModel.size(0))*sum(log(hx) + log(1-hy))
     return J
 
 
@@ -75,6 +75,8 @@ def gradNoiseContrastiveObjective(modelDistribution,noiseDistribution,dataModel,
     """
     hx = logistic(modelDistribution.loglik(dataModel) -noiseDistribution.loglik(dataModel))
     hy = logistic(modelDistribution.loglik(dataNoise) -noiseDistribution.loglik(dataNoise))
+    print "Size hx: " + str(hx.shape)
+    print "size dldtheta " + str(modelDistribution.dldtheta(dataModel).shape)
     g1 = sum((1-hx)*modelDistribution.dldtheta(dataModel),axis=1)
     g2 = sum((-hy)*modelDistribution.dldtheta(dataNoise),axis=1)
     return -(g1+g2)
