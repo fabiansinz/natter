@@ -1,4 +1,5 @@
-from Transforms import Transform, NonlinearTransform
+from Transform import Transform
+from NonlinearTransform import NonlinearTransform
 import string
 from numpy.linalg import inv, det
 from Auxiliary import Errors, Plotting

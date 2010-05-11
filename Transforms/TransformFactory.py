@@ -1,7 +1,8 @@
 from __future__ import division
 import numpy as np
 import mdp
-from Transforms import LinearTransform, NonlinearTransform
+from LinearTransform import LinearTransform
+from NonlinearTransform import NonlinearTransform
 from numpy import linalg
 from scipy import special
 import Distribution

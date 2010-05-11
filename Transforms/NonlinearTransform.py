@@ -1,4 +1,5 @@
-from Transforms import Transform, LinearTransform
+from Transform import Transform
+from LinearTransform import LinearTransform
 import numpy as np
 import string
 from Auxiliary import Errors
