@@ -2,8 +2,8 @@ import Transform
 import LinearTransform
 import numpy as np
 import string
-from Auxiliary import Errors
-from DataModule import Data
+from natter.Auxiliary import Errors
+from natter.DataModule import Data
 import types
 import copy
 

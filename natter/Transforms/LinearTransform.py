@@ -2,8 +2,8 @@ import Transform
 import NonlinearTransform
 import string
 from numpy.linalg import inv, det
-from Auxiliary import Errors, Plotting
-from DataModule import Data
+from natter.Auxiliary import Errors, Plotting
+from natter.DataModule import Data
 import types
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
 

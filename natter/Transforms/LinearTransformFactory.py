@@ -4,8 +4,8 @@ import mdp
 from LinearTransform import LinearTransform
 from numpy import linalg
 from scipy import special
-from Auxiliary import Errors
-import Auxiliary
+from natter.Auxiliary import Errors
+from natter import Auxiliary
 import types
 
 ################################ LINEAR FILTERS ########################################

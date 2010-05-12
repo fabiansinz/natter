@@ -2,7 +2,7 @@ import Data
 from scipy import io
 from scipy.sparse import lil_matrix
 import pickle
-from Auxiliary import Errors
+from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array
 
 def load(path):

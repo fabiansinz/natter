@@ -1,5 +1,5 @@
 import pickle
-import Auxiliary
+from natter import Auxiliary
 import types
 
 class Transform:

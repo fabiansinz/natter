@@ -1,5 +1,5 @@
 from __future__ import division
-from Distribution import Gaussian
+from natter.Distribution import Gaussian
 from scipy import optimize
 from numpy import sum,log,exp
 

@@ -1,5 +1,5 @@
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, array, reshape, ceil, sqrt, var, cov, exp, log,sign, dot
-from  Auxiliary import  Errors, Plotting, save
+from  natter.Auxiliary import  Errors, Plotting, save
 import matplotlib as mpl
 import pylab as pl
 from numpy.linalg import qr, svd
