@@ -1,7 +1,6 @@
 import numpy as np
 import unittest
 import Auxiliary
-from scipy import io
 import mdp
 
 class TestfminboundnD(unittest.TestCase):
