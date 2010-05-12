@@ -1,10 +1,9 @@
 from numpy import log
-from Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
+from natter.Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
-from numpy import linalg
 from scipy import special
-from Auxiliary import Errors
-import types
+from natter.Auxiliary import Errors
+
 
 ################################ NONLINEAR FILTERS ########################################
 
@@ -32,7 +31,9 @@ def logDetJacobianRadialTransform(dat,psource,ptarget,p):
     r2 = ptarget.ppf(psource.cdf(r))
     n = dat.size(0)
     return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+
     
+
 #################################################
 
 def LpNestedNonLinearICA(p):
