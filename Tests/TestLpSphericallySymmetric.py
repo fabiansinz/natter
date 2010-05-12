@@ -4,7 +4,11 @@ import numpy as np
 import unittest
 from scipy import io
 import sys
+import os
+
 class TestLpSphericallySymmetric(unittest.TestCase):
+
+    matpath = os.path.abspath('./Tests/')
 
     Tol = 1e-10
     llTol = 1e-4
@@ -37,7 +41,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
         sys.stdout.flush()
         for k in range(5):
             print '\t--> test case ' + str(k)
-            dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
+            dat = io.loadmat(self.matpath + '/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             truell = dat['ll']
             p = Distributions.LpSphericallySymmetric({'p':dat['p'],'n':dat['n'],'rp':Distributions.Gamma({'s':dat['s'],'u':dat['u']})})
             dat = Data(dat['X'])
@@ -52,7 +56,7 @@ class TestLpSphericallySymmetric(unittest.TestCase):
         for k in range(5):
             print '\t--> test case ' + str(k)
             sys.stdout.flush()
-            dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
+            dat = io.loadmat(self.matpath + '/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
             trueparam = {'s':dat['s'],'p':dat['p'],'u':dat['u']}
             p = Distributions.LpSphericallySymmetric({'n':dat['n']})
             dat = Data(dat['X'])

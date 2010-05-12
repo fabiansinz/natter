@@ -1,8 +1,8 @@
-import numpy as np
+from numpy import log
+from  Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
 from numpy import linalg
 from scipy import special
-from  Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from Auxiliary import Errors
 import types
 
@@ -31,7 +31,7 @@ def logDetJacobianRadialTransform(dat,psource,ptarget,p):
     r = dat.norm(p)
     r2 = ptarget.ppf(psource.cdf(r))
     n = dat.size(0)
-    return (n-1)*np.log(r2.X) - (n-1)*np.log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+    return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
     
 #################################################
 
@@ -44,7 +44,6 @@ def LpNestedNonLinearICA(p):
 def getLpNestedNonLinearICARec(rp,L,mind):
     p = L.p[L.pdict[()]]
     s = (special.gamma(1.0/p) / special.gamma(3.0/p))**(p/2.0)
-    #    s = rp.param['s']
     rptarget = GammaP({'u':float(L.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
     g = lambda x: x.scaleCopy( rptarget.ppf(rp.cdf(L(x))).X / L(x).X, L.iByI[()])
     gdet = lambda y: logDetJacobianLpNestedTransform(y,rp,rptarget,L)
@@ -64,4 +63,4 @@ def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     r = L(dat)
     r2 = ptarget.ppf(psource.cdf(r))
     n = L.n[()]
-    return (n-1)*np.log(r2.X) - (n-1)*np.log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+    return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
