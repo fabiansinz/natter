@@ -3,7 +3,7 @@ from Distribution import Distribution
 from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv
 from numpy.random import randn
-from DataModule import Data 
+from natter.DataModule import Data 
 
 class Gaussian(Distribution):
     """

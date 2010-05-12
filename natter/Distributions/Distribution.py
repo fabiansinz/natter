@@ -1,11 +1,8 @@
-from Auxiliary import Errors
-import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
-from DataModule import Data
+from natter.Auxiliary import Errors
+from natter.DataModule import Data
 import copy
 from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min
 import pickle
-import Auxiliary
 import types
 
 #
@@ -39,7 +36,7 @@ class Distribution:
 
     def pdf(self,dat):
         if hasattr(self,'loglik'):
-            return nexp(self.loglik(dat))
+            return exp(self.loglik(dat))
         raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
 
     def cdf(self,dat):

@@ -1,5 +1,5 @@
 from Distribution import Distribution
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import zeros
 from ExponentialPower import ExponentialPower
 import sys
@@ -23,7 +23,7 @@ class ProductOfExponentialPowerDistributions(Distribution):
             for k in param.keys():
                 self.param[k] = param[k]
         if self.param['P'] != None:
-            self.param['n'] = len(P)
+            self.param['n'] = len(self.param['P'])
         else:
             self.param['P'] = [ExponentialPower() for i in range(self.param['n'])]
         self.primary = ['P']

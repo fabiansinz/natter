@@ -1,10 +1,10 @@
 from Distribution import Distribution
 from Gamma import Gamma
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import log, abs, sign
 from numpy.random import gamma, randn
 from scipy.special import gammaln
-from Auxiliary.Optimization import goldenMinSearch
+from natter.Auxiliary.Optimization import goldenMinSearch
 
 class LpSphericallySymmetric(Distribution):
     '''

@@ -1,14 +1,13 @@
 from Distribution import Distribution
-from DataModule import Data
-from numpy import where, zeros, sum, cumsum, array, size, float64, dot, reshape, log, exp
-from numpy import ones, kron, shape, squeeze, Inf, argmax, mean, abs, median, all
+from natter.DataModule import Data
+from numpy import where, zeros, sum, cumsum, array, size,  dot, reshape, log, exp
+from numpy import ones, kron, shape, squeeze, Inf, argmax, mean, abs
 from numpy.random import rand
 from numpy.random.mtrand import dirichlet
-from scipy.special import gammaln, polygamma
+from scipy.special import gammaln
 from scipy.optimize import fmin_l_bfgs_b
-from Auxiliary import Errors
-from Auxiliary.Numerics import logsumexp, inv_digamma, digamma, trigamma
-import types
+from natter.Auxiliary import Errors
+from natter.Auxiliary.Numerics import logsumexp, inv_digamma, digamma, trigamma
 import sys
 from Dirichlet import dirichlet_fit_m, dirichlet_fit_s, dirichletMomentMatch
 

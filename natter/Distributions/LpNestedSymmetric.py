@@ -1,12 +1,12 @@
 from Distribution import Distribution
 from Gamma import Gamma
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign
 from numpy.random import beta, dirichlet, rand
-from Auxiliary import LpNestedFunction
-from Auxiliary.Optimization import fminboundnD, goldenMinSearch
+from natter.Auxiliary import LpNestedFunction
+from natter.Auxiliary.Optimization import fminboundnD, goldenMinSearch
 import sys
-from scipy.optimize import fminbound
+
 
 
 class LpNestedSymmetric(Distribution):

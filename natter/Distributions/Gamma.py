@@ -1,5 +1,5 @@
 from Distribution import Distribution
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import log, exp, mean
 from numpy.random import gamma
 from scipy.special import gammaln, polygamma

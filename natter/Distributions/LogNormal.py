@@ -1,5 +1,5 @@
 from Distribution import Distribution
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import exp, log, pi, mean, std
 from numpy.random import randn
 from scipy.stats import norm

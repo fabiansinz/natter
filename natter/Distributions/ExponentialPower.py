@@ -1,6 +1,6 @@
 from Distribution import Distribution
-from DataModule import Data
-from numpy import log, abs, sign, exp, mean, abs
+from natter.DataModule import Data
+from numpy import log, abs, sign, exp, mean
 from numpy.random import gamma, randn
 from scipy.special import gammaln
 from scipy.optimize import fminbound

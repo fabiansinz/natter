@@ -1,11 +1,10 @@
 from Distribution import Distribution
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import dot, log, sum, mean, ones, shape, abs, exp, where, max, median
 from numpy.random import rand
 from numpy.random.mtrand import dirichlet
-import scipy as sp
-from Auxiliary import Errors
-from Auxiliary.Numerics import inv_digamma, digamma, trigamma
+from natter.Auxiliary import Errors
+from natter.Auxiliary.Numerics import inv_digamma, digamma, trigamma
 from scipy.special import gammaln
 
 class Dirichlet(Distribution):

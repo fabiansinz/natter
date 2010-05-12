@@ -1,11 +1,10 @@
 from __future__ import division
-from Auxiliary import Potential
-from Auxiliary.Optimization import StGradient
+from natter.Auxiliary import Potential
+from natter.Auxiliary.Optimization import StGradient
 from Distribution import Distribution 
-from numpy import ones, size, max, zeros, sum, array, kron, reshape,dot,shape,squeeze, Inf
-from numpy.random import randn
-from Transforms import LinearTransformFactory, LinearTransform
-from DataModule import Data
+from numpy import ones, max, zeros, sum, array, kron, reshape,dot,shape, Inf
+from natter.Transforms import LinearTransformFactory, LinearTransform
+from natter.DataModule import Data
 from sys import stdout
 from scipy.optimize import fmin_l_bfgs_b
 

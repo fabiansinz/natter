@@ -1,11 +1,10 @@
 from Distribution import Distribution
 from MixtureOfGaussians import MixtureOfGaussians
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import array, sum,cumsum, exp, log, zeros, squeeze, pi
 from numpy.random import randn, rand
 from scipy.stats import norm
-import sys
-from Auxiliary.Numerics import logsumexp
+from natter.Auxiliary.Numerics import logsumexp
 
 class MixtureOfLogNormals(Distribution):
     '''

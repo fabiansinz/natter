@@ -1,7 +1,7 @@
 from Gamma  import  Gamma
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import log, exp, mean
-import Auxiliary
+from natter import Auxiliary
 from scipy.stats import gamma
 
 

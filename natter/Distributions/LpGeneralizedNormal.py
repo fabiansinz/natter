@@ -1,10 +1,9 @@
-from Distribution import Distribution
 from LpSphericallySymmetric import LpSphericallySymmetric
 from GammaP import GammaP
-from DataModule import Data
+from natter.DataModule import Data
 from numpy import mean, sum, abs, sign
 from numpy.random import gamma, randn
-from Auxiliary.Optimization import goldenMinSearch
+from natter.Auxiliary.Optimization import goldenMinSearch
 
 class LpGeneralizedNormal(LpSphericallySymmetric):
     '''

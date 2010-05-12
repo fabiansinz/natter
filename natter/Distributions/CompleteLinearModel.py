@@ -1,10 +1,9 @@
 from Distribution import Distribution
-from DataModule import Data
-from Transforms import LinearTransform
+from natter.DataModule import Data
+from natter.Transforms import LinearTransform
 from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff, sum, log
-import Auxiliary
+from natter.Auxiliary.Optimization import StGradient
 from mdp.utils import random_rot
-import types
 
 class CompleteLinearModel(Distribution):
     '''
@@ -77,7 +76,7 @@ class CompleteLinearModel(Distribution):
             print "\tALL: %.4f [Bits/Component]" %( self.all(dat),)
 
             # estimating the filter matrix
-            (Wnew,fval,param) = Auxiliary.Optimization.StGradient(self.objective, W, \
+            (Wnew,fval,param) = StGradient(self.objective, W, \
                                                                    param, dat,q)
             dAngle[iter] = real(max(arccos(diag(dot(W,Wnew.transpose()))) \
                                               /2/pi*360.0))
