@@ -1,5 +1,5 @@
 from numpy import log
-from  Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
+from Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
 from numpy import linalg
 from scipy import special
