@@ -7,13 +7,16 @@ from DataModule import Data
 
 class Gaussian(Distribution):
     """
-      Gaussian Distribution
+    Gaussian Distribution
 
-      Parameters and their defaults are:
-         n:        dimensionality
-         sigma:    covariance matrix
-         mu:       mean
-         
+    Base class for the Gaussian distribution.  
+    
+    :arguments:
+        param : dictionary which might containt parameters for the Gaussian
+              'n'    :    dimensionality (default=2)
+              'sigma':    covariance matrix (default = eye(2))
+              'mu'   :    mean  (default = zeros(2))
+
     """
     
     def __init__(self,param=None):
