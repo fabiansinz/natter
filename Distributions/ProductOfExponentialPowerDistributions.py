@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import zeros
 from ExponentialPower import ExponentialPower

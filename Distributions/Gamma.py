@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import log, exp, mean
 from numpy.random import gamma

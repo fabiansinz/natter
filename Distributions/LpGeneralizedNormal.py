@@ -1,10 +1,12 @@
-import Distributions
+from Distribution import Distribution
+from LpSphericallySymmetric import LpSphericallySymmetric
+from GammaP import GammaP
 from DataModule import Data
 from numpy import mean, sum, abs, sign
 from numpy.random import gamma, randn
-import Auxiliary
+from Auxiliary.Optimization import goldenMinSearch
 
-class LpGeneralizedNormal(Distributions.LpSphericallySymmetric):
+class LpGeneralizedNormal(LpSphericallySymmetric):
     '''
       Lp-Generalized Normal Distribution
 
@@ -20,7 +22,7 @@ class LpGeneralizedNormal(Distributions.LpSphericallySymmetric):
         if param != None:
             for k in param.keys():
                 self.param[k] = float(param[k])
-        self.param['rp'] = Distributions.GammaP({'u':(self.param['n']/self.param['p']),'s':self.param['s'],'p':self.param['p']})
+        self.param['rp'] = GammaP({'u':(self.param['n']/self.param['p']),'s':self.param['s'],'p':self.param['p']})
         self.primary = ['p','s']
 
     def estimate(self,dat,prange=(.1,5.0)):
@@ -32,7 +34,7 @@ class LpGeneralizedNormal(Distributions.LpSphericallySymmetric):
         '''
         if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
-            bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
+            bestp = goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
 
         self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']

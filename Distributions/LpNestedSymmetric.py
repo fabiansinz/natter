@@ -1,8 +1,10 @@
-from Distributions import Distribution, Gamma
+from Distribution import Distribution
+from Gamma import Gamma
 from DataModule import Data
 from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign
 from numpy.random import beta, dirichlet, rand
-import Auxiliary
+from Auxiliary import LpNestedFunction
+from Auxiliary.Optimization import fminboundnD, goldenMinSearch
 import sys
 from scipy.optimize import fminbound
 
@@ -19,7 +21,7 @@ class LpNestedSymmetric(Distribution):
 
     def __init__(self,param=None):
         self.name = 'Lp-Nested Symmetric Distribution'
-        self.param = {'n':2, 'rp':Gamma(),'f':Auxiliary.LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
+        self.param = {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
 
         if param != None:
             for k in param.keys():
@@ -74,7 +76,7 @@ class LpNestedSymmetric(Distribution):
             if method == "neldermead":
                 print "\tEstimating best p with bounded Nelder-Mead ..."
                 f = lambda t: self.__all(t,dat)
-                bestp = Auxiliary.Optimization.fminboundnD(f,self.param['f'].p,self.param['f'].lb,self.param['f'].ub,1e-5)
+                bestp = fminboundnD(f,self.param['f'].p,self.param['f'].lb,self.param['f'].ub,1e-5)
                 self.param['f'].p = bestp
 
             # --------- estimation with greedy method -------------
@@ -113,7 +115,7 @@ class LpNestedSymmetric(Distribution):
                     
                     for i in pind:
                         f = lambda t: self.__all2(t,i,dat)
-                        tmp = Auxiliary.Optimization.goldenMinSearch(f,LB[i],UB[i],1e-3)
+                        tmp = goldenMinSearch(f,LB[i],UB[i],1e-3)
                         self.param['f'].p[i] = .5*(tmp[0]+tmp[1])
                         print ""
                     if itercount > 0:

@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import where, zeros, sum, cumsum, array, size, float64, dot, reshape, log, exp
 from numpy import ones, kron, shape, squeeze, Inf, argmax, mean, abs, median, all

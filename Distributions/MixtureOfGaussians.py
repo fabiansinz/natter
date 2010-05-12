@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import sum, cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs
 from numpy.random import rand, randn 

@@ -2,8 +2,7 @@ import numpy as np
 from NonlinearTransform import NonlinearTransform
 from numpy import linalg
 from scipy import special
-#from  Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
-import Distributions
+from  Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from Auxiliary import Errors
 import types
 
@@ -12,7 +11,7 @@ import types
 def RadialFactorization(psource):
     if not isinstance(psource,LpSphericallySymmetric):
         raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
-    ptarget = Distributions.LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0),\
+    ptarget = LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0),\
                                                 'p':psource.param['p']})
     print ptarget
     return RadialTransformation(psource,ptarget)
@@ -46,7 +45,7 @@ def getLpNestedNonLinearICARec(rp,L,mind):
     p = L.p[L.pdict[()]]
     s = (special.gamma(1.0/p) / special.gamma(3.0/p))**(p/2.0)
     #    s = rp.param['s']
-    rptarget = Distributions.GammaP({'u':float(L.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
+    rptarget = GammaP({'u':float(L.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
     g = lambda x: x.scaleCopy( rptarget.ppf(rp.cdf(L(x))).X / L(x).X, L.iByI[()])
     gdet = lambda y: logDetJacobianLpNestedTransform(y,rp,rptarget,L)
     F = NonlinearTransform(g,'Rescaling of ' + str(mind),logdetJ=gdet)
@@ -54,7 +53,7 @@ def getLpNestedNonLinearICARec(rp,L,mind):
     for k in range(L.l[()]):
         if L.n[(k,)] > 1:
             L2 = L[(k,)]
-            pnew = Distributions.GammaP({'u':float(L2.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
+            pnew = GammaP({'u':float(L2.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
             F2 = getLpNestedNonLinearICARec(pnew,L2,mind + (k,))
             F = F2*F
 

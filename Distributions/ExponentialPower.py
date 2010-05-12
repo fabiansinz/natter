@@ -1,8 +1,7 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import log, abs, sign, exp, mean, abs
 from numpy.random import gamma, randn
-#from scipy.stats import gamma as statsgamma
 from scipy.special import gammaln
 from scipy.optimize import fminbound
 

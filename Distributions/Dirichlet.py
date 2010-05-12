@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from numpy import dot, log, sum, mean, ones, shape, abs, exp, where, max, median
 from numpy.random import rand

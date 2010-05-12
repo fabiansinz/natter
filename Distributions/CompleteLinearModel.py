@@ -1,4 +1,4 @@
-from Distributions import Distribution
+from Distribution import Distribution
 from DataModule import Data
 from Transforms import LinearTransform
 from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff, sum, log

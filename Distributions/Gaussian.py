@@ -1,5 +1,5 @@
 from __future__ import division
-from Distributions import Distribution
+from Distribution import Distribution
 from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv
 from numpy.random import randn

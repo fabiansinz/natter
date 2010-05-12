@@ -1,10 +1,9 @@
 from Auxiliary import Errors
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 from DataModule import Data
 import copy
-import numpy as np
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min
 import pickle
 import Auxiliary
 import types
@@ -40,7 +39,7 @@ class Distribution:
 
     def pdf(self,dat):
         if hasattr(self,'loglik'):
-            return np.exp(self.loglik(dat))
+            return nexp(self.loglik(dat))
         raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
 
     def cdf(self,dat):
@@ -91,7 +90,7 @@ class Distribution:
         return copy.deepcopy(self)
 
     def all(self,dat):
-        return -np.mean(self.loglik(dat)) / dat.size(0) / np.log(2)
+        return -mean(self.loglik(dat)) / dat.size(0) / log(2)
     
     def __str__(self):
         s = 30*'-'
@@ -100,9 +99,9 @@ class Distribution:
         for k in self.param.keys():
             if not (type(self.param[k]) == types.FloatType)  \
                    and not (type(self.param[k]) == type('dummy')) \
-                   and not (type(self.param[k]) == np.float64) \
-                   and not (type(self.param[k]) == np.float32) \
-                   and not (type(self.param[k]) == np.float) \
+                   and not (type(self.param[k]) == float64) \
+                   and not (type(self.param[k]) == float32) \
+                   and not (type(self.param[k]) == float) \
                    and not (type(self.param[k]) == type(1)):
                 later.append(k)
             else:
@@ -131,15 +130,15 @@ class Distribution:
 
     def histogram(self,dat,cdf = False):
 
-        sh = np.shape(dat.X)
+        sh = shape(dat.X)
         if len(sh) > 1 and sh[0] > 1:
             raise Errors.DimensionalityError('Cannont plot data with more than one dimension!')
     
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        x =np.squeeze(dat.X)
+        x =squeeze(dat.X)
         
-        n, bins, patches = ax.hist(x, np.max(sh)/400, normed=1, facecolor='blue', alpha=0.8)
+        n, bins, patches = ax.hist(x, max(sh)/400, normed=1, facecolor='blue', alpha=0.8)
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
 
@@ -155,7 +154,7 @@ class Distribution:
        
         ax.set_xlabel('x')
         ax.set_ylabel('Probability')
-        ax.set_xlim(np.min(x), np.max(x))
+        ax.set_xlim(min(x),max(x))
         ax.grid(True)
 
         plt.show()

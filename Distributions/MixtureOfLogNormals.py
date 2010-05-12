@@ -1,4 +1,5 @@
-from Distributions import Distribution, MixtureOfGaussians
+from Distribution import Distribution
+from MixtureOfGaussians import MixtureOfGaussians
 from DataModule import Data
 from numpy import array, sum,cumsum, exp, log, zeros, squeeze, pi
 from numpy.random import randn, rand

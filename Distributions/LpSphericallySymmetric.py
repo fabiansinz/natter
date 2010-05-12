@@ -1,9 +1,10 @@
-from Distributions import Distribution, Gamma
+from Distribution import Distribution
+from Gamma import Gamma
 from DataModule import Data
 from numpy import log, abs, sign
 from numpy.random import gamma, randn
 from scipy.special import gammaln
-import Auxiliary
+from Auxiliary.Optimization import goldenMinSearch
 
 class LpSphericallySymmetric(Distribution):
     '''
@@ -58,7 +59,7 @@ class LpSphericallySymmetric(Distribution):
             prange = self.prange
         if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
-            bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)
+            bestp = goldenMinSearch(f,prange[0],prange[1],5e-4)
             self.param['p'] = .5*(bestp[0]+bestp[1])
         if 'rp' in self.primary:
             self.param['rp'].estimate(dat.norm(self.param['p']))

@@ -1,4 +1,4 @@
-from Distributions import Gaussian
+from Distribution import Gaussian
 from numpy import array,hstack,squeeze
 
 class UnnormalizedGaussian(Gaussian):
