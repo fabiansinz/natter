@@ -4,7 +4,7 @@ from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, m
 from numpy.linalg import svd
 from scipy.optimize import fminbound
 from scipy.optimize import fmin
-from Auxiliary import Errors
+from natter.Auxiliary import Errors
 
 def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     xsize = shape(x0);
