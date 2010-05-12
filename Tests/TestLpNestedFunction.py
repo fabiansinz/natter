@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
-from  Auxiliary import LpNestedFunction
-from DataModule import Data
+from  natter.Auxiliary import LpNestedFunction
+from natter.DataModule import Data
 import sys
 
 

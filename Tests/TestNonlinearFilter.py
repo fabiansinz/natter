@@ -1,10 +1,10 @@
 from numpy import linalg
 import numpy as np
-import Auxiliary
+from natter import Auxiliary
 import unittest
-from Transforms import NonlinearTransformFactory, LinearTransformFactory, LinearTransform
+from natter.Transforms import NonlinearTransformFactory, LinearTransformFactory, LinearTransform
 from numpy import linalg
-import Distributions
+from natter import Distributions
 import sys
 
 class TestNonlinearFilter(unittest.TestCase):

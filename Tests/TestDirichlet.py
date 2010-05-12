@@ -1,10 +1,8 @@
-import Distributions
-from DataModule import Data
+from natter import Distributions
+from natter.DataModule import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
 from scipy import io
-import Auxiliary
 import sys
 
 class TestDirichlet(unittest.TestCase):

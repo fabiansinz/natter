@@ -1,4 +1,4 @@
-import Distributions
+from natter import Distributions
 import numpy as np
 import unittest
 from scipy import io

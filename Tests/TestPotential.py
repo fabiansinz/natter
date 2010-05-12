@@ -1,8 +1,8 @@
-from Auxiliary import Potential
+from natter.Auxiliary import Potential
 import sys
 from numpy import max, abs, log
 from numpy.random import randn
-from DataModule import Data
+from natter.DataModule import Data
 import unittest
 
 class TestPotential(unittest.TestCase):

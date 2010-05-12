@@ -1,10 +1,10 @@
-import Distributions
-from DataModule import Data
+from natter import Distributions
+from natter.DataModule import Data
 import numpy as np
 import unittest
-from Auxiliary import Errors
+from natter.Auxiliary import Errors
 from scipy import io
-import Auxiliary
+from natter import Auxiliary
 import sys
 
 class TestMixtureOfLogNormals(unittest.TestCase):

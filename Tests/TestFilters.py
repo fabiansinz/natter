@@ -1,11 +1,11 @@
 from numpy import linalg
 import numpy as np
-from Auxiliary import Errors
+from natter.Auxiliary import Errors
 import unittest
-from Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
+from natter.Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
 from numpy import linalg
-import Distributions
-from DataModule import Data
+from natter import Distributions
+from natter.DataModule import Data
 import sys
 
 class TestFilter(unittest.TestCase):

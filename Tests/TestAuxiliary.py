@@ -1,6 +1,6 @@
 import numpy as np
 import unittest
-import Auxiliary
+from natter import Auxiliary
 import mdp
 
 class TestfminboundnD(unittest.TestCase):

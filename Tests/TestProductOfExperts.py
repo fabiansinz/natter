@@ -1,5 +1,5 @@
 import unittest
-import Distributions
+from natter import Distributions
 import sys
 from numpy.random import randn, rand
 from numpy import max, abs, size, array

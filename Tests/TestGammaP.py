@@ -1,5 +1,5 @@
-import Distributions
-from DataModule import Data
+from natter import Distributions
+from natter.DataModule import Data
 import numpy as np
 import unittest
 from scipy import io

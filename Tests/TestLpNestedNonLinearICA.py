@@ -1,8 +1,8 @@
 import unittest
-from  Distributions import ProductOfExponentialPowerDistributions, LpNestedSymmetric
+from  natter.Distributions import ProductOfExponentialPowerDistributions, LpNestedSymmetric
 import sys
-from  Auxiliary import LpNestedFunction, testProtocol
-from Transforms import NonlinearTransformFactory
+from  natter.Auxiliary import LpNestedFunction, testProtocol
+from natter.Transforms import NonlinearTransformFactory
 import numpy as np
 import sys
 

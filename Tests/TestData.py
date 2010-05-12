@@ -2,8 +2,8 @@ import unittest
 from numpy.random import randn
 from numpy import dot, abs
 from numpy.linalg import det, cholesky
-from Transforms import LinearTransformFactory
-from DataModule import Data
+from natter.Transforms import LinearTransformFactory
+from natter.DataModule import Data
 class TestData(unittest.TestCase):
     
     def test_makeWhiVolCons(self):
