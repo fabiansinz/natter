@@ -4,10 +4,12 @@ import numpy as np
 import unittest
 from scipy import io
 import sys
-
+import os
 
 
 class TestLpGeneralizedNormal(unittest.TestCase):
+
+    matpath = os.path.abspath('./Tests/')
 
     Tol = 1e-10
     TolParam = {'p':.1,'s':.45,'n':0}
@@ -16,7 +18,7 @@ class TestLpGeneralizedNormal(unittest.TestCase):
         sys.stdout.flush()
         for k in range(5):
             print '\t--> test case ' + str(k)
-            dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
+            dat = io.loadmat(self.matpath + '/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
             truell = dat['ll']
             p = Distributions.LpGeneralizedNormal({'s':2*dat['s'],'p':dat['p'],'n':dat['n']})
             dat = Data(dat['X'])
@@ -30,7 +32,7 @@ class TestLpGeneralizedNormal(unittest.TestCase):
         sys.stdout.flush()
         for k in range(5):
             print '\t--> test case ' + str(k)
-            dat = io.loadmat('/kyb/agmb/fabee/code/dev/lib/python/natter/Tests/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
+            dat = io.loadmat(self.matpath + '/TestPGeneralizedNormal'+ str(k) + '.mat',struct_as_record=True)
             trueparam = {'s':2*dat['s'],'p':dat['p'],'n':dat['n']}
             p = Distributions.LpGeneralizedNormal({'n':dat['n']})
             dat = Data(dat['X'])
