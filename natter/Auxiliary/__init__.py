@@ -1,7 +1,7 @@
 """
 This is the Auxiliary module
 """
-from Utils import save, testProtocol
+from Utils import save, testProtocol, debug
 import  Errors 
 import Optimization
 import Plotting

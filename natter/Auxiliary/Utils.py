@@ -20,3 +20,16 @@ def testProtocol(value):
         s += 10*'- - ' + '\n'
     s += "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     return s
+
+
+HaveIpython=True
+try:
+    from IPython.Debugger import Tracer;  debug = Tracer()
+except:
+    HaveIpython=False
+    def debug():
+        pass
+    pass
+
+    
+ 
