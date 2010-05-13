@@ -1,3 +1,3 @@
-import DataSampler
-import DataLoader
 from Data import Data
+import DataLoader
+import DataSampler

@@ -4,6 +4,8 @@ from numpy import dot, abs
 from numpy.linalg import det, cholesky
 from natter.Transforms import LinearTransformFactory
 from natter.DataModule import Data
+
+
 class TestData(unittest.TestCase):
     
     def test_makeWhiVolCons(self):

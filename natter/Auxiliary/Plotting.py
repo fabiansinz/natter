@@ -1,6 +1,5 @@
 import numpy as np
 import Errors
-import matplotlib as mpl
 from matplotlib import pyplot
 import types
 
