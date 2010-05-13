@@ -1,4 +1,7 @@
 import pickle
+import os
+import cProfile
+import lsprofcalltree
 
 
 def save(o,filename):
@@ -31,5 +34,22 @@ except:
         pass
     pass
 
-    
- 
+
+
+def profileFunction(f):
+    """
+    profiles the execution of a function via lsprofcalltree for later inspection with kcachegrind.
+
+    :arguments:
+        f   : function handle of the function to profile.
+        filename: string of the filename to write profie information to.
+    """
+    filename = '/tmp/profile.prof'
+    p = cProfile.Profile()
+    p.runcall(f)
+    k = lsprofcalltree.KCacheGrind(p)
+    data = open(filename, 'w+')
+    k.output(data)
+    data.close()
+    cmd = "kcachegrind %s" % filename
+    os.system(cmd)

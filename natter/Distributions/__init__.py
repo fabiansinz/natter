@@ -10,6 +10,7 @@ from LpGeneralizedNormal import LpGeneralizedNormal
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from Gaussian import Gaussian
+from UnnormalizedGaussian import UnnormalizedGaussian
 from ExponentialPower import ExponentialPower
 from LogNormal import LogNormal
 from ProductOfExperts import ProductOfExperts

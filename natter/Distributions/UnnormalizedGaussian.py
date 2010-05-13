@@ -1,5 +1,6 @@
-from Distribution import Gaussian
-from numpy import array,hstack,squeeze
+from __future__ import division
+from Gaussian import Gaussian
+from numpy import hstack,resize,log
 
 class UnnormalizedGaussian(Gaussian):
     """
@@ -23,15 +24,31 @@ class UnnormalizedGaussian(Gaussian):
         self.param['Z'] = 10.0;
         if param.has_key('Z'):
             self.param['Z'] = param['Z']
-        self.primary = ['Z']
+        self.primary = ['mu','sigma','Z']
 
     def primary2array(self):
-        return self.param['Z']
+        arr = Gaussian.primary2array(self)
+        if 'Z' in self.primary:
+            arr = hstack((arr,self.param['Z']))
+        return arr
 
     def array2primary(self,arr):
-        if len(arr)!=1:
-            raise DimensionalityError("Normalization constant has to be scalar!")
-        self.param['Z']= arr[0]
+        if 'Z' in self.primary:
+            Gaussian.array2primary(self,arr[:-1])
+            self.param['Z'] = arr[-1]
+        else:
+            Gaussian.array2primary(self,arr)
+
+    def loglik(self,data):
+        lv = Gaussian.loglik(self,data)
+        lv = lv - log( self.param['Z'])
+        return lv
     
     def dldtheta(self,data):
-        
+        grad = Gaussian.dldtheta(self,data)
+        if 'Z' in self.primary:
+            grad = resize(grad,(grad.shape[0]+1,grad.shape[1]))
+            grad[-1,:] = -1/self.param['Z']
+        return grad
+
+    
