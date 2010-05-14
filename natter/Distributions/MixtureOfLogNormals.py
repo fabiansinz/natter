@@ -91,7 +91,7 @@ class MixtureOfLogNormals(Distribution):
 
 
     def estimate(self,dat, errTol=1e-4,maxiter=1000):
-        dummy = MixtureOfGaussians.MixtureOfGaussians(self.param)
+        dummy = MixtureOfGaussians(self.param)
         dummy.primary = self.primary
         dummy.estimate(Data(log(dat.X)), errTol, maxiter)
         self.param = dummy.param
