@@ -34,10 +34,15 @@ def noiseContrastive(modelDistribution,
     def df(theta):
         modelDistribution.array2primary(theta)
         return gradNoiseContrastiveObjective(modelDistribution,noiseDistribution,data,dataNoise)
-
+    def check(theta):
+        err = optimize.check_grad(f,df,theta)
+        print "error from check_grad: " , err
+        
     theta0 = modelDistribution.primary2array()
     if verbosity>0:
-        thetaOpt = optimize.fmin_bfgs(f,theta0,df,disp=1)
+        print "VERBOSE!!"
+        check(theta0)
+        thetaOpt = optimize.fmin_bfgs(f,theta0,df,disp=1,callback = check)
     else:
         thetaOpt = optimize.fmin_bfgs(f,theta0,df,disp=0)
     
@@ -79,7 +84,7 @@ def gradNoiseContrastiveObjective(modelDistribution,noiseDistribution,dataModel,
     print "size dldtheta " + str(modelDistribution.dldtheta(dataModel).shape)
     g1 = sum((1-hx)*modelDistribution.dldtheta(dataModel),axis=1)
     g2 = sum((-hy)*modelDistribution.dldtheta(dataNoise),axis=1)
-    return -(g1+g2)
+    return (g1+g2)
 
 
 

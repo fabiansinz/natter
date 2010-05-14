@@ -1,6 +1,6 @@
 from __future__ import division
 from Gaussian import Gaussian
-from numpy import hstack,resize,log
+from numpy import hstack,resize,log,zeros
 
 class UnnormalizedGaussian(Gaussian):
     """
@@ -45,10 +45,15 @@ class UnnormalizedGaussian(Gaussian):
         return lv
     
     def dldtheta(self,data):
+        n,m = data.X.shape
         grad = Gaussian.dldtheta(self,data)
         if 'Z' in self.primary:
-            grad = resize(grad,(grad.shape[0]+1,grad.shape[1]))
-            grad[-1,:] = -1/self.param['Z']
+            if len(grad)==0:
+                grad = zeros((1,m))
+                grad[0,:] = -1/self.param['Z']
+            else:
+                grad = resize(grad,(grad.shape[0]+1,grad.shape[1]))
+                grad[-1,:] = -1/self.param['Z']
         return grad
 
     

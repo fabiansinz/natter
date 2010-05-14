@@ -1,9 +1,10 @@
-from natter.Auxiliary import Errors
+from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
 from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min
 import pickle
 import types
+import pylab as plt
 
 #
 # DISTRIBUTION
@@ -157,7 +158,7 @@ class Distribution:
         plt.show()
 
     def save(self,filename):
-        Auxiliary.save(self,filename)
+        save(self,filename)
 
 
     def __call__(self,dat,pa=None):
