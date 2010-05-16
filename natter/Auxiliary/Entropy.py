@@ -3,6 +3,45 @@ from numpy import zeros, std,ceil,max,min, histogram, where, dot, log, array, su
 
 
 def marginalEntropy(dat,method='JK'):
+    """
+
+    Estimates the marginal differential entropies of the data in
+    **nats** given by dat. For each marginal, a histogram is computed
+    and possibly regularized (depending on the method). The number of
+    bins is computed by using the heuristic proposed by [Scott1979]_.
+
+
+    For computing the differential entropy we us the fact that the
+    entropy from a normalized histogram is asymptotically linear in
+    the negative logarithm of the bin width. We correct for that by
+    adding the logarithm of the bin width using the formula
+    
+    .. math::
+       h \mbox{ approx.} H_\delta + \log \delta
+       
+       H_\delta = - \sum p_i \log p_i 
+       
+    The method for regularizing the histogram can be specified by the
+    parameter *method*. Its default value is 'JK' which corresponds to
+    a jackknifed maximum likelihood estimator. Other possible values
+    for *method* are:
+
+    * 'MM' : Miller-Madow regularization of the histogram (see [Miller1955]_).
+    * 'MLE' : simple maximum likelihood estimation without regularization.
+    * 'CAE' : coverage adjusted regularization of the histogram. 
+    
+    :param dat: Data for which the marginal entropies will be computed.
+    :type name: DataModule.Data
+    :param method: Specifies the method which is used to estimate the marginal entropy.
+    :type method: string
+    :returns:   An numpy array containing the marginal entropies.
+
+
+    .. [Scott1979] D.W. Scott, *On optimal and data-based histograms,* Biometrika,  vol. 66, Dez. 1979, S. 605-610.
+    .. [Miller1955] G.A. Miller, *Note on the bias of information estimates,* Information Theory in Psychology: Problems and Methods, 1955, S. 95-100.
+    
+    """
+
     n,m = dat.size()
     H = zeros((n,1))
     hfunc = None

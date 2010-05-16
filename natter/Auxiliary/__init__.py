@@ -1,6 +1,14 @@
 """
-This is the Auxiliary module
+
+The Auxiliary module includes several auxiliary functions for the natter. It contains the following submodules.
+
+.. toctree::
+   :maxdepth: 2
+   
+   Auxiliary_Entropy.rst
+
 """
+
 from Utils import save, testProtocol, debug , profileFunction
 import  Errors 
 import Optimization

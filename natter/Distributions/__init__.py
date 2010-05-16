@@ -6,7 +6,7 @@ implements. At the moment it provides the following distributions.
 .. toctree::
    :maxdepth: 2
    
-   Gamma.rst
+   Distributions_Gamma.rst
 
 """
 
