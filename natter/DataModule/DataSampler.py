@@ -1,6 +1,17 @@
-from numpy import shape, floor, zeros, NaN, isinf, isnan, any, array
-from numpy.random import rand
+from numpy import shape, floor, zeros, NaN, isinf, isnan, any, array, reshape, dot,eye
+from numpy.random import rand, randn
 from Data import Data
+from numpy.linalg import cholesky
+
+
+def gauss(n,m,mu = None, sigma = None):
+    if not mu == None:
+        mu = reshape(mu,(n,1))
+    else:
+        mu = zeros((n,1))
+    if sigma == None:
+        sigma = eye(n)
+    return Data(dot(cholesky(sigma),randn(n,m))+mu,'Multivariate Gaussian data.')
 
 
 def img2PatchRand(img, p, N):

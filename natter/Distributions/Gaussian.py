@@ -133,5 +133,11 @@ class Gaussian(Distribution):
         return ret
 
    
-    
+    def estimate(self,dat):
+        if 'sigma' in self.primary:
+            self.param['sigma'] = dat.cov()
+        if 'mu' in self.primary:
+            self.param['mu'] = dat.mean()
+            
+        
     

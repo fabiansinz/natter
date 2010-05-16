@@ -7,19 +7,21 @@ from scipy.stats import gamma as gammastats
 
 
 class Gamma(Distribution):
-    """
-      Gamma Distribution
-
-      Parameters and their defaults are:
-         u:    shape parameter (default = 1)
-         s:    scale parameter (default = 1)
-         
-    """
     maxCount = 10000
     Tol = 10.0**-20.0
 
     
     def __init__(self,param=None):
+        """
+        Gamma distribution constructor.
+
+         :param param: Initial parameters for the Gamma distribution. The Gamma distribution has parameters *u* (shape parameter) and *s* (scale parameter). The default value for param is {'u':1.0,'s':1.0}.
+         :type param: dict.
+         :returns:  A Gamma distribution object initialized with the parameters in param.
+
+         
+    """
+        
         self.name = 'Gamma Distribution'
         self.param = {'u':1.0,'s':1.0}
         if param != None:
@@ -28,13 +30,15 @@ class Gamma(Distribution):
         self.primary = ['u','s']
         
     def sample(self,m):
-        '''
+        """
 
-           sample(m)
+        Samples m samples from the current Gamma distribution.
 
-           samples M examples from the gamma distribution.
-           
-        '''
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+
+        """
         return Data(gamma(self.param['u'],self.param['s'],(1,m)) \
                          ,str(m) + ' samples from ' + self.name)
         
@@ -42,10 +46,12 @@ class Gamma(Distribution):
     def loglik(self,dat):
         '''
 
-           loglik(dat)
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the loglikelihoods.
         
-           computes the loglikelihood of the data points in dat. The
-           parameter dat must be a Data.Data object.
            
         '''
         return (self.param['u']-1.0) * log(dat.X)   \
@@ -56,10 +62,12 @@ class Gamma(Distribution):
     def pdf(self,dat):
         '''
 
-           pdf(dat)
+        Evaluates the probability density function on the data points in dat. 
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the values of the density.
         
-           returns the probability of the data points in dat under the
-           model. The parameter dat must be a Data.Data object
            
         '''
         return exp(self.loglik(dat))
@@ -68,11 +76,12 @@ class Gamma(Distribution):
     def cdf(self,dat):
         '''
 
-           cdf(dat)
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
         
-           returns the values of the cumulative distribution function
-           of the data points in dat under the model. The parameter
-           dat must be a Data.Data object
            
         '''
         return gammastats.cdf(dat.X,self.param['u'],scale=self.param['s'])
@@ -81,12 +90,12 @@ class Gamma(Distribution):
     def ppf(self,X):
         '''
 
-           ppf(X)
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
         
-           returns the values of the inverse cumulative distribution
-           function of the percentile points X under the model. The
-           parameter X must be a numpy array. ppf returns a Data.Data
-           object.
            
         '''
         return Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
@@ -95,11 +104,11 @@ class Gamma(Distribution):
     def dldx(self,dat):
         """
 
-        dldx(dat)
-
-        returns the derivative of the log-likelihood of the gamma
-        distribution w.r.t. the data in dat. The parameter dat must be
-        a Data.Data object.
+        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the derivatives.
         
         """
         return (self.param['u']-1.0)/dat.X  - 1.0/self.param['s']
@@ -108,11 +117,10 @@ class Gamma(Distribution):
     def estimate(self,dat):
         '''
 
-        estimate(dat)
-        
-        estimates the parameters from the data in dat (Data.Data
-        object). The optional second argument specifys a list of
-        parameters (list of strings) that should be estimated.
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+        :param dat: Data points on which the Gamma distribution will be estimated.
+        :type dat: natter.DataModule.Data
         '''
 
         logmean = log(mean(dat.X))
