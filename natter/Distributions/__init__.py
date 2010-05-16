@@ -1,3 +1,16 @@
+"""
+
+The Distributions module stores all distributions the *natter*
+implements. At the moment it provides the following distributions.
+
+.. toctree::
+   :maxdepth: 2
+   
+   Gamma.rst
+
+"""
+
+
 from Distribution import Distribution
 from Gamma import Gamma
 from GammaP import GammaP

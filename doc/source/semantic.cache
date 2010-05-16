@@ -1,0 +1,15 @@
+;; Object source/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "source/"
+  :tables (list 
+   (semanticdb-table "conf.py"
+    :major-mode 'python-mode
+    :tags '(("sys" include nil (dependency-file none) [455 469]) ("sys" code nil nil [709 751]) ("extensions" variable nil nil [980 1056]) ("templates_path" variable nil nil [1131 1162]) ("source_suffix" variable nil nil [1198 1220]) ("master_doc" variable nil nil [1313 1333]) ("project" variable nil nil [1376 1432]) ("copyright" variable nil nil [1433 1498]) ("version" variable nil nil [1701 1716]) ("release" variable nil nil [1767 1784]) ("exclude_trees" variable nil nil [2309 2327]) ("pygments_style" variable nil nil [2872 2897]) ("html_theme" variable nil nil [3195 3219]) ("html_logo" variable nil nil [3839 3877]) ("html_static_path" variable nil nil [4302 4332]) ("htmlhelp_basename" variable nil nil [5525 5587]) ("latex_documents" variable nil nil [5953 6158]))
+    :file "conf.py"
+    :pointmax 6608
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre4"
+  :semanticdb-version "2.0pre4"
+  )
