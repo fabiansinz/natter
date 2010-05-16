@@ -17,6 +17,7 @@ class Gamma(Distribution):
     """
     maxCount = 10000
     Tol = 10.0**-20.0
+
     
     def __init__(self,param=None):
         self.name = 'Gamma Distribution'
