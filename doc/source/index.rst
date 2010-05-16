@@ -13,6 +13,7 @@ Contents:
    
    tutorial.rst
    Distributions.rst
+   Auxiliary.rst
 
 Indices and tables
 ==================
