@@ -119,6 +119,8 @@ class Gamma(Distribution):
 
         Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
 
+        Estimate uses the algorithm by [Minka2002]_ to fit the parameters.
+
         :param dat: Data points on which the Gamma distribution will be estimated.
         :type dat: natter.DataModule.Data
         '''
