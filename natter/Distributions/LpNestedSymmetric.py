@@ -15,7 +15,7 @@ class LpNestedSymmetric(Distribution):
         """
         LpNestedSymmetric distribution constructor.
         
-        :param param: Initial parameters for the LpNestedSymmetric distribution. The LpNestedSymmetric distribution has parameters *n* (dimension), 'p' (the p of the Lp-norm) and *rp* (the radial density). The default value for param is {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}.
+        :param param: Initial parameters for the LpNestedSymmetric distribution. The LpNestedSymmetric distribution has parameters *n* (dimension), 'f' (the Lp-nested function) and *rp* (the radial density). The default value for param is {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}.
 
         Primary parameters are ['rp','f'].
         
