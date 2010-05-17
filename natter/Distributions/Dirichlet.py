@@ -8,13 +8,6 @@ from natter.Auxiliary.Numerics import inv_digamma, digamma, trigamma
 from scipy.special import gammaln
 
 class Dirichlet(Distribution):
-    """
-      Dirichlet Distribution
-
-      Parameters and their defaults are:
-         alpha:   default alpha=random.rand(3)
-         
-    """
 
     maxiter = 1000
     innermaxiter = 100
@@ -22,6 +15,17 @@ class Dirichlet(Distribution):
     innertol = 1e-6
     
     def __init__(self,param=None):
+        """
+        Dirichlet distribution constructor.
+        
+        :param param: Initial parameters for the Dirichlet distribution. The Dirichlet distribution has parameters *alpha*. The default value for param is {'alpha':numpy.random.rand(10)}.
+
+        Primary parameters are ['alpha'].
+        
+        :type param: dict.
+        :returns:  A Dirichlet distribution object initialized with the parameters in param.
+        """
+        
         self.name = 'Dirichlet Distribution'
         self.param = {'alpha':rand(10)}
         if param != None:
@@ -30,17 +34,31 @@ class Dirichlet(Distribution):
         self.primary = ['alpha']
         
     def sample(self,m):
-        '''
+        """
 
-           sample(m)
+        Samples m samples from the current Dirichlet distribution.
 
-           samples M examples from the gamma distribution.
-           
-        '''
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+        :rtype:    natter.DataModule.Data
+
+        """
+
         return Data(dirichlet(tuple(self.param['alpha']),m).transpose(),str(m) + ' samples from ' + self.name)
         
 
     def loglik(self,dat):
+        '''
+
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype: numpy.array
+           
+        '''
         return dot(self.param['alpha']-1.0,log(dat.X)) \
              + gammaln(sum(self.param['alpha'])) - sum(gammaln(self.param['alpha']))
     
@@ -48,20 +66,17 @@ class Dirichlet(Distribution):
     def estimate(self,dat):
         """
 
-        Maximum-likelihood Dirichlet distribution fitting.
+        Estimates the parameters from the data in dat. It is possible
+        to only selectively fit parameters of the distribution by
+        setting the primary array accordingly (see :doc:`Tutorial on
+        the Distributions module <tutorial_Distributions>`).
 
-        estimate(dat)
+        Estimate uses the algorithm as described in [Minka2000]_.
 
+        :param dat: Data points on which the Gamma distribution will be estimated.
+        :type dat: natter.DataModule.Data
 
-        returns the MLE for the data object dat.
-
-        The Dirichlet distribution is parameterized as
-        p(p) = (Gamma(sum_k a_k)/prod_k Gamma(a_k)) prod_k p_k^(a_k-1)
-
-        The algorithm is an alternating optimization for m and for s, described in
-        \"Estimating a Dirichlet distribution\" by T. Minka.
-
-        Written for Matlab by Tom Minka, ported to Python by Fabian Sinz
+        This code was initially written for Matlab by Tom Minka.
         """
 
 

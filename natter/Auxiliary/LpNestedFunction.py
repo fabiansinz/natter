@@ -4,16 +4,35 @@ from scipy import special
 import string
 from  natter.DataModule import Data
 import copy
-import matplotlib as mpl
 from matplotlib.patches import Ellipse
-from matplotlib import pyplot
-from matplotlib.pyplot import figure, show, arrow, axes, draw, text
+from matplotlib.pyplot import figure, show,draw
 import Plotting
 
 
 class LpNestedFunction:
 
     def __init__(self, tree="(0,0,(1,1,(3,2,3,4,5),6,7),8:11,11,(2,12:16,16,(4,17,18,19:22,22),23),24)", p=None):
+        """
+        Constructs an LpNestedFunction object. The tree structure is
+        passed by the context-sensitive expression tree. The grammar for tree is
+
+        * tree = (p_index, list)
+        * list = index_into_data, list | index_into_data| tree, list| tree
+
+        p_index is the index into the second argument p, which stores
+        the p of the respective inner node of the
+        tree. index_into_data is the index of a single dimension of
+        the data points (you can also use slices with the standard
+        python notation that in a:b is [a,a+1,...,b-1]). You can get a
+        good feeling of how the expression can look like by looking at
+        the default argument.
+
+        :param tree: A string with a valid tree expression as described above. 
+        :type tree: string
+        :param p:   An array containing the initial values of the p exponents at the inner nodes. It must have the appropriate dimension such that each *p_index* is covered.
+        :type p: numpy.array
+        
+        """
         self.tree = parsetree(tree)
         self.n = parseNoLeaves(self.tree,(),{})
         self.l = parseNoChildren(self.tree,(),{})
@@ -32,17 +51,27 @@ class LpNestedFunction:
             
     def f(self,dat):
         """
-        f(dat)
+        Computes the value of the Lp-nested funtion at the vectors in
+        dat. Alternatively you can directly call the object on the
+        data, i.e. use *L(dat)* instead of *L.f(dat)*.
 
-        computes the value of the Lp-nested funtion at the vectors in dat.
+        :param dat: Data on which the LpNestedFunction will be evaluated.
+        :type dat: natter.DataModule.Data
+        :returns: A Data object containing the function values
+        :rtype: natter.DataModule.Data
+        
         """
         return Data(computerec(self.tree,dat.X,self.p))
 
     def dfdx(self,dat):
         """
-        dfdx(dat)
-
-        computes the derivative of the Lp-nested function at the data points in dat.
+        Computes the derivative of the Lp-nested function at the data points in dat.
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the derivatives.
+        :rtype:    numpy.array
+        
         """
         ret = 0.0*dat.X.copy()
         self.__dfdxRec((),dat,ret)
@@ -72,9 +101,11 @@ class LpNestedFunction:
 
     def logSurface(self):
         """
-        logSurface()
+        Computes the logarithm of the surface area of the Lp-nested unit sphere.
+
+        :returns: The logarithm of the surface area.
+        :rtype: float
         
-        returns the log of the surface area of the Lp-nested unit sphere.
         """
         log = np.log
         ret = self.n[()]*log(2)
@@ -87,13 +118,17 @@ class LpNestedFunction:
                 tmp += self.n[I + (k+1,)]
         return ret
 
-    def i(self,I):
+    def i(self, I):
         """
-        i(I)
-
-        transforms the multiindex I into a) the coefficient index if I
+        Transforms the multiindex I into a) the coefficient index if I
         corresponds to leaf, b) a tuple representing the subtree
         corresponding to I.
+
+        :param I: A multiindex into the tree (see [SinzEtAl2009]_).
+        :type I: tuple of int
+        :returns: index or multiindex
+        :rtype: int or tuple of int
+        
         """
         tmp = self.tree
         for k in I:
@@ -103,12 +138,13 @@ class LpNestedFunction:
 
     def plotGraph(self,F):
         """
-        plotGraph(F)
-
-        plots the tree corresponding to the Lp-nested function and
-        plots the columns of the linear filter F as patches at the
+        Plots the tree corresponding to the Lp-nested function and
+        plots the columns of the linear transform F as patches at the
         leaves. For that reason the number of rows of the linear
-        filter F must be a square of an integer.
+        transorm F must be a square of an integer.
+
+        :param F: LinearTransform containing filters to be plotted at the leaves
+        :type F: natter.Transforms.LinearTransform
         """
         ptchsz = np.sqrt(np.size(F.W,0))
         tmp = np.sqrt(np.max(np.array(self.l.values())))
@@ -215,6 +251,12 @@ class LpNestedFunction:
         return self.__str__()
 
     def copy(self):
+        """
+        Returns a deepcopy of the LpNestedFunction object.
+
+        :returns: A deepcopy of the LpNestedFunction objec.
+        :rtype: natter.Auxiliary.LpNestedFunction
+        """
         return copy.deepcopy(self)
 
 

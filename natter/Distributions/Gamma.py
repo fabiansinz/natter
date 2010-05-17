@@ -15,9 +15,14 @@ class Gamma(Distribution):
         """
         Gamma distribution constructor.
 
+
+
          :param param: Initial parameters for the Gamma distribution. The Gamma distribution has parameters *u* (shape parameter) and *s* (scale parameter). The default value for param is {'u':1.0,'s':1.0}.
          :type param: dict.
          :returns:  A Gamma distribution object initialized with the parameters in param.
+
+        Primary parameters are ['u','s'].
+
 
          
     """
@@ -50,8 +55,9 @@ class Gamma(Distribution):
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the loglikelihoods.
-        
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+         
            
         '''
         return (self.param['u']-1.0) * log(dat.X)   \
@@ -66,8 +72,8 @@ class Gamma(Distribution):
 
         :param dat: Data points for which the p.d.f. will be computed.
         :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the values of the density.
-        
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
            
         '''
         return exp(self.loglik(dat))
@@ -81,7 +87,7 @@ class Gamma(Distribution):
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the probabilities.
-        
+        :rtype:    numpy.array
            
         '''
         return gammastats.cdf(dat.X,self.param['u'],scale=self.param['s'])
@@ -95,7 +101,7 @@ class Gamma(Distribution):
         :param X: Percentiles for which the ppf will be computed.
         :type X: numpy.array
         :returns:  A Data object containing the values of the ppf.
-        
+        :rtype:    natter.DataModule.Data
            
         '''
         return Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
@@ -109,6 +115,7 @@ class Gamma(Distribution):
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the derivatives.
+        :rtype:    numpy.array
         
         """
         return (self.param['u']-1.0)/dat.X  - 1.0/self.param['s']

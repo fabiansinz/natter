@@ -6,20 +6,20 @@ from scipy.stats import gamma
 
 
 class GammaP(Gamma):
-    '''
-      P-Gamma Distribution
-
-      p(x) is p-gamma distributed if x^p is gamma distributed.
-
-      Parameters and their defaults are:
-         u:  shape parameter (default u=1.0)
-         s:  scale parameter (default s=1.0)
-         p:  exponent (default p=2)
-         
-    '''
 
     def __init__(self,param=None):
-        self.name = 'P-Gamma Distribution'
+        '''
+        GammaP distribution constructor.
+        
+        :param param: Initial parameters for the GammaP distribution. The GammaP distribution has parameters *u* (shape parameter), *s* (scale parameter) and *p* (exponent). The default value for param is {'u':1.0,'s':1.0,'p':2.0}.
+        :type param: dict.
+        :returns:  A GammaP distribution object initialized with the parameters in param.
+
+        Primary parameters are ['u','s','p'].
+
+        
+        '''
+        self.name = 'GammaP Distribution'
         self.param = {'u':1.0, 'p':2.0, 's':1.0}
         if param!=None:
             for k in param.keys():
@@ -29,10 +29,12 @@ class GammaP(Gamma):
     def loglik(self,dat):
         '''
 
-           loglik(dat)
-        
-           computes the loglikelihood of the data points in dat. The
-           parameter dat must be a Data.Data object.
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype: numpy.array
            
         '''
         return Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) 
@@ -40,13 +42,14 @@ class GammaP(Gamma):
     def dldx(self,dat):
         """
 
-        dldx(dat)
-
-        returns the derivative of the log-likelihood of the p-gamma
-        distribution w.r.t. the data in dat. The parameter dat must be
-        a Data.Data object.
+        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
         
-        """
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the derivatives.
+        :rtype:    numpy.array
+        
+        """        
         return Gamma.dldx(self,dat**self.param['p'])*self.param['p']*dat.X**(self.param['p']-1.0) \
                +(self.param['p']-1)/dat.X
     
@@ -54,10 +57,12 @@ class GammaP(Gamma):
     def pdf(self,dat):
         '''
 
-           pdf(dat)
-        
-           returns the probability of the data points in dat under the
-           model. The parameter dat must be a Data.Data object
+        Evaluates the probability density function on the data points in dat. 
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
            
         '''
         return exp(self.loglik(dat))
@@ -66,11 +71,12 @@ class GammaP(Gamma):
     def cdf(self,dat):
         '''
 
-           cdf(dat)
-        
-           returns the values of the cumulative distribution function
-           of the data points in dat under the model. The parameter
-           dat must be a Data.Data object
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
            
         '''
         return gamma.cdf(dat.X**self.param['p'],self.param['u'],scale=self.param['s'])
@@ -78,25 +84,29 @@ class GammaP(Gamma):
     def ppf(self,U):
         '''
 
-           ppf(X)
-        
-           returns the values of the inverse cumulative distribution
-           function of the percentile points X under the model. The
-           parameter X must be a numpy array. ppf returns a Data.Data
-           object.
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
            
         '''
         return Data(gamma.ppf(U,self.param['u'],scale=self.param['s'])**(1/self.param['p']))
 
 
     def sample(self,m):
-        '''
+        """
 
-           sample(m)
+        Samples m samples from the current GammaP distribution.
 
-           samples M examples from the gamma distribution.
-           
-        '''
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+        :rtype:    natter.DataModule.Data
+
+        """
+
         dat = (Gamma.sample(self,m))**(1/self.param['p'])
         dat.setHistory([])
         return dat
@@ -104,13 +114,17 @@ class GammaP(Gamma):
     def estimate(self,dat,prange=(.1,5.0)):
         '''
 
-        estimate(dat[,[prange=(.1,5.0)]])
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+        Estimate fits a Gamma distribution on :math:`x^p`.
+
+        :param dat: Data points on which the Gamma distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        :param prange: Range to be search in for the optimal *p*.
+        :type prange:  tuple
         
-        estimates the parameters from the data in dat (Data.Data
-        object). The optional second argument specifys a list of
-        parameters (list of strings) that should be estimated. prange,
-        when specified, defines the search range for p.
         '''
+
         if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
             bestp = Auxiliary.Optimization.goldenMinSearch(f,prange[0],prange[1],5e-4)

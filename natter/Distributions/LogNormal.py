@@ -5,21 +5,21 @@ from numpy.random import randn
 from scipy.stats import norm
 
 class LogNormal(Distribution):
-    """
-      LogNormal Distribution
-
-      if x is log-normal distributed, then log(x) is N(mu,s)
-      distributed.
-      
-      Parameters and their defaults are:
-         mu:    location parameter (default = 0)
-         s:    scale parameter (default = 1)
-         
-    """
     maxCount = 1000
     Tol = 10.0**-20.0
     
     def __init__(self,param=None):
+        '''
+        LogNormal distribution constructor.
+        
+        :param param: Initial parameters for the LogNormal distribution. The LogNormal distribution has parameters *mu* (mean of log x) and *s* (std of log x). The default value for param is {'mu':0.0,'s':1.0}.
+
+        Primary parameters are ['mu','s'].
+        
+        :type param: dict.
+        :returns:  A LogNormal distribution object initialized with the parameters in param.
+        
+        '''
         self.name = 'Log-Normal Distribution'
         self.param = {'mu':0.0,'s':1.0}
         if param != None:
@@ -33,23 +33,27 @@ class LogNormal(Distribution):
         
     def sample(self,m):
         """
-        samples m examples from the log-normal distribution.
-        
-        Arguments:
-        - `m`: number of examples to sample.
-        """
-        
 
+        Samples m samples from the current GammaP distribution.
+
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+        :rtype:    natter.DataModule.Data
+
+        """
         return Data(exp(randn(1,m)*self.param['s'] + self.param['mu']) ,str(m) + ' samples from ' + self.name)
         
 
     def loglik(self,dat):
         '''
 
-           loglik(dat)
-        
-           computes the loglikelihood of the data points in dat. The
-           parameter dat must be a Data.Data object.
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype: numpy.array
            
         '''
         return -log(dat.X) - .5*log(pi*2.0) - log(self.param['s']) \
@@ -59,23 +63,27 @@ class LogNormal(Distribution):
     def pdf(self,dat):
         '''
 
-           pdf(dat)
-        
-           returns the probability of the data points in dat under the
-           model. The parameter dat must be a Data.Data object
+        Evaluates the probability density function on the data points in dat. 
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
            
         '''
+
         return exp(self.loglik(dat))
         
 
     def cdf(self,dat):
         '''
 
-           cdf(dat)
-        
-           returns the values of the cumulative distribution function
-           of the data points in dat under the model. The parameter
-           dat must be a Data.Data object
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
            
         '''
         return norm.cdf(log(dat.X),loc=self.param['mu'],scale=self.param['s'])
@@ -84,37 +92,44 @@ class LogNormal(Distribution):
     def ppf(self,X):
         '''
 
-           ppf(X)
-        
-           returns the values of the inverse cumulative distribution
-           function of the percentile points X under the model. The
-           parameter X must be a numpy array. ppf returns a Data.Data
-           object.
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
            
         '''
+
         return Data(exp(norm.ppf(X,loc=self.param['mu'],scale=self.param['s'])))
 
 
     def dldx(self,dat):
         """
 
-        dldx(dat)
-
-        returns the derivative of the log-likelihood of the gamma
-        distribution w.r.t. the data in dat. The parameter dat must be
-        a Data.Data object.
+        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
         
-        """
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the derivatives.
+        :rtype:    numpy.array
+        
+        """        
         return -1.0/dat.X  - 1.0 / self.param['s']**2.0 * (log(dat.X) - self.param['mu']) / dat.X
         
 
     def estimate(self,dat):
         '''
 
-        estimate(dat)
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+        Estimate fits the log-normal distribution by fitting a Gaussian distribution to log x.
+
+        :param dat: Data points on which the Gamma distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        :param prange: Range to be search in for the optimal *p*.
+        :type prange:  tuple
         
-        estimates the parameters from the data in dat (Data.Data
-        object). 
         '''
 
 

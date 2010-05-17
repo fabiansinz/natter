@@ -10,16 +10,19 @@ import sys
 
 
 class LpNestedSymmetric(Distribution):
-    '''
-      Lp-Nested Symmetric Distribution
-
-      Parameters and their defaults are:
-         n:  dimensionality (default n=3)
-         rp: radial distribution (default rp=Gamma())
-         f:  Lp-nested function object (default f=Auxiliary.LpNestedFunction('(0,0,(1,1:2))',[.5,1.0]))
-    '''
 
     def __init__(self,param=None):
+        """
+        LpNestedSymmetric distribution constructor.
+        
+        :param param: Initial parameters for the LpNestedSymmetric distribution. The LpNestedSymmetric distribution has parameters *n* (dimension), 'p' (the p of the Lp-norm) and *rp* (the radial density). The default value for param is {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}.
+
+        Primary parameters are ['rp','f'].
+        
+        :type param: dict.
+        :returns:  A LpNestedSymmetric distribution object initialized with the parameters in param.
+        """
+        
         self.name = 'Lp-Nested Symmetric Distribution'
         self.param = {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
 
@@ -30,11 +33,31 @@ class LpNestedSymmetric(Distribution):
         self.primary = ['rp','f']
 
     def loglik(self,dat):
+        '''
+
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype: numpy.array
+           
+        '''
         r = self.param['f'].f(dat)
         return self.param['rp'].loglik(r) \
                - self.param['f'].logSurface() - (self.param['n']-1)*log(r.X)
 
     def sample(self,m):
+        """
+
+        Samples m samples from the current LpNestedSymmetric distribution.
+
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+        :rtype:    natter.DataModule.Data
+
+        """
         ret = zeros((self.param['f'].n[()],m))
         r = beta(float(self.param['f'].n[()]),1.0,(1,m))
         recsample((),r,self.param['f'],m,ret)
@@ -46,10 +69,15 @@ class LpNestedSymmetric(Distribution):
 
     def dldx(self,dat):
         """
-        DLDX(DAT)
 
-        returns the derivative of the log-likelihood w.r.t. the data points in DAT.
-        """
+        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the derivatives.
+        :rtype:    numpy.array
+        
+        """        
         drdx = self.param['f'].dfdx(dat)
         r = self.param['f'].f(dat)
         tmp = (self.param['rp'].dldx(r) - (self.param['n']-1.0)*1.0/r.X)
@@ -60,14 +88,21 @@ class LpNestedSymmetric(Distribution):
 
     def estimate(self,dat,method="neldermead"):
         """
-        estimate(dat,method=\"neldermead\")
-        
-        estimates the parameters of the Lp-nested symmetric
-        distributions. 
-            
-        METHOD specifies the estimation method for the ps of the
-        Lp-nested function. Default is \"neldermead\". Other possible
-        options are \"greedy\".
+
+        Estimates the parameters from the data in dat. It is possible
+        to only selectively fit parameters of the distribution by
+        setting the primary array accordingly (see :doc:`Tutorial on
+        the Distributions module <tutorial_Distributions>`).
+
+        Fitting is carried out by alternating between optimizing *f*,
+        keeping the parameters of the radial distribution fixed, and
+        optimizing the parameters of the radial distribution keeping
+        the value of *f* fixed.
+
+        :param dat: Data points on which the Gamma distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        :param method: method to be used for fitting *f* (default: 'neldermead'; other options are 'greedy')
+        :type method:  string
         """
 
 

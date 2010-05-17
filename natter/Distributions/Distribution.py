@@ -33,9 +33,30 @@ class Distribution:
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
 
     def sample(self,m):
+        """
+
+        Samples m samples from the current distribution.
+
+        :param m: Number of samples to draw.
+        :type name: int.
+        :returns:  A Data object containing the samples
+        :rtype:    natter.DataModule.Data
+
+        """
+        
         raise Errors.AbstractError('Abstract method sample not implemented in ' + self.name)
 
     def pdf(self,dat):
+        '''
+
+        Evaluates the probability density function on the data points in dat. 
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
+           
+        '''
         if hasattr(self,'loglik'):
             return exp(self.loglik(dat))
         raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
@@ -85,9 +106,25 @@ class Distribution:
         raise Errors.AbstractError('Abstract method score not implemented in ' + self.name)
 
     def copy(self):
+        """
+        Creates a deep copy of the distribution object.
+
+        :returns: Deep copy of the distribution object.
+        """
         return copy.deepcopy(self)
 
     def all(self,dat):
+        """
+
+        Computes the average log-loss in bits per component of the current distribution on the data points in dat.
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  The average log-loss in bits per component.
+        :rtype:    float
+        
+        """        
+        
         return -mean(self.loglik(dat)) / dat.size(0) / log(2)
     
     def __str__(self):

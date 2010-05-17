@@ -6,7 +6,13 @@ implements. At the moment it provides the following distributions.
 .. toctree::
    :maxdepth: 2
    
+   Distributions_CompleteLinearModel.rst
+   Distributions_Dirichlet.rst
    Distributions_Gamma.rst
+   Distributions_GammaP.rst
+   Distributions_LogNormal.rst
+   Distributions_LpNestedSymmetric.rst
+   Distributions_LpSphericallySymmetric.rst
 
 """
 

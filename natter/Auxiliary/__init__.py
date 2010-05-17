@@ -6,6 +6,7 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    :maxdepth: 2
    
    Auxiliary_Entropy.rst
+   Auxiliary_LpNestedFunction.rst
 
 """
 
