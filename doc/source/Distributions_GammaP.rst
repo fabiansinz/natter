@@ -10,4 +10,4 @@ Univariate distribution for which :math: x^p is Gamma distributed.
 
 
 .. autoclass:: natter.Distributions.GammaP
-   :members: __init__,sample, loglik, pdf, cdf, ppf, dldx, estimate, all
+   :members: __init__,sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy

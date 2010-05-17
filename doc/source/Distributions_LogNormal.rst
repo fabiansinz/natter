@@ -10,4 +10,4 @@ the parametrization
 
 
 .. autoclass:: natter.Distributions.LogNormal
-   :members: __init__,sample, loglik, pdf, cdf, ppf, dldx, estimate, all
+   :members: __init__,sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy
