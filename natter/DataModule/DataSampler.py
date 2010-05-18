@@ -1,8 +1,10 @@
-from numpy import shape, floor, zeros, NaN, isinf, isnan, any, array, reshape, dot,eye
+from __future__ import division
+from numpy import shape, floor, zeros, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil
 from numpy.random import rand, randn
-from Data import Data
+from natter.DataModule import Data
 from numpy.linalg import cholesky
-
+from os import listdir
+from sys import stdout
 
 def gauss(n,m,mu = None, sigma = None):
     """
@@ -58,7 +60,7 @@ def img2PatchRand(img, p, N):
   
     X = zeros( ( p*p, N))
 
-    for ii in xrange(N):
+    for ii in xrange(int(N)):
         ptch = array([NaN])
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
             xi = floor( rand() * ( nx - p))
@@ -69,7 +71,7 @@ def img2PatchRand(img, p, N):
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
 
-def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc):
+def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
 
     Samples m patches from images in dir by loading them with
@@ -89,5 +91,17 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc):
 
     
     """
+    files = listdir(dir)
+    M = len(files)
+    mpf = ceil(m/M)
+
+    # load and sample first image
+    dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
     
-    pass
+    for i in xrange(1,M):
+        print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[0] )
+        stdout.flush()
+        dat.append(img2PatchRand(loadfunc(dir + files[0]), p, mpf))
+    return dat
+        
+        
