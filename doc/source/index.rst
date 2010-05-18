@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
    
    tutorial.rst
+   DataModule.rst
    Distributions.rst
    Auxiliary.rst
 

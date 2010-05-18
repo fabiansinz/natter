@@ -5,6 +5,23 @@ from numpy.linalg import cholesky
 
 
 def gauss(n,m,mu = None, sigma = None):
+    """
+
+    Samples m n-dimensional samples from a Gaussian with mean mu and covariance sigma.
+
+
+    :param n: dimensionality
+    :type n: int
+    :param m: number of samples
+    :type m: int
+    :param mu: mean (default = zeros((n,1)))
+    :type mu: numpy.array
+    :param sigma: covariance matrix (default = eye(n))
+    :type sigma: numpy.array
+    :returns: Data object with sampled patches
+    :rtype: natter.DataModule.Data
+    
+    """
     if not mu == None:
         mu = reshape(mu,(n,1))
     else:
@@ -17,11 +34,18 @@ def gauss(n,m,mu = None, sigma = None):
 def img2PatchRand(img, p, N):
     """
 
-    img2PatchRand(img, p, N)
+    Samples N pxp patches from img.
 
-    samples N pXp patches from an numpy array img and returns an
-    appropriate Data object. The images are vectorized in
-    FORTRAN/MATLAB style.
+    The images are vectorized in FORTRAN/MATLAB style.
+
+    :param img: Image to sample from
+    :type img: numpy.array
+    :param p: patch size
+    :type p: int
+    :param N: number of patches to sampleFromImagesInDir
+    :type N: int
+    :returns: Data object with sampled patches
+    :rtype: natter.DataModule.Data
     
     """
 
@@ -44,3 +68,26 @@ def img2PatchRand(img, p, N):
   
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
+
+def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc):
+    """
+
+    Samples m patches from images in dir by loading them with
+    loadfunc(filename) and sampling patches via samplefunc(img, p,
+    ceil(m/#images)).
+
+    :param dir: Directory containing the images
+    :type dir: string
+    :param m: number of images to samplefunc
+    :type m: int
+    :param p: patchsize
+    :type p: int
+    :param loadfun: function handle of the load function
+    :param samplefunc: function handle of the sampling function
+    :returns: Data object with the sampled image patches
+    :rtype: natter.DataModule.Data
+
+    
+    """
+    
+    pass
