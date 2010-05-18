@@ -35,3 +35,4 @@ from LogNormal import LogNormal
 from ProductOfExperts import ProductOfExperts
 from Distribution import load
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
+from FiniteMixtureDistribution import FiniteMixtureDistribution

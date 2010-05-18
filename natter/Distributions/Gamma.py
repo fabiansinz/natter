@@ -41,7 +41,9 @@ class Gamma(Distribution):
 
         :param m: Number of samples to draw.
         :type name: int.
+        :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
+
 
         """
         return Data(gamma(self.param['u'],self.param['s'],(1,m)) \

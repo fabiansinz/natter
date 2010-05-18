@@ -1,6 +1,6 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer,Inf,isnan,min
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
@@ -78,6 +78,8 @@ class Gaussian(Distribution):
         X = dat.X - kron(reshape(mu,(n,1)),ones((1,m)))
         X = dot(self.cholP,X)
         X = diag(dot(X.T,X))
+        if isnan(sum(log(diag(self.cholP)))):
+            return -ones(X.shape)*abs(min(diag(self.cholP)))*10000
         return -n/2*log(2*pi) +sum(log(diag(self.cholP))) - .5*X
 
     def pdf(self,dat):
@@ -98,7 +100,7 @@ class Gaussian(Distribution):
         """
         ret = array([])
         if 'mu' in self.primary:
-            ret = hstack((ret,self.param['mu'].copy()))
+            ret = hstack((ret,self.param['mu']))
         if 'sigma' in self.primary:
             ret = hstack((ret,squeeze(self.cholP[self.I])))
         return ret
@@ -111,6 +113,7 @@ class Gaussian(Distribution):
             arr = arr[n:]
         if 'sigma' in self.primary:
             self.cholP[self.I] = arr
+            #            self.cholP[where(eye(self.cholP.shape[0])>0)] = abs(diag(self.cholP))
             self.param['sigma'] = solve(self.cholP,solve(self.cholP.T,eye(n)))
 
 
@@ -131,11 +134,11 @@ class Gaussian(Distribution):
             else:
                 ret = vstack((ret,retC))
         return ret
-
-   
+        
     def estimate(self,dat):
         if 'sigma' in self.primary:
             self.param['sigma'] = dat.cov()
+            self.cholP = cholesky(inv(self.param['sigma'])) 
         if 'mu' in self.primary:
             self.param['mu'] = dat.mean()
             
