@@ -1,10 +1,9 @@
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, array, reshape, ceil, sqrt, var, cov, exp, log,sign, dot
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack
 from  natter.Auxiliary import  Errors, Plotting, save
 import matplotlib as mpl
 import pylab as pl
 from numpy.linalg import qr, svd
 import types
-import pickle
 
 
 class Data:
@@ -180,6 +179,13 @@ class Data:
 
     def save(self,filename):
         save(self,filename)
+
+
+    def append(self,O):
+        h = list(O.history)
+        self.X = hstack((self.X,O.X))
+        self.history.append('Concatenated with data from \"' + O.name + '\"')
+        self.history.append(h)
 
 def displayHistoryRec(h,recDepth=0):
     s = ""

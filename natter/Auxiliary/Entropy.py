@@ -66,8 +66,9 @@ def marginalEntropy(dat,method='JK'):
 
 def marginalEntropyJK(x,bins):
     n = len(x)
-    N,c = histogram(x,bins=bins)
-    hn = c[1]-c[0]; # get bin width
+    N,c = histogram(x,bins=bins,new=True)
+    
+    hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
     N = N[where(N)]
   
     H = 0
@@ -81,16 +82,16 @@ def marginalEntropyJK(x,bins):
 
 def marginalEntropyMLE(x,bins):
     n = len(x)
-    h,c = histogram(x,bins=bins)
+    h,c = histogram(x,bins=bins,new=True)
     h = h/n
-    hn = c[1]-c[0] # bin width
+    hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
     h = h[where(h)]
     return -dot(h,log(h)) + log(hn)
 
 def marginalEntropyCAE(x,bins):
     n = len(x)
-    N,c = histogram(x,bins=bins)
-    hn = c[1]-c[0] # bin width
+    N,c = histogram(x,bins=bins,new=True)
+    hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
     N = N[where(N)]
     C = 1 - len(where(N==1))/(n+1)
     N = C*N/n
@@ -98,9 +99,9 @@ def marginalEntropyCAE(x,bins):
     return -sum( N *log(N) / (1-(1-N)**n)) + log(hn)
 
 def marginalEntropyMM(x,bins):
-      n = len(x)
-      N,c = histogram(x,bins=bins)
-      hn = c[1]-c[0] # get bin width
-      N = N[where(N)]
+    n = len(x)
+    N,c = histogram(x,bins=bins,new=True)
+    hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
+    N = N[where(N)]
   
-      return - 1/n * dot(N ,log(1/n*N)) + (len(N) - 1)/ 2 / n  + log(hn)
+    return - 1/n * dot(N ,log(1/n*N)) + (len(N) - 1)/ 2 / n  + log(hn)
