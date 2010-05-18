@@ -1,6 +1,6 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer,Inf,isnan,min
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer,Inf,isnan,min,inner
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
@@ -76,11 +76,8 @@ class Gaussian(Distribution):
         C = self.param['sigma']
         mu = self.param['mu']
         X = dat.X - kron(reshape(mu,(n,1)),ones((1,m)))
-        X = dot(self.cholP,X)
-        X = diag(dot(X.T,X))
-        if isnan(sum(log(diag(self.cholP)))):
-            return -ones(X.shape)*abs(min(diag(self.cholP)))*10000
-        return -n/2*log(2*pi) +sum(log(diag(self.cholP))) - .5*X
+        Y = sum(dot(self.cholP.T,X)**2,axis=0)
+        return -n/2*log(2*pi) +sum(log(diag(self.cholP))) - .5*Y
 
     
     def primary2array(self):
@@ -113,7 +110,9 @@ class Gaussian(Distribution):
         if 'mu' in self.primary:
             ret = solve(self.cholP,solve(self.cholP.T, dat.X -reshape(self.param['mu'],(n,1))))
         if 'sigma' in self.primary:
+            print "chlolP: ", self.cholP
             v = diag(1/diag(self.cholP))[self.I]
+            print "v: " ,v
             retC = zeros((len(self.I[0]),m));
             for i,x in enumerate(dat.X.T):
                 X = x - self.param['mu']
