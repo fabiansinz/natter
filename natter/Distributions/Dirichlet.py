@@ -8,6 +8,20 @@ from natter.Auxiliary.Numerics import inv_digamma, digamma, trigamma
 from scipy.special import gammaln
 
 class Dirichlet(Distribution):
+    """
+    Dirichlet Distribution
+
+    on the n-dimensional probability simplex.
+
+    :param param:
+        dictionary which might containt parameters for the Dirichlet
+              'alpha'    :    alpha parameters (default = rand(10)). alpha also determines the dimensionality.
+
+    :type param: dict
+
+    Primary parameters are ['alpha'].
+        
+    """
 
     maxiter = 1000
     innermaxiter = 100
@@ -16,14 +30,6 @@ class Dirichlet(Distribution):
     
     def __init__(self,param=None):
         """
-        Dirichlet distribution constructor.
-        
-        :param param: Initial parameters for the Dirichlet distribution. The Dirichlet distribution has parameters *alpha*. The default value for param is {'alpha':numpy.random.rand(10)}.
-
-        Primary parameters are ['alpha'].
-        
-        :type param: dict.
-        :returns:  A Dirichlet distribution object initialized with the parameters in param.
         """
         
         self.name = 'Dirichlet Distribution'

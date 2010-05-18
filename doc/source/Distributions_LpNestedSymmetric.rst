@@ -18,4 +18,4 @@ the radial density is specified via the parameter 'rp' which is
 another Distribution object.
 
 .. autoclass:: natter.Distributions.LpNestedSymmetric
-   :members: __init__,sample, loglik, pdf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, dldx, estimate, all, copy

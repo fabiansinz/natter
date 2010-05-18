@@ -12,4 +12,4 @@ i.e. :math:`\boldsymbol{W}\in SO(n)`, and :math:`q` is a base
 distribution represented by another Distribution object. 
 
 .. autoclass:: natter.Distributions.CompleteLinearModel
-   :members: __init__,sample, loglik, pdf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, dldx, estimate, all, copy

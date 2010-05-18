@@ -7,20 +7,22 @@ from scipy.special import gammaln
 from natter.Auxiliary.Optimization import goldenMinSearch
 
 class LpSphericallySymmetric(Distribution):
+    """
+    Lp-spherically symmetric Distribution
+
+    :param param:
+        dictionary which might containt parameters for the Lp-spherically symmetric distribution
+              'rp'    :  Radial distribution (default = Gamma()).
+              
+              'p'     :  p for the p-norm (default = 2.0)
+              
+    :type param: dict
+
+    Primary parameters are ['rp','p'].
+        
+    """
 
     def __init__(self,param=None):
-        '''
-        LpSphericallySymmetric distribution constructor.
-        
-        :param param: Initial parameters for the LpSphericallySymmetric distribution. The LpSphericallySymmetric distribution has parameters *n* (dimension), 'p' (the p of the Lp-norm) and *rp* (the radial density). The default value for param is {'n':2, 'rp':Gamma(),'p':2.0}.
-
-        Primary parameters are ['rp','p'].
-        
-        :type param: dict.
-        :returns:  A LpSphericallySymmetric distribution object initialized with the parameters in param.
-        
-        '''
-
         self.name = 'Lp-Spherically Symmetric Distribution'
         self.param = {'n':2, 'rp':Gamma(),'p':2.0}
         if param != None: 

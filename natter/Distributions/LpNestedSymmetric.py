@@ -10,19 +10,24 @@ import sys
 
 
 class LpNestedSymmetric(Distribution):
+    """
+    Lp-nested symmetric Distribution
+
+    :param param:
+        dictionary which might containt parameters for the Lp-nested symmetric distribution
+              'n'    :   Dimensionality (default = 2)
+        
+              'rp'   :    Radial density (default Gamma())
+              
+              'f'    :    Lp-nested function (default = LpNestedFunction('(0,0,(1,1:2))',[.5,1.0]))
+              
+    :type param: dict
+
+    Primary parameters are ['rp','f'].
+        
+    """
 
     def __init__(self,param=None):
-        """
-        LpNestedSymmetric distribution constructor.
-        
-        :param param: Initial parameters for the LpNestedSymmetric distribution. The LpNestedSymmetric distribution has parameters *n* (dimension), 'f' (the Lp-nested function) and *rp* (the radial density). The default value for param is {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}.
-
-        Primary parameters are ['rp','f'].
-        
-        :type param: dict.
-        :returns:  A LpNestedSymmetric distribution object initialized with the parameters in param.
-        """
-        
         self.name = 'Lp-Nested Symmetric Distribution'
         self.param = {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
 

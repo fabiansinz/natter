@@ -6,16 +6,6 @@ import pickle
 import types
 import pylab as plt
 
-#
-# DISTRIBUTION
-#
-# is the mother class of all Distribution objects. It implements
-# certain abstract functions that raise the appropriate errors if
-# called but not implemented on child classes.
-#
-# Apart from that it implements routines for saving, loading and
-# displaying Distribution objects.
-#
 class Distribution:
 
     param = {}
@@ -49,10 +39,12 @@ class Distribution:
     def pdf(self,dat):
         '''
 
-        Evaluates the probability density function on the data points in dat. 
+        Evaluates the probability density function on the data points
+        in dat by calling the function loglik.
 
         :param dat: Data points for which the p.d.f. will be computed.
         :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError if loglik of that distribution is not implemented.
         :returns:  An array containing the values of the density.
         :rtype:    numpy.array
            

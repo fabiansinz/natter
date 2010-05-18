@@ -7,26 +7,25 @@ from scipy.stats import gamma as gammastats
 
 
 class Gamma(Distribution):
+    """
+    Gamma Distribution
+
+    :param param:
+        dictionary which might containt parameters for the Gamma distribution
+              'u'    :    Shape parameter  (default = 1.0)
+              
+              's'    :    Scale parameter (default = 1.0)
+              
+    :type param: dict
+
+    Primary parameters are ['u','s'].
+        
+    """
     maxCount = 10000
     Tol = 10.0**-20.0
 
     
     def __init__(self,param=None):
-        """
-        Gamma distribution constructor.
-
-
-
-         :param param: Initial parameters for the Gamma distribution. The Gamma distribution has parameters *u* (shape parameter) and *s* (scale parameter). The default value for param is {'u':1.0,'s':1.0}.
-         :type param: dict.
-         :returns:  A Gamma distribution object initialized with the parameters in param.
-
-        Primary parameters are ['u','s'].
-
-
-         
-    """
-        
         self.name = 'Gamma Distribution'
         self.param = {'u':1.0,'s':1.0}
         if param != None:

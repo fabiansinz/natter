@@ -6,19 +6,26 @@ from scipy.stats import gamma
 
 
 class GammaP(Gamma):
+    """
+    GammaP Distribution
+
+
+    :param param:
+        dictionary which might containt parameters for the GammaP  distribution
+              'p'    :    Exponent (default = 2.0)
+              
+              's'    :    Scale parameter (default = 1.0)
+
+              'u'    :    Shape parameter (default = 1.0)
+              
+    :type param: dict
+
+    Primary parameters are ['p','s','u'].
+        
+    """
+    
 
     def __init__(self,param=None):
-        '''
-        GammaP distribution constructor.
-        
-        :param param: Initial parameters for the GammaP distribution. The GammaP distribution has parameters *u* (shape parameter), *s* (scale parameter) and *p* (exponent). The default value for param is {'u':1.0,'s':1.0,'p':2.0}.
-        :type param: dict.
-        :returns:  A GammaP distribution object initialized with the parameters in param.
-
-        Primary parameters are ['u','s','p'].
-
-        
-        '''
         self.name = 'GammaP Distribution'
         self.param = {'u':1.0, 'p':2.0, 's':1.0}
         if param!=None:

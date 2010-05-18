@@ -13,21 +13,17 @@ class Gaussian(Distribution):
 
     Base class for the Gaussian distribution.  
     
-    :arguments:
-        param : dictionary which might containt parameters for the Gaussian
+    :param param:
+        dictionary which might containt parameters for the Gaussian
               'n'    :    dimensionality (default=2)
+              
               'sigma':    covariance matrix (default = eye(dimensionality))
+              
               'mu'   :    mean  (default = zeros(dimensionality))
 
-    *Example*
+    :type param: dict
 
-        >>> normal = Gaussian( {'n':5} )
-        >>> normal.sample(10)
-        ------------------------------
-        Data object: 10 samples from a 5-dimensional Gaussian
-	10  Examples
-	5  Dimensions
-        ------------------------------
+    Primary parameters are ['mu','sigma'].
         
     """
     
@@ -47,27 +43,31 @@ class Gaussian(Distribution):
         self.cholP = cholesky(inv(self.param['sigma'])) 
         
     def sample(self,m):
-        '''
-        
-        sample(m)
-        
-        samples m examples from the Gaussian distribution.
-    
-        '''
+        """
+
+        Samples m samples from the current Gaussian distribution.
+
+        :param m: Number of samples to draw.
+        :type name: int.
+        :rtype: natter.DataModule.Data
+        :returns:  A Data object containing the samples
+
+
+        """
         return Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
                     str(m) + " samples from a " + str(self.param['n']) + "-dimensional Gaussian")
         
 
     def loglik(self,dat):
         '''
-        
-        loglik(dat)
-        
-        computes the loglikelihood of the data points in dat. The
-        parameter dat must be a natter.DataModule.Data object.
 
-        :return:
-            array of log-likelihood values for each data-point in dat
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+         
            
         '''
 
@@ -82,16 +82,6 @@ class Gaussian(Distribution):
             return -ones(X.shape)*abs(min(diag(self.cholP)))*10000
         return -n/2*log(2*pi) +sum(log(diag(self.cholP))) - .5*X
 
-    def pdf(self,dat):
-        '''
-        
-        pdf(dat)
-        
-        returns the probability of the data points in dat under the
-        model. The parameter dat must be a Data.Data object
-        
-        '''
-        return exp(self.loglik(dat))
     
     def primary2array(self):
         """
@@ -136,6 +126,14 @@ class Gaussian(Distribution):
         return ret
         
     def estimate(self,dat):
+        '''
+
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+
+        :param dat: Data points on which the Gaussian distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
         if 'sigma' in self.primary:
             self.param['sigma'] = dat.cov()
             self.cholP = cholesky(inv(self.param['sigma'])) 

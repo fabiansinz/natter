@@ -5,21 +5,24 @@ from numpy.random import randn
 from scipy.stats import norm
 
 class LogNormal(Distribution):
+    """
+    Log-Normal Distribution
+
+    :param param:
+        dictionary which might containt parameters for the Log-Normal distribution
+              'mu'   :    Mean of log(x)  (default = 1.0)
+              
+              's'    :    Std of log(x) (default = 1.0)
+              
+    :type param: dict
+
+    Primary parameters are ['mu','s'].
+        
+    """
     maxCount = 1000
     Tol = 10.0**-20.0
     
     def __init__(self,param=None):
-        '''
-        LogNormal distribution constructor.
-        
-        :param param: Initial parameters for the LogNormal distribution. The LogNormal distribution has parameters *mu* (mean of log x) and *s* (std of log x). The default value for param is {'mu':0.0,'s':1.0}.
-
-        Primary parameters are ['mu','s'].
-        
-        :type param: dict.
-        :returns:  A LogNormal distribution object initialized with the parameters in param.
-        
-        '''
         self.name = 'Log-Normal Distribution'
         self.param = {'mu':0.0,'s':1.0}
         if param != None:

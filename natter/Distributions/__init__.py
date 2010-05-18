@@ -8,8 +8,11 @@ implements. At the moment it provides the following distributions.
    
    Distributions_CompleteLinearModel.rst
    Distributions_Dirichlet.rst
+   Distributions_Distribution.rst
+   Distributions_ExponentialPower.rst
    Distributions_Gamma.rst
    Distributions_GammaP.rst
+   Distributions_Gaussian.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst

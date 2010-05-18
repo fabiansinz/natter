@@ -6,19 +6,24 @@ from natter.Auxiliary.Optimization import StGradient
 from mdp.utils import random_rot
 
 class CompleteLinearModel(Distribution):
+    """
+    Complete Linear Model
+
+    :param param:
+        dictionary which might containt parameters for the Dirichlet
+              'q'    :    Base distribution on the outputs :math:`y = Wx`
+
+              'W'    :    Linear Filter (type should be natter.Transforms.LinearTransform). W must be an orthonormal linear transformation. If *q* has a parameter *n*, then *drawn* from the Haar distribution. Otherwise it has no default.
+
+
+    :type param: dict
+
+    Primary parameters are ['q','W'].
+        
+    """
+
 
     def __init__(self,param = None ):
-        """
-        CompleteLinearModel constructor.
-        
-        :param param: Initial parameters for the CompleteLinearModel distribution. The CompleteLinearModel distribution has parameters *W* (LinearTransform) and 'q' (the base distribution). The default values for *W* is a random rotation matrix. *q* does not have a default value.
-        
-        Primary parameters are ['q','W'].
-        
-        :type param: dict.
-        :returns:  A CompleteLinearModel distribution object initialized with the parameters in param.
-    
-        """
         if param == None:
             param = {'q':None, 'W':None}
         self.name = 'Complete Linear Model'
