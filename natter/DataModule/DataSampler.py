@@ -6,6 +6,7 @@ from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
 
+
 def gauss(n,m,mu = None, sigma = None):
     """
 
@@ -99,9 +100,9 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
     
     for i in xrange(1,M):
-        print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[0] )
+        print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
         stdout.flush()
-        dat.append(img2PatchRand(loadfunc(dir + files[0]), p, mpf))
+        dat.append(img2PatchRand(loadfunc(dir + files[i]), p, mpf))
     return dat
         
         

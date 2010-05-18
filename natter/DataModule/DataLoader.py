@@ -7,6 +7,7 @@ from numpy import any, size, max, zeros, concatenate, shape, ndarray, array
 
 def load(path):
     """
+    
     DAT = LOAD(PATH)
 
     tries to load data from a specified file. If it cannot determine the file type, it throws an error.
