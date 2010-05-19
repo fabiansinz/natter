@@ -100,8 +100,7 @@ class Gaussian(Distribution):
             arr = arr[n:]
         if 'sigma' in self.primary:
             self.cholP[self.I] = arr
-            #            self.cholP[where(eye(self.cholP.shape[0])>0)] = abs(diag(self.cholP))
-            self.param['sigma'] = solve(self.cholP,solve(self.cholP.T,eye(n)))
+            self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(n)))
 
 
     def dldtheta(self,dat):
@@ -110,12 +109,12 @@ class Gaussian(Distribution):
         if 'mu' in self.primary:
             ret = solve(self.cholP,solve(self.cholP.T, dat.X -reshape(self.param['mu'],(n,1))))
         if 'sigma' in self.primary:
-            v = diag(1/diag(self.cholP))[self.I]
+            v = diag(1.0/diag(self.cholP))[self.I]
             retC = zeros((len(self.I[0]),m));
             for i,x in enumerate(dat.X.T):
                 X = x - self.param['mu']
                 X = outer(X,X)
-                retC[:,i] = -dot(self.cholP.T,X)[self.I]   + v
+                retC[:,i] = -dot(self.cholP.T,X).T[self.I]   + v
             if len(ret)==0:
                 ret = retC
             else:

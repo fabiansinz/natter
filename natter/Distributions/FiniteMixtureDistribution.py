@@ -58,6 +58,7 @@ class FiniteMixtureDistribution(Distribution):
         return Data(X,str(m) + " samples from a " + str(self.dimensionality) + self.name)
 
     def loglik(self,dat):
+        self.checkAlpha()
         n,m = dat.size()
         X = zeros((m,self.numberOfMixtureComponents))
         for k,p in enumerate(self.ps):
@@ -86,21 +87,35 @@ class FiniteMixtureDistribution(Distribution):
                 self.ps[k].array2primary(arr[0:lp])
                 arr = arr[lp::]
 
+    def checkAlpha(self):
+        s=0.0
+        for alpha in self.alphas:
+            ab = alpha
+            alpha = max(min(alpha,1.0-s),0.0)
+            s +=alpha
+            diff =abs(ab-alpha)
+            if diff > 1e-03:
+                print "Warning : diff in alphas: ", diff
+            
     def dldtheta(self,dat):
-        p = self.pdf(dat)
+        self.checkAlpha()
+        #        p = self.pdf(dat)
+        lp = self.loglik(dat)
         n,m = dat.size()
         if 'alpha' in self.primary:
             ret=zeros((self.numberOfMixtureComponents,m))
             for k in xrange(self.numberOfMixtureComponents):
-                ret[k,:] = self.ps[k].pdf(dat)/p
+                ret[k,:] = exp(self.ps[k].loglik(dat)-lp)
         if 'theta' in self.primary:
             ret0 = self.ps[0].dldtheta(dat)
-            p0   = self.ps[0].pdf(dat)
-            ret0 = ret0*(p0/p)
+            lp0  = self.ps[0].loglik(dat)
+            #p0   = self.ps[0].pdf(dat)
+            ret0 = ret0*exp(lp0-lp + log(self.alphas[0]))
             for k in xrange(1,self.numberOfMixtureComponents):
                 ret1 = self.ps[k].dldtheta(dat)
-                p1   = self.ps[k].pdf(dat)
-                ret1 = ret1*(p1/p)
+                lp1  = self.ps[k].loglik(dat)
+                #                p1   = self.ps[k].pdf(dat)
+                ret1 = ret1*exp(lp1-lp + log(self.alphas[k]))
                 ret0 = vstack((ret0,ret1))
             if len(ret)==0:
                 ret = ret0
@@ -115,93 +130,110 @@ class FiniteMixtureDistribution(Distribution):
         """
         if method==None:
             method = 'gradient'
-            print "Method: ", method
-        n,m = dat.size()
-        K   = self.numberOfMixtureComponents
-        T = zeros((K,m))
-        LP = zeros((K,m))
-        nsamples = min([max([m,1000000]),10000000])
-        Y = zeros((n,nsamples))
-        for k in xrange(K):
-            LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
-        for k in xrange(K):
-            T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-            
-        def estep():
-            if verbose:
-                print "\rE",
-                sys.stdout.flush()
+            print "Using:  ", method , " - method"
+
+        if method=="EMgradient" or method=="EMsampling":
+            n,m = dat.size()
+            K   = self.numberOfMixtureComponents
+            T = zeros((K,m))
+            LP = zeros((K,m))
+            nsamples = min([max([m,1000000]),10000000])
+            Y = zeros((n,nsamples))
             for k in xrange(K):
                 LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
             for k in xrange(K):
                 T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-            if verbose:
-                print ".",
-                sys.stdout.flush()
-            return sum((T*LP).flatten())
-        
-        def mstep():
-            L = T.copy()
-            n,m = dat.size()
-            if method=='sampling':
-                for k in xrange(self.numberOfMixtureComponents):
-                    ind =0
-                    pdata = L[k,:]/sum(L[k,:])
-                    MJ = multinomial(nsamples,pdata)
-                    for nd in xrange(m):
-                        if MJ[nd]>0:
-                            Y[:,ind:ind+MJ[nd]] = kron(dat.X[:,nd],ones((MJ[nd],1))).T
-                            ind = ind+MJ[nd]
-                    self.ps[k].estimate(Data(Y))
-                if 'alpha' in self.primary:
-                    self.alphas = mean(T,axis=1)
-            else:
-                def f(ar):
-                    par = ar.copy()
-                    L = T.copy()
-                    mg = len(self.ps[0].primary2array())
-                    for k in xrange(self.numberOfMixtureComponents):
-                        self.ps[k].array2primary(par[0:mg])
-                        par = par[mg::]
-                        X = self.ps[k].loglik(dat)
-                        L[k,:] = T[k,:]*X
-                    return -sum(L.flatten())
-                def df(ar):
-                    par = ar.copy()
-                    grad = zeros(len(ar))
-                    ind =0
-                    mg = len(self.ps[0].primary2array())
-                    for k in xrange(self.numberOfMixtureComponents):
-                        self.ps[k].array2primary(par[0:mg])
-                        par = par[mg::]
-                        dX = self.ps[k].dldtheta(dat)
-                        grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
-                        ind = ind+mg
-                    return -grad
-                def fdf(ar):
-                    fv = f(ar)
-                    grad = df(ar)
-                    return fv,grad
-                def check(arr):
-                    err = optimize.check_grad(f,df,arr)
-                    print "Error in gradient: ",err
-                arr = self.primary2array()
-                if 'alpha' in self.primary:
-                    arr = arr[self.numberOfMixtureComponents::]
-                check(arr)
-                a = minimize_carl(arr,fdf,-10000)
-                #                a = optimize.fmin_bfgs(f,arr,df,gtol=1e-09,disp=0,full_output=0,callback=check)
-                if 'alpha' in self.primary:
-                    self.alphas = mean(T,axis=1)
 
-        diff = 10000000
-        oldS = estep()
-        while abs(diff)>1e-05:
-            mstep()
-            fv= estep()
-            diff = oldS-fv
-            oldS=fv
-            print "Diff: ",diff
-        
-                
+            def estep():
+                if verbose:
+                    print "\rE",
+                    sys.stdout.flush()
+                for k in xrange(K):
+                    LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
+                for k in xrange(K):
+                    T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+                if verbose:
+                    print ".",
+                    sys.stdout.flush()
+                return sum((T*LP).flatten())
+
+            def mstep():
+                L = T.copy()
+                n,m = dat.size()
+                if method=='EMsampling':
+                    for k in xrange(self.numberOfMixtureComponents):
+                        ind =0
+                        pdata = L[k,:]/sum(L[k,:])
+                        MJ = multinomial(nsamples,pdata)
+                        for nd in xrange(m):
+                            if MJ[nd]>0:
+                                Y[:,ind:ind+MJ[nd]] = kron(dat.X[:,nd],ones((MJ[nd],1))).T
+                                ind = ind+MJ[nd]
+                        self.ps[k].estimate(Data(Y))
+                    if 'alpha' in self.primary:
+                        self.alphas = mean(T,axis=1)
+                else:
+                    def f(ar):
+                        par = ar.copy()
+                        L = T.copy()
+                        mg = len(self.ps[0].primary2array())
+                        for k in xrange(self.numberOfMixtureComponents):
+                            self.ps[k].array2primary(par[0:mg])
+                            par = par[mg::]
+                            X = self.ps[k].loglik(dat)
+                            L[k,:] = T[k,:]*X
+                        return -sum(L.flatten())
+                    def df(ar):
+                        par = ar.copy()
+                        grad = zeros(len(ar))
+                        ind =0
+                        mg = len(self.ps[0].primary2array())
+                        for k in xrange(self.numberOfMixtureComponents):
+                            self.ps[k].array2primary(par[0:mg])
+                            par = par[mg::]
+                            dX = self.ps[k].dldtheta(dat)
+                            grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
+                            ind = ind+mg
+                        return -grad
+                    def fdf(ar):
+                        fv = f(ar)
+                        grad = df(ar)
+                        return fv,grad
+                    def check(arr):
+                        err = optimize.check_grad(f,df,arr)
+                        print "Error in gradient: ",err
+                    arr = self.primary2array()
+                    if 'alpha' in self.primary:
+                        arr = arr[self.numberOfMixtureComponents::]
+                    check(arr)
+                    a = optimize.fmin_bfgs(f,arr,df,gtol=1e-09,disp=0,full_output=0,callback=check)
+                    if 'alpha' in self.primary:
+                        self.alphas = mean(T,axis=1)
+            diff = 10000000
+            oldS = estep()
+            while abs(diff)>1e-05:
+                mstep()
+                fv= estep()
+                diff = oldS-fv
+                oldS=fv
+                print "Diff: ",diff
+        else:
+            def f(arr):
+                self.array2primary(arr)
+                return -sum(self.loglik(dat))
+            def df(arr):
+                self.array2primary(arr)
+                grad = sum(self.dldtheta(dat),axis=1)
+                if 'alpha' in self.primary:
+                    nc = self.numberOfMixtureComponents
+                    ga = grad[0:nc]
+                    grad[0:nc] = ga - mean(ga)
+                return -grad
+            arr0 = self.primary2array()
+            bound = [(None,None)]*len(arr0)
+            for k in xrange(self.numberOfMixtureComponents):
+                bound[k] = (0.,1.)
+            arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-10)[0]
+            print "arropt : ",arropt
+            arropt = optimize.fmin_cg(f,arropt,df,gtol=1e-09)
         
