@@ -41,7 +41,7 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
         LP = zeros((K,m))
         diff = 100
         oldLP = 10000
-        while diff>1e-07:
+        while diff>1e-09:
             for k in xrange(K):
                 LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
             for k in xrange(K):
