@@ -65,7 +65,7 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
 
 
             cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
-            diff = abs(oldLP-cALL)
-            print "\rDiff: " ,diff , "  current ALL: " , cALL ,"             ",
+            diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
+            print "\rrelative difference: " ,diff , "  current ALL: " , cALL ,"             ",
             sys.stdout.flush()
             oldLP = cALL
