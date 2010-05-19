@@ -139,8 +139,16 @@ class Data:
                 D = array([((D[i] > 1e-8) and D[i] or 0.0) for i in range(len(D))])
 
             s = exp(-.5/len(D)*sum(log(D)))
-            self.X *= s
-            self.history.append('made whitening volume conserving with method "' + method + '"')
+        if method == 'raw':
+            if D == None:
+                C = cov(self.X)
+                (U,D,V) = svd(C)
+                D = array([((D[i] > 1e-8) and D[i] or 0.0) for i in range(len(D))])
+
+            s = exp(-.5/len(D)*sum(log(D)))
+            
+        self.X *= s
+        self.history.append('made whitening volume conserving with method "' + method + '"')
         return D
 
 

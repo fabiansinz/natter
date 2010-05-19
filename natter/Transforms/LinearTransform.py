@@ -5,7 +5,7 @@ from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
 import types
-from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log
+from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs
 
 class LinearTransform(Transform.Transform):
     '''
@@ -95,6 +95,7 @@ class LinearTransform(Transform.Transform):
 
     def det(self):
         return det(self.W)
+
 
     def logDetJacobian(self,dat=None):
         sh = shape(self.W)

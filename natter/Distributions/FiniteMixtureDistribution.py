@@ -6,7 +6,7 @@ from natter.DataModule import Data
 from numpy.random import shuffle
 import sys
 from scipy import optimize
-from functions import minimize_carl
+#from functions import minimize_carl
 
 class FiniteMixtureDistribution(Distribution):
     """
