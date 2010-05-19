@@ -42,7 +42,6 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
         diff = 100
         oldLP = 10000
         while diff>1e-07:
-
             for k in xrange(K):
                 LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
             for k in xrange(K):
@@ -65,8 +64,8 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
                     self.ps[k].cholP[self.ps[k].I] = solve(cholesky(self.ps[k].param['sigma']),eye(n))[self.ps[k].I]
 
 
-            SLP=sum((T*LP).flatten())
-            diff = abs(oldLP-SLP)
-            print "\rDiff: " ,diff , "  current loglik: " , SLP ,"             ",
+            cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
+            diff = abs(oldLP-cALL)
+            print "\rDiff: " ,diff , "  current ALL: " , cALL ,"             ",
             sys.stdout.flush()
-            oldLP = SLP
+            oldLP = cALL
