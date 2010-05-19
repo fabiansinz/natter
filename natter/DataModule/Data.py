@@ -4,6 +4,7 @@ import matplotlib as mpl
 import pylab as pl
 from numpy.linalg import qr, svd
 import types
+import sys
 
 
 class Data:
@@ -126,6 +127,13 @@ class Data:
         return mu
 
     def makeWhiteningVolumeConserving(self,method='project',D=None):
+        if not type(method) == types.StringType:
+            if D == None:
+                sys.stderr.write("Warning: method should be a string! Assume that you passed me D and used method='project'")
+                D = method
+            else:
+                raise TypeError("method must be a string!")
+                
         if method == 'project':
             if D == None:
                 n = self.size(0)
