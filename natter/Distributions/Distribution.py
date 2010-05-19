@@ -5,6 +5,7 @@ from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, 
 import pickle
 import types
 import pylab as plt
+import string
 
 class Distribution:
 
@@ -147,7 +148,8 @@ class Distribution:
                 ss = '\n' + str(self.param[k])
                 ss = ss.replace('\n','\n\t')
             s += ss + '\n'
-            
+        s += '\n\tPrimary Parameters:'
+        s += '[' + string.join(self.primary,', ') + ']\n'
         s += 30*'-' + '\n'
         return s
 
