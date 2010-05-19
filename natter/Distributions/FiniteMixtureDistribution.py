@@ -7,6 +7,7 @@ from numpy.random import shuffle
 import sys
 from scipy import optimize
 #from functions import minimize_carl
+from natter.Auxiliary.Numerics import logsumexp
 
 class FiniteMixtureDistribution(Distribution):
     """
@@ -57,10 +58,11 @@ class FiniteMixtureDistribution(Distribution):
         return Data(X,str(m) + " samples from a " + str(self.dimensionality) + self.name)
 
     def loglik(self,dat):
-        X = self.ps[0].pdf(dat)*self.alphas[0]
-        for k in xrange(1,self.numberOfMixtureComponents):
-            X = X + self.ps[k].pdf(dat)*self.alphas[k]
-        return log(X)
+        n,m = dat.size()
+        X = zeros((m,self.numberOfMixtureComponents))
+        for k,p in enumerate(self.ps):
+            X[:,k] = p.loglik(dat) + log(self.alphas[k])
+        return logsumexp(X,axis=1)
 
     def pdf(self,dat):
         return exp(self.loglik(dat))
@@ -123,7 +125,7 @@ class FiniteMixtureDistribution(Distribution):
         for k in xrange(K):
             LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
         for k in xrange(K):
-            T[k,:] = exp(LP[k,:])/sum(exp(LP),axis=0)
+            T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
             
         def estep():
             if verbose:
@@ -132,7 +134,7 @@ class FiniteMixtureDistribution(Distribution):
             for k in xrange(K):
                 LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
             for k in xrange(K):
-                T[k,:] = exp(LP[k,:])/sum(exp(LP),axis=0)
+                T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
             if verbose:
                 print ".",
                 sys.stdout.flush()
