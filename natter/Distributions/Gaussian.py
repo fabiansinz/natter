@@ -100,6 +100,7 @@ class Gaussian(Distribution):
             arr = arr[n:]
         if 'sigma' in self.primary:
             self.cholP[self.I] = arr
+            self.cholP[where(eye(n)>0)] = map(lambda x: max(x,0),diag(self.cholP))
             self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(n)))
 
 
