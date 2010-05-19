@@ -219,6 +219,7 @@ class FiniteMixtureDistribution(Distribution):
                 print "Diff: ",diff
         else:
             costf = 100000.0
+            n,m = dat.size()
             def f(arr):
                 self.array2primary(arr)
                 # loss = zeros(self.numberOfMixtureComponents)
@@ -226,7 +227,10 @@ class FiniteMixtureDistribution(Distribution):
                 #     loss[k] =max(exp(self.alphas[k]-1) -1,0) + max(exp(-self.alphas[k]) -1,0)
                 # loss = costf*(sum(loss) +( exp(sum(self.alphas) -1)))
                 # print "Loss:",loss
-                return -sum(self.loglik(dat))  
+                LL=-sum(self.loglik(dat))
+                ALL=-LL/(n*m)/log(2)  
+                print "\rALL:", ALL
+                return LL
             
             def df(arr):
                 self.array2primary(arr)
