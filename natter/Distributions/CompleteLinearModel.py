@@ -34,8 +34,10 @@ class CompleteLinearModel(Distribution):
                param['q'].param.has_key('n'):
             self.param['W'] = LinearTransform(random_rot(param['q'].param['n']),\
                                                       'Random rotation matrix',['sampled from Haar distribution'])
-
-        self.primary = ['q','W']
+        if not 'primary' in param.keys():
+            self.primary = ['q','W']
+        else:
+            self.primary = param['primary']
             
     def loglik(self,dat):
         '''

@@ -5,7 +5,7 @@ from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
 from natter.Auxiliary import debug
-
+from scipy import optimize
 
 class Gaussian(Distribution):
     """
@@ -26,7 +26,7 @@ class Gaussian(Distribution):
     Primary parameters are ['mu','sigma'].
         
     """
-    
+
     def __init__(self,param=None):
         self.name = 'Gaussian Distribution'
         self.param = {'n':2}
@@ -77,7 +77,7 @@ class Gaussian(Distribution):
         mu = self.param['mu']
         X = dat.X - kron(reshape(mu,(n,1)),ones((1,m)))
         Y = sum(dot(self.cholP.T,X)**2,axis=0)
-        return -n/2*log(2*pi) +sum(log(diag(self.cholP))) - .5*Y
+        return -n/2*log(2*pi) +sum(log(diag(abs(self.cholP)))) - .5*Y
 
     
     def primary2array(self):
@@ -122,7 +122,8 @@ class Gaussian(Distribution):
                 ret = vstack((ret,retC))
         return ret
         
-    def estimate(self,dat):
+
+    def estimate(self,dat,method=None):
         '''
 
         Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
@@ -131,11 +132,25 @@ class Gaussian(Distribution):
         :param dat: Data points on which the Gaussian distribution will be estimated.
         :type dat: natter.DataModule.Data
         '''
-        if 'sigma' in self.primary:
-            self.param['sigma'] = dat.cov()
-            self.cholP = cholesky(inv(self.param['sigma'])) 
-        if 'mu' in self.primary:
-            self.param['mu'] = dat.mean()
+
+        if method==None:
+            method = "analytic"
+        if method=="analytic":
+            if 'sigma' in self.primary:
+                self.param['sigma'] = dat.cov()
+                self.cholP = cholesky(inv(self.param['sigma'])) 
+            if 'mu' in self.primary:
+                self.param['mu'] = dat.mean()
+        else:
+            def f(arr):
+                self.array2primary(arr)
+                return -sum(self.loglik(dat))
+            def df(arr):
+                self.array2primary(arr)
+                return -sum(self.dldtheta(dat),axis=1)
+            arr0 = self.primary2array()
+            arropt = optimize.fmin_bfgs(f,arr0,df)
+                
             
         
     

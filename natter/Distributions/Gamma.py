@@ -1,8 +1,8 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean
+from numpy import log, exp, mean, zeros
 from numpy.random import gamma
-from scipy.special import gammaln, polygamma
+from scipy.special import gammaln, polygamma,digamma
 from scipy.stats import gamma as gammastats
 
 
@@ -108,6 +108,25 @@ class Gamma(Distribution):
         return Data(gammastats.ppf(X,self.param['u'],scale=self.param['s']))
 
 
+    def dldtheta(self,data):
+        """
+        Evaluates the gradient of the Gamma function with respect to the primary parameters.
+
+        :param data: Data on which the gradient should be evaluated.
+        :type data: DataModule.Data
+        
+        """
+        m = data.size(1)
+        grad = zeros((len(self.primary,m)))
+        ind =0
+        if 'u' in self.primary:
+            grad[ind,:] = log(data.X) - log(self.param['s']) - digamma(data.X)
+            ind +=1
+        if 's' in self.primary:
+            grad[ind,:] = data.X/self.param['s']**2 - self.param['u']/self.param['s']
+        return grad
+     
+
     def dldx(self,dat):
         """
 
@@ -152,5 +171,22 @@ class Gamma(Distribution):
         if 'u' in self.primary:
             self.param['s'] = exp(logmean)/self.param['u'];
    
+    
+    def primary2array(self):
+        """
+        converts primary parameters into an array.
+        """
+        ret = zeros(len(self.primary))
+        for ind,key in enumerate(self.primary):
+            ret[ind]=self.primary[key]
+
+    def array2primary(self,arr):
+        """
+        Converts the given array into primary parameters.
+            
+        """
+        for ind,key in enumerate(self.primary):
+            self.param[key]=arr[ind]
+            
     
     
