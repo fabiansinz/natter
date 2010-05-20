@@ -42,6 +42,21 @@ class FiniteMixtureDistribution(Distribution):
         self.primary = ['alpha','theta']
 
 
+    def __str__(self):
+        """
+        """
+        s=  30*'-'
+        s+=  '\n' + self.name + '\n'
+        s+= "Number of Components: " + str( self.numberOfMixtureComponents) + str('\n')
+        for k,p in enumerate(self.ps):
+            s+= 30*'-'
+            s+= "COMPONENT %d: "%k
+            s+= 30*'-'
+            s+= str(p)
+        return s
+        
+    
+
     def sample(self,m):
         """
         Samples from the mixture distribution.
@@ -218,15 +233,9 @@ class FiniteMixtureDistribution(Distribution):
                 oldS=fv
                 print "Diff: ",diff
         else:
-            costf = 100000.0
             n,m = dat.size()
             def f(arr):
                 self.array2primary(arr)
-                # loss = zeros(self.numberOfMixtureComponents)
-                # for k in xrange(self.numberOfMixtureComponents):
-                #     loss[k] =max(exp(self.alphas[k]-1) -1,0) + max(exp(-self.alphas[k]) -1,0)
-                # loss = costf*(sum(loss) +( exp(sum(self.alphas) -1)))
-                # print "Loss:",loss
                 LL=-sum(self.loglik(dat))
                 ALL=-LL/(n*m)/log(2)  
                 print "\rALL:", ALL
@@ -236,12 +245,6 @@ class FiniteMixtureDistribution(Distribution):
                 self.array2primary(arr)
                 grad = sum(self.dldtheta(dat),axis=1)
                 if 'alpha' in self.primary:
-                    # for k,alpha  in enumerate(self.alphas):
-                    #     if alpha>1.:
-                    #         grad[k] = grad[k] - costf*exp(alpha -1)
-                    #     elif alpha<0:
-                    #         grad[k] = grad[k] - costf*exp(-alpha)
-                    #     grad[k] = grad[k] - costf*exp(sum(self.alphas)-1)
                     nc = self.numberOfMixtureComponents
                     ga = grad[0:nc]
                     grad[0:nc] = ga - mean(ga)
@@ -251,7 +254,4 @@ class FiniteMixtureDistribution(Distribution):
             for k in xrange(self.numberOfMixtureComponents):
                 bound[k] = (0.,1.)
             arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-13)[0]
-            print "arropt : ",arropt
-            #            arropt = optimize.fmin_l_bfgs_b(f,arropt,fprime=df,bounds=bound,pgtol=1e-10)[0]
-            #            arropt = optimize.fmin_cg(f,arropt,df,gtol=1e-09)
         

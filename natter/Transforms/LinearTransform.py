@@ -101,9 +101,9 @@ class LinearTransform(Transform.Transform):
         sh = shape(self.W)
         if sh[0] == sh[1]:
             if dat==None:
-                return log(det(self.W))
+                return log(abs(det(self.W)))
             else:
-                return array(dat.size(1)*[log(det(self.W))])
+                return array(dat.size(1)*[log(abs(det(self.W)))])
         else:
             raise Errors.DimensionalityError('Can only compute log det of square filter matrix')
 

@@ -117,10 +117,10 @@ class Gamma(Distribution):
         
         """
         m = data.size(1)
-        grad = zeros((len(self.primary,m)))
+        grad = zeros((len(self.primary),m))
         ind =0
         if 'u' in self.primary:
-            grad[ind,:] = log(data.X) - log(self.param['s']) - digamma(data.X)
+            grad[ind,:] = log(data.X) - log(self.param['s']) - digamma(self.param['u'])
             ind +=1
         if 's' in self.primary:
             grad[ind,:] = data.X/self.param['s']**2 - self.param['u']/self.param['s']
@@ -178,7 +178,8 @@ class Gamma(Distribution):
         """
         ret = zeros(len(self.primary))
         for ind,key in enumerate(self.primary):
-            ret[ind]=self.primary[key]
+            ret[ind]=self.param[key]
+        return ret
 
     def array2primary(self,arr):
         """

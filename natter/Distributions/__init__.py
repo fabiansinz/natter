@@ -40,3 +40,4 @@ from Distribution import load
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
 from FiniteMixtureDistribution import FiniteMixtureDistribution
 from FiniteMixtureOfGaussians import FiniteMixtureOfGaussians
+from EllipticallyContourGamma import EllipticallyContourGamma

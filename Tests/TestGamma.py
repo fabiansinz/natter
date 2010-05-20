@@ -6,6 +6,8 @@ from natter.Auxiliary import Errors
 from scipy import io
 from natter import Auxiliary
 import sys
+from scipy  import optimize
+from natter.Auxiliary.Numerics import logsumexp
 
 class TestGamma(unittest.TestCase):
 
@@ -15,6 +17,14 @@ class TestGamma(unittest.TestCase):
     TolParam = 5*1e-2
     
     def test_loglik(self):
+        p1 = Distributions.Gamma({'u':2.0,'s':3.0})
+        p2 = Distributions.Gamma({'u':1.0,'s':1.0})
+        nsamples = 1000000
+        data = p2.sample(nsamples)
+        logZ = logsumexp(p1.loglik(data) -p2.loglik(data) - np.log(nsamples))
+        print "Estimated partition function: ", np.exp(logZ)
+        
+        
         print "Testing log-likelihood of Gamma distribution ... "
         sys.stdout.flush()
         p = Distributions.Gamma({'u':2.0,'s':3.0})
@@ -51,6 +61,25 @@ class TestGamma(unittest.TestCase):
         self.assertFalse(np.max(np.abs(df-df2)) > tol,\
                          'Difference ' + str(np.max(np.abs(df-df2)))+ 'in derivative of log-likelihood for Gamma greater than ' + str(tol))
 
+    def test_dldtheta(self):
+        p = Distributions.Gamma({'u':2.0,'s':3.0})
+        p.primary=['u','s']
+        dat = p.sample(1000)
+        def f(arr):
+            p.array2primary(arr)
+            return np.sum(p.loglik(dat))
+        def df(arr):
+            p.array2primary(arr)
+            return np.sum(p.dldtheta(dat),axis=1)
+        arr0= p.primary2array()
+        arr0 = abs(np.random.randn(len(arr0)))
+        err  = optimize.check_grad(f,df,arr0)
+        print "Error in graident: ",err
+        self.assertTrue(err<1e-02)
+
+
+        
+        
 
 if __name__=="__main__":
     

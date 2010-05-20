@@ -3,8 +3,8 @@ from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
-from numpy.special import gammaln,digamma
-from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack
+from scipy.special import gammaln,digamma
+from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt
 from numpy.linalg import inv
 
 
@@ -31,19 +31,30 @@ class EllipticallyContourGamma(CompleteLinearModel):
         CompleteLinearModel.__init__(self,param)
         if 'q' in self.primary:
             self.param['q'].primary = ['u','s']
-
+        self.name = 'Elliptically contour Gamma distribution'
 
     def primary2array(self):
         ret = array([])
         if 'q' in self.primary:
             ret = self.param['q'].primary2array()
-        if 'w' in self.primary:
+        if 'W' in self.primary:
             if len(ret)==0:
-                ret = self.param['w'].W.flatten()
+                ret = self.param['W'].W.flatten()
             else:
-                ret = hstack((ret,self.param['W']))
+                ret = hstack((ret,self.param['W'].W.flatten()))
         return ret
-                        
+
+
+    def array2primary(self,arr):
+        """
+        Converts array to primary parameters
+        """
+        if 'q' in self.primary:
+            self.param['q'].array2primary(arr[0:2])
+            arr = arr[2:]
+        if 'W' in self.primary:
+            self.param['W'].W = arr.reshape(self.param['W'].W.shape)
+    
         
     def loglik(self,data):
         """
@@ -52,10 +63,11 @@ class EllipticallyContourGamma(CompleteLinearModel):
         - `self`:
         - `data`:
         """
-
+        n,m = data.size()
         squareData = self.param['W']*data
-        squareData.X = sum(squareData.X**2,axis=0)
-        y = self.param['q'].loglik(squareData) + self.param['W'].logDetJacobian
+        squareData.X = sqrt(sum(squareData.X**2,axis=0))
+        y = self.param['q'].loglik(squareData) + self.param['W'].logDetJacobian()\
+            -(n/2)*log(pi) +gammaln(n/2) -log(2) + (1-n)*log(squareData.X)
         return y
 
 
@@ -67,8 +79,9 @@ class EllipticallyContourGamma(CompleteLinearModel):
         """
         ret = array([])
         n,m = data.size()
-        squareData = Data()
-        squareData.X = sum((self.param['W']*data.X).X**2,axis=0)
+        squareData = self.param['W']*data
+        squareData.X = sqrt(sum(squareData.X**2,axis=0))
+        
         if 'q' in self.primary:
             gradG = self.param['q'].dldtheta(squareData)
             ret = gradG
@@ -77,7 +90,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
             s = self.param['q'].param['s']
             W = self.param['W'].W
             wx2 = squareData.X
-            gradW = ((u-1)/wx2  -1/s)*array( map(lambda x: dot(W,outer(x,x)).flatten(),data.X.T ))  + kron(ones((m,1)),inv(W).flatten()).T
+            WXXT = array( map(lambda x: dot(W,outer(x,x)).flatten(),data.X.T )).T
+            gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  + kron(ones((m,1)),inv(W.T).flatten()).T
             if len(ret)==0:
                 ret = gradW
             else:
@@ -85,3 +99,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
         return ret
         
                 
+    def estimate(self,data):
+        """
+        Estimate the primaray parameters of the distribution based on  gradient descent.
+        """
+        
