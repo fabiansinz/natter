@@ -117,6 +117,7 @@ class FiniteMixtureDistribution(Distribution):
         #        p = self.pdf(dat)
         lp = self.loglik(dat)
         n,m = dat.size()
+        ret = array([])
         if 'alpha' in self.primary:
             ret=zeros((self.numberOfMixtureComponents,m))
             for k in xrange(self.numberOfMixtureComponents):
@@ -197,6 +198,7 @@ class FiniteMixtureDistribution(Distribution):
                             par = par[mg::]
                             X = self.ps[k].loglik(dat)
                             L[k,:] = T[k,:]*X
+                        print "\rcurrent ALL : ", -mean(L.flatten())
                         return -sum(L.flatten())
                     def df(ar):
                         par = ar.copy()
@@ -205,7 +207,7 @@ class FiniteMixtureDistribution(Distribution):
                         mg = len(self.ps[0].primary2array())
                         for k in xrange(self.numberOfMixtureComponents):
                             self.ps[k].array2primary(par[0:mg])
-                            par = par[mg::]
+                            par = par[mg:]
                             dX = self.ps[k].dldtheta(dat)
                             grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
                             ind = ind+mg
@@ -220,8 +222,8 @@ class FiniteMixtureDistribution(Distribution):
                     arr = self.primary2array()
                     if 'alpha' in self.primary:
                         arr = arr[self.numberOfMixtureComponents::]
-                    check(arr)
-                    a = optimize.fmin_bfgs(f,arr,df,gtol=1e-09,disp=0,full_output=0,callback=check)
+                        #                    check(arr)
+                    a = optimize.fmin_bfgs(f,arr,df,gtol=1e-09,disp=0,full_output=0)
                     if 'alpha' in self.primary:
                         self.alphas = mean(T,axis=1)
             diff = 10000000
@@ -234,11 +236,10 @@ class FiniteMixtureDistribution(Distribution):
                 print "Diff: ",diff
         else:
             n,m = dat.size()
+            
             def f(arr):
                 self.array2primary(arr)
                 LL=-sum(self.loglik(dat))
-                ALL=-LL/(n*m)/log(2)  
-                print "\rALL:", ALL
                 return LL
             
             def df(arr):
@@ -250,8 +251,33 @@ class FiniteMixtureDistribution(Distribution):
                     grad[0:nc] = ga - mean(ga)
                 return -grad
             arr0 = self.primary2array()
-            bound = [(None,None)]*len(arr0)
+            bound = [(None,None)]*len(self.alphas)
             for k in xrange(self.numberOfMixtureComponents):
                 bound[k] = (0.,1.)
-            arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-13)[0]
+            done=False
+            diff = 100000;
+            oldALL = self.all(dat)
+            while not done:
+                self.primary = ['alpha']
+                arr0 = self.alphas
+                print "Optimizing alphas...",
+                sys.stdout.flush()
+                arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-13)[0]
+                print "done. Current ALL:",self.all(dat)
+                sys.stdout.flush() 
+
+                self.primary = ['theta']
+                arr0 = self.primary2array()
+                print "Optimizing thetas...",
+                sys.stdout.flush()
+
+                arropt = optimize.fmin_bfgs(f,arr0,fprime=df,gtol=1e-08)
+                print "done."
+                sys.stdout.flush()
+                ALL = self.all(dat)
+                diff = abs(oldALL-ALL)
+                if diff <1e-09:
+                    done=True
+                print "Current ALL: %g, current diff: %g" %(ALL,diff)
+                sys.stdout.flush()
         
