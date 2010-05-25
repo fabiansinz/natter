@@ -45,7 +45,7 @@ class Gamma(Distribution):
 
 
         """
-        return Data(gamma(self.param['u'],self.param['s'],(1,m)) \
+        return Data(gamma(abs(self.param['u']),abs(self.param['s']),(1,m)) \
                          ,str(m) + ' samples from ' + self.name)
         
 

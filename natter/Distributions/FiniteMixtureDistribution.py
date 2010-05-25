@@ -104,13 +104,13 @@ class FiniteMixtureDistribution(Distribution):
 
     def checkAlpha(self):
         s=0.0
-        # for alpha in self.alphas:
-        #     ab = alpha
-        #     alpha = max(min(alpha,1.0-s),0.0)
-        #     s +=alpha
-        #     diff =abs(ab-alpha)
-        #     if diff > 1e-03:
-        #         print "Warning : diff in alphas: ", diff
+        for alpha in self.alphas:
+            ab = alpha
+            alpha = max(min(alpha,1.0-s),0.0)
+            s +=alpha
+            diff =abs(ab-alpha)
+            if diff > 1e-03:
+                print "Warning : diff in alphas: ", diff
             
     def dldtheta(self,dat):
         self.checkAlpha()
@@ -259,11 +259,25 @@ class FiniteMixtureDistribution(Distribution):
             oldALL = self.all(dat)
             while not done:
                 self.primary = ['alpha']
-                arr0 = self.alphas
+
                 print "Optimizing alphas...",
                 sys.stdout.flush()
-                arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-13)[0]
-                print "done. Current ALL:",self.all(dat)
+                n,m = dat.size()
+                K   = self.numberOfMixtureComponents
+                T = zeros((K,m))
+                LP = zeros((K,m))
+                nsamples = min([max([m,1000000]),10000000])
+                Y = zeros((n,nsamples))
+                for k in xrange(K):
+                    LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
+                for k in xrange(K):
+                    T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+                self.alphas = mean(T,axis=1)
+                arr0 = self.alphas
+                #arropt = optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=bound,pgtol=1e-13)[0]
+                print "done."
+                print "alphas: ", self.alphas, " sum(alphas): ", sum(self.alphas)
+                print " Current ALL:",self.all(dat)
                 sys.stdout.flush() 
 
                 self.primary = ['theta']
