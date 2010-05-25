@@ -98,7 +98,6 @@ class EllipticallyContourGamma(CompleteLinearModel):
         n,m = data.size()
         squareData = self.param['W']*data
         squareData.X = sqrt(sum(squareData.X**2,axis=0))
-        print "squareData.size(): ",squareData.size()
         if 'q' in self.primary:
             gradG = self.param['q'].dldtheta(squareData)
             ret = gradG
