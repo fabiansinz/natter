@@ -76,13 +76,15 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 for k in xrange(K):
                     TS = sum(T[k,:])
                     X = data.X
-                    X = X*sqrt(T[k,:]/TS)
-                    C = cov(X)*(m-1) + eye(n)*1e-05 # add a ridge
-                    if 'W' in self.ps[k].primary:
-                        self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
-                    Y = Data(sum(dot(self.ps[k].param['W'].W,X*(m-1))**2,axis=0))
+                    X = X*sqrt(T[k,:]/TS)*sqrt(m)
+                    C = cov(X)
+                    # C = cov(X)*(m-1) + eye(n)*1e-05 # add a ridge
+                    Y = Data(sqrt(sum(dot(self.ps[k].param['W'].W,X)**2,axis=0)))
                     if 'q' in self.ps[k].primary:
                         self.ps[k].param['q'].estimate(Y)
+
+                    if 'W' in self.ps[k].primary:
+                        self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
                 cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
                 diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
                 print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
