@@ -271,12 +271,13 @@ class FiniteMixtureDistribution(Distribution):
                 print "Optimizing thetas...",
                 sys.stdout.flush()
 
-                arropt = optimize.fmin_bfgs(f,arr0,fprime=df,gtol=1e-08)
+                arropt = optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=10,gtol=1e-05) # be fast, be greedy
                 print "done."
                 sys.stdout.flush()
                 ALL = self.all(dat)
                 diff = abs(oldALL-ALL)
-                if diff <1e-09:
+                oldALL=ALL
+                if diff <1e-07:
                     done=True
                 print "Current ALL: %g, current diff: %g" %(ALL,diff)
                 sys.stdout.flush()

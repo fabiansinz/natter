@@ -1,5 +1,5 @@
 from __future__ import division
-from natter.Distributions import EllipticallyContourGamma,Gaussian,FiniteMixtureOfGaussians,FiniteMixtureDistribution
+from natter.Distributions import EllipticallyContourGamma,Gaussian,FiniteMixtureOfGaussians,FiniteMixtureDistribution,FiniteMixtureOfEllipticallyGamma
 from numpy import log,pi,sum,ones,sqrt,logspace,exp,eye,eye,ones
 from natter.Transforms import LinearTransform
 from numpy.random import randn
@@ -27,21 +27,21 @@ class TestEllipticallyContourGamma(unittest.TestCase):
         self.MOG.ps[0].cholP  = cholesky(inv(C1))
         self.MOG.ps[1].param['sigma'] =C2
         self.MOG.ps[1].cholP  = cholesky(inv(C2))
-        self.data = self.MOG.sample(100000)
+        self.data = self.MOG.sample(10000)
 
         self.MECG = FiniteMixtureDistribution(baseDistribution=self.ECG,
                                               numberOfMixtureComponents=self.nc)
+        self.M2ECG = FiniteMixtureOfEllipticallyGamma({'n':self.n,
+                                                       'NC':self.nc})
         
     def test_init(self):
         pass
 
     def test_estimate(self):
-        print self.MECG
-        print self.MOG
+        self.M2ECG.estimate(self.data)
+        print "Difference in ALL (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
         self.MECG.estimate(self.data)
-        print self.MECG
-        print self.MOG
-        print "Difference in ALL: ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
+        print "Difference in ALL (MOG -MECG): ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
 
 ##################################################################################################
 

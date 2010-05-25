@@ -37,12 +37,18 @@ class TestEllipticallyContourGamma(unittest.TestCase):
         dataImportance = self.Gaussian.sample(nsamples)
         logweights = self.ECG.loglik(dataImportance)-self.Gaussian.loglik(dataImportance)
         Z = logsumexp(logweights)-log(nsamples)
-        print "sampled partition function:", exp(Z)
-        
+        self.assertTrue(abs(exp(Z)-1)<1e-01)
+                        
     
+    def test_sample(self):
+        nsamples = 10000
+        data = self.ECG.sample(nsamples)
+        logWeights = self.Gaussian.loglik(data) -self.ECG.loglik(data)
+        Z = logsumexp(logWeights)-log(nsamples)
+        self.assertTrue(abs(exp(Z)-1)<1e-01)
+
 
     def test_dldtheta(self):
-
         self.ECG.primary = ['q']
         def f(X):
             self.ECG.array2primary(X)

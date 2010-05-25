@@ -61,9 +61,9 @@ class Gamma(Distribution):
          
            
         '''
-        return (self.param['u']-1.0) * log(dat.X)   \
-               - dat.X/self.param['s']\
-               - self.param['u'] * log(self.param['s']) -  gammaln(self.param['u']) 
+        return (abs(self.param['u'])-1.0) * log(dat.X)   \
+               - dat.X/abs(self.param['s'])\
+               - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
 
 
     def pdf(self,dat):
@@ -120,10 +120,10 @@ class Gamma(Distribution):
         grad = zeros((len(self.primary),m))
         ind =0
         if 'u' in self.primary:
-            grad[ind,:] = log(data.X) - log(self.param['s']) - digamma(self.param['u'])
+            grad[ind,:] = log(data.X) - log(abs(self.param['s'])) - digamma(abs(self.param['u']))
             ind +=1
         if 's' in self.primary:
-            grad[ind,:] = data.X/self.param['s']**2 - self.param['u']/self.param['s']
+            grad[ind,:] = data.X/abs(self.param['s']**2) - abs(self.param['u']/self.param['s'])
         return grad
      
 

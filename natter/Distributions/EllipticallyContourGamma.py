@@ -4,9 +4,9 @@ from Gamma import Gamma
 from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
 from scipy.special import gammaln,digamma
-from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt
+from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag
 from numpy.linalg import inv
-
+from numpy.random import randn
 
 
 
@@ -32,19 +32,35 @@ class EllipticallyContourGamma(CompleteLinearModel):
         if 'q' in self.primary:
             self.param['q'].primary = ['u','s']
         self.name = 'Elliptically contour Gamma distribution'
+        self.Wind = where(tril(ones(self.param['W'].W.shape))>0)
+        self.param['W'].W = tril(self.param['W'].W)
 
+        
     def primary2array(self):
         ret = array([])
         if 'q' in self.primary:
             ret = self.param['q'].primary2array()
         if 'W' in self.primary:
             if len(ret)==0:
-                ret = self.param['W'].W.flatten()
+                ret = self.param['W'].W[self.Wind].flatten()
             else:
-                ret = hstack((ret,self.param['W'].W.flatten()))
+                ret = hstack((ret,self.param['W'].W[self.Wind].flatten()))
         return ret
 
+    def sample(self,nsamples=1):
+        """
+        Sample from an elliptically contoured Gamma distribution.
+        
+        To do so, we first sample from a Gaussian distribution with
+        the appropiate Covariance matrix, normalize and then draw a
+        radius from the radial-Gamma distribution.
+        
+        """
 
+        WX = dot(self.param['W'].W,randn(self.param['W'].W.shape[0],nsamples))
+        r  = self.param['q'].sample(nsamples)
+        return Data(WX/sqrt(sum(WX**2,axis=0))*r.X)
+    
     def array2primary(self,arr):
         """
         Converts array to primary parameters
@@ -53,7 +69,7 @@ class EllipticallyContourGamma(CompleteLinearModel):
             self.param['q'].array2primary(arr[0:2])
             arr = arr[2:]
         if 'W' in self.primary:
-            self.param['W'].W = arr.reshape(self.param['W'].W.shape)
+            self.param['W'].W[self.Wind] = arr#.reshape(self.param['W'].W.shape)
     
         
     def loglik(self,data):
@@ -66,7 +82,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
         n,m = data.size()
         squareData = self.param['W']*data
         squareData.X = sqrt(sum(squareData.X**2,axis=0))
-        y = self.param['q'].loglik(squareData) + self.param['W'].logDetJacobian()\
+        y = self.param['q'].loglik(squareData) + \
+            array(data.size(1)*[sum(log(abs(diag(self.param['W'].W))))])\
             -(n/2)*log(pi) +gammaln(n/2) -log(2) + (1-n)*log(squareData.X)
         return y
 
@@ -81,7 +98,7 @@ class EllipticallyContourGamma(CompleteLinearModel):
         n,m = data.size()
         squareData = self.param['W']*data
         squareData.X = sqrt(sum(squareData.X**2,axis=0))
-        
+        print "squareData.size(): ",squareData.size()
         if 'q' in self.primary:
             gradG = self.param['q'].dldtheta(squareData)
             ret = gradG
@@ -90,8 +107,11 @@ class EllipticallyContourGamma(CompleteLinearModel):
             s = self.param['q'].param['s']
             W = self.param['W'].W
             wx2 = squareData.X
-            WXXT = array( map(lambda x: dot(W,outer(x,x)).flatten(),data.X.T )).T
-            gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  + kron(ones((m,1)),inv(W.T).flatten()).T
+            v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
+            WXXT    = array( map(lambda x: dot(W,outer(x,x))[self.Wind]  ,data.X.T )).T
+            dldx    = self.param['q'].dldx(squareData)
+            dnormdW = (1./wx2)* WXXT
+            gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T
             if len(ret)==0:
                 ret = gradW
             else:
