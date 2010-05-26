@@ -40,6 +40,8 @@ class TestEllipticallyContourGamma(unittest.TestCase):
     def test_estimate(self):
         self.M2ECG.estimate(self.data)
         print "Difference in ALL (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
+        self.M2ECG.estimate(self.data,method='gradient')
+        print "Difference in ALL for gradient method (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
         self.MECG.estimate(self.data)
         print "Difference in ALL (MOG -MECG): ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
         print self.MECG

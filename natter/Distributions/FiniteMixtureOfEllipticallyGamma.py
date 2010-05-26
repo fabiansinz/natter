@@ -124,13 +124,14 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                     return -sum(self.dldtheta(data),axis=1)
 
                 arr0=self.primary2array()
-                arropt = optimize.fmin_bfgs(f,arr0,df,maxiter=2)
+                xopt, fopt, gopt, Hopt, func_calls, grad_calls, warnflag = optimize.fmin_bfgs(f,arr0,df,maxiter=2,disp=0,full_output=1)
+                
             cALL=self.all(data)
             diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
             print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
             sys.stdout.flush()
             oldLP = cALL
-            if diff<tol:
+            if diff<tol or warnflag==2:
                 done=True
 
                         

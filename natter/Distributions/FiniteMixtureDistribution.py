@@ -104,13 +104,13 @@ class FiniteMixtureDistribution(Distribution):
 
     def checkAlpha(self):
         s=0.0
-        for alpha in self.alphas:
-            ab = alpha
-            alpha = max(min(alpha,1.0-s),0.0)
-            s +=alpha
-            diff =abs(ab-alpha)
-            if diff > 1e-03:
-                print "Warning : diff in alphas: ", diff
+        # for alpha in self.alphas:
+        #     ab = alpha
+        #     alpha = max(min(alpha,1.0-s),0.0)
+        #     s +=alpha
+        #     diff =abs(ab-alpha)
+        #     if diff > 1e-03:
+        #         print "Warning : diff in alphas: ", diff
             
     def dldtheta(self,dat):
         self.checkAlpha()
