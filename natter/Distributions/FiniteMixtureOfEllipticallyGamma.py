@@ -86,7 +86,11 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                         self.ps[k].param['q'].estimate(Y)
 
                     if 'W' in self.ps[k].primary:
-                        self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
+                        try:
+                            self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
+                        except:
+                            print "C.shape: ", C.shape
+                            print "C: ", C
                 cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
                 diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
                 print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
