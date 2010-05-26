@@ -90,14 +90,15 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                            for (int g=0;g<m;g++){
                                 for (int i=0;i<n;i++){
                                     for (int j=i;j<n;j++){
-                                       C(i,j)=C(j,i)+=X(i,g)*X(j,g)*T(k,g)/TS;
+                                       C(i,j)=C(j,i)+=X(i,g)*X(j,g)*U(k,g);
                                     }
                                 }
                             }
                             return_val = C;
                     """
+                    U=T/TS;
                     C = weave.inline(code,
-                                     ['C', 'X', 'T', 'k', 'n','m','TS'],
+                                     ['C', 'X', 'U', 'k', 'n','m'],
                                      type_converters=converters.blitz,
                                      compiler = 'gcc')
 
