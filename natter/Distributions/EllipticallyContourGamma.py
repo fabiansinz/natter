@@ -4,7 +4,7 @@ from Gamma import Gamma
 from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
 from scipy.special import gammaln,digamma
-from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag
+from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros
 from numpy.linalg import inv
 from numpy.random import randn
 
@@ -107,7 +107,10 @@ class EllipticallyContourGamma(CompleteLinearModel):
             W = self.param['W'].W
             wx2 = squareData.X
             v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
-            WXXT    = array( map(lambda x: dot(W,outer(x,x))[self.Wind]  ,data.X.T )).T
+            #            WXXT    = array( map(lambda x: dot(W,outer(x,x))[self.Wind]  ,data.X.T )).T
+            WXXT    = zeros((len(v),m))
+            for k in xrange(m):
+                WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
             dldx    = self.param['q'].dldx(squareData)
             dnormdW = (1./wx2)* WXXT
             gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T

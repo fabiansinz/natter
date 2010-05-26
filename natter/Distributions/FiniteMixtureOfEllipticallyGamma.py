@@ -3,11 +3,13 @@ from FiniteMixtureDistribution import FiniteMixtureDistribution
 from EllipticallyContourGamma import EllipticallyContourGamma
 from natter.DataModule import Data
 from numpy.linalg import cholesky,inv,solve
-from numpy import zeros,ones,dot,eye,log,mean,exp,sqrt,cov,sum,var,isnan
+from numpy import zeros,ones,dot,eye,log,mean,exp,sqrt,cov,sum,var,isnan,outer
 from mdp.utils import random_rot,symrand
 from natter.Transforms import LinearTransform
 from natter.Auxiliary.Numerics import logsumexp
 import sys
+from scipy import optimize
+from natter.Auxiliary import profileFunction
 
 class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
     """
@@ -61,25 +63,28 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                  set.
         
         """
-        if method==None or method=="EM":
-            n,m = data.size()
-            K   = self.numberOfMixtureComponents
-            T = zeros((K,m))
-            LP = zeros((K,m))
-            done = False
-            diff = 100
-            oldLP = 10000
-            while not done:
-                for k in xrange(K):
-                    LP[k,:] = self.ps[k].loglik(data)  + log(self.alphas[k])
-                for k in xrange(K):
-                    T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-                self.alphas = mean(T,axis=1) # mstep
+        n,m = data.size()
+        K   = self.numberOfMixtureComponents
+        T = zeros((K,m))
+        LP = zeros((K,m))
+        done = False
+        diff = 100
+        oldLP = 10000
+        while not done:
+            for k in xrange(K):
+                LP[k,:] = self.ps[k].loglik(data)  + log(self.alphas[k])
+            for k in xrange(K):
+                T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+            self.alphas = mean(T,axis=1) # mstep
+            if method=="EM" or method==None:
                 for k in xrange(K):
                     TS = sum(T[k,:])
                     X = data.X
                     X = X*exp(0.5*(log(T[k,:]) -log(TS) + log(m)))
-                    C = cov(X) + eye(n)*1e-03
+                    C = zeros((n,n))
+                    for l in xrange(m):
+                        C = C + outer(X[:,l],X[:,l])*T[k,l]/TS
+                    C = C + eye(n)*1e-02
                     if isnan(C).any():
                         print "Uiuiui"
                         C = eye(n)
@@ -90,14 +95,24 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
 
                     if 'W' in self.ps[k].primary:
                         self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
+            else:
+                self.primary=['theta']
+                def f(arr):
+                    self.array2primary(arr)
+                    return -sum(self.loglik(data))
+                def df(arr):
+                    self.array2primary(arr)
+                    return -sum(self.dldtheta(data),axis=1)
+                arr0=self.primary2array()
+                arropt = optimize.fmin_bfgs(f,arr0,df,maxiter=3)
+            cALL=self.all(data)
+            diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
+            print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
+            sys.stdout.flush()
+            oldLP = cALL
+            if diff<1e-08:
+                done=True
 
-                cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
-                diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
-                print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
-                sys.stdout.flush()
-                oldLP = cALL
-                if diff<1e-08:
-                    done=True
-            
+                        
 
 
