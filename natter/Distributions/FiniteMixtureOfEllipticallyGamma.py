@@ -36,8 +36,10 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 p = param['q'].copy()
         else:
             for k in xrange(self.numberOfMixtureComponents):
+                W =symrand(self.param['n'])
+                W = dot(W,W.T)
                 self.ps[k] = EllipticallyContourGamma({'n': self.param['n'],
-                                                       'W': LinearTransform(cholesky(symrand(self.param['n'])))})
+                                                       'W': LinearTransform(cholesky(W))})
         self.alphas = ones(self.numberOfMixtureComponents)/self.numberOfMixtureComponents
         self.primary = ['alpha','theta']
         
