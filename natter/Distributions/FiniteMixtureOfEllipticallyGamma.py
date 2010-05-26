@@ -94,7 +94,6 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                                     }
                                 }
                             }
-                            return_val = C;
                     """
                     U=T/TS;
                     C = weave.inline(code,
