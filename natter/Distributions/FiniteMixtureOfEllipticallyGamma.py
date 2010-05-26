@@ -3,7 +3,7 @@ from FiniteMixtureDistribution import FiniteMixtureDistribution
 from EllipticallyContourGamma import EllipticallyContourGamma
 from natter.DataModule import Data
 from numpy.linalg import cholesky,inv,solve
-from numpy import zeros,ones,dot,eye,log,mean,exp,sqrt,cov,sum,var
+from numpy import zeros,ones,dot,eye,log,mean,exp,sqrt,cov,sum,var,isnan
 from mdp.utils import random_rot,symrand
 from natter.Transforms import LinearTransform
 from natter.Auxiliary.Numerics import logsumexp
@@ -78,19 +78,18 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 for k in xrange(K):
                     TS = sum(T[k,:])
                     X = data.X
-                    X = X*sqrt(T[k,:]/TS)*sqrt(m)
+                    X = X*exp(0.5*(log(T[k,:]) -log(TS) + log(m)))
                     C = cov(X) + eye(n)*1e-05
+                    if isnan(C).any():
+                        C = eye(n)
                     # C = cov(X)*(m-1) + eye(n)*1e-05 # add a ridge
                     Y = Data(sqrt(sum(dot(self.ps[k].param['W'].W,X)**2,axis=0)))
                     if 'q' in self.ps[k].primary:
                         self.ps[k].param['q'].estimate(Y)
 
                     if 'W' in self.ps[k].primary:
-                        try:
-                            self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
-                        except:
-                            print "C.shape: ", C.shape
-                            print "C: ", C
+                        self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
+
                 cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
                 diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
                 print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
