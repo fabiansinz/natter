@@ -5,8 +5,11 @@ from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
 from scipy.special import gammaln,digamma
 from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros
-from numpy.linalg import inv
+from numpy.linalg import inv,norm
 from numpy.random import randn
+
+from scipy import weave
+from scipy.weave import converters
 
 
 
@@ -87,7 +90,9 @@ class EllipticallyContourGamma(CompleteLinearModel):
             -(n/2)*log(pi) +gammaln(n/2) -log(2) + (1-n)*log(squareData.X)
         return y
 
-
+        
+        
+        
     def dldtheta(self,data):
         """
         Calculates the gradient with respect to the primary parameters on the data set given.
@@ -107,10 +112,29 @@ class EllipticallyContourGamma(CompleteLinearModel):
             W = self.param['W'].W
             wx2 = squareData.X
             v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
-            #            WXXT    = array( map(lambda x: dot(W,outer(x,x))[self.Wind]  ,data.X.T )).T
-            WXXT    = zeros((len(v),m))
-            for k in xrange(m):
-                WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
+            # WXXT    = zeros((len(v),m))
+            # for k in xrange(m):
+            #     WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
+            WXXT    = zeros((n,n,m))
+            code = """
+            for (int i=0;i<n;i++){
+               for (int j=0;j<n;j++){
+                  for (int l=0;l<m;l++){
+                     for (int u=0;u<n;u++){
+                        WXXT(i,j,l) += W(i,u)*X(u,l)*X(j,l);
+                    }
+                  }
+               }
+            }
+            """
+            X = data.X;
+            weave.inline(code,
+                         ['W', 'X', 'WXXT', 'n','m'],
+                         type_converters=converters.blitz,
+                         compiler = 'gcc')
+            WXXT = WXXT[self.Wind[0],self.Wind[1],:]
+            #print "difference norm: ",norm(WXXT-WXXT2)
+
             dldx    = self.param['q'].dldx(squareData)
             dnormdW = (1./wx2)* WXXT
             gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T

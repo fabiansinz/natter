@@ -122,8 +122,9 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 def df(arr):
                     self.array2primary(arr)
                     return -sum(self.dldtheta(data),axis=1)
+
                 arr0=self.primary2array()
-                arropt = optimize.fmin_bfgs(f,arr0,df,maxiter=3)
+                arropt = optimize.fmin_bfgs(f,arr0,df,maxiter=2)
             cALL=self.all(data)
             diff = abs(oldLP-cALL)/abs(oldLP) # relative difference...
             print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
