@@ -155,9 +155,10 @@ class Gamma(Distribution):
         logmean = log(mean(dat.X))
         meanlog = mean(log(dat.X))
         u=2.0
-
+        
         if 'u' in self.primary: # if we want to estimate u
             for k in range(self.maxCount):
+                u = max(u,1e-08)
                 unew= 1/u + (meanlog - logmean + log(u) - float(polygamma(0,u)))/ \
                       (u**2  * (1/u - float(polygamma(1,u))))
                 unew = 1/unew
@@ -168,7 +169,7 @@ class Gamma(Distribution):
             
             self.param['u'] = unew;
 
-        if 'u' in self.primary:
+        if 's' in self.primary:
             self.param['s'] = exp(logmean)/self.param['u'];
    
     

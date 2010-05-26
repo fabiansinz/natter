@@ -79,8 +79,9 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                     TS = sum(T[k,:])
                     X = data.X
                     X = X*exp(0.5*(log(T[k,:]) -log(TS) + log(m)))
-                    C = cov(X) + eye(n)*1e-05
+                    C = cov(X) + eye(n)*1e-03
                     if isnan(C).any():
+                        print "Uiuiui"
                         C = eye(n)
                     # C = cov(X)*(m-1) + eye(n)*1e-05 # add a ridge
                     Y = Data(sqrt(sum(dot(self.ps[k].param['W'].W,X)**2,axis=0)))
