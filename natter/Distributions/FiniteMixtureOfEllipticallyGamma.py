@@ -98,6 +98,6 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 oldLP = cALL
                 if diff<1e-08:
                     done=True
-                
+            
 
 
