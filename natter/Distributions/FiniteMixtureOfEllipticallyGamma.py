@@ -11,6 +11,10 @@ import sys
 from scipy import optimize
 from natter.Auxiliary import profileFunction
 
+from scipy import weave
+from scipy.weave import converters
+
+
 class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
     """
     Class for representing a finite mixture of elliptically Gamma-distributions.
@@ -80,8 +84,23 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                 for k in xrange(K):
                     TS = sum(T[k,:])
                     X = data.X
-                    X = X*exp(0.5*(log(T[k,:]) -log(TS) + log(m)))
+                    #X = X*exp(0.5*(log(T[k,:]) -log(TS) + log(m)))
                     C = zeros((n,n))
+                    code = """
+                           for (int g=0;g<m;g++){
+                                for (int i=0;i<n;i++){
+                                    for (int j=i;j<n;j++){
+                                       C(i,j)=C(j,i)+=X(i,g)*X(j,g)*T(k,g)/TS;
+                                    }
+                                }
+                            }
+                            return_val = C;
+                    """
+                    C = weave.inline(code,
+                                     ['C', 'X', 'T', 'k', 'n','m','TS'],
+                                     type_converters=converters.blitz,
+                                     compiler = 'gcc')
+
                     for l in xrange(m):
                         C = C + outer(X[:,l],X[:,l])*T[k,l]/TS
                     C = C + eye(n)*1e-02
