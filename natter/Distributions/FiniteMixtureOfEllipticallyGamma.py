@@ -96,13 +96,13 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                             }
                     """
                     U=T/TS;
-                    C = weave.inline(code,
-                                     ['C', 'X', 'U', 'k', 'n','m'],
-                                     type_converters=converters.blitz,
-                                     compiler = 'gcc')
+                    weave.inline(code,
+                                 ['C', 'X', 'U', 'k', 'n','m'],
+                                 type_converters=converters.blitz,
+                                 compiler = 'gcc')
 
-                    for l in xrange(m):
-                        C = C + outer(X[:,l],X[:,l])*T[k,l]/TS
+                    # for l in xrange(m):
+                    #     C = C + outer(X[:,l],X[:,l])*T[k,l]/TS
                     C = C + eye(n)*1e-02
                     if isnan(C).any():
                         print "Uiuiui"
