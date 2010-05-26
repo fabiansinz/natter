@@ -50,7 +50,7 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
         self.primary = ['alpha','theta']
         
         
-    def estimate(self,data,method=None):
+    def estimate(self,data,method=None,tol=1e-08):
         """
         Estimate the parameters of each ECG distribution using the EM
         algorithm by default.
@@ -130,7 +130,7 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
             print "\rrelative difference: " ,diff , "  current ALL: " , cALL ," ",
             sys.stdout.flush()
             oldLP = cALL
-            if diff<1e-08:
+            if diff<tol:
                 done=True
 
                         
