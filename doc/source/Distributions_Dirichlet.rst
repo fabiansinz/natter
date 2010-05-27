@@ -1,7 +1,7 @@
 Dirichlet Distribution
 ======================
 
-The density of the complete linear model has the form 
+The density of the Dirichlet distribution has the form
 
 .. math::
 
