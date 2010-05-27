@@ -74,6 +74,7 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
         done = False
         diff = 100
         oldLP = 10000
+        warnflag=0
         while not done:
             for k in xrange(K):
                 LP[k,:] = self.ps[k].loglik(data)  + log(self.alphas[k])
