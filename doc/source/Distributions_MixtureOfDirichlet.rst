@@ -1,4 +1,4 @@
-Mxiture of Dirichlet Distributions
+Mixture of Dirichlet Distributions
 ==================================
 
 The mixture of Dirichlet distributions has the form
