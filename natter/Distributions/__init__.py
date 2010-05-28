@@ -16,6 +16,9 @@ implements. At the moment it provides the following distributions.
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst
+   Distributions_MixtureOfDirichlet.rst
+   Distributions_MixtureOfGaussians.rst
+   Distributions_MixtureOfLogNormals.rst
 
 """
 

@@ -13,16 +13,23 @@ from Dirichlet import dirichlet_fit_m, dirichlet_fit_s, dirichletMomentMatch
 
 class MixtureOfDirichlet(Distribution):
     """
-      Mixture Of Dirichlet Distributions
+    Mixture of Dirichlet Distributions
 
-      Parameters and their defaults are:
+    
+    :param param:
+        dictionary which might containt parameters for the Mixture of Dirichlet Distributions
+              'K'    :    number of mixtures (default=3)
 
-         K:     number of mixtures (default K=3)
-         alpha: alpha parameters for the mixture components
-                (dimensions X mixtures)  default alpha=rand(3,K)
-         pi:    prior mixture probabilities (default normalized
-                random array of lenth L)
-         
+              'alpha':   alpha parameters for the mixture components (dimensions X mixtures)  default alpha=rand(3,K)
+
+               'pi'  :   prior mixture probabilities (default normalized random array of lenth L)
+
+               'n'   :   dimensionality (default=3)
+
+    :type param: dict
+
+    Primary parameters are ['pi','alpha'].
+        
     """
 
     maxiter = 1000
@@ -47,13 +54,17 @@ class MixtureOfDirichlet(Distribution):
         
         
     def sample(self,m):
-        '''
+        """
 
-           sample(m)
+        Samples m samples from the current mixture of Dirichlet distributions.
 
-           samples M examples from the mixture of Dirichlet distributions.
-           
-        '''
+        :param m: Number of samples to draw.
+        :type name: int.
+        :rtype: natter.DataModule.Data
+        :returns:  A Data object containing the samples
+
+
+        """
         u = rand(m)
         cum_pi = cumsum(self.param['pi'])
         k = array(m*[0])
@@ -70,6 +81,17 @@ class MixtureOfDirichlet(Distribution):
         return Data(X,str(m) + ' samples from a mixture of ' + str(self.param['K']) + ' Dirichlet distributions.')
     
     def loglik(self,dat):
+        '''
+
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+         
+           
+        '''
         ret = zeros((self.param['K'],dat.size(1)))
         for k in range(self.param['K']):
             ret[k,:]  = log(self.param['pi'][k]) + squeeze(self.__kloglik(dat,k))
@@ -78,6 +100,17 @@ class MixtureOfDirichlet(Distribution):
 
     
     def pdf(self,dat):
+        '''
+
+        Evaluates the probability density function on the data points,
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
+           
+        '''
+
         ret = zeros((dat.size(1)))
         for k in range(self.param['K']):
             ret  += self.param['pi'][k]*squeeze(exp(self.__kloglik(dat,k)))
@@ -85,6 +118,16 @@ class MixtureOfDirichlet(Distribution):
         #return exp(self.loglik(dat))
 
     def getPosteriorWeights(self,dat):
+        '''
+        Computes the posterior probabilities that a data point belongs to the kth mixture for all mixtures.
+
+        :param dat: Data points for which the posterior probabilities will be computed
+        :type dat: natter.DataModule.DataModule
+        :returns: An K X m matrix with the posterior probabilities where K is the number of mixtures and m is the number of data points.
+        :rtype: numpy.array
+        
+        
+        '''
         n,m = dat.size()
         K = self.param['K']
         eta = zeros((K,m))
@@ -94,6 +137,24 @@ class MixtureOfDirichlet(Distribution):
         return exp(eta)
 
     def estimate(self,dat,method='bfgs',initial_guess=True):
+        '''
+
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+        The estimation method uses EM to fit the mixture distribution. In the M-Step one can select between a gradient ascent on the bound or fixpoint iterations adapted from [Minka2000]_ via the parameter *method*. There is also a third option that computes the MAP over the mixture responsibilities and does a kmeans like update. 
+
+
+        The estimate methods computes an initial guess by moment matching like in [Minka2000]_. The initial guess can be switched off via the parameters *initial_guess*. 
+
+        :param dat: Data points on which the Mixture of Dirichlet distributions will be estimated.
+        :type dat: natter.DataModule.Data
+        :param method: selects the maximization method in the M-Step (either 'bfgs' (default) or 'fixpoint' or 'kmeans')
+        :type method: string
+        :param initial_guess: Determines whether there will be an initial guess or not.
+        :param initial_guess: boolean
+        
+        '''
+        
         n,m = dat.size()
         K = self.param['K']
         all_old = Inf

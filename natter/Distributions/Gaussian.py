@@ -1,10 +1,10 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag, exp, where, triu, tril, hstack, squeeze, array,vstack,outer,Inf,isnan,min,inner
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
-from natter.Auxiliary import debug
+#from natter.Auxiliary import debug
 from scipy import optimize
 
 class Gaussian(Distribution):
