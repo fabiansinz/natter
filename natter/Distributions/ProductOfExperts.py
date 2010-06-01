@@ -10,19 +10,31 @@ from scipy.optimize import fmin_l_bfgs_b
 
 
 class ProductOfExperts(Distribution):
+    """
+    Product of Experts Distribution
+
+    :param param:
+        dictionary which might containt parameters for the Gaussian
+
+             'potentials'  : List of 1D potentials (Auxiliary.Potential objects; default is a list of Potential(\'laplacian\') objects)
+         
+             'n':   Dimensionality of the input data (default n=2).
+         
+             'N':   Number of Filters (must be >= n)
+
+             'W': linear filter object (Default: 2n X n Linear Filter object)
+
+             'alpha': exponents ( ones((2*n)))
+
+
+    :type param: dict
+
+    Primary parameters are ['W','alpha'].
+        
+    """
     '''
       PRODUCT OF EXPERTS
 
-      implements a distribution of the form p(x) = prod q_i(w_i*x)^alpha_i, where W is
-      an tall matrix.
-
-      Parameters and their defaults are:
-
-         potentials: List of 1D potentials (Auxiliary.Potential objects; default is a list of Potential(\'laplacian\') objects)
-         n:   Dimensionality of the input data (default n=2).
-         N:   Number of Filters
-         W: linear filter object (Default: 2n X n Linear Filter object)
-         alpha: exponents ( ones((2*n)))
     '''
 
     maxiter = 100
