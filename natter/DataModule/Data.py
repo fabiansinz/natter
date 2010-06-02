@@ -133,7 +133,8 @@ class Data:
                 D = method
             else:
                 raise TypeError("method must be a string!")
-                
+
+        s = 1.0
         if method == 'project':
             if D == None:
                 n = self.size(0)

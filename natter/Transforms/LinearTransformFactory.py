@@ -3,8 +3,6 @@ import numpy as np
 import mdp
 from LinearTransform import LinearTransform
 from numpy import linalg
-from scipy import special
-from natter.Auxiliary import Errors
 from natter import Auxiliary
 import types
 
@@ -20,6 +18,10 @@ def fastICA(dat,whitened=True):
     ICA.whitened = whitened
     ICA.verbose = True
     ICA.train(dat.X.transpose())
+    # refine
+    ICA.g = 'gaus'
+    ICA.train(dat.X.transpose())
+    
     return LinearTransform(ICA.get_projmatrix().transpose(),'fast ICA filter computed on ' + dat.name)
     
     
