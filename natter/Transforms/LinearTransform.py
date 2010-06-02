@@ -4,9 +4,8 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
+from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape
 import types
-from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs
-
 class LinearTransform(Transform.Transform):
     '''
     LINEARTRANSFORM class representing linear filters.
@@ -110,7 +109,13 @@ class LinearTransform(Transform.Transform):
     def __getitem__(self,key):
         tmp = list(self.history)
         tmp.append('subsampled')
+            
         tmp2 = array(self.W[key])
+        if type(key[0]) == types.IntType:
+            tmp2 = reshape(tmp2,(1,len(tmp2)))
+        elif len(key) > 1 and type(key[1]) == types.IntType:
+            tmp2 = reshape(tmp2,(len(tmp2),1))
+            
         return LinearTransform(tmp2,self.name,tmp)
 
 
