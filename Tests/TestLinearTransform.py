@@ -33,6 +33,10 @@ class TestFilter(unittest.TestCase):
         sys.stdout.flush()
         W2= W[1,0:5]
         self.assertFalse(np.max(np.abs(W2.W - W.W[1,0:5]).flatten()) > self.Tol, 'Subsampling does not work properly!')
+        self.assertTrue(W2.W.shape == (1,5), 'Reshaping after subsampling does not work properly!')
+        
+
+        
         
         
         
