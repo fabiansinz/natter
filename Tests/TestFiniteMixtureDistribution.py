@@ -38,6 +38,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
 
         self.data = self.mixture.sample(self.nsamples)
         self.ALL = sum(self.mixture.loglik(self.data))
+        
     def test_init(self):
         pass
 

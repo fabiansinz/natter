@@ -45,3 +45,4 @@ from FiniteMixtureDistribution import FiniteMixtureDistribution
 from FiniteMixtureOfGaussians import FiniteMixtureOfGaussians
 from EllipticallyContourGamma import EllipticallyContourGamma
 from FiniteMixtureOfEllipticallyGamma import FiniteMixtureOfEllipticallyGamma
+from Boltzmann import Boltzmann

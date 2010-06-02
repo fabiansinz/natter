@@ -2,7 +2,7 @@ import pickle
 import os
 import cProfile
 import lsprofcalltree
-
+from copy import deepcopy
 
 def save(o,filename):
     tmp = filename.split('.')
@@ -53,3 +53,13 @@ def profileFunction(f):
     data.close()
     cmd = "kcachegrind %s" % filename
     os.system(cmd)
+
+def fillDict(default,dic):
+    ret = deepcopy(default)
+    if dic==None:
+        return ret
+    else:
+        for key in default.keys():
+            if key in dic.keys():
+                ret[key]=dic[key]
+    return ret

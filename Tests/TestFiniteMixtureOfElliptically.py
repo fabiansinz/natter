@@ -45,6 +45,7 @@ class TestEllipticallyContourGamma(unittest.TestCase):
         self.MECG.estimate(self.data)
         print "Difference in ALL (MOG -MECG): ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
         print self.MECG
+        
 ##################################################################################################
 
 if __name__=="__main__":
