@@ -9,12 +9,13 @@ import string
 
 class Distribution:
 
-    param = {}
-    name = 'Abstract Distribution'
-    primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted
-
-    def __init__(self,param):
-        self.param = {}
+    def __init__(self,param=None):
+        if param!=None:
+            self.param = param
+        else:
+            self.param = {}
+        self.name = 'Abstract Distribution'
+        self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted        
         
 
     def setParam(self,key,value):
