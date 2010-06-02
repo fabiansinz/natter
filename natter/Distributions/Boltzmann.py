@@ -48,7 +48,7 @@ class Boltzmann(Distribution):
         if 'logZ' in param.keys():
             self.param['logZ'] = param['logZ']
         else:
-            self.param['logZ'] = log(sum( exp(self.param['h']) + len(self.param['h'])))
+            self.param['logZ'] = sum( log(exp(self.param['h']) + 1.0))
         self.name = "Boltzmann distribution with " + str(self.param['n']) + " binary nodes"
         self.primary = ['L','h']        # by default we only want to fit the
                                         # connection matrix and the bias term
@@ -123,7 +123,6 @@ class Boltzmann(Distribution):
             state = (randn(n)>0)*1
             ind = range(n)
             J = self.param['L'] +self.param['L'].T # get connection matrix
-            print "J : ", J
             for k in xrange(param['burnIn']):
                 shuffle(ind)            # shuffle in place for random conditional
                 for i in ind:
@@ -182,7 +181,7 @@ class Boltzmann(Distribution):
             else:
                 nsamples = 1000*self.param['n']**2
             self.param['logZ']=0.0
-            print "sampler : ", sampler
+
             X = sampler.sample(nsamples)
             logweights = self.loglik(X) - sampler.loglik(X)
             self.param['logZ'] = logsumexp(logweights) -log(nsamples)
