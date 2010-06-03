@@ -14,7 +14,7 @@ class ProductOfExperts(Distribution):
     Product of Experts Distribution
 
     :param param:
-        dictionary which might containt parameters for the Gaussian
+        dictionary which may contain initial parameters for the Product of Experts
 
              'potentials'  : List of 1D potentials (Auxiliary.Potential objects; default is a list of Potential(\'laplacian\') objects)
          
@@ -32,11 +32,6 @@ class ProductOfExperts(Distribution):
     Primary parameters are ['W','alpha'].
         
     """
-    '''
-      PRODUCT OF EXPERTS
-
-    '''
-
     maxiter = 100
     Tol = 1e-4
 
@@ -57,6 +52,16 @@ class ProductOfExperts(Distribution):
         self.primary = ['potentials','W','alpha']
 
     def estimate(self,dat):
+
+        '''
+
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+        The Product of Experts is estimated with score matching [Hyvarinen2005]_.
+
+        :param dat: Data points on which the Product of Experts will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
 
         print "\tEstimating parameters of Product of Experts...\n"
         stdout.flush()

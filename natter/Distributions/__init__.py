@@ -20,6 +20,7 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExperts.rst
+   Distributions_ProductOfExponentialPowerDistributions.rst
 """
 
 
