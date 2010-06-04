@@ -88,3 +88,19 @@ class ProductOfExponentialPowerDistributions(Distribution):
         
     
 
+    def dldx(self,dat):
+        """
+
+        Returns the derivative of the log-likelihood of the Product of Exponential Power distributions w.r.t. the data in dat. 
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the derivatives.
+        :rtype:    numpy.array
+        
+        """
+        ret = zeros(dat.size())
+        for i in xrange(self.param['n']):
+            ret[i,:] = self.param['P'][i].dldx(dat[i,:])
+        return ret
+        
