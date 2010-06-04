@@ -13,6 +13,7 @@ implements. At the moment it provides the following distributions.
    Distributions_Gamma.rst
    Distributions_GammaP.rst
    Distributions_Gaussian.rst
+   Distributions_ISA.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst
@@ -47,3 +48,4 @@ from FiniteMixtureOfGaussians import FiniteMixtureOfGaussians
 from EllipticallyContourGamma import EllipticallyContourGamma
 from FiniteMixtureOfEllipticallyGamma import FiniteMixtureOfEllipticallyGamma
 from Boltzmann import Boltzmann
+from ISA import ISA

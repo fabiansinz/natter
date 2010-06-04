@@ -62,7 +62,7 @@ class LpSphericallySymmetric(Distribution):
     def dldx(self,dat):
         """
 
-        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
+        Returns the derivative of the log-likelihood of the distribution w.r.t. the data in dat. 
         
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
