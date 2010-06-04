@@ -4,7 +4,7 @@ from numpy import log, abs, sign, exp, mean
 from numpy.random import gamma, randn
 from scipy.special import gammaln
 from scipy.optimize import fminbound
-
+import types
 class ExponentialPower(Distribution):
     """
     Exponential Power Distribution
@@ -111,7 +111,9 @@ class ExponentialPower(Distribution):
 
         if 'p' in self.primary:
             func = lambda t: self.__objective(t,dat,'s' in self.primary)
-            p = fminbound(func, 0.0, 100.0)[0]
+            p = fminbound(func, 0.0, 100.0)
+            if type(p) == types.TupleType:
+                p = p[0]
             self.param['p'] = p
 
         if 's' in self.primary:
