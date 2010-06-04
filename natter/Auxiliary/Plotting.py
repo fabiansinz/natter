@@ -66,8 +66,8 @@ def plotPatches( B , nx, ptchSz,ax=None):
         nx = int(nx)
         ny = int(nx)
     
-    p = ptchSz**2
-    sz = np.size(A,0)
+    # p = ptchSz**2
+    # sz = np.size(A,0)
     
     A -= np.min(np.min(A))
     A /= np.max(np.max(A))
@@ -95,9 +95,8 @@ def plotPatches( B , nx, ptchSz,ax=None):
         ax.plot(np.array([-.5,nx*ptchSz-.5]),np.array([i*ptchSz-.5,i*ptchSz-.5]),color='black')
 
     if doShow:
-        print "I do show!"
         ax.axis('tight')
         ax.axis('off')
-        ax.show()
+        #ax.show()
     
     

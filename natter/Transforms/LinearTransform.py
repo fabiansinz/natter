@@ -6,6 +6,7 @@ from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape
 import types
+
 class LinearTransform(Transform.Transform):
     '''
     LINEARTRANSFORM class representing linear filters.
@@ -27,12 +28,12 @@ class LinearTransform(Transform.Transform):
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
         Plotting.plotPatches(inv(self.W),nx,ptchSz)
-
+    
     def plotFilters(self):
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
         Plotting.plotPatches(self.W.transpose(),nx,ptchSz)
-
+        
     def __invert__(self):
         sh = shape(self.W)
         if sh[0] == sh[1]:
