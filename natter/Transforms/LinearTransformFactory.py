@@ -12,15 +12,14 @@ import types
 def fastICA(dat,whitened=True):
     sampsize = 1
     if dat.size(1) > 500000:
-      sampsize =  500000.0/dat.size(1)
-    # g = 'gaus'?
+        sampsize =  500000.0/dat.size(1)
     ICA = mdp.nodes.FastICANode(input_dim=dat.size(0),approach='symm',stabilization=True,sample_size=sampsize,max_it=10000,max_it_fine=1000)
     ICA.whitened = whitened
     ICA.verbose = True
-    ICA.train(dat.X.transpose())
+    ICA.train(dat.X.T)
     # refine
-    ICA.g = 'gaus'
-    ICA.train(dat.X.transpose())
+    # ICA.g = 'gaus'
+    # ICA.train(dat.X.transpose())
     
     return LinearTransform(ICA.get_projmatrix().transpose(),'fast ICA filter computed on ' + dat.name)
     
