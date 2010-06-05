@@ -8,6 +8,12 @@
     :file "conf.py"
     :pointmax 6608
     )
+   (semanticdb-table "DataModule_Data.py"
+    :major-mode 'python-mode
+    :tags '(("submodule" code nil nil [17 26]) ("natter" code nil nil [70 99]))
+    :file "DataModule_Data.py"
+    :pointmax 157
+    )
    )
   :file "semantic.cache"
   :semantic-tag-version "2.0pre4"

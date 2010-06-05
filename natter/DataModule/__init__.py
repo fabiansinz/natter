@@ -5,6 +5,7 @@ The DataModule module stores all data objects and helper modules.
 .. toctree::
    :maxdepth: 2
    
+   DataModule_Data.rst
    DataModule_DataSampler.rst
 
 """
