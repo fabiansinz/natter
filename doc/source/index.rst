@@ -12,9 +12,10 @@ Contents:
    :maxdepth: 2
    
    tutorial.rst
+   Auxiliary.rst
    DataModule.rst
    Distributions.rst
-   Auxiliary.rst
+   Transforms.rst
 
 Indices and tables
 ==================
