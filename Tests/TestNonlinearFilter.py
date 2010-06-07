@@ -16,11 +16,9 @@ class TestNonlinearFilter(unittest.TestCase):
         sys.stdout.flush()
         p = np.random.rand()+1.0
         psource = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':2.0*np.random.rand()+1.0,'s':5.0*np.random.rand()+1.0})})
+        ptarget = Distributions.LpGeneralizedNormal({'p':p,'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0)})
 
         F = NonlinearTransformFactory.RadialFactorization(psource)
-
-
-        ptarget = Distributions.LpGeneralizedNormal({'p':p,'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0)})
 
         dat = psource.sample(10000)
         ld = F.logDetJacobian(dat)
@@ -37,29 +35,50 @@ class TestNonlinearFilter(unittest.TestCase):
         prot["ALL(TARGET)"] = all_target
         prot["ALL(SOURCE)"] = all_source
         prot["ALL(TARGET) + 1/n/log(2) * <|det J|> - ALL(SOURCE)"] = all_target + ld - all_source
+
+        # -------------------------------------------------------
+        # L = Auxiliary.LpNestedFunction('(0,0:2)',np.array([p]))
+        # psource2 = Distributions.LpNestedSymmetric({'f':L,'n':2.0,'rp':psource.param['rp'].copy()})
+        # F2 = NonlinearTransformFactory.LpNestedNonLinearICA(psource2)
+
+        # ld2 = F2.logDetJacobian(dat)
+        # ld2 = np.mean(np.abs(ld2)) / dat.size(0) / np.log(2)
+        
+        # all_source2 = psource2.all(dat)
+
+        # print all_target + ld - all_source
+        # print all_target + ld2 - all_source2        
+        # -------------------------------------------------------
+
         
         self.assertTrue(np.abs(all_target + ld - all_source) < tol,Auxiliary.testProtocol(prot))
 
-    def test_DeterminantOfRadialFactorization(self):
-        print "Testing Determimant of Radial Factorization ..."
-        sys.stdout.flush()
-        p = np.random.rand()+1.0
-        psource = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':2.0*np.random.rand()+1.0,'s':5.0*np.random.rand()+1.0})})
-        dat = psource.sample(100)
+    # def test_DeterminantOfRadialFactorization(self):
+    #     print "Testing Determimant of Radial Factorization ..."
+    #     sys.stdout.flush()
+    #     p = np.random.rand()+1.0
+    #     psource = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':2.0*np.random.rand()+1.0,'s':5.0*np.random.rand()+1.0})})
 
-        F = NonlinearTransformFactory.RadialFactorization(psource)
-        n,m = dat.size()
-        h = 1e-7
-        logdetJ = F.logDetJacobian(dat)
-        for i in range(m):
-            J = np.zeros((n,n))
-            for j in range(n):
-                tmp = dat[:,i]
-                tmp2 = tmp.copy()
-                tmp2.X[j,:] = tmp2.X[j,:] + h
-                J[:,j] = ((F*tmp2).X-(F*tmp).X)[:,0]/h
-            self.assertFalse( np.abs(np.log(linalg.det(J)) - logdetJ[i]) > self.DetTol,\
-                              'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
+    #     # L = Auxiliary.LpNestedFunction('(0,0:2)',np.array([p]))
+    #     # psource2 = Distributions.LpNestedSymmetric({'f':L,'n':2.0,'rp':psource.param['rp'].copy()})
+    #     # F2 = NonlinearTransformFactory.LpNestedNonLinearICA(psource2)
+
+
+    #     dat = psource.sample(100)
+    #     F = NonlinearTransformFactory.RadialFactorization(psource)
+
+    #     n,m = dat.size()
+    #     h = 1e-7
+    #     logdetJ = F.logDetJacobian(dat)
+    #     for i in range(m):
+    #         J = np.zeros((n,n))
+    #         for j in range(n):
+    #             tmp = dat[:,i]
+    #             tmp2 = tmp.copy()
+    #             tmp2.X[j,:] = tmp2.X[j,:] + h
+    #             J[:,j] = ((F*tmp2).X-(F*tmp).X)[:,0]/h
+    #         self.assertFalse( np.abs(np.log(linalg.det(J)) - logdetJ[i]) > self.DetTol,\
+    #                           'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
 
 
 
