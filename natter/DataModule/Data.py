@@ -140,9 +140,10 @@ class Data:
         """
         name = ''
         scaledwhat = ''
+
         if not (type(s) == ndarray): # then we assume that s is a data object
-            s = s.X
             name = s.name
+            s = s.X
         else:
             name = 'array'
             

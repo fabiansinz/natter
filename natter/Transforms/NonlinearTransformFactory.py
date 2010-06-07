@@ -23,8 +23,7 @@ def RadialFactorization(psource):
     """
     if not isinstance(psource,LpSphericallySymmetric):
         raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
-    ptarget = LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0),\
-                                                'p':psource.param['p']})
+    ptarget = LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0), 'p':psource.param['p']})
     return RadialTransformation(psource,ptarget)
 
 def RadialTransformation(psource,ptarget):
@@ -138,3 +137,4 @@ def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     r2 = ptarget.ppf(psource.cdf(r))
     n = L.n[()]
     return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+
