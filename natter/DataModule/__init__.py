@@ -6,6 +6,7 @@ The DataModule module stores all data objects and helper modules.
    :maxdepth: 2
    
    DataModule_Data.rst
+   DataModule_DataLoader.rst
    DataModule_DataSampler.rst
 
 """

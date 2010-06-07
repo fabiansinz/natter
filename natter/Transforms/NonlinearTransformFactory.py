@@ -8,14 +8,40 @@ from natter.Auxiliary import Errors
 ################################ NONLINEAR FILTERS ########################################
 
 def RadialFactorization(psource):
+    """
+    Creates a non-linear transformation that maps a radial
+    distribution of any Lp-spherically symmetric distribution into the
+    radial distribution of a Lp-generalized Normal distribution. The
+    resulting filter acts on samples from the original
+    distribution. For further details see ([SinzBethge2009]_).
+
+    :param psource: Source distribution which must be Lp-spherically symmetric
+    :type psource: natter.Distributions.LpSphericallySymmetric
+    :returns: A non-linear filter that maps samples from psource into samples from a Lp-generalized Normal.
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    """
     if not isinstance(psource,LpSphericallySymmetric):
         raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
     ptarget = LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0),\
                                                 'p':psource.param['p']})
-    print ptarget
     return RadialTransformation(psource,ptarget)
 
 def RadialTransformation(psource,ptarget):
+    """
+    Creates a non-linear transform that maps samples from one
+    Lp-spherically symmetric distribution into that of another by
+    histogram equalization on the radial component (see [SinzBethge2009]_).
+
+    :param psource: Source distribution which must be Lp-spherically symmetric
+    :type psource: natter.Distributions.LpSphericallySymmetric
+    :param ptarget: Target distribution which must be Lp-spherically symmetric
+    :type ptarget: natter.Distributions.LpSphericallySymmetric
+    :returns: A non-linear filter that maps samples from psource into samples from ptarget.
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    
+    """
     if ptarget.param['p'] != psource.param['p']:
         raise Errors.ValueError('Values of p must agree')
     p = ptarget.param['p']
@@ -27,6 +53,23 @@ def RadialTransformation(psource,ptarget):
     return NonlinearTransform(g,name,logdetJ=gdet)
 
 def logDetJacobianRadialTransform(dat,psource,ptarget,p):
+    """
+    Computes the log-determinant of the transformation between two
+    Lp-spherically symmetric distributions (see additional material of
+    [SinzBethge2009]_).
+
+    :param dat: Points at which the log-determinant is to be computed.
+    :type dat: natter.DataModule.Data
+    :param psource: Source distribution which must be Lp-spherically symmetric
+    :type psource: natter.Distributions.LpSphericallySymmetric
+    :param ptarget: Target distribution which must be Lp-spherically symmetric
+    :type ptarget: natter.Distributions.LpSphericallySymmetric
+    :param p: p of the Lp-norm
+    :type p: float
+    :returns: log-determinant
+    :rtype: float
+    
+    """
     r = dat.norm(p)
     r2 = ptarget.ppf(psource.cdf(r))
     n = dat.size(0)
@@ -37,6 +80,17 @@ def logDetJacobianRadialTransform(dat,psource,ptarget,p):
 #################################################
 
 def LpNestedNonLinearICA(p):
+    """
+    Creates a non-linera filter that maps the samples from the
+    Lp-nested symmetric distribution *p* into samples from a Product
+    of Exponential Power distributions (see [SinzBethge2010]_).
+
+    :param p: Lp-nested symmetric source distribution.
+    :type p: natter.Distributions.LpNestedSymmetric
+    :returns: non-linear transform
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    """
     L = p.param['f'].copy()
     rp = p.param['rp'].copy()
 
@@ -61,6 +115,25 @@ def getLpNestedNonLinearICARec(rp,L,mind):
     return F
     
 def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
+    """
+    Computes the log-determinant of the transformation between two
+    Lp-nested symmetric distributions in the Lp-nested symmetric ICA
+    (as described in [SinzBethge2010]_). Note that the non-linear
+    filter created with *LpNestedNonLinearICA* provides a
+    log-determinant.
+
+    :param dat: Points at which the log-determinant is to be computed.
+    :type dat: natter.DataModule.Data
+    :param psource: Source distribution
+    :type psource: natter.Distributions.LpSphericallySymmetric
+    :param ptarget: Target distribution
+    :type ptarget: natter.Distributions.LpNestedSymmetric
+    :param L: Lp-nested function
+    :type L: natter.Auxiliary.LpNestedFunction
+    :returns: log-determinant
+    :rtype: float
+    
+    """
     r = L(dat)
     r2 = ptarget.ppf(psource.cdf(r))
     n = L.n[()]
