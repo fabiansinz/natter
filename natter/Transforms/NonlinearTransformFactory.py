@@ -1,4 +1,4 @@
-from numpy import log
+from numpy import log, abs
 from natter.Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
 from scipy import special

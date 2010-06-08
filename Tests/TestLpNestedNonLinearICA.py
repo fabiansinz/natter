@@ -1,5 +1,6 @@
+from __future__ import division
 import unittest
-from  natter.Distributions import ProductOfExponentialPowerDistributions, LpNestedSymmetric, LpSphericallySymmetric, LpGeneralizedNormal
+from  natter.Distributions import ProductOfExponentialPowerDistributions, LpNestedSymmetric, LpSphericallySymmetric, LpGeneralizedNormal, Gamma
 import sys
 from  natter.Auxiliary import LpNestedFunction, testProtocol
 from natter.Transforms import NonlinearTransformFactory
@@ -16,23 +17,18 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
     def test_NonlinearTransform(self):
         print "Comparing ALL before and after Nonlinear transformation ..."
         sys.stdout.flush()
-        L = LpNestedFunction('(0,0:2)',np.array([1.3]))
-        pnd = LpNestedSymmetric({'f':L})
+        #L = LpNestedFunction('(0,0:2,(1,2:4,(2,4:6)),(2,6:8,(3,8:10)))',np.array([1.3,1.1,0.8,1.8]))
+        L = LpNestedFunction()
+        n = L.n[()]
+        pnd = LpNestedSymmetric({'f':L,'rp':Gamma({'u':np.sqrt(n),'s':3.0*n})})
 
-        # --------------------------
-        # pssd = LpSphericallySymmetric({'n':2,'rp':pnd.param['rp'].copy(),'p':L.p[0]})
-        # F2 = NonlinearTransformFactory.RadialFactorization(pssd)
-        ##---------------------------
-
-        dat = pnd.sample(10000)
+        dat = pnd.sample(50000)
         F = NonlinearTransformFactory.LpNestedNonLinearICA(pnd)
 
         dat2 = F*dat
         
         ica = ProductOfExponentialPowerDistributions({'n':pnd.param['f'].n[()]})
-
-        #p = L.p[0]
-        #        ica2 = LpGeneralizedNormal({'p':p,'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0)})
+               
 
         ica.estimate(dat2)
         ld = F.logDetJacobian(dat)
@@ -46,30 +42,30 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
         prot["1/n/log(2) * <|det J|> "] = ld
         prot["ALL(ICA)"] = icaall
         prot["ALL(PND)"] = pndall
-        prot["ALL(ICA) - 1/n/log(2) * <|det J|> - ALL(PND)"] = icaall - ld - pndall
-        self.assertFalse(np.abs(icaall - ld - pndall) > self.allTol,testProtocol(prot))
+        prot["ALL(ICA) - 1/n/log(2) * <|det J|> - ALL(PND)"] = icaall + ld - pndall
+        self.assertFalse(np.abs(icaall + ld - pndall) > self.allTol,testProtocol(prot))
 
-    # def test_CheckDeterminant(self):
-    #     print "Testing determinant ..."
-    #     sys.stdout.flush()
-    #     L = LpNestedFunction()
-    #     pnd = LpNestedSymmetric({'f':L})
+    def test_CheckDeterminant(self):
+        print "Testing determinant ..."
+        sys.stdout.flush()
+        L = LpNestedFunction()
+        pnd = LpNestedSymmetric({'f':L})
 
-    #     dat = pnd.sample(10)
+        dat = pnd.sample(10)
         
-    #     F = NonlinearTransformFactory.LpNestedNonLinearICA(pnd)
-    #     n,m = dat.size()
-    #     h = 1e-7
-    #     logdetJ = F.logDetJacobian(dat)
-    #     for i in range(m):
-    #         J = np.zeros((n,n))
-    #         for j in range(n):
-    #             tmp = dat[:,i]
-    #             tmp2 = tmp.copy()
-    #             tmp2.X[j,:] = tmp2.X[j,:] + h
-    #             J[:,j] = ((F*tmp2).X-(F*tmp).X)[:,0]/h
-    #         self.assertFalse( np.abs(np.log(linalg.det(J)) - logdetJ[i]) > self.DetTol,\
-    #                           'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
+        F = NonlinearTransformFactory.LpNestedNonLinearICA(pnd)
+        n,m = dat.size()
+        h = 1e-7
+        logdetJ = F.logDetJacobian(dat)
+        for i in range(m):
+            J = np.zeros((n,n))
+            for j in range(n):
+                tmp = dat[:,i]
+                tmp2 = tmp.copy()
+                tmp2.X[j,:] = tmp2.X[j,:] + h
+                J[:,j] = ((F*tmp2).X-(F*tmp).X)[:,0]/h
+            self.assertFalse( np.abs(np.log(linalg.det(J)) - logdetJ[i]) > self.DetTol,\
+                              'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
 
 
 

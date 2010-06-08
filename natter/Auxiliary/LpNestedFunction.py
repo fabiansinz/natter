@@ -11,7 +11,7 @@ import Plotting
 
 class LpNestedFunction:
 
-    def __init__(self, tree="(0,0,(1,1,(3,2,3,4,5),6,7),8:11,11,(2,12:16,16,(4,17,18,19:22,22),23),24)", p=None):
+    def __init__(self, tree=None, p=None):
         """
         Constructs an LpNestedFunction object. The tree structure is
         passed by the context-sensitive expression tree. The grammar for tree is
@@ -33,6 +33,8 @@ class LpNestedFunction:
         :type p: numpy.array
         
         """
+        if tree == None:
+            tree = "(0,0,(1,1,(3,2,3,4,5),6,7),8:11,11,(2,12:16,16,(4,17,18,19:22,22),23),24)"
         self.tree = parsetree(tree)
         self.n = parseNoLeaves(self.tree,(),{})
         self.l = parseNoChildren(self.tree,(),{})
