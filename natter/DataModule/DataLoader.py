@@ -1,4 +1,4 @@
-import Data
+from natter.DataModule import Data
 from scipy import io
 import pickle
 from natter.Auxiliary import Errors
@@ -50,7 +50,7 @@ def matlab(path, varname=None):
     """
     dat = io.loadmat(path,struct_as_record=True)
     if varname:
-        return Data.Data(dat[varname],'Matlab data from ' + path)
+        return Data(dat[varname],'Matlab data from ' + path)
     else:
         thekey = None
         maxdat = 0
@@ -60,7 +60,7 @@ def matlab(path, varname=None):
                 if sh[0]*sh[1] > maxdat:
                     maxdat = sh[0]*sh[1]
                     thekey = k
-        return Data.Data(dat[thekey],'Matlab variable ' + thekey + ' from ' + path)
+        return Data(dat[thekey],'Matlab variable ' + thekey + ' from ' + path)
 
 def nisdetDataObject(path,varname='dat'):
     """
@@ -76,7 +76,7 @@ def nisdetDataObject(path,varname='dat'):
     
     """
     dat = io.loadmat(path,struct_as_record=True)[varname][0][0][1]
-    return Data.Data(dat,'Data from NISDET data object ' + varname + ' from ' + path)
+    return Data(dat,'Data from NISDET data object ' + varname + ' from ' + path)
 
 def ascii(path):
     """
@@ -93,7 +93,7 @@ def ascii(path):
     for l in f:
         X.append([float(elem) for elem in l.rstrip().lstrip().split()])
     f.close()
-    return Data.Data(array(X),'Ascii file read from ' + path)
+    return Data(array(X),'Ascii file read from ' + path)
     
 def pydat(path):
     """
@@ -142,7 +142,7 @@ def libsvm(path,n=1):
             print ind
         X[i,ind] = val
         i += 1
-    dat = Data.Data(X.transpose(),'Data from ' + path )
+    dat = Data(X.transpose(),'Data from ' + path )
     dat.history.append('loaded from ' + path)
     dat.history.append('converted from libsvm format')
     return dat
