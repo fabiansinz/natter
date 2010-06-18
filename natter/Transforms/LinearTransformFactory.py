@@ -6,6 +6,7 @@ from numpy import linalg
 from natter import Auxiliary
 import types
 
+
 ################################ LINEAR FILTERS ########################################
 
 
@@ -13,15 +14,16 @@ def fastICA(dat,whitened=True):
     sampsize = 1
     if dat.size(1) > 500000:
         sampsize =  500000.0/dat.size(1)
-    ICA = mdp.nodes.FastICANode(input_dim=dat.size(0),approach='symm',stabilization=True,sample_size=sampsize,max_it=10000,max_it_fine=1000)
+    ICA = mdp.nodes.FastICANode(input_dim=dat.size(0),limit=1e-5, fine_gaus=1.0, fine_g='gaus', g='gaus',\
+                                mu=1.0,  approach='symm',stabilization=True,sample_size=sampsize,\
+                                max_it=1000,max_it_fine=20)
     ICA.whitened = whitened
     ICA.verbose = True
     ICA.train(dat.X.T)
     # refine
     # ICA.g = 'gaus'
     # ICA.train(dat.X.transpose())
-    
-    return LinearTransform(ICA.get_projmatrix().transpose(),'fast ICA filter computed on ' + dat.name)
+    return LinearTransform(Auxiliary.Optimization.projectOntoSt(ICA.get_projmatrix(False)),'fast ICA filter computed on ' + dat.name)
     
     
 
@@ -31,6 +33,8 @@ def wPCA(dat):
     wPCA.train(dat.X.transpose())
     return LinearTransform(wPCA.get_projmatrix().transpose(),'Whitening PCA filter computed on ' + dat.name)
     
+def DCAC(dat):
+    return DCnonDC(dat)
 
 def DCnonDC(dat):
     n = dat.size(0)

@@ -1,7 +1,9 @@
 from scipy.maxentropy import maxentutils 
-from numpy import asarray, log, exp, array, where, float64, shape, reshape
+from numpy import asarray, log, exp, array, where, float64, shape, reshape, size
 from scipy import special
 import types
+from Errors import DimensionalityError
+
 
 
 def logsumexp(a, axis=None):

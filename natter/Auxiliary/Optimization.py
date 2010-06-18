@@ -1,7 +1,8 @@
 from __future__ import division
 from sys import stdout 
-from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, sign, Inf, max, dot, real,sin, sum, min,array
-from numpy.linalg import svd
+from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, Inf, max, dot, real,sin,  min,array
+#from numpy.linalg import svd
+from scipy.linalg import sqrtm, inv
 from scipy.optimize import fminbound
 from scipy.optimize import fmin
 from natter.Auxiliary import Errors
@@ -256,9 +257,10 @@ def StGradient(func, X, param0=None, *args):
     return (X,ftmax,param)
 
 def projectOntoSt(C):
-    (u,d,v) = svd(C,full_matrices=False)
-    return dot(u,v)
-
+    # (u,d,v) = svd(C,full_matrices=False)
+    # return dot(u,v)
+    return real( dot(  inv(sqrtm(dot(C,C.T)))  ,C) )
+    
 def checkGrad(f,x,tol,*args):
     """
     BOOL = CHECKGRAD(FUNC, X, TOL, *ARGS)
