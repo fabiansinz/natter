@@ -35,33 +35,36 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
                                            baseDistribution=baseDistribution)
         
     def estimate(self,dat,verbose=False):
+        """
+        estimate the parameters of the mixture of Gaussians using a standard EM algorithm.
+        """
         n,m = dat.size()
-        K   = self.numberOfMixtureComponents
+        K   = self.param['numberOfMixtureComponents']
         T = zeros((K,m))
         LP = zeros((K,m))
         diff = 100
         oldLP = 10000
         while diff>1e-09:
             for k in xrange(K):
-                LP[k,:] = self.ps[k].loglik(dat)  + log(self.alphas[k])
+                LP[k,:] = self.param['ps'][k].loglik(dat)  + log(self.param['alphas'][k])
             for k in xrange(K):
                 T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-            self.alphas = mean(T,axis=1)
+            self.param['alphas'] = mean(T,axis=1)
             for k in xrange(K):
                 TS = sum(T[k,:])
-                if 'mu' in self.ps[k].primary:
-                    self.ps[k].param['mu'] = sum(dat.X*T[k,:]/TS,axis=1)
-                if 'sigma' in self.ps[k].primary:
+                if 'mu' in self.param['ps'][k].primary:
+                    self.param['ps'][k].param['mu'] = sum(dat.X*T[k,:]/TS,axis=1)
+                if 'sigma' in self.param['ps'][k].primary:
                     X = dat.X
                     n,m = X.shape
-                    Y= (X - kron(reshape(self.ps[k].param['mu'],(n,1)),ones((1,m))))
+                    Y= (X - kron(reshape(self.param['ps'][k].param['mu'],(n,1)),ones((1,m))))
                     Y = Y*sqrt(T[k,:]/TS)
                     C = cov(Y)*(m-1) + eye(n)*1e-05 # add a ridge
                     # C = zeros((n,n))
                     # for l in xrange(m):
                     #     C = C + (T[k,l]/TS)*outer(Y[:,l],Y[:,l])
-                    self.ps[k].param['sigma'] = C
-                    self.ps[k].cholP[self.ps[k].I] = solve(cholesky(self.ps[k].param['sigma']),eye(n))[self.ps[k].I]
+                    self.param['ps'][k].param['sigma'] = C
+                    self.param['ps'][k].cholP[self.param['ps'][k].I] = solve(cholesky(self.param['ps'][k].param['sigma']),eye(n))[self.param['ps'][k].I]
 
 
             cALL=sum(-(T*LP).flatten())/(n*m)/log(2)

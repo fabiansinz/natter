@@ -26,7 +26,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         self.mixture.ps[1].param['sigma'] =C2
         self.mixture.ps[1].cholP  = cholesky(inv(C2))
         self.mixture.alphas = array([0.6,0.4])
-
+        self.mixture.etas = array([log(1/self.mixture.alphas[0] -1)])
         self.GaussMixture = FiniteMixtureOfGaussians(numberOfMixtureComponents=2,dim=dim,primary=['sigma'])
         C1 =  eye(dim)*5 + ones((dim,dim))
         C2 =  eye(dim)*5  -ones((dim,dim))
@@ -35,7 +35,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         self.GaussMixture.ps[1].param['sigma'] =C2
         self.GaussMixture.ps[1].cholP  = cholesky(inv(C2))
         self.GaussMixture.alphas = array([0.6,0.4])
-
+        self.GaussMixture.etas = array([log(1/self.GaussMixture.alphas[0] -1)])
         self.data = self.mixture.sample(self.nsamples)
         self.ALL = sum(self.mixture.loglik(self.data))
         
@@ -68,6 +68,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
 
         arrStart = self.mixture.primary2array()
         self.mixture.alphas = array([0.8,0.2])
+        self.mixture.etas = array([log(1/self.mixture.alphas[0] -1)])
         self.mixture.estimate(self.data,verbose=True)
         arrEnd   = self.mixture.primary2array()
         print "ground truth: " , arrStart
@@ -78,6 +79,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
 
         arrStart = self.GaussMixture.primary2array()
         self.GaussMixture.alphas = array([0.8,0.2])
+        self.GaussMixture.etas = array([log(1/self.GaussMixture.alphas[0] -1)])
         self.GaussMixture.estimate(self.data,verbose=True)
         arrEnd   = self.GaussMixture.primary2array()
         print "ground truth: " , arrStart

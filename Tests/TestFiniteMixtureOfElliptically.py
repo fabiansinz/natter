@@ -23,10 +23,10 @@ class TestEllipticallyContourGamma(unittest.TestCase):
                                             primary=['sigma'])
         C1 =  eye(self.n)*5 + ones((self.n,self.n))
         C2 =  eye(self.n)*5  -ones((self.n,self.n))
-        self.MOG.ps[0].param['sigma'] =C1
-        self.MOG.ps[0].cholP  = cholesky(inv(C1))
-        self.MOG.ps[1].param['sigma'] =C2
-        self.MOG.ps[1].cholP  = cholesky(inv(C2))
+        self.MOG.param['ps'][0].param['sigma'] =C1
+        self.MOG.param['ps'][0].cholP  = cholesky(inv(C1))
+        self.MOG.param['ps'][1].param['sigma'] =C2
+        self.MOG.param['ps'][1].cholP  = cholesky(inv(C2))
         self.data = self.MOG.sample(10000)
 
         self.MECG = FiniteMixtureDistribution(baseDistribution=self.ECG,
