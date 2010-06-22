@@ -262,7 +262,10 @@ class Boltzmann(Distribution):
                 
             arr0 = self.primary2array()
             arropt = optimize.fmin_bfgs(logp,arr0,fprime,callback=check)
-            
+        else:
+            raise NotImplementedError('Method not implemented (yet).')
+        
+     
                 
             
                 

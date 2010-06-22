@@ -35,18 +35,18 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
             self.param['n']=2
             
         if 'NC' in param.keys():
-            self.numberOfMixtureComponents= param['NC']
-            self.ps = zeros(self.numberOfMixtureComponents,dtype=object)
+            self.param['numberOfMixtureComponents']= param['NC']
+            self.param['ps'] = zeros(self.param['numberOfMixtureComponents'],dtype=object)
         if 'q' in param.keys():
-            for p in self.ps:
+            for p in self.param['ps']:
                 p = param['q'].copy()
         else:
-            for k in xrange(self.numberOfMixtureComponents):
+            for k in xrange(self.param['numberOfMixtureComponents']):
                 W =symrand(self.param['n'])
                 W = dot(W,W.T)
-                self.ps[k] = EllipticallyContourGamma({'n': self.param['n'],
+                self.param['ps'][k] = EllipticallyContourGamma({'n': self.param['n'],
                                                        'W': LinearTransform(cholesky(W))})
-        self.alphas = ones(self.numberOfMixtureComponents)/self.numberOfMixtureComponents
+        self.param['alphas'] = ones(self.param['numberOfMixtureComponents'])/self.param['numberOfMixtureComponents']
         self.primary = ['alpha','theta']
         
         
@@ -68,7 +68,7 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
         
         """
         n,m = data.size()
-        K   = self.numberOfMixtureComponents
+        K   = self.param['numberOfMixtureComponents']
         T = zeros((K,m))
         LP = zeros((K,m))
         done = False
@@ -77,10 +77,10 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
         warnflag=0
         while not done:
             for k in xrange(K):
-                LP[k,:] = self.ps[k].loglik(data)  + log(self.alphas[k])
+                LP[k,:] = self.param['ps'][k].loglik(data)  + log(self.param['alphas'][k])
             for k in xrange(K):
                 T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-            self.alphas = mean(T,axis=1) # mstep
+            self.param['alphas'] = mean(T,axis=1) # mstep
             if method=="EM" or method==None:
                 for k in xrange(K):
                     TS = sum(T[k,:])
@@ -109,12 +109,12 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
                         print "Uiuiui"
                         C = eye(n)
                     # C = cov(X)*(m-1) + eye(n)*1e-05 # add a ridge
-                    Y = Data(sqrt(sum(dot(self.ps[k].param['W'].W,X)**2,axis=0)))
-                    if 'q' in self.ps[k].primary:
-                        self.ps[k].param['q'].estimate(Y)
+                    Y = Data(sqrt(sum(dot(self.param['ps'][k].param['W'].W,X)**2,axis=0)))
+                    if 'q' in self.param['ps'][k].primary:
+                        self.param['ps'][k].param['q'].estimate(Y)
 
-                    if 'W' in self.ps[k].primary:
-                        self.ps[k].param['W'].W =  solve(cholesky(C),eye(n))
+                    if 'W' in self.param['ps'][k].primary:
+                        self.param['ps'][k].param['W'].W =  solve(cholesky(C),eye(n))
             else:
                 self.primary=['theta']
                 def f(arr):

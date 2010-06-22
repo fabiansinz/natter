@@ -10,6 +10,7 @@ implements. At the moment it provides the following distributions.
    Distributions_Dirichlet.rst
    Distributions_Distribution.rst
    Distributions_ExponentialPower.rst
+   Distributions_FiniteMixtureDistribution.rst
    Distributions_Gamma.rst
    Distributions_GammaP.rst
    Distributions_Gaussian.rst
@@ -48,4 +49,5 @@ from FiniteMixtureOfGaussians import FiniteMixtureOfGaussians
 from EllipticallyContourGamma import EllipticallyContourGamma
 from FiniteMixtureOfEllipticallyGamma import FiniteMixtureOfEllipticallyGamma
 from Boltzmann import Boltzmann
+from NIG import NIG
 from ISA import ISA

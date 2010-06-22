@@ -82,8 +82,9 @@ class Gaussian(Distribution):
     
     def primary2array(self):
         """
-        :return:
-        array containing primary parameters. 
+        :return: array containing primary parameters. If 'Sigma' is in
+        the primary parameters, then the cholesky factor of the
+        precision matrix is filled in the array.
         """
         ret = array([])
         if 'mu' in self.primary:
@@ -105,6 +106,13 @@ class Gaussian(Distribution):
 
 
     def dldtheta(self,dat):
+        """
+        Calculates the gradient with respect to the primary
+        parameters. Note: if 'Sigma' is in the primary parameters the
+        gradient is calculated with respect to the cholesky factor of
+        the inverse covariance matrix.
+        
+        """
         ret = array([])
         n,m = dat.size()
         if 'mu' in self.primary:
