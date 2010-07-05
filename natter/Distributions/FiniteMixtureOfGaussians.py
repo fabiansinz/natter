@@ -4,9 +4,12 @@ from Gaussian import Gaussian
 from numpy import zeros,ones,diag,eye,cov,log,sum,mean,sqrt,kron,reshape,dot,outer,exp
 from numpy.linalg import cholesky,inv,solve,eigvalsh
 from scipy import optimize
+from numpy.random import randn
 import sys
 import pylab as pl
 from natter.Auxiliary.Numerics import logsumexp
+from mdp.utils import symrand
+
 
 class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
     """
@@ -38,6 +41,10 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
         """
         estimate the parameters of the mixture of Gaussians using a standard EM algorithm.
         """
+        for p in self.param['ps']:
+            C = symrand(p.param['n'])
+            p.param['sigma'] = dot(C,C.T)
+            p.param['mu']    = randn(p.param['n'])
         n,m = dat.size()
         K   = self.param['numberOfMixtureComponents']
         T = zeros((K,m))
