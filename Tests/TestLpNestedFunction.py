@@ -80,7 +80,22 @@ class TestLpNestedFunction(unittest.TestCase):
                 'Log surface of Lp-nested function deviates by more than ' + str(self.surfTol) + '!')
 
 
+    def test_p_derivatives(self):
+        print "Testing derivative for p-nested function ... "
+        sys.stdout.flush()
+        L = LpNestedFunction('(0,(1,0:2,(2,2:4)),4:6,(3,6:8))')
+        #L = LpNestedFunction()
+        L.p = L.p+1.0
+        dat = Data(np.random.randn(8,5)*1.0)
+        df = L.dfdp(dat)
+        df2 = np.Inf * df
+        h = 1e-8
+        for k in range(len(L.p)):
+            Lh = L.copy()
+            Lh.p[k] = Lh.p[k] + h
+            df2[k,:] = (Lh(dat).X - L(dat).X)/h
 
+        print df2-df
         
 if __name__=="__main__":
     
