@@ -130,6 +130,9 @@ class LpNestedFunction:
 
         # compute the derivative for this inner node
         df[ip,:] = vI/pI * (vI**-pI * sum(tmp**pI * log(tmp),0) - log(vI))
+        df[ip,:] = (vI**(1-pI)/pI * sum(tmp**pI * log(tmp),0) - vI*log(vI)/pI)
+
+        
 
         # multiply additional factors for all children nodes
         for k in range(l):
