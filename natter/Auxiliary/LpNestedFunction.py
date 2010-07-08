@@ -1,5 +1,7 @@
+from __future__ import division
 import types
-import numpy as np
+from numpy import max, abs, sum, zeros, sign, Inf, log, sqrt, size, array, linspace, arctan, pi, floor, ceil,ones
+from numpy.random import rand
 from scipy import special
 import string
 from  natter.DataModule import Data
@@ -7,7 +9,7 @@ import copy
 from matplotlib.patches import Ellipse
 from matplotlib.pyplot import figure, show,draw
 import Plotting
-
+from Errors import SpecificationError
 
 class LpNestedFunction:
 
@@ -40,13 +42,13 @@ class LpNestedFunction:
         self.l = parseNoChildren(self.tree,(),{})
         if p == None:
             self.p = extractp(self.tree)
-            self.p = np.random.rand(np.max(self.p)+1.0)+.5
+            self.p = rand(max(self.p)+1.0)+.5
         else:
             self.p = p
         self.pdict = parseP(self.tree,(),{})
         self.ipdict = iparseP(self.tree,(),{})
         self.lb = 0*self.p
-        self.ub = [np.Inf]*len(self.p)
+        self.ub = [Inf]*len(self.p)
         self.iByI = {}
         getLeavesFromSubtree((),self,self.iByI)
 
@@ -79,22 +81,85 @@ class LpNestedFunction:
         self.__dfdxRec((),dat,ret)
         return ret
 
+    def dfdp(self,dat):
+        """
+        Computes the derivative of the Lp-nested function w.r.t to the p at
+        the data points in dat.
+
+        IMPORTANT: The derivative will only give correct results if
+        each inner node has its own p. 
+        
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the derivatives.
+        :rtype:    numpy.array
+        
+        """
+
+        # test whether each p has only one inner node
+        for k,v in self.ipdict.items():
+            if len(v) > 1:
+                raise SpecificationError(\
+                    "Cannot compute derivative since p[%i] is placed on more than one inner node" % (k,))
+
+        ret = ones((len(self.p),dat.numex()))
+        self.__dfdpRec((),dat,ret)
+        return ret
+        
+
+    def __dfdpRec(self,I,dat,df):
+        """
+        Private function used by dfdp
+        """
+        print 30*"-"
+        print I
+        print self[I]
+        l = self.l[I] # get no of children
+        tmp = zeros((l,dat.size(1))) # stores the function values of the children
+        pI = self.p[self.pdict[I]] # p of the current node
+        ip = self.pdict[I] # index of the p for the current node
+        
+        for k in range(l):
+            Ik = I + (k,)
+            if self.n[Ik] == 1: # if Ik is a leaf
+                i = self.i(Ik)
+                tmp[k,:] = abs(dat.X[i,:].copy()) # the function value (= absolute value)
+            else: # if Ik is an inner node itself
+                tmp[k,:] = self.__dfdpRec(Ik,dat,df) # get its function value
+        vI = sum(tmp**pI,0)**(1.0/pI) # compute the function value of this node
+
+        # compute the derivative for this inner node
+        df[ip,:] = vI/pI * (vI**-pI * sum(tmp**pI * log(tmp),0) - log(vI))
+
+        # multiply additional factors for all children nodes
+        for k in range(l):
+            Ik = I + (k,)
+            if self.n[Ik] > 1: # if Ik is not a leaf
+                ipk = self.pdict[Ik]
+                print Ik
+                print ipk
+                df[ipk,:] *= vI**(1.0-pI) * tmp[k,:]**(pI-1.0)
+        print 30*'+'
+        return vI
+        
+
+
     def __dfdxRec(self,I,dat,df):
         """
         Private function used by dfdx
         """
         l = self.l[I] # get no of children
-        tmp = np.zeros((l,dat.size(1))) # stores the function values of the children
+        tmp = zeros((l,dat.size(1))) # stores the function values of the children
         pI = self.p[self.pdict[I]] # p of the current node
         for k in range(l):
             Ik = I + (k,)
             i = self.i(Ik) 
             if self.n[Ik] == 1: # if Ik is a leaf
-                tmp[k,:] = np.abs(dat.X[i,:].copy()) # the function value (= absolute value)
-                df[i,:] = np.sign(dat.X[i,:].copy()) # the derivative of the absolute value
+                tmp[k,:] = abs(dat.X[i,:].copy()) # the function value (= absolute value)
+                df[i,:] = sign(dat.X[i,:].copy()) # the derivative of the absolute value
             else: # if Ik is an inner node itself
                 tmp[k,:] = self.__dfdxRec(Ik,dat,df) # get its function value
-        f = np.sum(tmp**pI,0)**(1.0/pI) # compute the function value of this node
+        f = sum(tmp**pI,0)**(1.0/pI) # compute the function value of this node
         for k in range(l):
             Ik = I + (k,)
             for i in self.iByI[Ik]:
@@ -109,7 +174,6 @@ class LpNestedFunction:
         :rtype: float
         
         """
-        log = np.log
         ret = self.n[()]*log(2)
         for I in self.l.keys():
             p = self.p[self.pdict[I]]
@@ -148,12 +212,12 @@ class LpNestedFunction:
         :param F: LinearTransform containing filters to be plotted at the leaves
         :type F: natter.Transforms.LinearTransform
         """
-        ptchsz = np.sqrt(np.size(F.W,0))
-        tmp = np.sqrt(np.max(np.array(self.l.values())))
+        ptchsz = sqrt(size(F.W,0))
+        tmp = sqrt(max(array(self.l.values())))
         height = self.n[()]/tmp*1.5*ptchsz
         depth = height
         eldiam = .25*ptchsz
-        deltad = depth / ( np.max(np.array([len(k) for k in self.n.keys()])) + 2.0)
+        deltad = depth / ( max(array([len(k) for k in self.n.keys()])) + 2.0)
         
         fig = figure()
         fig.clf()
@@ -190,11 +254,11 @@ class LpNestedFunction:
         dh = (h1-h0)/(l+1.0) # one for each node, one for all leaves
 
         # compute new heights
-        newh = np.linspace(h0+dh,h1-dh,l)
+        newh = linspace(h0+dh,h1-dh,l)
 
         # label the current node with its p
         s = r"$p_{%d} = %.2f$" % (self.pdict[mind],self.p[self.pdict[mind]])
-        angle = np.arctan(( (h1-h0)*.5-dh )/dd)/(2*np.pi)*360.0
+        angle = arctan(( (h1-h0)*.5-dh )/dd)/(2*pi)*360.0
         ax.text(root[0] - 2*eldiam, root[1] + eldiam,s,
              rotation= angle,
              horizontalalignment = 'left',
@@ -211,10 +275,10 @@ class LpNestedFunction:
         # plot the leaves
         if len(leaves) >0:
             ax.arrow(root[0]+.5*eldiam, root[1], dd - eldiam, newh[hc] - root[1])
-            ny = np.floor(np.sqrt(float(len(leaves))))
+            ny = floor(sqrt(float(len(leaves))))
             while ny*ptchsz > dh and ny > 1:
-                ny = np.ceil(ny/2)
-            nx = np.ceil(len(leaves)/ny)
+                ny = ceil(ny/2)
+            nx = ceil(len(leaves)/ny)
             a = fig.add_axes(ax2fig([root[0]+dd,newh[hc] - .5*ny*ptchsz,nx*ptchsz,ny*ptchsz],ax), \
                              xlim=(0,nx*ptchsz),ylim=(0,ny*ptchsz),autoscale_on=False)
             a.axis('off')
@@ -229,7 +293,6 @@ class LpNestedFunction:
         # introduce slices
         if type(key) == types.SliceType:
             raise TypeError('Slices not allowed in multindices!')
-        pind = self.tree[0]
         if type(key) == types.IntType:
             tmp = self.tree[key+1]
         else:
@@ -237,7 +300,6 @@ class LpNestedFunction:
             for k in key:
                 if type(k) == types.SliceType:
                     raise TypeError('Slices not allowed in multindices!')
-                pind = tmp[0]
                 tmp = tmp[k+1]
 
         if type(tmp) == types.IntType:
@@ -278,10 +340,10 @@ def computerec(tree,X,p):
     """
     Compute the Lp-nested function recursively
     """
-    ret = np.zeros((np.size(X,1),))
+    ret = zeros((size(X,1),))
     for k in range(1,len(tree)):
         if type(tree[k])==types.IntType:
-            ret += np.abs(X[tree[k],:])**p[tree[0]]
+            ret += abs(X[tree[k],:])**p[tree[0]]
         else:
             ret += computerec(tree[k],X,p)**p[tree[0]]
     return ret**(1/p[tree[0]])

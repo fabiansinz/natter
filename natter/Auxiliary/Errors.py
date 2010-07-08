@@ -72,3 +72,6 @@ class NotImplementedError(Exception):
     def __init__(self,value):
         Exception.__init__(self)
         
+class SpecificationError(Exception):
+    def __init__(self,value):
+        Exception.__init__(self)
