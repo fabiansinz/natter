@@ -102,7 +102,7 @@ class LpNestedFunction:
                 raise SpecificationError(\
                     "Cannot compute derivative since p[%i] is placed on more than one inner node" % (k,))
 
-        ret = ones((len(self.p),dat.numex()))
+        ret = ones((len(self.p),dat.numex()))*Inf
         self.__dfdpRec((),dat,ret)
         return ret
         
@@ -111,9 +111,6 @@ class LpNestedFunction:
         """
         Private function used by dfdp
         """
-        print 30*"-"
-        print I
-        print self[I]
         l = self.l[I] # get no of children
         tmp = zeros((l,dat.size(1))) # stores the function values of the children
         pI = self.p[self.pdict[I]] # p of the current node
@@ -130,7 +127,6 @@ class LpNestedFunction:
 
         # compute the derivative for this inner node
         df[ip,:] = vI/pI * (vI**-pI * sum(tmp**pI * log(tmp),0) - log(vI))
-        df[ip,:] = (vI**(1-pI)/pI * sum(tmp**pI * log(tmp),0) - vI*log(vI)/pI)
 
         
 
@@ -138,11 +134,8 @@ class LpNestedFunction:
         for k in range(l):
             Ik = I + (k,)
             if self.n[Ik] > 1: # if Ik is not a leaf
-                ipk = self.pdict[Ik]
-                print Ik
-                print ipk
+                ipk = self.pdict[Ik] # which index does Ik have?
                 df[ipk,:] *= vI**(1.0-pI) * tmp[k,:]**(pI-1.0)
-        print 30*'+'
         return vI
         
 

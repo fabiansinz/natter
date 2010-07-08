@@ -80,22 +80,22 @@ class TestLpNestedFunction(unittest.TestCase):
                 'Log surface of Lp-nested function deviates by more than ' + str(self.surfTol) + '!')
 
 
-    def test_p_derivatives(self):
+    def test_p_derivatives(self): # this is numerically hard to test; this is the reason for the threshold
         print "Testing derivative for p-nested function ... "
         sys.stdout.flush()
-        L = LpNestedFunction('(0,(1,0:2,(2,2:4)),4:6,(3,6:8))')
-        #L = LpNestedFunction()
-        L.p = L.p+1.0
-        dat = Data(np.random.randn(8,5)*1.0)
+        #L = LpNestedFunction('(0,(1,0:2,(2,2:4)),4:6,(3,6:8))')
+        L = LpNestedFunction()
+        L.p = L.p+0.5
+        dat = Data(np.random.randn(25,50)*0.5)
         df = L.dfdp(dat)
         df2 = np.Inf * df
-        h = 1e-8
+        h = 1e-10
         for k in range(len(L.p)):
             Lh = L.copy()
             Lh.p[k] = Lh.p[k] + h
             df2[k,:] = (Lh(dat).X - L(dat).X)/h
 
-        print df2-df
+        self.assertFalse(np.max( (df2-df).flatten()) > 1.0,'Derivative w.r.t p differs by more than 1.0')
         
 if __name__=="__main__":
     

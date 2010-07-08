@@ -163,7 +163,9 @@ class LpNestedSymmetric(Distribution):
                         LB = array(self.param['f'].p)*.8
                         UB = array(self.param['f'].p)*1.2
                     itercount += 1
-            
+            elif method == "gradient":
+                # implement gradient descent on p via d l(r)/dp = dl(r)/dr * dr/dp
+                pass
         if 'rp' in self.primary:
             self.param['rp'].estimate(self.param['f'].f(dat))
         print "\t[Done]"
