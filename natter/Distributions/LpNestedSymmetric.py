@@ -164,6 +164,7 @@ class LpNestedSymmetric(Distribution):
                         UB = array(self.param['f'].p)*1.2
                     itercount += 1
             elif method == "gradient":
+                print "\tEstimating best p with bounded gradient descent ..."
                 tolp = 1e-2
                 maxiter = 100
                 
