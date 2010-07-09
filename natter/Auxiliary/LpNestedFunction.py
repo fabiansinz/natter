@@ -10,7 +10,7 @@ from matplotlib.patches import Ellipse
 from matplotlib.pyplot import figure, show,draw
 import Plotting
 from Errors import SpecificationError
-
+from Numerics import digamma
 class LpNestedFunction:
 
     def __init__(self, tree=None, p=None):
@@ -115,28 +115,35 @@ class LpNestedFunction:
         tmp = zeros((l,dat.size(1))) # stores the function values of the children
         pI = self.p[self.pdict[I]] # p of the current node
         ip = self.pdict[I] # index of the p for the current node
-        
+        children = [] # holds multiindices of all the children of that tree
+        childrenk = []
         for k in range(l):
             Ik = I + (k,)
             if self.n[Ik] == 1: # if Ik is a leaf
                 i = self.i(Ik)
                 tmp[k,:] = abs(dat.X[i,:].copy()) # the function value (= absolute value)
+                childrenk.append([])
             else: # if Ik is an inner node itself
-                tmp[k,:] = self.__dfdpRec(Ik,dat,df) # get its function value
+                tmp[k,:],tmp2 = self.__dfdpRec(Ik,dat,df) # get its function value
+                children += tmp2
+                childrenk.append(tmp2)
         vI = sum(tmp**pI,0)**(1.0/pI) # compute the function value of this node
 
         # compute the derivative for this inner node
         df[ip,:] = vI/pI * (vI**-pI * sum(tmp**pI * log(tmp),0) - log(vI))
-
         
 
         # multiply additional factors for all children nodes
-        for k in range(l):
-            Ik = I + (k,)
-            if self.n[Ik] > 1: # if Ik is not a leaf
-                ipk = self.pdict[Ik] # which index does Ik have?
-                df[ipk,:] *= vI**(1.0-pI) * tmp[k,:]**(pI-1.0)
-        return vI
+        if self.l.has_key(I):
+            for k in range(l):
+                for Ic in childrenk[k]:
+                    ipk = self.pdict[Ic] # which index does Ik have?
+                    df[ipk,:] *= vI**(1.0-pI) * tmp[k,:]**(pI-1.0)
+        if self.n[I] > 1:
+            return (vI,children + [I])
+        else:
+            return (vI,children)
+            
         
 
 
@@ -171,12 +178,40 @@ class LpNestedFunction:
         
         """
         ret = self.n[()]*log(2)
-        for I in self.l.keys():
-            p = self.p[self.pdict[I]]
+
+        for I in self.l.keys(): # for all inner nodes
+            p = self.p[self.pdict[I]] # get the p
             ret -= (self.l[I]-1.0)*log(p) # log(1/p_I^(l_I-1))
             tmp = self.n[I + (0,)]
             for k in range(self.l[I]-1):
                 ret += special.betaln(tmp/p,self.n[I + (k+1,)]/p)
+                tmp += self.n[I + (k+1,)]
+        return ret
+
+    def dlogSurfacedp(self):
+        """
+        Computes the derivative of the logarithm of the surface area
+        of the Lp-nested unit sphere w.r.t. to the p.
+
+        IMPORTANT: The derivative will only be correct if every inner
+        node has a different p.
+
+        :returns: The logarithm of the surface area.
+        :rtype: float
+        
+        """
+        ret = zeros((len(self.p),))
+        for I in self.l.keys():
+            lI = self.l[I]
+            ip = self.pdict[I]
+            p = self.p[ip]
+            ret[ip] -= (lI-1.0)/p
+            tmp = self.n[I + (0,)]
+            for k in range(lI-1):
+                ret[ip] += digamma((tmp+self.n[I + (k+1,)])/p) *  (tmp+self.n[I + (k+1,)])/p**2
+                ret[ip] -= digamma(tmp/p) * tmp/p**2.0
+                ret[ip] -= digamma(self.n[I + (k+1,)]/p) * self.n[I + (k+1,)]/p**2.0
+                
                 tmp += self.n[I + (k+1,)]
         return ret
 

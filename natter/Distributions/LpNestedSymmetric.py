@@ -1,12 +1,12 @@
 from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
-from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign
+from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign, mean, reshape
 from numpy.random import beta, dirichlet, rand
 from natter.Auxiliary import LpNestedFunction
 from natter.Auxiliary.Optimization import fminboundnD, goldenMinSearch
 import sys
-
+from scipy.optimize import fmin_l_bfgs_b
 
 
 class LpNestedSymmetric(Distribution):
@@ -164,8 +164,29 @@ class LpNestedSymmetric(Distribution):
                         UB = array(self.param['f'].p)*1.2
                     itercount += 1
             elif method == "gradient":
-                # implement gradient descent on p via d l(r)/dp = dl(r)/dr * dr/dp
-                pass
+                tolp = 1e-2
+                maxiter = 100
+                
+                p = array(self.param['f'].p)
+                pold = Inf*p
+                f = lambda z: self.__all3(z,dat)
+                bounds = []
+                for k in range(len(p)):
+                    if self.param['f'].ub[k] < Inf:
+                        bounds.append((self.param['f'].lb[k],self.param['f'].ub[k]))
+                    else:
+                        bounds.append((self.param['f'].lb[k],None))
+                iter = 1    
+                while max(abs(p-pold)) > tolp and iter <= maxiter:
+                    print "\t Iteration %d" % (iter,)
+                    iter += 1
+                    pold = p 
+                    p,fval,dummy = fmin_l_bfgs_b(f,p, fprime=None,bounds=bounds)
+                    self.param['f'].p = p
+                    if 'rp' in self.primary:
+                        self.param['rp'].estimate(self.param['f'].f(dat))
+                    print ""
+                    
         if 'rp' in self.primary:
             self.param['rp'].estimate(self.param['f'].f(dat))
         print "\t[Done]"
@@ -192,6 +213,22 @@ class LpNestedSymmetric(Distribution):
         if 'rp' in self.primary:
             self.param['rp'].estimate(self.param['f'].f(dat))
         return self.all(dat)
+
+    def __all3(self,p,dat):
+        r = self.param['f'](dat)
+        if len(p) <= 5:
+            print "\r\t" + str(p),
+        else:
+            print "\r\t[" + str(p[0]) + ", ..., " + str(p[-1]),
+        sys.stdout.flush()
+        self.param['f'].p = p
+        dfdp = self.param['f'].dfdp(dat)
+        n = dat.dim()
+        df = self.param['rp'].dldx(r)*dfdp - (n-1)/r.X*dfdp - reshape(self.param['f'].dlogSurfacedp(),(len(p),1))
+        df = -mean(df,1)/n / log(2)
+        
+        return (self.all(dat) , df)
+        
 
 def recsample(key,r,L,m,ret):
     alpha = array([float(L.n[key + (i,)])/L.p[L.pdict[key]] for i in range(L.l[key])])
