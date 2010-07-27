@@ -37,14 +37,18 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
         FiniteMixtureDistribution.__init__(self,numberOfMixtureComponents=numberOfMixtureComponents,
                                            baseDistribution=baseDistribution)
         
-    def estimate(self,dat,verbose=False):
+    def estimate(self,dat,verbose=False,method=None):
         """
         estimate the parameters of the mixture of Gaussians using a standard EM algorithm.
         """
+        if method ==None:
+            method = 'EM'
         for p in self.param['ps']:
-            C = symrand(p.param['n'])
-            p.param['sigma'] = dot(C,C.T)
-            p.param['mu']    = randn(p.param['n'])
+            if 'sigma' in self.primary:
+                C = symrand(p.param['n'])
+                p.param['sigma'] = dot(C,C.T)
+            if 'mu' in self.primary:
+                p.param['mu']    = randn(p.param['n'])
         n,m = dat.size()
         K   = self.param['numberOfMixtureComponents']
         T = zeros((K,m))
