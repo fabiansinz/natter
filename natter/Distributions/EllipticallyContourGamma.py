@@ -125,7 +125,7 @@ class EllipticallyContourGamma(CompleteLinearModel):
                }
             }
             """
-            
+            X = data.X
             weave.inline(code,
                          ['W', 'X', 'WXXT', 'n','m'],
                          type_converters=converters.blitz,
