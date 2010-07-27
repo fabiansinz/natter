@@ -7,7 +7,7 @@ multiplication operation which allows it to be multiplied (applied to
 the results of) LinearTransform and Data objects.
 
 .. autoclass:: natter.Transforms.NonlinearTransform
-   :members:   apply, logDetJacobian,  __call__,  __str__, copy
+   :members:   apply, logDetJacobian,  __call__,  __str__, copy,addToHistory
 
 
 

@@ -9,9 +9,16 @@ import copy
 
 class NonlinearTransform(Transform.Transform):
     '''
-    NONLINEARTRANSFORM class representing nonlinear transformations.
+    NonlinearTransform class.
 
-    Each object stores a function f representing the transformation.
+    :param f: Function on data representing the mapping for this NonlinearTransform object.
+    :type f: function
+    :param name: Name of the NonlinearTransform object.
+    :type name: string
+    :param history: History of the object.
+    :type history: List of (list of ...) strings
+    :param logdetJ: Function that computes the log-det-Jacobian of the NonlinearTransform on data.
+    :type logdetJ: function
     '''
 
     def __init__(self,f=None,name='Noname',history=None,logdetJ=None):
@@ -25,6 +32,22 @@ class NonlinearTransform(Transform.Transform):
 
 
     def apply(self,O):
+        """
+        Applies the NonlinearTransform object to *O*. *O* can either be
+
+        * a natter.Transforms.LinearTransform object
+        * a natter.Transforms.NonlinearTransform object
+        * a natter.DataModule.Data object
+
+        It also updates the correct computation of the log-det-Jacobian.
+        
+        :param O: Object this NonlinearTransform is to be applied to.
+        :type O: see above.
+        :returns: A new Transform or Data object
+        :rtype: Depends on the type of *O*
+        
+        """
+        
         if isinstance(O,Data):
             # copy other history 
             tmp = list(O.history)
@@ -67,15 +90,42 @@ class NonlinearTransform(Transform.Transform):
 
 
     def logDetJacobian(self,dat):
+        """
+        Computes the determinant of the logarithm of the Jacobians
+        determinant for the nonliner transformation at each data point
+        in *dat*.
+
+
+        :param dat: Data for which the log-det-Jacobian is to be computed.
+        :type dat: natter.DataModule.Data
+        :returns: The log-det-Jacobian 
+        :rtype: numpy.array
+        """
+        
         if self.logdetJ == None:
             raise Errors.AbstractError('logdetJ has not been specified!')
         else:
             return self.logdetJ(dat)
 
     def __call__(self,O):
+        """
+        The same as apply(O). Overloades the call operator.
+
+        :param O: Object this NonlinearTransform is to be applied to.
+        :type O: see above.
+        :returns: A new Transform or Data object
+        :rtype: Depends on the type of *O*
+        """
         return self.apply(O)
 
     def __str__(self):
+        """
+        Returns a string representation of the NonlinearTransform object.
+
+        :returns: A string representation of the NonlinearTransform object.
+        :rtype: string
+        """
+        
                 
         s = 30*'-'
         s += '\nNonlinear Transform: ' + self.name + '\n'
@@ -86,10 +136,26 @@ class NonlinearTransform(Transform.Transform):
         return s
 
     def getHistory(self):
+        """
+        Returns the history of the object. The history is a list of
+        (list of ...) strings that store the previous operations
+        carried out on the object.
+
+        :returns: The history.
+        :rtype: list of (list of ...) strings
+        """
+        
         return list(self.history)
 
     def __repr__(self):
         return self.__str__()
 
     def copy(self):
+        """
+        Makes a deep copy of the NonlinearTransform and returns it.
+
+        :returns: A deep copy of the NonlinearTransform object.
+        :rtype: natter.Transforms.NonlinearTransform
+        """
+        
         return copy.deepcopy(self)

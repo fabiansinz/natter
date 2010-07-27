@@ -4,7 +4,7 @@ import types
 
 class Transform:
     '''
-    TRANSFORM representing abstract transforms
+    Mother class of all transformations.
 
     '''
 
@@ -12,25 +12,61 @@ class Transform:
         raise Errors.AbstractError('Filter is only an abstract class!')
 
     def logDetJacobian(self):
+        """
+        Abstract method for the computation of the log-det-Jacobian
+        which is to be implemented by the children that inherit from
+        Transform.
+        """
         raise Errors.AbstractError('Abstract method logDetJacobian() not implemented in ' + self.name)
         
 
     def addToHistory(self,hi):
+        """
+        Appends an item to the history of the transformation.
+
+        :param hi: Item to be added to the history.
+        :type hi: string or list of (list of ...) strings
+        """
         self.history.append(hi)
 
     def __mul__(self,O):
+        """
+        Overloads the multiplication operator. This is equivalent to call self.apply(O)
+
+        :param O: Object *apply* is to be called on.
+        :type O: Transform object or a Data object.
+        :returns: A new Transform object
+        :rtype: natter.Transforms.Transform
+        """
         return self.apply(O)
 
     def apply(self):
+        """
+        Abstract method for the application of the Transform object
+        which is to be implemented by the children that inherit from
+        Transform.
+        """
         raise Errors.AbstractError('Abstract method apply() not implemented in ' + self.name)
 
-    def __invert__(self):
-        raise Errors.AbstractError('Abstract method __invert__ not implemented in ' + self.name)
             
     def save(self,filename):
+        """
+        Save the filter object to the specified file.
+
+        :param filename: Filename for the save file.
+        :type filename: string
+        """
         Auxiliary.save(self,filename)
 
 def load(path):
+    """
+    Loads a saved Transform object from the specified path.
+
+    :param path: Path to the saved Transform object.
+    :type path: string
+    :returns: The loaded object.
+    :rtype: natter.Transforms.Transform
+    """
     f = open(path,'r')
     ret = pickle.load(f)
     f.close()
