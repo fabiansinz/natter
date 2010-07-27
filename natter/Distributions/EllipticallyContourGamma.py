@@ -1,11 +1,9 @@
 from __future__ import division
-from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
-from scipy.special import gammaln,digamma
-from numpy import log,exp,sum,array,dot,outer,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros
-from numpy.linalg import inv,norm
+from scipy.special import gammaln
+from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros
 from numpy.random import randn
 
 from scipy import weave
@@ -127,7 +125,7 @@ class EllipticallyContourGamma(CompleteLinearModel):
                }
             }
             """
-            X = data.X;
+            
             weave.inline(code,
                          ['W', 'X', 'WXXT', 'n','m'],
                          type_converters=converters.blitz,
@@ -135,8 +133,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
             WXXT = WXXT[self.Wind[0],self.Wind[1],:]
             #print "difference norm: ",norm(WXXT-WXXT2)
 
-            dldx    = self.param['q'].dldx(squareData)
-            dnormdW = (1./wx2)* WXXT
+            
+            
             gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T
             if len(ret)==0:
                 ret = gradW
