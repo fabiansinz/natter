@@ -101,6 +101,7 @@ class TestNonlinearFilter(unittest.TestCase):
                 tmp2 = tmp.copy()
                 tmp2.X[j,:] = tmp2.X[j,:] + h
                 J[:,j] = ((F*tmp2).X-(F*tmp).X)[:,0]/h
+            # print np.abs(np.log(linalg.det(J)) - logdetJ[i])
             self.assertFalse( np.abs(np.log(linalg.det(J)) - logdetJ[i]) > self.DetTol,\
                               'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
 
