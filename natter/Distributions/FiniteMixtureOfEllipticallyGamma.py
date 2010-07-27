@@ -26,7 +26,7 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
     def __init__(self, param=None):
         """
         """
-
+        FiniteMixtureDistribution.__init__(self)
         if param==None:
             param = {'NC':2}
         if 'n' in param.keys():
