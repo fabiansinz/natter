@@ -71,12 +71,12 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
                         n,m = X.shape
                         Y= (X - kron(reshape(self.param['ps'][k].param['mu'],(n,1)),ones((1,m))))
                         Y = Y*sqrt(T[k,:]/TS)
-                        C = cov(Y)*(m-1) + eye(n)*1e-05 # add a ridge
+                        C = cov(Y) + eye(n)*1e-05 # add a ridge
                         # C = zeros((n,n))
                         # for l in xrange(m):
                         #     C = C + (T[k,l]/TS)*outer(Y[:,l],Y[:,l])
                         self.param['ps'][k].param['sigma'] = C
-                        self.param['ps'][k].cholP[self.param['ps'][k].I] = solve(cholesky(self.param['ps'][k].param['sigma']),eye(n))[self.param['ps'][k].I]
+                        self.param['ps'][k].cholP[self.param['ps'][k].I] = solve(sqrt((m-1))*cholesky(self.param['ps'][k].param['sigma']),eye(n))[self.param['ps'][k].I]
 
 
                 cALL=sum(-(T*LP).flatten())/(n*m)/log(2)
