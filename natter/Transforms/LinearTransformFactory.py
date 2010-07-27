@@ -11,6 +11,9 @@ import types
 
 
 def fastICA(dat,whitened=True):
+    """
+    Hallo?
+    """
     sampsize = 1
     if dat.size(1) > 500000:
         sampsize =  500000.0/dat.size(1)

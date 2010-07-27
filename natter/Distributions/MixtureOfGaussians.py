@@ -186,20 +186,18 @@ class MixtureOfGaussians(Distribution):
                 H[k,:] = H[k,:] - sumH
 
             H = exp(H) # leave log-domain here
-
-
-            p = squeeze(mean(H,1))
             sumHk = sum(H,1)
 
-            mu = dot(H,X.transpose())/sumHk
-            for k in range(K):
-                s[k] = sqrt(sum(H[k,:]*(X-mu[k])**2)/sumHk[k])
 
             if 'mu' in self.primary:
+                mu = dot(H,X.transpose())/sumHk
                 self.param['mu'] = mu
             if 'pi' in self.primary:
+                p = squeeze(mean(H,1))
                 self.param['pi'] = p
             if 's' in self.primary:
+                for k in range(K):
+                    s[k] = sqrt(sum(H[k,:]*(X-mu[k])**2)/sumHk[k])
                 self.param['s'] = s
             if i >= 2:
                 ALL = self.all(dat)

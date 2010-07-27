@@ -51,14 +51,17 @@ distribution.
 >>> p
 ------------------------------
 Gaussian Distribution
-        n: 3
-        mu:
-        [ 0.  0.  0.]
-        sigma:
-        [[ 1.  0.  0.]
-         [ 0.  1.  0.]
-         [ 0.  0.  1.]]
+	n: 3
+	mu: 
+	[ 0.  0.  0.]
+	sigma: 
+	[[ 1.  0.  0.]
+	 [ 0.  1.  0.]
+	 [ 0.  0.  1.]]
+
+	Primary Parameters:[mu, sigma]
 ------------------------------
+
 
 This demonstrates the generic way in which every distribution is
 created. You either call it with no arguments or with a dictionary
@@ -91,6 +94,34 @@ Of course, we can also sample from our distribution.
 
 >>> dat2 = p.sample(50000)
 
+No, we can compute the pdf or the loglikelihood of the data, by
+entering 
 
+>>> p.pdf(dat2)
 
+or 
 
+>>> p.loglik(dat2)
+
+this will generate numpy arrays containing the respective density
+values or loglikelihoods. 
+
+Since the data has been sampled from a Gaussian with a covariance
+matrix that is not the identiy
+
+>>> dat2.cov()
+
+we might want to whiten the data. We can do this with the module
+natter.LinearTransformFactory.
+
+>>> from natter.Transforms import LinearTransformFactory
+>>> F = LinearTransformFactory.SYM(dat2)
+
+This creates a symmetric whitening filter for the data dat2. The
+multiplication operator is overloaded for data and transform
+objects. Therefore, whitening the data can simply be done by
+
+>>> dat3 = F*dat2
+
+NATTER provides all sorts of distributions and filter objects. Check
+out the documentation of the different submodules.

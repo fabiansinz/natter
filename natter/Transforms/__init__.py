@@ -7,6 +7,7 @@ factories.
 .. toctree::
    :maxdepth: 2
    
+   Transforms_LinearTransformFactory.rst
    Transforms_NonlinearTransformFactory.rst
 
 """
