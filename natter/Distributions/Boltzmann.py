@@ -11,11 +11,6 @@ from Distribution import Distribution
 
 class Boltzmann(Distribution):
     """
-    Class for modeling a Boltzmann distribution which is given by:
-        :math:`p(b) = \frac{1}{Z}\exp( b^\top (L + L^\top) b  + h^\top b)` , where
-        :math:`Z   =  \sum_b \exp( b^\top (L +L^\top) b + h^\top b )`
-
-        Where L is a lower triangular matrix with zero diagonal and h is a bias term. b_i \in {0,1}
     """
 
     def __init__(self, param=None):

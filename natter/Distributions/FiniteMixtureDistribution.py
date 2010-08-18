@@ -266,6 +266,7 @@ class FiniteMixtureDistribution(Distribution):
             def f(arr):
                 self.array2primary(arr)
                 LL=-sum(self.loglik(dat))
+                print "\rnLL: ",LL,
                 return LL
             
             def df(arr):

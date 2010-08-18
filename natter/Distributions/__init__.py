@@ -23,6 +23,9 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExperts.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
+   Distributions_Boltzmann.rst
+   Distributions_NIG.rst
+   Distributions_GPPM.rst
 """
 
 
@@ -51,3 +54,4 @@ from FiniteMixtureOfEllipticallyGamma import FiniteMixtureOfEllipticallyGamma
 from Boltzmann import Boltzmann
 from NIG import NIG
 from ISA import ISA
+from GPPM import GPPM

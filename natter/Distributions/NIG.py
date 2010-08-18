@@ -39,20 +39,17 @@ class NIG(Distribution):
     Base class for a  normal inverse Gaussian distribution.
     This distribution is given by the following mean-variance scale mixture:
 
-    :math:`p(x) = \int \mathcal{N}(x|\mu + \beta z \Gamma, z\Gamma) IG(z,\delta^2,\alpha^2 - \beta^\top \Gamma\beta) d z`
+    :math:`p(x) = \\int \\mathcal{N}(x|\\mu + \\beta z \\Gamma, z\\Gamma) IG(z,\\delta^2,\\alpha^2 - \\beta^\\top \\Gamma\\beta) d z`
 
 
 
 
     TODO: much todo here...  Gamma should be cholesky
-    factor implement EM as well as ML estimation of paarameters """
+    factor implement EM as well as ML estimation of parameters """
 
     def __init__(self, param=None):
         """
-        we should represent:
-        la = log(alpha)
-        ld = log(delta)
-        lb = 
+        
         """
         Distribution.__init__(self)
         defaultParam = {'alpha':1.0,

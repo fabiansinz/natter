@@ -22,12 +22,14 @@ class TestEllipticallyContourGamma(unittest.TestCase):
                                             dim=self.n,
                                             primary=['sigma'])
         C1 =  eye(self.n)*5 + ones((self.n,self.n))
-        C2 =  eye(self.n)*5  -ones((self.n,self.n))
+        C2 =  eye(self.n)*5  +ones((self.n,self.n))
         self.MOG.param['ps'][0].param['sigma'] =C1
         self.MOG.param['ps'][0].cholP  = cholesky(inv(C1))
+        # self.MOG.param['ps'][0].param['mu'] = randn(2)/100.0
+        # self.MOG.param['ps'][1].param['mu'] = randn(2)/100.0
         self.MOG.param['ps'][1].param['sigma'] =C2
         self.MOG.param['ps'][1].cholP  = cholesky(inv(C2))
-        self.data = self.MOG.sample(10000)
+        self.data = self.MOG.sample(50000)
 
         self.MECG = FiniteMixtureDistribution(baseDistribution=self.ECG,
                                               numberOfMixtureComponents=self.nc)
@@ -38,13 +40,22 @@ class TestEllipticallyContourGamma(unittest.TestCase):
         pass
 
     def test_estimate(self):
-        self.M2ECG.estimate(self.data)
-        print "Difference in ALL (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
-        self.M2ECG.estimate(self.data,method='gradient')
-        print "Difference in ALL for gradient method (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
-        self.MECG.estimate(self.data)
-        print "Difference in ALL (MOG -MECG): ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
-        print self.MECG
+
+        print self.MOG
+        print "ALL: " , self.MOG.all(self.data)
+        self.MOG.estimate(self.data,method='gradient')
+        print "ALL: " , self.MOG.all(self.data)
+        print self.MOG
+        self.MOG.estimate(self.data)
+        print self.MOG
+        print "ALL: " , self.MOG.all(self.data)
+        # self.M2ECG.estimate(self.data)
+        # print "Difference in ALL (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
+        # self.M2ECG.estimate(self.data,method='gradient')
+        # print "Difference in ALL for gradient method (MOG -M2ECG): ", abs(self.MOG.all(self.data)-self.M2ECG.all(self.data))
+        # self.MECG.estimate(self.data)
+        # print "Difference in ALL (MOG -MECG): ", abs(self.MOG.all(self.data)-self.MECG.all(self.data))
+        # print self.MECG
         
 ##################################################################################################
 
