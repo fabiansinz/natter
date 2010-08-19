@@ -6,6 +6,7 @@ implements. At the moment it provides the following distributions.
 .. toctree::
    :maxdepth: 2
    
+   Distributions_Boltzmann.rst
    Distributions_CompleteLinearModel.rst
    Distributions_Dirichlet.rst
    Distributions_Distribution.rst
@@ -13,6 +14,7 @@ implements. At the moment it provides the following distributions.
    Distributions_FiniteMixtureDistribution.rst
    Distributions_Gamma.rst
    Distributions_GammaP.rst
+   Distributions_GPPM.rst
    Distributions_Gaussian.rst
    Distributions_ISA.rst
    Distributions_LogNormal.rst
@@ -21,11 +23,10 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfDirichlet.rst
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
+   Distributions_NIG.rst
    Distributions_ProductOfExperts.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
-   Distributions_Boltzmann.rst
-   Distributions_NIG.rst
-   Distributions_GPPM.rst
+   Distributions_SchwartzSimoncelliModel.rst
 """
 
 
@@ -51,6 +52,7 @@ from FiniteMixtureDistribution import FiniteMixtureDistribution
 from FiniteMixtureOfGaussians import FiniteMixtureOfGaussians
 from EllipticallyContourGamma import EllipticallyContourGamma
 from FiniteMixtureOfEllipticallyGamma import FiniteMixtureOfEllipticallyGamma
+from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from Boltzmann import Boltzmann
 from NIG import NIG
 from ISA import ISA
