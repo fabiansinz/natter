@@ -19,4 +19,4 @@ with
 
 
 .. autoclass:: natter.Distributions.SchwartzSimoncelliModel
-   :members: loglik, primary2array, array2primary, dldtheta
+   :members: loglik, primary2array, array2primary, dldtheta,estimate
