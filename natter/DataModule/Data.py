@@ -1,4 +1,4 @@
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt
 from  natter.Auxiliary import  Errors, Plotting, save
 import matplotlib as mpl
 import pylab as pl
@@ -371,14 +371,22 @@ class Data:
         """
         return Data(self.X.copy(),self.name,list(self.history))
 
-    def save(self,filename):
+    def save(self,filename,format='pickle'):
         """
         Save the Data object to a file.
 
         :param filename: Filename
         :type filename: string 
+        :param format: format in which the data is to be saved (default is 'pickle'). Other choices are 'ascii'
+        :type format: string
+        
         """
-        save(self,filename)
+        if format=='pickle':
+            save(self,filename)
+        elif format=='ascii':
+            savetxt(filename,self.X,'%.16e')
+            
+            
 
 
     def append(self,O):

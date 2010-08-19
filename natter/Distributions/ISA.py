@@ -65,13 +65,16 @@ class ISA(Distribution):
     def estimate(self,dat):
         '''
 
-        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+        Estimates the parameters from the data in dat. It is possible
+        to only selectively fit parameters of the distribution by
+        setting the primary array accordingly (see :doc:`Tutorial on
+        the Distributions module <tutorial_Distributions>`).
 
         :param dat: Data points on which the ISA model will be estimated.
         :type dat: natter.DataModule.Data
         '''
             
-        print "Fitting ISA model ..."
+        print "\tFitting ISA model ..."
         P = self.param['P']
         S = self.param['S']
         for i in xrange(len(P)):

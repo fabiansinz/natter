@@ -143,6 +143,10 @@ class Distribution:
             if type(self.param[k]) == types.ListType:
                 if isinstance(self.param[k][0],Distribution):
                     ss = "list of %d \"%s\" objects" % (len(self.param[k]),self.param[k][0].name)
+                elif type(self.param[k][0]) == type.ListType:
+                    ss = "list of %d lists" % (len(self.param[k]),)
+                elif type(self.param[k][0]) == type.TupleType:
+                    ss = "list of %d tuples" % (len(self.param[k]),)
                 else:
                     ss = "list of %d \"%s\" objects" % (len(self.param[k]),str(self.param[k][0]))
             else:
