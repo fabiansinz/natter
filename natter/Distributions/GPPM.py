@@ -104,7 +104,7 @@ class GPPM(Distribution):
         G = self.param['g'].sample(m).X
         H = self.param['h'].sample(m).X
         N = randn(self.param['n'],m)*sqrt(self.param['obsSig'])
-        return Data(F*G*exp(G) + N, str(m) + ' sapmles from a ' + self.name)
+        return Data(F*G*exp(H) + N, str(m) + ' sapmles from a ' + self.name)
 
 
 
@@ -163,14 +163,15 @@ class GPPM(Distribution):
                         ip.iprint=-5
                         r = ip.solve('nlp:ralg')
                         him = r.xf
-
                         accept = (abs(hip-him)>0.5) # found a real interval
-                        hinew = rand(1)*abs(hip-him) + min(hip,him) 
-                        dd = H[l]
-                        while not accept:
-                            hinew = rand(1) - 0.5 + H[l]
-                            if fh(hinew)>0:
-                                accept = True
+                        if accept:
+                            hinew = rand(1)*abs(hip-him) + min(hip,him)
+                        else:
+                            xl=H[l]
+                            xr=
+                                hinew = rand(1) - 0.5 + H[l]
+                                if fh(hinew)>0:
+                                    accept = True
                         H[l]=hinew
 
             Y[0:len(X)]=F
