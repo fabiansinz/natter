@@ -167,11 +167,9 @@ class GPPM(Distribution):
                         if accept:
                             hinew = rand(1)*abs(hip-him) + min(hip,him)
                         else:
-                            xl=H[l]
-                            xr=
-                                hinew = rand(1) - 0.5 + H[l]
-                                if fh(hinew)>0:
-                                    accept = True
+                            hinew = rand(1) - 0.5 + H[l]
+                            if fh(hinew)>0:
+                                accept = True
                         H[l]=hinew
 
             Y[0:len(X)]=F
