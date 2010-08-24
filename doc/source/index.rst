@@ -16,7 +16,8 @@ Contents:
    DataModule.rst
    Distributions.rst
    Transforms.rst
-
+   Coding_Guidelines.rst
+   
 Indices and tables
 ==================
 
