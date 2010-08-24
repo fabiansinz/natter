@@ -10,4 +10,4 @@ Base class for a finite mixture of base distributions.
 
 
 .. autoclass:: natter.Distributions.FiniteMixtureDistribution
-   :members: __init__, estimate
+   :members: estimate, parameters

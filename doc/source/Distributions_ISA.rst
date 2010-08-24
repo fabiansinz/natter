@@ -15,4 +15,4 @@ The ISA class does not implement filters. If you wish to do that
 create a CompleteLinearModel with ISA as a base class.
 
 .. autoclass:: natter.Distributions.ISA
-   :members: sample, loglik, pdf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters

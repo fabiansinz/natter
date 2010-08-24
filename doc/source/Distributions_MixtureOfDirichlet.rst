@@ -14,4 +14,4 @@ s.t. :math:`\sum_{i=1}^n x_i=1`, :math:`x_i > 0` and :math:`\alpha_i
 
 
 .. autoclass:: natter.Distributions.MixtureOfDirichlet
-   :members: sample, loglik, pdf, estimate, all, copy, getPosteriorWeights
+   :members: sample, loglik, pdf, estimate, all, copy, getPosteriorWeights, parameters

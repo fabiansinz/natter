@@ -11,4 +11,4 @@ the parametrization
   
 
 .. autoclass:: natter.Distributions.NIG
-   :members: sample, loglik, pdf, cdf, ppf, estimate, all
+   :members: sample, loglik, pdf, cdf, ppf, estimate, all, parameters

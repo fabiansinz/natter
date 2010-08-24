@@ -10,4 +10,4 @@ The gamma distribution is a univariate density with the p.d.f.
 
 
 .. autoclass:: natter.Distributions.Gamma
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters

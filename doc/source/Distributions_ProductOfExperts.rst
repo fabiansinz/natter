@@ -11,4 +11,4 @@ where :math:`\psi_k` are univariate experts, i.e. factors that shape the distrib
 
 
 .. autoclass:: natter.Distributions.ProductOfExperts
-   :members: estimate, copy
+   :members: estimate, copy, parameters

@@ -12,4 +12,4 @@ Gaussian Process Product model with  the parametrization
 
 
 .. autoclass:: natter.Distributions.GPPM
-   :members: sample, loglik, pdf, estimate
+   :members: sample, loglik, pdf, estimate, parameters

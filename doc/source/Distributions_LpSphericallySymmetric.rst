@@ -15,4 +15,4 @@ form (see [GuptaSong1997]_)
 Distribution object.
 
 .. autoclass:: natter.Distributions.LpSphericallySymmetric
-   :members: sample, loglik, pdf, dldx, estimate, all, logSurfacePSphere, copy
+   :members: sample, loglik, pdf, dldx, estimate, all, logSurfacePSphere, copy, parameters

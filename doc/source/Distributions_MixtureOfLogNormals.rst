@@ -10,4 +10,4 @@ The mixture of log-normal distributions is given by
 
 
 .. autoclass:: natter.Distributions.MixtureOfLogNormals
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters

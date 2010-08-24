@@ -12,4 +12,5 @@ the parametrization
 Where L is a lower triangular matrix with zero diagonal and h is a bias term. b_i \in {0,1}
 
 .. autoclass:: natter.Distributions.Boltzmann
-   :members: sample, loglik, pdf, cdf, estimate, estimatePartitionFunction, all
+   :members: sample, parameters, loglik, pdf, cdf, estimate, estimatePartitionFunction, all
+   

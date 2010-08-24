@@ -10,4 +10,4 @@ The multivariate Gaussian distribution is given by
 
 
 .. autoclass:: natter.Distributions.Gaussian
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy
+   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters
