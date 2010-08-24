@@ -103,9 +103,16 @@ class Boltzmann(Distribution):
         method can have its own additionaly set of parameters
         specified by sampleOpts.
 
-        :param m: Number of samples to draw
-        :param method: Which method to use (default: 'Gibbs')
-        :param sampleOpts: optional parameter specifying additional parameters for the sampling method.
+        :param m:
+           Number of samples to draw
+           
+        :param method:
+           Which method to use (default: 'Gibbs')
+           
+        :param sampleOpts:
+           optional parameter specifying additional parameters for the sampling method.
+
+           
         
         """
         n = self.param['n']
@@ -139,16 +146,17 @@ class Boltzmann(Distribution):
         distribution. By default this is done via brute force
         enumeration. Alternativ methods are: noiseContrastive, importanceSampling.
 
-        :param methodParam: Dictionary of additional parameters
-        specifying the method to be used for estiamteing the partition
-        function.
+        :param methodParam:
+           Dictionary of additional parameters specifying the method to be used for estiamteing the partition function.
+
 
         :Usage:
-        n=2
-        p = Boltzmann({'n':n})
-        param = {'method':'importanceSampling',
-                 'proposal': p}
-        model.estimatePartitionFunction(methodParam=param)
+        >>>n=2
+        >>>p = Boltzmann({'n':n})
+        >>>param = {'method':'importanceSampling','proposal': p}
+        >>>model.estimatePartitionFunction(methodParam=param)
+
+
         
         """
         n = self.param['n']

@@ -39,7 +39,8 @@ class Gaussian(Distribution):
             self.param['mu'] = zeros((self.param['n'],))
         self.primary = ['mu','sigma']
         self.I =  where(tril(ones((self.param['n'],self.param['n'])))>0)
-        # internally, we represent the covariance in terms of the cholesky factor of the precision matrix
+        # internally, we represent the covariance in terms of the
+        # cholesky factor of the precision matrix
         self.cholP = cholesky(inv(self.param['sigma'])) 
         
     def sample(self,m):
@@ -54,8 +55,11 @@ class Gaussian(Distribution):
 
 
         """
-        return Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
+        return Data(solve(self.cholP,randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
                     str(m) + " samples from a " + str(self.param['n']) + "-dimensional Gaussian")
+
+        # return Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
+        #             str(m) + " samples from a " + str(self.param['n']) + "-dimensional Gaussian")
         
 
     def loglik(self,dat):
