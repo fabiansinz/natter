@@ -3,6 +3,7 @@ from natter.DataModule import Data
 from numpy import exp, log, pi, mean, std
 from numpy.random import randn
 from scipy.stats import norm
+from copy import deepcopy
 
 class LogNormal(Distribution):
     """
@@ -30,7 +31,28 @@ class LogNormal(Distribution):
                 self.param[k] = float(param[k])
         self.primary = ['mu','s']
 
+    def parameters(self,keyval=None):
+        """
 
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
     
         
         

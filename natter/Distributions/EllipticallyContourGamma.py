@@ -8,7 +8,7 @@ from numpy.random import randn
 
 from scipy import weave
 from scipy.weave import converters
-
+from copy import deepcopy
 
 
 
@@ -35,6 +35,29 @@ class EllipticallyContourGamma(CompleteLinearModel):
         self.name = 'Elliptically contour Gamma distribution'
         self.Wind = where(tril(ones(self.param['W'].W.shape))>0)
         self.param['W'].W = tril(self.param['W'].W)
+
+    def parameters(self,keyval=None):
+        """
+
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
 
         
     def primary2array(self):

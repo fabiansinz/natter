@@ -3,6 +3,7 @@ from natter.DataModule import Data
 from numpy import zeros
 from ExponentialPower import ExponentialPower
 import sys
+from copy import deepcopy
 
 class ProductOfExponentialPowerDistributions(Distribution):
     """
@@ -49,6 +50,29 @@ class ProductOfExponentialPowerDistributions(Distribution):
         for i in xrange(self.param['n']):
             X[i,:] = self.param['P'][i].sample(m).X
         return Data(X,str(m) + ' samples from a ' + self.name)
+
+    def parameters(self,keyval=None):
+        """
+
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
 
     def estimate(self,dat):
         '''

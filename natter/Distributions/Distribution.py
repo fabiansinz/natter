@@ -16,13 +16,19 @@ class Distribution:
             self.param = {}
         self.name = 'Abstract Distribution'
         self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted        
-        
-
-    def setParam(self,key,value):
-        self.param[key] = value
     
     def loglik(self,dat):
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
+
+    def __getitem__(self,key):
+        return self.param[key]
+
+    def __setitem__(self,key,value):
+        self.param[key] = value
+
+    def parameters(self,keyval=None):
+        raise Errors.AbstractError('Abstract method parameters not implemented in ' + self.name)
+        
 
     def sample(self,m):
         """
@@ -125,32 +131,32 @@ class Distribution:
         s = 30*'-'
         s += '\n' + self.name + '\n'
         later = []
-        for k in self.param.keys():
-            if not (type(self.param[k]) == types.FloatType)  \
-                   and not (type(self.param[k]) == type('dummy')) \
-                   and not (type(self.param[k]) == float64) \
-                   and not (type(self.param[k]) == float32) \
-                   and not (type(self.param[k]) == float) \
-                   and not (type(self.param[k]) == type(1)):
+        for k in self.parameters('keys'):
+            if not (type(self[k]) == types.FloatType)  \
+                   and not (type(self[k]) == type('dummy')) \
+                   and not (type(self[k]) == float64) \
+                   and not (type(self[k]) == float32) \
+                   and not (type(self[k]) == float) \
+                   and not (type(self[k]) == type(1)):
                 later.append(k)
             else:
                 s += '\t' + k + ': '
-                ss = str(self.param[k])
+                ss = str(self[k])
                 s += ss + '\n'
             
         for k in later:
             s += '\t' + k + ': '
-            if type(self.param[k]) == types.ListType:
-                if isinstance(self.param[k][0],Distribution):
-                    ss = "list of %d \"%s\" objects" % (len(self.param[k]),self.param[k][0].name)
-                elif type(self.param[k][0]) == type.ListType:
-                    ss = "list of %d lists" % (len(self.param[k]),)
-                elif type(self.param[k][0]) == type.TupleType:
-                    ss = "list of %d tuples" % (len(self.param[k]),)
+            if type(self[k]) == types.ListType:
+                if isinstance(self[k][0],Distribution):
+                    ss = "list of %d \"%s\" objects" % (len(self[k]),self[k][0].name)
+                elif type(self[k][0]) == type.ListType:
+                    ss = "list of %d lists" % (len(self[k]),)
+                elif type(self[k][0]) == type.TupleType:
+                    ss = "list of %d tuples" % (len(self[k]),)
                 else:
-                    ss = "list of %d \"%s\" objects" % (len(self.param[k]),str(self.param[k][0]))
+                    ss = "list of %d \"%s\" objects" % (len(self[k]),str(self[k][0]))
             else:
-                ss = '\n' + str(self.param[k])
+                ss = '\n' + str(self[k])
                 ss = ss.replace('\n','\n\t')
             s += ss + '\n'
         s += '\n\tPrimary Parameters:'

@@ -4,7 +4,7 @@ from numpy import log, exp, mean, zeros
 from numpy.random import gamma
 from scipy.special import gammaln, polygamma,digamma
 from scipy.stats import gamma as gammastats
-
+from copy import deepcopy
 
 class Gamma(Distribution):
     """
@@ -32,6 +32,29 @@ class Gamma(Distribution):
             for k in param.keys():
                 self.param[k] = float(param[k])
         self.primary = ['u','s']
+
+    def parameters(self,keyval=None):
+        """
+
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
         
     def sample(self,m):
         """
