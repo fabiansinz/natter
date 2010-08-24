@@ -48,7 +48,7 @@ def patch2Img(X, nx , ny):
  
 
 
-def plotPatches( B , nx, ptchSz,ax=None):
+def plotPatches( B , nx, ptchSz,ax=None,contrastenhancement=False):
     """
     PLOTPATCHES(A, NX, PTCHSZ)
 
@@ -71,13 +71,18 @@ def plotPatches( B , nx, ptchSz,ax=None):
     
     A -= np.min(np.min(A))
     A /= np.max(np.max(A))
+
     # contrast enhancement
-    #     A = np.array(A).transpose()
-    #     for k in range(len(A)):
-    #         A[k] -= np.min(A[k])
-    #         A[k] = np.array([((A[k,i] > 10e-10) and A[k,i] or 0.0) for i in range(len(A[k]))])
-    #         A[k] /= np.max(A[k])
-    #     A = A.transpose()
+    if contrastenhancement:
+        A = np.array(A).transpose()
+        for k in range(len(A)):
+            A[k] -= np.min(A[k])
+            A[k] = np.array([((A[k,i] > 10e-10) and A[k,i] or 0.0) for i in range(len(A[k]))])
+            A[k] /= np.max(A[k])
+        A = A.transpose()
+
+
+
 
     doShow = False
     if ax == None:

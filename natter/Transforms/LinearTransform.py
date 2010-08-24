@@ -44,7 +44,7 @@ class LinearTransform(Transform.Transform):
         """
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
-        Plotting.plotPatches(inv(self.W),nx,ptchSz)
+        Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True)
     
     def plotFilters(self):
         """
@@ -55,7 +55,7 @@ class LinearTransform(Transform.Transform):
         """
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
-        Plotting.plotPatches(self.W.transpose(),nx,ptchSz)
+        Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True)
         
     def __invert__(self):
         """
