@@ -21,10 +21,16 @@ class Distribution:
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
 
     def __getitem__(self,key):
-        return self.param[key]
+        if key in self.parameters('keys'):
+            return self.parameters()[key]
+        else:
+            raise KeyError("Parameter %s not defined for %s" % (key,self.name))
 
     def __setitem__(self,key,value):
-        self.param[key] = value
+        if key in self.parameters('keys'):
+            self.param[key] = value
+        else:
+            raise KeyError("Parameter %s not defined for %s" % (key,self.name))
 
     def parameters(self,keyval=None):
         raise Errors.AbstractError('Abstract method parameters not implemented in ' + self.name)
