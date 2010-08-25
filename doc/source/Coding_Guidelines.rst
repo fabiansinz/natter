@@ -1,13 +1,15 @@
 Mandatory Coding Guidelines (aka the Gerwinn-Sinz Coding Agreement)
 ===================================================================
 
-1. **Parameters of Distributions 1** Parameters of distributions are set
-via the __setitem__ and __getitem__ methods. By default these two
-methods call the __setitem__ and __getitem__ methods of a field param,
-which is a dictionary containing all the parameters of the
-distribution (like in the intialization). If not all parameters of the
-distribution are in the *param* dictionary, the __setitem__ and
-__getitem__ methods have to be overwritten. 
+1. **Parameters of Distributions 1** Parameters of distributions are
+set via the __setitem__ and __getitem__ methods. By default,
+__getitem__ uses the *parameters* method of the distribution object to
+return the respective parameter. If the key is not a parameter of the
+distribution, it raises a KeyError. The method __setitem__ calls the
+__setitem__ method of a field param, which is a dictionary containing
+all the parameters of the distribution (like in the intialization). If
+not all parameters of the distribution are in the *param* dictionary,
+the __setitem__ method has to be overwritten.
 
 2. **Parameters of Distributions 2** Every distribution object must
 implement a *parameters* function that returns (when called with no
