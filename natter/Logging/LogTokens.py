@@ -4,7 +4,10 @@ import types
 
 
 class LogToken:
-
+    """
+    Abstract class each LogToken inherits from. Forces LogTokens to
+    implement the methods *latex*, *ascii*, *html* and *wiki*.
+    """
     def latex(self):
         raise AbstractError("Method latex not implemented in this ProtocolToken!")
 
@@ -23,7 +26,16 @@ class LogToken:
 
 ############################################################################
 class Table(LogToken):
+    """
+    Table LogToken to store results. Each table is initialized with
+    two tuples: the row labels and the column labels. Table cells can
+    be accesses via these labels. For examples
 
+    >>> t = Table((1,2),('a','b'))
+    >>> t[1,'b'] = 1.2
+
+    Cell contents can be floats, strings or LogTokens again. 
+    """
     
     def __init__(self,rows = (), cols = ()):
         self._content = {}
@@ -52,6 +64,10 @@ class Table(LogToken):
         return self.ascii()
 
     def ascii(self):
+        """
+        :returns: An ascii representation of the Table.
+        :rtype: string
+        """
         n = 0
         for ck in self._cols:
             if len(str(ck)) > n:
@@ -98,6 +114,10 @@ class Table(LogToken):
         return ret
 
     def html(self):
+        """
+        :returns: A html representation of the table.
+        :rtype: string
+        """
         b = False
         s = "<br><table style=\"background-color: rgb(200, 200, 200);\" border=\"1\" cellpadding=\"8\" cellspacing=\"3\" rules=\"cols\" border=\"0\" rules=\"rows\">"
         s += "<tr><td></td>"
@@ -134,22 +154,50 @@ class Table(LogToken):
 ##############################################
 
 class Paragraph(LogToken):
+    """
+    Represents a paragraph.
+    """
 
     def ascii(self):
+        """
+        :returns: An ascii representation of the Paragraph.
+        :rtype: string
+        """
         return "\n\n"
 
     def wiki(self):
+        """
+        :returns: A wiki representation of the paragraph.
+        :rtype: string
+        """
+        
         return "\n\n"
     
     def html(self):
+        """
+        :returns: A html representation of the paragraph.
+        :rtype: string
+        """
         return "<p>"
 
     def latex(self):
+        """
+        :returns: A latex representation of the paragraph.
+        :rtype: string
+        """
         return "\n\n"
 
 ##############################################
 
 class Link(LogToken):
+    """
+    Represents links: Each link can either be initialized with its
+    target only or with an additional link name. For example:
+
+    >>> l = Link('myfile.html')
+    >>> l2 = Link('myfile.html','This is a link to a file')
+    
+    """
 
     def __init__(self,target, name=None):
         self._target = target
@@ -159,13 +207,29 @@ class Link(LogToken):
             self._name = name
         
     def ascii(self):
+        """
+        :returns: An ascii representation of the link.
+        :rtype: string
+        """
         return self._name
 
     def wiki(self):
+        """
+        :returns: An wiki representation of the link.
+        :rtype: string
+        """
         return "[%s %s]" % (self._target,self._name)
     
     def html(self):
+        """
+        :returns: An html representation of the link.
+        :rtype: string
+        """
         return "<a href=\"%s\">%s</a>" % (self._target,self._name)
 
     def latex(self):
+        """
+        :returns: An latex representation of the link.
+        :rtype: string
+        """
         return self._name

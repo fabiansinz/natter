@@ -15,6 +15,7 @@ Contents:
    Auxiliary.rst
    DataModule.rst
    Distributions.rst
+   Logging.rst
    Transforms.rst
    Coding_Guidelines.rst
    

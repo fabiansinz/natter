@@ -3,6 +3,32 @@ from LogTokens import LogToken, Link
 import textwrap
 import re
 class ExperimentLog(LogToken):
+    """
+    Class for storing experiment logs. ExperimentLog is a :doc:`LogToken <Logging_LogTokens>`.
+
+    ExperimentLog overloads the + and the * operator. + can be used to
+    add new content to the log. It accepts strings and LogTokens. *
+    adds links to the experiment logs. Links can be specified by the
+    path (string) only or by a tuple of two strings of which the first
+    denotes the path and the second denotes the link name. For example
+
+    >>> p = ExperimentLog('My fancy experiment')
+    >>> p += 'We sampled of data we found on the website:'
+    >>> p *= ('http://dataparadise.com','data paradise')
+
+    ExperimentLog allows for adding subsections with the function
+    *addSection*. These sections can be accessed under the section
+    name like in a dictionary. Each section is a ExperimentLog itself.
+
+    >>> p.addSection('Results')
+    >>> p['Results'] += 'The following section summarizes our results!'
+    
+    A new experiment log is initialized with an empty parameter list or the name of the log.
+
+    :param name: Name of the experiment log
+    :type name: string
+
+    """
 
     _HTML_HEADER = """
                    <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
@@ -31,6 +57,14 @@ class ExperimentLog(LogToken):
         self._name = name # name of the log
 
     def addSection(self,section,val=None):
+        """
+        Adds a new subsection to the log.
+
+        :param section: The subsection's name
+        :type section: string
+        :param val: Assign a experiment log to the subsection.
+        :type val: natter.Logging.ExperimentLog
+        """
         if not section in self._sections:
             self._sections += (section,)
             if val == None:
@@ -79,6 +113,10 @@ class ExperimentLog(LogToken):
         return self.ascii()
 
     def ascii(self):
+        """
+        :returns: An ascii representation of the experiment log.
+        :rtype: string
+        """
         joinfunc = lambda x: textwrap.fill(x,80) if type(x) == types.StringType else x.ascii()
 
         s = "\n%s\n\n" % (self._name.upper(),)
@@ -92,6 +130,10 @@ class ExperimentLog(LogToken):
         return s
 
     def html(self, title=True):
+        """
+        :returns: An html representation of the experiment log.
+        :rtype: string
+        """
         joinfunc = lambda x: x if type(x) == types.StringType else x.html()
         s = "<table border=\"0\" width=\"1000px\" cellspacing=\"10\">"
         if len(self._sublogs) > 0:
@@ -114,6 +156,14 @@ class ExperimentLog(LogToken):
         return self.__str__()
         
     def write(self,filename,format='html'):
+        """
+        Writes the experiment log to a file.
+
+        :param filename: Name of the output file.
+        :type filename: string
+        :param format: Output format. Possible formats are: html, ascii
+        :type format: string
+        """
         with open(filename,'w') as f:
             f.write(getattr(self,"_%s_HEADER" % (format.upper(),)) % (self._name,))
             f.write(self.__log__(format))

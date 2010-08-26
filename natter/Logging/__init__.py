@@ -5,7 +5,8 @@ The Log module provides functionalities for generating experiment logs.
 .. toctree::
    :maxdepth: 2
    
-   Log.rst
+   Logging_ExperimentLog.rst
+   Logging_LogTokens.rst
 """
 
 from ExperimentLog import ExperimentLog
