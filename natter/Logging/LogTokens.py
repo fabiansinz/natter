@@ -94,7 +94,7 @@ class Table(LogToken):
         #-------
         cm = len(self._cols) + 1
         ret = hLine(cm,n) + "\n"
-        ret += "|" + n*" " + "|" + "|".join([lrfill(elem,n) for elem in self._cols]) + "|\n"
+        ret += "|" + n*" " + "|" + "|".join([lrfill(str(elem),n) for elem in self._cols]) + "|\n"
         ret += hLine(cm,n) + "\n"
         
         
