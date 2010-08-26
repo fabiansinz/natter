@@ -125,8 +125,8 @@ class ExperimentLog(LogToken):
         """
         joinfunc = lambda x: textwrap.fill(x,80) if type(x) == types.StringType else x.ascii()
 
-        s = "\n%s\n\n" % (self._name.upper(),)
-        s +=  " ".join([joinfunc(elem) for elem in self._log]) + "\n\n"
+        s = "\n%s\n" % (self._name.upper(),)
+        s +=  " ".join([joinfunc(elem) for elem in self._log]) + "\n"
 
         for k in self._sections:
             s += 80*"-" + "\n"
@@ -141,7 +141,7 @@ class ExperimentLog(LogToken):
         :rtype: string
         """
         joinfunc = lambda x: x if type(x) == types.StringType else x.html()
-        s = "<table border=\"0\" width=\"1000px\" cellspacing=\"10\">"
+        s = "<table border=\"0\" width=\"1000px\" cellspacing=\"5\">"
         if len(self._sublogs) > 0:
             if title:
                 s += "<tr><td align=\"center\" colspan=\"2\"><b>%s</b></td></tr>" % (self._name,)
