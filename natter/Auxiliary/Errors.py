@@ -75,3 +75,8 @@ class NotImplementedError(Exception):
 class SpecificationError(Exception):
     def __init__(self,value):
         Exception.__init__(self)
+
+        
+class NumericalExceptionError(Exception):
+    def __init__(self,value):
+        Exception.__init__(self)
