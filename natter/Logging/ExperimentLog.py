@@ -170,7 +170,8 @@ class ExperimentLog(LogToken):
         :param format: Output format. Possible formats are: html, ascii
         :type format: string
         """
-        with open(filename,'w') as f:
-            f.write(getattr(self,"_%s_HEADER" % (format.upper(),)) % (self._name,))
-            f.write(self.__log__(format))
-            f.write(getattr(self,"_%s_FOOTER" % (format.upper(),)) ) 
+        f =  open(filename,'w')
+        f.write(getattr(self,"_%s_HEADER" % (format.upper(),)) % (self._name,))
+        f.write(self.__log__(format))
+        f.write(getattr(self,"_%s_FOOTER" % (format.upper(),)) )
+        f.close()
