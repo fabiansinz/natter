@@ -108,7 +108,7 @@ class CompleteLinearModel(Distribution):
         q = self.param['q']
 
         # initialization of default optimizatiion parameters
-        param = {'tolF':5.0*1e-6, 'maxiter':50, 'SOmaxiter':10, 'searchrange':10,'lsTol':1e-2}
+        param = {'tolF':5.0*1e-6, 'maxiter':50, 'SOmaxiter':20, 'searchrange':10,'lsTol':1e-6}
         if param0 != None:
             for k in param0.keys():
                 param[k] = param0[k]

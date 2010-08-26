@@ -213,7 +213,7 @@ def StGradient(func, X, param0=None, *args):
     
     bestdelta = Inf
     Z = Inf
-    param = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10.0,'lsTol':1e-2,'linesearch':'golden'}
+    param = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10.0,'lsTol':1e-6,'linesearch':'golden'}
     if param0 != None:
         for k in param0.keys():
             param[k] = param0[k]
