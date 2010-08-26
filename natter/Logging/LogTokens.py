@@ -1,7 +1,7 @@
 from natter.Auxiliary.Errors import AbstractError
 from Utils import lrfill, hLine
 import types
-
+import textwrap
 
 class LogToken:
     """
@@ -233,3 +233,73 @@ class Link(LogToken):
         :rtype: string
         """
         return self._name
+
+##########################################################
+
+class LogList(LogToken):
+    """
+    LogList implements a list of strings or LogTokens.
+
+    At initialization the type can be set to *item* in which case the
+    enumeration is unnumbered or to *arabic*, in which case the list is
+    enumerated with arabic numbers.
+
+    :param etype: Enumeration format. Possible values are: items, arabic
+    :type etype: string 
+    """
+
+    def __init__(self,etype='items'):
+        self._type = etype
+        self._list = []
+
+    def __add__(self,val):
+        if type(val) != types.StringType and not isinstance(val,LogToken):
+            raise TypeError("List elements must be strings or LogTokens")
+        else:
+            self._list.append(val)
+        return self
+
+    def ascii(self):
+        """
+        :returns: An ascii representation of the list.
+        :rtype: string
+        """
+        s = "\n"
+        counter = 1
+        for elem in self._list:
+            symbol = ""
+            if self._type == 'arabic':
+                symbol = str(counter) + " "
+                counter += 1
+            elif self._type == 'items':
+                symbol = "* "
+                
+            if type(elem) == types.StringType:
+                s += "%s%s\n" % (symbol,textwrap.fill(elem,80))
+            elif isinstance(elem,LogToken):
+                s += "%s%s\n" % (symbol,elem.ascii())
+        return s
+    
+    def html(self):
+        """
+        :returns: An html representation of the list.
+        :rtype: string
+        """
+        s = "<br>"
+        if self._type == "items":
+            s += "<ul>"
+        elif self._type == 'arabic':
+            s += "<ol>"
+            
+        for elem in self._list:
+            if type(elem) == types.StringType:
+                s += "<li>%s</li>\n" % (elem, )
+            elif isinstance(elem,LogToken):
+                s += "<li>%s</li>\n" % (elem.html(), )
+                
+        if self._type == "items":
+            s += "</ul>"
+        elif self._type == 'arabic':
+            s += "</ol>"
+            
+        return s + "<br>"
