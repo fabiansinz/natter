@@ -6,11 +6,13 @@ class ExperimentLog(LogToken):
     """
     Class for storing experiment logs. ExperimentLog is a :doc:`LogToken <Logging_LogTokens>`.
 
-    ExperimentLog overloads the + and the * operator. + can be used to
-    add new content to the log. It accepts strings and LogTokens. *
-    adds links to the experiment logs. Links can be specified by the
-    path (string) only or by a tuple of two strings of which the first
-    denotes the path and the second denotes the link name. For example
+    ExperimentLog overloads the +, the / and the * operator. + and /
+    can be used to add new content to the log. They accept strings and
+    LogTokens. The only difference between them is that / adds a line
+    break. * adds links to the experiment logs. Links can be specified
+    by the path (string) only or by a tuple of two strings of which
+    the first denotes the path and the second denotes the link
+    name. For example
 
     >>> p = ExperimentLog('My fancy experiment')
     >>> p += 'We sampled of data we found on the website:'
