@@ -155,9 +155,9 @@ class Distribution:
             if type(self[k]) == types.ListType:
                 if isinstance(self[k][0],Distribution):
                     ss = "list of %d \"%s\" objects" % (len(self[k]),self[k][0].name)
-                elif type(self[k][0]) == type.ListType:
+                elif type(self[k][0]) == types.ListType:
                     ss = "list of %d lists" % (len(self[k]),)
-                elif type(self[k][0]) == type.TupleType:
+                elif type(self[k][0]) == types.TupleType:
                     ss = "list of %d tuples" % (len(self[k]),)
                 else:
                     ss = "list of %d \"%s\" objects" % (len(self[k]),str(self[k][0]))
