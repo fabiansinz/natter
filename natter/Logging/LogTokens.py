@@ -2,7 +2,7 @@ from natter.Auxiliary.Errors import AbstractError
 from Utils import lrfill, hLine
 import types
 import textwrap
-
+import re
 class LogToken:
     """
     Abstract class each LogToken inherits from. Forces LogTokens to
@@ -256,7 +256,10 @@ class LogList(LogToken):
         if type(val) != types.StringType and not isinstance(val,LogToken):
             raise TypeError("List elements must be strings or LogTokens")
         else:
-            self._list.append(val)
+            if type(val) == types.StringType:
+                self._list.append(re.sub("\s+", " ", val))
+            else:
+                self._list.append(val)
         return self
 
     def ascii(self):
@@ -269,7 +272,7 @@ class LogList(LogToken):
         for elem in self._list:
             symbol = ""
             if self._type == 'arabic':
-                symbol = str(counter) + " "
+                symbol = str(counter) + ". "
                 counter += 1
             elif self._type == 'items':
                 symbol = "* "
