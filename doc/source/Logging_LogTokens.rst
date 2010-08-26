@@ -3,4 +3,4 @@ LogTokens
 
 
 .. automodule:: natter.Logging.LogTokens
-   :members: LogToken, Table, Paragraph, Link
+   :members: LogToken, Table, Paragraph, Link, LogList
