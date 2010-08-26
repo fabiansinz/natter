@@ -1,5 +1,5 @@
 import types
-from LogTokens import LogToken, Link
+from LogTokens import LogToken, Link, Paragraph
 import textwrap
 import re
 class ExperimentLog(LogToken):
@@ -85,6 +85,10 @@ class ExperimentLog(LogToken):
                 item = re.sub("\s+", " ", item)
             self._log.append(item)
         return self
+
+    def __div__(self,item):
+        self += Paragraph()
+        return self + item
 
     def __mul__(self,item):
         if type(item) == types.StringType:
