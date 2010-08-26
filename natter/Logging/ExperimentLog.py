@@ -1,5 +1,5 @@
 import types
-from LogTokens import LogToken
+from LogTokens import LogToken, Link
 import textwrap
 import re
 class ExperimentLog(LogToken):
@@ -51,6 +51,16 @@ class ExperimentLog(LogToken):
                 item = re.sub("\s+", " ", item)
             self._log.append(item)
         return self
+
+    def __mul__(self,item):
+        if type(item) == types.StringType:
+            self += Link(item)
+        elif type(item) == types.TupleType:
+            self += Link(item[0],item[1])
+        else:
+            raise TypeError("Multplication operator for logs (adding links) can only be used with PATH or (PATH,LINKNAME)")
+        return self
+            
         
     def __getitem__(self,k):
         if k in self._sections:

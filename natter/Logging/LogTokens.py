@@ -34,7 +34,7 @@ class Table(LogToken):
             self._content[rk] = {}
             for ck in cols:
                 self._content[rk][ck] = ""
-
+                
 
     def __getitem__(self,k):
         if k[0] in self._rows and k[1] in self._cols:
@@ -65,6 +65,8 @@ class Table(LogToken):
                     m =  len(self.FLOAT_FORMAT % (self._content[rk][ck],))
                 elif type(self._content[rk][ck]) == types.StringType:
                     m =  len(self._content[rk][ck])
+                elif isinstance(self._content[rk][ck],LogToken):
+                    m = len(self._content[rk][ck].ascii())
                 else:
                     raise TypeError("Data type of (%s,%s) not known" % (str(rk),str(ck)))
                     
@@ -87,11 +89,47 @@ class Table(LogToken):
                     row.append(self.FLOAT_FORMAT % (self._content[rk][ck],))
                 elif type(self._content[rk][ck]) == types.StringType:
                     row.append(self._content[rk][ck])
+                elif isinstance(self._content[rk][ck],LogToken):
+                    row.append(self._content[rk][ck].ascii())
                 else:
                     raise TypeError("Data type of (%s,%s) not known" % (str(rk),str(ck)))
             ret += "|" + "|".join([lrfill(elem,n) for elem in row]) + "|\n"
             ret += hLine(cm,n) + "\n"
         return ret
+
+    def html(self):
+        b = False
+        s = "<br><table style=\"background-color: rgb(200, 200, 200);\" border=\"1\" cellpadding=\"8\" cellspacing=\"3\" rules=\"cols\" border=\"0\" rules=\"rows\">"
+        s += "<tr><td></td>"
+        for colelem in self._cols:
+            s += "<td><b>%s</b></td>" % (str(colelem),)
+    
+        s += "</tr>"
+
+        for rk in self._rows:
+            if b:
+                s += "<tr style=\"background-color: rgb(221, 221, 221);\"><td><b>%s</b></td>" % (str(rk),)
+                b = False
+            else:
+                s += "<tr style=\"background-color: rgb(255, 255, 255);\"><td><b>%s</b></td>" % (str(rk),)
+                b = True
+            for ck in self._cols:
+                s += "<td>"
+                if type(self._content[rk][ck]) == types.FloatType:
+                    s += self.FLOAT_FORMAT % (self._content[rk][ck],)
+                elif type(self._content[rk][ck]) == types.StringType:
+                    s += self._content[rk][ck]
+                elif isinstance(self._content[rk][ck],LogToken):
+                    s += self._content[rk][ck].html()
+                    
+                s += "</td>"
+
+            s += "</tr>"
+
+        s+= "</table><br>"
+        return s
+
+        
 
 ##############################################
 
