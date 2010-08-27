@@ -150,14 +150,15 @@ class CompleteLinearModel(Distribution):
                 iter +=1
 
                 self.param['W'].W = W
+                
+                # if 'q' in self.primary:
+                #     if param.has_key('args'):
+                #         q.estimate(self.param['W']*dat,*param['args'])
+                #     else:
+                #         q.estimate(self.param['W']*dat)
+                #     self.param['q'] = q
 
-                if 'q' in self.primary:
-                    if param.has_key('args'):
-                        q.estimate(self.param['W']*dat,*param['args'])
-                    else:
-                        q.estimate(self.param['W']*dat)
-                    self.param['q'] = q
-        elif 'q' in self.primary:
+        if 'q' in self.primary:
             if param.has_key('args'):
                 q.estimate(self.param['W']*dat,*param['args'])
             else:
