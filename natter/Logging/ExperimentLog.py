@@ -141,7 +141,7 @@ class ExperimentLog(LogToken):
         :rtype: string
         """
         joinfunc = lambda x: x if type(x) == types.StringType else x.html()
-        s = "<table border=\"0\" width=\"1000px\" cellspacing=\"5\">"
+        s = "<table border=\"0\" width=\"80%\" cellspacing=\"5\">"
         if len(self._sublogs) > 0:
             if title:
                 s += "<tr><td align=\"center\" colspan=\"2\"><b>%s</b></td></tr>" % (self._name,)
