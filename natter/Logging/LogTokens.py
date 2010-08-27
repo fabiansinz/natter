@@ -149,6 +149,32 @@ class Table(LogToken):
         s+= "</table><br>"
         return s
 
+    def latex(self):
+        """
+        :returns: A latex representation of the table.
+        :rtype: string
+        """
+        
+        s = "\\begin{center}\\begin{tabular}{|%s|}\\hline" % ("|".join((len(self._cols)+1)*['l']))
+        s += "&" + "&".join([str(elem) for elem in self._cols]) + "\\\\ \\hline\\hline"
+    
+
+        for rk in self._rows:
+            s += "\\bf %s " % (str(rk),)
+            for ck in self._cols:
+                s += "&"
+                if type(self._content[rk][ck]) == types.FloatType:
+                    s += self.FLOAT_FORMAT % (self._content[rk][ck],)
+                elif type(self._content[rk][ck]) == types.StringType:
+                    s += self._content[rk][ck]
+                elif isinstance(self._content[rk][ck],LogToken):
+                    s += self._content[rk][ck].latex()
+                    
+
+            s += "\\\\\\hline"
+
+        s+= "\\end{tabular}\\end{center}"
+        return s
         
 
 ##############################################
@@ -232,7 +258,7 @@ class Link(LogToken):
         :returns: An latex representation of the link.
         :rtype: string
         """
-        return self._name
+        return "%s" % (self._name,)
 
 ##########################################################
 
@@ -285,7 +311,7 @@ class LogList(LogToken):
     
     def html(self):
         """
-        :returns: An html representation of the list.
+        :returns: A html representation of the list.
         :rtype: string
         """
         s = "<br>"
@@ -306,3 +332,26 @@ class LogList(LogToken):
             s += "</ol>"
             
         return s + "<br>"
+
+    def latex(self):
+        """
+        :returns: A latex representation of the list.
+        :rtype: string
+        """
+        s = ""
+        if self._type == "items":
+            s += "\\being{itemize}"
+        elif self._type == 'arabic':
+            s += "\\begin{enumerate}"
+            
+        for elem in self._list:
+            if type(elem) == types.StringType:
+                s += "\\item %s\n" % (elem, )
+            elif isinstance(elem,LogToken):
+                s += "\\item %s\n" % (elem.html(), )
+                
+            
+        if self._type == "items":
+            return s + "\\end{itemize}"
+        elif self._type == 'arabic':
+            return s + "\\end{enumerate}"

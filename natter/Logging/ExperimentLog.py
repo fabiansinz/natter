@@ -50,6 +50,16 @@ class ExperimentLog(LogToken):
     _ASCII_HEADER = 80*"=" + "\n\nExperiment Log \"%s\":\n\n" + 80*"-" + "\n\n"
     _ASCII_FOOTER = "\n\n" + 80*"="
 
+    _LATEX_HEADER = """\\documentclass[english]{article}
+                       \\usepackage[T1]{fontenc}
+                       \\usepackage[latin9]{inputenc}
+                       \\usepackage{babel}
+                       \\title{%s}
+                       \\begin{document}
+                       
+                       """
+    _LATEX_FOOTER = """\\end{document}"""
+
     def __init__(self,name="New Experiment Log", sections=()):
         self._sections = sections # sections of the log
         self._sublogs = {}
@@ -137,7 +147,7 @@ class ExperimentLog(LogToken):
 
     def html(self, title=True):
         """
-        :returns: An html representation of the experiment log.
+        :returns: A html representation of the experiment log.
         :rtype: string
         """
         joinfunc = lambda x: x if type(x) == types.StringType else x.html()
@@ -157,6 +167,21 @@ class ExperimentLog(LogToken):
         s += "</table>"
         return s
 
+    def latex(self, depth=0):
+        """
+        :returns: A latex representation of the experiment log.
+        :rtype: string
+        """
+        sections = {0:"\\section", 1:"\\subsection" , 2:"\\subsubsection", 3:"\\paragraph", 4:"\\subparagraph"}
+
+        joinfunc = lambda x: x if type(x) == types.StringType else x.latex()
+        
+        s = "%s{%s}" % (sections[depth],self._name)
+        s += "\n".join([joinfunc(elem) for elem in self._log])
+
+        for k in self._sections:
+            s += self[k].latex(depth+1)
+        return s
 
     def __repr__(self):
         return self.__str__()
