@@ -1,6 +1,6 @@
 from __future__ import division
 from sys import stdout 
-from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, Inf, max, dot, real,sin,  min,array
+from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, Inf, max, dot, real,sin,  min,array, float64
 #from numpy.linalg import svd
 from scipy.linalg import sqrtm, inv
 from scipy.optimize import fminbound
@@ -243,7 +243,9 @@ def StGradient(func, X, param0=None, *args):
         elif param['linesearch'] == 'brent':
             F = lambda t: -func(projectOntoSt(X+t*Z),1,*args)[0]
             bestdelta = fminbound(F,0,b,(),param['lsTol'])
-            bestdelta = bestdelta[0]
+            if not type(bestdelta) == float64:
+                bestdelta = bestdelta[0]
+            
 
         if bestdelta < b/4.0:
             b /=2
