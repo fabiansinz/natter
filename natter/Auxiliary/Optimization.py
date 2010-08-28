@@ -8,6 +8,10 @@ from scipy.optimize import fmin
 from natter.Auxiliary import Errors
 
 def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
+    """
+    I ported this function from Matlab. Someone else wrote it. TODO:
+    Who was it and reference him.
+    """
     xsize = shape(x0);
     x0 = x0.flatten()
     n=len(x0);
