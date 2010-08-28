@@ -217,7 +217,7 @@ def StGradient(func, X, param0=None, *args):
     
     bestdelta = Inf
     Z = Inf
-    param = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10.0,'lsTol':1e-6,'linesearch':'golden'}
+    param = {'tolF':1e-10, 'SOmaxiter':20, 'searchrange':10.0,'lsTol':1e-7,'linesearch':'brent'}
     if param0 != None:
         for k in param0.keys():
             param[k] = param0[k]
@@ -231,23 +231,28 @@ def StGradient(func, X, param0=None, *args):
         Z = Df - dot(dot(X,Df.transpose()),X)
         print "\t[Done]"
 
+        if k == 1:
+            print "\tPermforming Linesearch with parameters"
+            print "\t\t" + "\n\t\t".join( [str(elem[0]) + ': ' + str(elem[1]) for elem in param.items()] ) + "\n"
+        
         print "\tLinesearch %i" % (k,),
-        F = lambda t: func(projectOntoSt(X+t*Z),1,*args)[0]
         if param['linesearch'] == 'golden':
+            F = lambda t: func(projectOntoSt(X+t*Z),1,*args)[0]
             bestdelta = goldenMaxSearch(F,0,b,param['lsTol'])
             bestdelta = .5*(bestdelta[0]+bestdelta[1])
         elif param['linesearch'] == 'brent':
+            F = lambda t: -func(projectOntoSt(X+t*Z),1,*args)[0]
             bestdelta = fminbound(F,0,b,(),param['lsTol'])
             bestdelta = bestdelta[0]
 
         if bestdelta < b/4.0:
             b /=2
-            print "-(%.4f) " % b,
+            print "-(%.8f) " % b,
         elif bestdelta < 3.0*b/4.0:
             b *=2
-            print "+(%.4f) " % b,
+            print "+(%.8f) " % b,
         else:
-            print ".(%.4f) " % b,
+            print ".(%.8f) " % b,
   
         X = projectOntoSt(X+bestdelta*Z)
         ftmax = func(X,1,*args)
@@ -255,7 +260,7 @@ def StGradient(func, X, param0=None, *args):
         if k > maxiter:
              print 'Maxiter reached! Exiting ...\n'
              break
-    param['b'] = b
+    param['searchrange'] = b
     if k <= maxiter:
         print "\tMaximal gradient entry is smaller than %.4g! Exiting ...\n" % (tolF,)
     return (X,ftmax,param)

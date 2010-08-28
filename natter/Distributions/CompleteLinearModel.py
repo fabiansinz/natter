@@ -108,7 +108,7 @@ class CompleteLinearModel(Distribution):
         q = self.param['q']
 
         # initialization of default optimizatiion parameters
-        param = {'tolF':5.0*1e-6, 'maxiter':50, 'SOmaxiter':20, 'searchrange':10,'lsTol':1e-6}
+        param = {'tolF':5.0*1e-6, 'maxiter':50, 'SOmaxiter':20, 'searchrange':10,'lsTol':1e-7}
         if param0 != None:
             for k in param0.keys():
                 param[k] = param0[k]
@@ -144,7 +144,7 @@ class CompleteLinearModel(Distribution):
                 W = Wnew
                 # check stopping criterion
                 if iter > param['maxiter'] or \
-                        (iter > 1 and mean(abs(diff(fRec[iter-2:iter+1]))) < 1e-4 and dAngle[iter] < 1):
+                        (iter > 1 and mean(abs(diff(fRec[iter-2:iter+1]))) < 1e-6 and dAngle[iter] < .5):
                     print "\t Optimization terminated! [Exiting]"
                     loop = False
                 iter +=1
