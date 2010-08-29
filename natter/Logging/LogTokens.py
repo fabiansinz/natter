@@ -3,6 +3,8 @@ from Utils import lrfill, hLine
 import types
 import textwrap
 import re
+from numpy import isreal
+
 class LogToken:
     """
     Abstract class each LogToken inherits from. Forces LogTokens to
@@ -77,7 +79,7 @@ class Table(LogToken):
             if len(str(rk)) > n:
                 n = len(str(rk))
             for ck in self._cols:
-                if type(self._content[rk][ck]) == types.FloatType:
+                if type(self._content[rk][ck]) == types.FloatType or isreal(self._content[rk][ck]):
                     m =  len(self.FLOAT_FORMAT % (self._content[rk][ck],))
                 elif type(self._content[rk][ck]) == types.StringType:
                     m =  len(self._content[rk][ck])
@@ -101,7 +103,7 @@ class Table(LogToken):
         for rk in self._rows:
             row = [str(rk)]
             for ck in self._cols:
-                if type(self._content[rk][ck]) == types.FloatType:
+                if type(self._content[rk][ck]) == types.FloatType or isreal(self._content[rk][ck]):
                     row.append(self.FLOAT_FORMAT % (self._content[rk][ck],))
                 elif type(self._content[rk][ck]) == types.StringType:
                     row.append(self._content[rk][ck])
@@ -135,7 +137,7 @@ class Table(LogToken):
                 b = True
             for ck in self._cols:
                 s += "<td>"
-                if type(self._content[rk][ck]) == types.FloatType:
+                if type(self._content[rk][ck]) == types.FloatType or isreal(self._content[rk][ck]):
                     s += self.FLOAT_FORMAT % (self._content[rk][ck],)
                 elif type(self._content[rk][ck]) == types.StringType:
                     s += self._content[rk][ck]
@@ -163,7 +165,7 @@ class Table(LogToken):
             s += "\\bf %s " % (str(rk),)
             for ck in self._cols:
                 s += "&"
-                if type(self._content[rk][ck]) == types.FloatType:
+                if type(self._content[rk][ck]) == types.FloatType or isreal(self._content[rk][ck]):
                     s += self.FLOAT_FORMAT % (self._content[rk][ck],)
                 elif type(self._content[rk][ck]) == types.StringType:
                     s += self._content[rk][ck]
