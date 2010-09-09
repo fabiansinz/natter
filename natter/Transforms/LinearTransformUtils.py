@@ -6,6 +6,7 @@ from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgri
 from natter.Auxiliary.Statistics import quantile
 
 
+
 def bestMatchingGratings(F):
     W = F.W
     N = sqrt(W.shape[1])
@@ -19,7 +20,7 @@ def bestMatchingGratings(F):
 
         # extract center
         pw = abs(w)
-        qu = quantile(pw.flatten(),0.5)
+        qu = quantile(pw.flatten(),0.8)
         pw[where(pw <= qu)] = 0.0
         pw = pw/sum(pw.flatten())
         mu = array([sum(sum(pw*Nx)), sum(sum(pw*Ny))])
@@ -27,6 +28,7 @@ def bestMatchingGratings(F):
         # extract maximal frequency
         z = fftshift(fft2(w))
         az = abs(z)
+        
         i = argmax(max(az,0),0)
         j = argmax(az[:,i])
         omega = array([f[i],f[j]])

@@ -7,6 +7,27 @@ from os import listdir
 from sys import stdout
 
 def gratings(p,omega0,phi0,deltaAlpha,deltaOmega,mu):
+    """
+    Creates a data object that contains gratings on pxp patches. The
+    functional form of the grating is
+    
+    cos( 2*pi/p <w0,n-mu> + phi0 )
+
+    :param p: patch size (patch is pxp)
+    :type p: int or float
+    :param omega0: frequency vector
+    :type omega0: numpy.array of length 2
+    :param phi0: initial phase
+    :type phi0: float
+    :param deltaAlpha: additive changes in the orientation of omega0
+    :type deltaAlpha: numpy.array
+    :param deltaOmega: additive changes in the length of omega0
+    :type deltaOmega: numpy.array
+    :param mu: center of the grating
+    :type mu: numpy.array of length 2
+    :returns: an array containing the orientations in the first and the frequencies in the second row, as well as a data object containing the gratings
+    :rtype: numpy.array, natter.DataModule.Data
+    """
     
     # rotates the frequency vector
     rot = lambda w,alpha: array([w[0]*cos(alpha) -w[1]*sin(alpha),w[0]*sin(alpha)+ w[1]*cos(alpha)])
