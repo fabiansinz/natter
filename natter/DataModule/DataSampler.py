@@ -1,10 +1,40 @@
 from __future__ import division
-from numpy import shape, floor, zeros, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, arange, meshgrid,floor, sin, cos, vstack,sum,sqrt, arctan2
 from numpy.random import rand, randn
 from natter.DataModule import Data
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
+
+def gratings(p,omega0,phi0,deltaAlpha,deltaOmega,mu):
+    
+    # rotates the frequency vector
+    rot = lambda w,alpha: array([w[0]*cos(alpha) -w[1]*sin(alpha),w[0]*sin(alpha)+ w[1]*cos(alpha)])
+
+    # sampling points
+    [x,y] = meshgrid(arange(p),arange(p))
+    X = vstack((x.reshape((1,p**2),order='F'),y.reshape((1,p**2),order='F')))
+
+    # matrix that holds the gratings later
+    G = zeros((p**2,len(deltaAlpha)*len(deltaOmega)))
+
+    # compute spatial frequency corresponding to w and make deltaOmega a multiplicative factor
+    f = sqrt(sum(omega0**2))
+    deltaOmega /= f
+    deltaOmega += 1.0
+
+    # will store the actual orientations and frequencies later
+    labels = zeros((2,len(deltaAlpha)*len(deltaOmega)))
+
+    # generate gratings
+    k = 0
+    for alpha in deltaAlpha:
+        for omega in deltaOmega:
+            G[:,k] = cos(2*pi* dot(rot(omega0*omega/p,alpha),X) - 2*pi* dot(rot(omega0*omega/p,alpha),mu) + phi0)
+            labels[0,k] = arctan2(omega0[1],omega0[0])+alpha
+            labels[1,k] = f*omega
+            k += 1
+    return labels,Data(G)
 
 
 def gauss(n,m,mu = None, sigma = None):

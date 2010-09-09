@@ -21,4 +21,5 @@ from Transform import Transform,load
 from LinearTransform import LinearTransform
 from NonlinearTransform import NonlinearTransform
 import LinearTransformFactory
+import LinearTransformUtils
 import NonlinearTransformFactory
