@@ -17,6 +17,8 @@ class LpSphericallySymmetric(Distribution):
               'rp'    :  Radial distribution (default = Gamma()).
               
               'p'     :  p for the p-norm (default = 2.0)
+
+              'n'     :  dimensionality of the data
               
     :type param: dict
 

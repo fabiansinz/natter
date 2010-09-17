@@ -1,10 +1,28 @@
 from __future__ import division
-from numpy.fft import fft2, fftshift
-from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, zeros, sin,where
-# from scipy.optimize import fmin_bfgs, fmin_cg
+from numpy.fft import fft2, fftshift,fft
+from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, zeros, sin,where,zeros
+from scipy.optimize import fmin_bfgs, fmin_cg
 # from numpy.random import randn
 from natter.Auxiliary.Statistics import quantile
 
+
+def getTuningCurve(R,fundamental_freq=1):
+    """
+    Extracts the tuning curve from the responses R by taking the
+    amplitude of the response at the fundamental frequency.
+
+    :param R: Array containing the responses to a grating moving with the fundamental frequency in each row.
+    :type R: numpy.array
+    :returns: the values for the tuning curve
+    :rtype: numpy.array
+    
+    """
+
+    ret = zeros((R.shape[0],))
+    N = R.shape[1]
+    for k in xrange(R.shape[0]):
+        ret[k] = 2/N*abs(fft(R[k,:])[fundamental_freq])
+    return ret
 
 
 def bestMatchingGratings(F):
@@ -12,7 +30,7 @@ def bestMatchingGratings(F):
     N = sqrt(W.shape[1])
     f = arange(-ceil(N/2),ceil(N/2))
     Nx,Ny = meshgrid(arange(N),arange(N))
-    # Nxy = vstack( (Nx.flatten('F'), Ny.flatten('F')) )
+    Nxy = vstack( (Nx.flatten('F'), Ny.flatten('F')) )
     
     ret = []
     for k in xrange(W.shape[0]):
@@ -29,22 +47,24 @@ def bestMatchingGratings(F):
         z = fftshift(fft2(w))
         az = abs(z)
         
-        i = argmax(max(az,0),0)
-        j = argmax(az[:,i])
-        omega = array([f[i],f[j]])
+        j = argmax(max(az,0),0)
+        i = argmax(az[:,j])
+        omega = array([f[j],f[i]])
 
         # extract phase
-        phi = arctan2(imag(z[i,j]),real(z[i,j])) + 2*pi/N*(f[i]*mu[0]+f[j]*mu[1])
+        phi = arctan2(imag(z[i,j]),real(z[i,j])) + 2*pi/N*dot(mu,omega)
 
         # refine
-        # x0 = zeros((3,))
-        # x0[:2] = omega
-        # x0[2] = phi
-        # print x0
-        # x0 = fmin_bfgs(_optfunc,x0,fprime=_doptfunc,args=(w,Nxy,mu,N),gtol=1e-15)
-        # print x0
+        x0 = zeros((3,))
+        x0[:2] = omega
+        x0[2] = phi
+        #print x0
+        x0 = fmin_bfgs(_optfunc,x0,fprime=_doptfunc,args=(w,Nxy,mu,N),gtol=1e-20)
+        #print x0
         # raw_input()
-
+        omega = x0[:2]
+        phi = x0[2]
+        
         ret.append({'frequency':omega,\
                     'phase': phi, \
                     'center': mu})
