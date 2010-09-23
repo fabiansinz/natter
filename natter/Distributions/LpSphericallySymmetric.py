@@ -125,7 +125,6 @@ class LpSphericallySymmetric(Distribution):
         
         '''
 
-
         if not prange:
             prange = self.prange
         if 'p' in self.primary:

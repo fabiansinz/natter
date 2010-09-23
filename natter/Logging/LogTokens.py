@@ -262,6 +262,49 @@ class Link(LogToken):
         """
         return "%s" % (self._name,)
 
+##############################################
+
+class Image(LogToken):
+    """
+    Represents images: Each image is initialized with its
+    filename. For example:
+
+    >>> I = Image('whatever.png')
+    
+    """
+
+    def __init__(self,name):
+        self._name = name
+        
+    def ascii(self):
+        """
+        :returns: An ascii representation of the image.
+        :rtype: string
+        """
+        return self._name
+
+    def wiki(self):
+        """
+        :returns: An wiki representation of the image.
+        :rtype: string
+        """
+        return "%s" % (self._name,)
+    
+    def html(self):
+        """
+        :returns: An html representation of the image.
+        :rtype: string
+        """
+        return "<img src=\"%s\">" % (self._name,)
+
+    def latex(self):
+        """
+        :returns: An latex representation of the image.
+        :rtype: string
+        """
+        return "\\includegraphics{%s}" % (self._name,)
+
+
 ##########################################################
 
 class LogList(LogToken):
