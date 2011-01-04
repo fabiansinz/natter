@@ -2,6 +2,7 @@
 ** TODO Make [[./natter/Distributions/FiniteMixtureDistribution.py][FiniteMixtureDistribution]], [[./natter/Distributions/FiniteMixtureOfGaussians.py][FiniteMixtureOfGaussians]] param and *args,**kwargs compatible
 ** TODO Make documentations sphinx compatible
 
+** TODO Comment [[./natter/Distributions/EllipticallyContourGamma.py][EllipticallyContourGamma.py]]
 * Fabian
 
 

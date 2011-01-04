@@ -17,7 +17,6 @@ import Plotting
 import Numerics
 import Statistics
 import Entropy
-from Potential import Potential
 import ImageUtils
 from LpNestedFunction import LpNestedFunction
 
