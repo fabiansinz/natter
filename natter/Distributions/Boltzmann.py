@@ -14,9 +14,14 @@ class Boltzmann(Distribution):
     """
     """
 
-    def __init__(self, param=None):
+    def __init__(self, *args,**kwargs):
         """
         Constructor.
+
+        The constructor is either called with a dictionary, holding
+        the parameters (see below) or directly with the parameter
+        assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+        also possible.
 
         :param param: Dictionary of parameter entries, possible keys are:
                       'L' : lower traingular part of connection matrix
@@ -24,6 +29,24 @@ class Boltzmann(Distribution):
                       'n' : number of nodes (dimensionality of b)
                       'logZ': log partition function
         """
+
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
         Distribution.__init__(self)
         if param==None:
             param = {'n':2}

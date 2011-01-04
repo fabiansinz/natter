@@ -18,6 +18,11 @@ class FiniteMixtureDistribution(Distribution):
     """
     Base class for a finite mixture of base distributions.
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
     :math:`p(x|\\theta) = \sum_{k=1}^{K} \\alpha_k p(x|\\theta_k)`
 
     """
@@ -33,6 +38,10 @@ class FiniteMixtureDistribution(Distribution):
         :type baseDistribution: natter.Distributions.Distribution
 
         """
+
+        raise NotImplementedError('Not consitently implemented! See Sebastian TODO, below.')
+        #@TODO Sebastian: Make Constructor (*args,**kwargs) compatible
+        
         Distribution.__init__(self)
 
         self.param['numberOfMixtureComponents'] = numberOfMixtureComponents

@@ -21,12 +21,36 @@ class FiniteMixtureOfEllipticallyGamma(FiniteMixtureDistribution):
 
     That is, the radial component is Gamma-distributed.
     
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
     """
 
-    def __init__(self, param=None):
+    def __init__(self,  *args,**kwargs):
         """
         """
         FiniteMixtureDistribution.__init__(self)
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         if param==None:
             param = {'NC':2}
         if 'n' in param.keys():

@@ -5,9 +5,16 @@ from numpy import Inf, array, real, max, arccos, diag, dot, pi, mean, abs, diff,
 from natter.Auxiliary.Optimization import StGradient
 from mdp.utils import random_rot
 from copy import deepcopy
+
 class CompleteLinearModel(Distribution):
     """
     Complete Linear Model
+
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
 
     :param param:
         dictionary which might containt parameters for the Dirichlet
@@ -23,7 +30,27 @@ class CompleteLinearModel(Distribution):
     """
 
 
-    def __init__(self,param = None ):
+    def __init__(self, *args,**kwargs ):
+
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         if param == None:
             param = {'q':None, 'W':None}
         self.name = 'Complete Linear Model'

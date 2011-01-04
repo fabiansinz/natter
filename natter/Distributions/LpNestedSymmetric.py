@@ -13,6 +13,11 @@ class LpNestedSymmetric(Distribution):
     """
     Lp-nested symmetric Distribution
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
     :param param:
         dictionary which might containt parameters for the Lp-nested symmetric distribution
               'n'    :   Dimensionality (default = 2)
@@ -27,7 +32,26 @@ class LpNestedSymmetric(Distribution):
         
     """
 
-    def __init__(self,param=None):
+    def __init__(self, *args,**kwargs):
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         self.name = 'Lp-Nested Symmetric Distribution'
         self.param = {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
 

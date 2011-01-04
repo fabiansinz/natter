@@ -44,6 +44,12 @@ class GPPM(Distribution):
     where f,h are Gaussian processes over the possibly two-dimensional pixel space.
     However, it is assumed, that the xs are the same for all data points.
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
+
     :param param:
         dictionary which may contain parameters for the hidden GPs:
         'n' : dimensionality
@@ -56,8 +62,27 @@ class GPPM(Distribution):
     parameters can be specified, which are then selected to be
     inferred for estimation.
     """
-    def __init__(self,param=None):
+    def __init__(self, *args,**kwargs):
         Distribution.__init__(self,param)
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         if param==None:
             self.param['n'] = 16        # 4x4 images are default
             self.param['f'] = Gaussian({'n':16})

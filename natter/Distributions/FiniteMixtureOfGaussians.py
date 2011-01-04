@@ -14,6 +14,11 @@ from copy import deepcopy
 class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
     """
     specialized class for a mixture of Gaussians.
+
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
     """
 
     def __init__(self,
@@ -30,6 +35,11 @@ class FiniteMixtureOfGaussians(FiniteMixtureDistribution):
         :return:
             
         """
+
+        raise NotImplementedError('Not consitently implemented! See Sebastian TODO, below.')
+        #@TODO Sebastian: Make Constructor (*args,**kwargs) compatible
+
+        
         if primary==None:
             primary = ['mu','sigma']
         baseDistribution = Gaussian({'n':dim})

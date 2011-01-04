@@ -41,16 +41,39 @@ class NIG(Distribution):
 
     :math:`p(x) = \\int \\mathcal{N}(x|\\mu + \\beta z \\Gamma, z\\Gamma) IG(z,\\delta^2,\\alpha^2 - \\beta^\\top \\Gamma\\beta) d z`
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
 
 
 
     TODO: much todo here...  Gamma should be cholesky
     factor implement EM as well as ML estimation of parameters """
 
-    def __init__(self, param=None):
+    def __init__(self,  *args,**kwargs):
         """
         
         """
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         Distribution.__init__(self)
         defaultParam = {'alpha':1.0,
                         'beta':0.0,

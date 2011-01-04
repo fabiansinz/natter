@@ -13,6 +13,11 @@ class ProductOfExperts(Distribution):
     """
     Product of Experts Distribution
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
     :param param:
         dictionary which may contain initial parameters for the Product of Experts
 
@@ -35,11 +40,27 @@ class ProductOfExperts(Distribution):
     maxiter = 100
     Tol = 1e-4
 
-    def __init__(self,param0 = None ):
+    def __init__(self,*args,**kwargs ):
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         self.param = {'potentials':None, 'W':None, 'n':2.0,'N':4}
-        if param0 != None:
-            for k in param0.keys():
-                self.param[k] = param0[k]
         self.name = 'Product of Experts'
         if param0==None or not param0.has_key('N'):
             self.param['N'] = 2*self.param['n']

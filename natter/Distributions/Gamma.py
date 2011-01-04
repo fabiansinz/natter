@@ -10,6 +10,12 @@ class Gamma(Distribution):
     """
     Gamma Distribution
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
+
     :param param:
         dictionary which might containt parameters for the Gamma distribution
               'u'    :    Shape parameter  (default = 1.0)
@@ -25,7 +31,26 @@ class Gamma(Distribution):
     Tol = 10.0**-20.0
 
     
-    def __init__(self,param=None):
+    def __init__(self, *args,**kwargs):
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         self.name = 'Gamma Distribution'
         self.param = {'u':1.0,'s':1.0}
         if param != None:

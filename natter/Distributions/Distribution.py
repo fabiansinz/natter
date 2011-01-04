@@ -9,7 +9,27 @@ import string
 
 class Distribution:
 
-    def __init__(self,param=None):
+    def __init__(self, *args,**kwargs):
+                # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
+
         if param!=None:
             self.param = param
         else:

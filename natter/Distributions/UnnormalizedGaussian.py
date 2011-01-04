@@ -9,6 +9,11 @@ class UnnormalizedGaussian(Gaussian):
     set via an explicit (primary) parameter. Primary parameters are
     the parameters w.r.t which we can do inference.
 
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
     Parameters:
         n     : dimensionality
         mu    : mean
@@ -18,9 +23,29 @@ class UnnormalizedGaussian(Gaussian):
     Primary parameters:
         Z
     """
-
-    def __init__(self,param=None):
+    #@TODO: Adapt class documentation to sphinx convention.
+    
+    def __init__(self, *args,**kwargs):
         Gaussian.__init__(self,param)
+        # parse parameters correctly
+        param = None
+        if len(args) > 0:
+            param = args[0]
+        if kwargs.has_key('param'):
+            if param == None:
+                param = kwargs['param']
+            else:
+                for k,v in kwargs['param'].items():
+                    param[k] = v
+        if len(kwargs)>0:
+            if param == None:
+                param = kwargs
+            else:
+                for k,v in kwargs.items():
+                    if k != 'param':
+                        param[k] = v
+        
+        # set default parameters
         self.name = "Unnormalized Gaussian"
         self.param['Z'] = 10.0;
         if param.has_key('Z'):
