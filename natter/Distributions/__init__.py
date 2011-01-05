@@ -20,6 +20,7 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
+   Distributions_SchwartzSimoncelliModel.rst
 """
 
 
@@ -39,4 +40,5 @@ from LogNormal import LogNormal
 from Distribution import load
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
 from EllipticallyContourGamma import EllipticallyContourGamma
+from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
