@@ -1,9 +1,11 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import  ones, eye,dot,log,sum,pi,where,zeros,outer,array,mean
+from numpy import  ones, eye,dot,log,sum,pi,where,zeros,outer, mean, kron, mod, reshape, floor, ceil
 from natter.Transforms import LinearTransform
 from scipy.optimize import fmin_l_bfgs_b
 from copy import deepcopy
+from natter.Auxiliary.Utils import parseParameters
+from natter.Auxiliary.Errors import SpecificationError
 
 class SchwartzSimoncelliModel(Distribution):
     """
@@ -20,7 +22,9 @@ class SchwartzSimoncelliModel(Distribution):
               
               'sigma':  offset for the covariance matrix
               
-              'W' : Transforms.LinearTransform object that models the neighborhood function for the single variances. The diagonal of W is constrained to be 0 and the single entries are constrained to be positive. 
+              'W' : Transforms.LinearTransform object that models the neighborhood function for the single variances. The diagonal of W is constrained to be 0 and the single entries are constrained to be positive.
+
+              'restrictW':  Whether to fix the W of two consecutive filters to the same value (default: False). When True, n needs to be even.
 
     :type param: dict
 
@@ -30,22 +34,7 @@ class SchwartzSimoncelliModel(Distribution):
 
     def __init__(self, *args,**kwargs):
         # parse parameters correctly
-        param = None
-        if len(args) > 0:
-            param = args[0]
-        if kwargs.has_key('param'):
-            if param == None:
-                param = kwargs['param']
-            else:
-                for k,v in kwargs['param'].items():
-                    param[k] = v
-        if len(kwargs)>0:
-            if param == None:
-                param = kwargs
-            else:
-                for k,v in kwargs.items():
-                    if k != 'param':
-                        param[k] = v
+        param = parseParameters(args,kwargs)
         
         # set default parameters
         self.name = 'Schwartz Simoncelli Model'
@@ -53,12 +42,41 @@ class SchwartzSimoncelliModel(Distribution):
         if param != None:
             for k in param.keys():
                 self.param[k] = param[k]
+        if not self.param.has_key('restrictW'):
+            self.param['restrictW'] = False
+            self.oldRW = False
+        else:
+            self.oldRW = self.param['restrictW']
+            
         if not self.param.has_key('W'):
             self.param['W'] = LinearTransform(ones( (self.param['n'],self.param['n'])) - eye(self.param['n']),'Neighborhood function')
         self.primary = ['W','sigma']
 
-        # indices into W that correspond to the offdiagonal term
-        self.offDiagI,self.offDiagJ = where(ones( (self.param['n'],self.param['n'])) - eye(self.param['n']))
+        # indices into W that correspond to the offdiagonal terms
+        self.updateIndices()
+        # make sure that W confines to the format.
+        print self.primary2array()
+        #self.array2primary(self.primary2array())
+        
+
+    def updateIndices(self):
+        """
+        Magic function to get the indices right.
+        """
+        m = (1+int(self.param['restrictW']))
+        n = int(self.param['n']/m)
+        if m > 1 and mod(self.param['n'],2) > 0:
+            raise SpecificationError('n must be even for restricted W')
+        A = kron(reshape(range(n*(n-1)*m),(self.param['n'],-1)),ones((1,m)))
+        B = -ones((self.param['n'],self.param['n']))
+        for i in range(self.param['n']):
+            if self.param['restrictW']:
+                B[i,range(int(floor(i/2)*2)) + range(int(floor(i/2)*2+m),self.param['n'])] = A[i,:]
+            else:
+                B[i,range(i) + range(i+m,self.param['n'])] = A[i,:]
+        self.I,self.J = where(B >= 0)
+        self.i = list(B[self.I,self.J])
+        
 
     def parameters(self,keyval=None):
         """
@@ -159,7 +177,7 @@ class SchwartzSimoncelliModel(Distribution):
         if 'sigma' in self.primary:
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            n += self.param['W'].W.shape[0]**2 - self.param['W'].W.shape[0]
+            n += self.param['W'].W.shape[0]**2 - (1+int(self.param['restrictW']))*self.param['W'].W.shape[0]
             
         ret = zeros((n,))
         n = 0
@@ -167,7 +185,8 @@ class SchwartzSimoncelliModel(Distribution):
             ret[n] = self.param['sigma']
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            ret[n:] = self.param['W'].W[self.offDiagI,self.offDiagJ]
+            tmp = self.param['W'].W[self.I,self.J][::(1+int(self.param['restrictW']))]
+            ret[n:] = tmp[self.i]
         
         return ret
 
@@ -186,7 +205,7 @@ class SchwartzSimoncelliModel(Distribution):
             self.param['sigma'] = a[n]
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            self.param['W'].W[self.offDiagI,self.offDiagJ] = a[n:]
+            self.param['W'].W[self.I,self.J] = a[n:]
 
 
     def dldtheta(self,dat):
@@ -224,6 +243,6 @@ class SchwartzSimoncelliModel(Distribution):
             k += 1
         if 'W' in self.primary:
             for i in xrange(m):
-                grad[k:,i] = outer((Y2[:,i]-myvar[:,i])/myvar[:,i]**2,Y2[:,i]/2.0)[self.offDiagI,self.offDiagJ]
+                grad[k:,i] = outer((Y2[:,i]-myvar[:,i])/myvar[:,i]**2,Y2[:,i]/2.0)[self.I,self.J]
         return grad
             

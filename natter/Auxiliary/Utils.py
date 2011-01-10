@@ -4,6 +4,26 @@ import cProfile
 import lsprofcalltree
 from copy import deepcopy
 
+
+def parseParameters(args,kwargs):
+    param = None
+    if len(args) > 0:
+        param = args[0]
+    if kwargs.has_key('param'):
+        if param == None:
+            param = kwargs['param']
+        else:
+            for k,v in kwargs['param'].items():
+                param[k] = v
+    if len(kwargs)>0:
+        if param == None:
+            param = kwargs
+        else:
+            for k,v in kwargs.items():
+                if k != 'param':
+                    param[k] = v
+    return param
+
 def save(o,filename):
     tmp = filename.split('.')
     if tmp[-1] == 'pydat':

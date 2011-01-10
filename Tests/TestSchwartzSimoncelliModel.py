@@ -28,6 +28,14 @@ class TestSchwartzSimoncelliModel(unittest.TestCase):
             p2.array2primary(thetah)
             dldtheta2[k,:] = (p2.loglik(dat)-p.loglik(dat))/h
         self.assertTrue(max(abs(dldtheta1-dldtheta2)) < Tol,'Numerical gradient deviates from returned by %d' % (Tol,)) 
+
+    def test_restricted_derivative(self):
+        W = rand(4,4)
+        W = W-diag(diag(W))
+        
+        p = Distributions.SchwartzSimoncelliModel(n=4,W=LinearTransform(W),sigma=rand()*5.0,restrictW=True)
+        print p['W'].W
+        self.assertTrue(True,'Numerical gradient deviates from returned by %d' % (1.0,)) 
         
         
 
