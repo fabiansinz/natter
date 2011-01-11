@@ -1,6 +1,6 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import  ones, eye,dot,log,sum,pi,where,zeros,outer, mean, kron, mod, reshape, floor, ceil
+from numpy import  ones, eye,dot,log,sum,pi,where,zeros,outer, mean, kron, mod, reshape, floor, ceil, array
 from natter.Transforms import LinearTransform
 from scipy.optimize import fmin_l_bfgs_b
 from copy import deepcopy
@@ -55,8 +55,9 @@ class SchwartzSimoncelliModel(Distribution):
         # indices into W that correspond to the offdiagonal terms
         self.updateIndices()
         # make sure that W confines to the format.
-        print self.primary2array()
-        #self.array2primary(self.primary2array())
+        tmp = self.primary2array()
+        self.param['W'].W = 0*self.param['W'].W
+        self.array2primary(tmp)
         
 
     def updateIndices(self):
@@ -118,6 +119,14 @@ class SchwartzSimoncelliModel(Distribution):
         :type dat: natter.DataModule.Data
         
         '''
+
+        if self.oldRW != self.param['restrictW']:
+            self.updateIndices()
+            # make sure that W confines to the format.
+            tmp = self.primary2array()
+            self.param['W'].W = 0*self.param['W'].W
+            self.array2primary(tmp)
+            self.oldRW = self.param['restrictW']
         
         theta = self.primary2array()
         bounds = len(theta)*[(0.0,None)]
@@ -173,12 +182,20 @@ class SchwartzSimoncelliModel(Distribution):
         
         """
 
+        if self.oldRW != self.param['restrictW']:
+            self.updateIndices()
+            # make sure that W confines to the format.
+            tmp = self.primary2array()
+            self.param['W'].W = 0*self.param['W'].W
+            self.array2primary(tmp)
+            self.oldRW = self.param['restrictW']
+
         n = 0
+        m = (1+int(self.param['restrictW']))
         if 'sigma' in self.primary:
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            n += self.param['W'].W.shape[0]**2 - (1+int(self.param['restrictW']))*self.param['W'].W.shape[0]
-            
+            n += self.param['W'].W.shape[0]**2 /m - self.param['W'].W.shape[0]
         ret = zeros((n,))
         n = 0
         if 'sigma' in self.primary:
@@ -186,8 +203,7 @@ class SchwartzSimoncelliModel(Distribution):
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
             tmp = self.param['W'].W[self.I,self.J][::(1+int(self.param['restrictW']))]
-            ret[n:] = tmp[self.i]
-        
+            ret[n:] = tmp[self.i][::m]
         return ret
 
     def array2primary(self,a):
@@ -205,8 +221,9 @@ class SchwartzSimoncelliModel(Distribution):
             self.param['sigma'] = a[n]
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            self.param['W'].W[self.I,self.J] = a[n:]
-
+            tmp = a[n:]
+            tmp = tmp[self.i]
+            self.param['W'].W[self.I,self.J] = tmp
 
     def dldtheta(self,dat):
         """
@@ -222,27 +239,41 @@ class SchwartzSimoncelliModel(Distribution):
         
         """
 
+        if self.oldRW != self.param['restrictW']:
+            self.updateIndices()
+            # make sure that W confines to the format.
+            tmp = self.primary2array()
+            self.param['W'].W = 0*self.param['W'].W
+            self.array2primary(tmp)
+            self.oldRW = self.param['restrictW']
+
         Y2 = dat.X**2.0
+            
         W = self.param['W'].W
         myvar = dot(W,Y2) + self.param['sigma']**2
         m = dat.numex()
 
         n = 0
+        n2 = (1+int(self.param['restrictW']))
         if 'sigma' in self.primary:
             n += 1
         if 'W' in self.primary: # all entries in W without the diagonal
-            n += self.param['W'].W.shape[0]**2 - self.param['W'].W.shape[0]
+            n += self.param['W'].W.shape[0]**2 /n2 - self.param['W'].W.shape[0]
             
         grad = zeros((n,m))
-        
-
 
         k = 0
         if 'sigma' in self.primary:
             grad[k,:] = self.param['sigma']*sum((Y2-myvar)/myvar**2,0)
             k += 1
         if 'W' in self.primary:
+
             for i in xrange(m):
-                grad[k:,i] = outer((Y2[:,i]-myvar[:,i])/myvar[:,i]**2,Y2[:,i]/2.0)[self.I,self.J]
+                tmp = outer((Y2[:,i]-myvar[:,i])/myvar[:,i]**2 , Y2[:,i]/2.0)[self.I,self.J]
+                if self.param['restrictW']:
+                    grad[k:,i] = array([tmp[j]+tmp[j+1] for j in range(0,len(tmp),2)])
+                else:
+                    grad[k:,i] = tmp
+                    
         return grad
             
