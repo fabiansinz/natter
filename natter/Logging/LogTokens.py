@@ -3,7 +3,11 @@ from Utils import lrfill, hLine
 import types
 import textwrap
 import re
+import os
 from numpy import float64, float32
+from subprocess import Popen, PIPE
+from os import path, chdir
+from time import time, strftime, localtime
 
 class LogToken:
     """
@@ -24,6 +28,54 @@ class LogToken:
 
     def __log__(self,type='ascii'):
         return getattr(self,type)()        
+
+
+
+##############################################
+
+class Git(LogToken):
+    """
+    Represents information about the state of a git directory.
+    """
+
+    
+    def __init__(self,gitdir='./'):
+        self.gitdir = gitdir
+        self.boolPretty = {True:'yes', False:'no'}
+        olddir = os.path.abspath('./')
+        chdir(self.gitdir)
+        # get commit hash
+        pr1 = Popen(['git', 'log', '-1'], stdout=PIPE)
+        pr2 = Popen(['head', '-1'], stdin=pr1.stdout, stdout=PIPE)
+        pr3 = Popen(['cut', '-d', ' ', '-f', '2'], stdin=pr2.stdout, stdout=PIPE)
+        self.commit = pr3.communicate()[0][:-1]
+        
+        # check if project contains uncommitted changes
+        pr1 = Popen(['git', 'status', '--porcelain'], stdout=PIPE)
+        pr2 = Popen(['egrep', '^.M'], stdin=pr1.stdout, stdout=PIPE)
+				
+        if pr2.communicate()[0]:
+            self.modified = True
+        else:
+            self.modified = False
+        chdir(olddir)
+
+    def ascii(self):
+        """
+        :returns: An ascii representation of the Git Repository.
+        :rtype: string
+        """
+
+        return "Git directory: %s\ncommit: %s\nuncommited changes: %s" % (self.gitdir, self.commit, self.boolPretty[self.modified])
+
+    
+    def html(self):
+        """
+        :returns: A html representation of the git directory.
+        :rtype: string
+        """
+        return "<table border=\"0\"><tr><td>Git directory:</td><td>%s</td></tr><tr><td>commit:</td><td> %s</td></tr><tr><td>uncommited changes: </td><td>%s</td></tr></table>" % (self.gitdir, self.commit, self.boolPretty[self.modified])
+
 
 
 ############################################################################
@@ -400,3 +452,4 @@ class LogList(LogToken):
             return s + "\\end{itemize}"
         elif self._type == 'arabic':
             return s + "\\end{enumerate}"
+
