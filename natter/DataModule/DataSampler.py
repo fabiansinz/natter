@@ -1,65 +1,80 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, arange, meshgrid,floor, sin, cos, vstack,sum,sqrt, arctan2, arange, min, max, std
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum,   ones, kron, arange,max, real, imag
 from numpy.random import rand, randn
 from natter.DataModule import Data
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
+from numpy.fft import fft2
 
-def gratings(p,omega,phi,c,alpha,T=1):
+def gratings(p,T,omega,tau):
     """
     Creates a data object that contains gratings on pxp patches. The
-    functional form of the grating is
+    maximal and minimal amplitude of the gratings is 1. The functional
+    form of the grating is
     
-    cos( 2*pi/p <R[alpha]*w,n> + 2*pi/T *t * phi )
+    :math:`\\cos( \\frac{2*\\pi}{p} \\langle\\mathbf \\omega,\\mathbf n\\rangle + \\frac{2*\\pi}{T} \\tau\\cdot t )`
 
-    where t in range(0,T) and R[alpha] is a rotation matrix.
+    where :math:`t\in \{0,...,T-1\}` and :math:`\mathbf\omega\in\{0,...p\}^2`.
+    T is the length of the vector tau.
+
+    The total number of patches which is created is m*T*|tau|, where m
+    is the number of columns of omega and T is the number of time
+    points and |tau| the length of tau. The ordering in the data
+    object will be the following
+
+    |------------tau[0]--------------------|------------tau[1]---------------|- ...
+    |----omega[0]----|----omega[1]----| ...|----omega[0]----|----omega[1]----|- ...
+    | 0, 1, ..., T-1 | 0, 1, ..., T-1 | ...| 0, 1, ..., T-1 | 0, 1, ..., T-1 |- ...
+    
+    i.e. the first T patches have spatial frequency omega[:,0] and
+    temporal frequency tau[0], the next T patches have spatial
+    frequency omega[:,1] and spatial frequency tau[0], and so on.
 
     :param p: patch size (patch is pxp)
-    :type p: int or float
+    :type p: int 
+    :param T: patch size (patch is pxp)
+    :type T: int 
     :param omega: frequency vectors
     :type omega: numpy.array of shape 2 x m
-    :param phi: temporal frequency
-    :type phi: float
-    :param c: contrasta
-    :type c: numpy.array
-    :param alpha: changes in the orientation of omega
-    :type alpha: numpy.array
-    :param T: number of samling points in time. 
-    :type T: int
-    :returns: a data object containing the gratings as well as a dictionary containin the indices into the gratings fir a given set of orientation, frequency and contrast, i.e. I[alpha[i],j,c[k]] where j is a index into the omega array. 
-    :rtype: numpy.array, natter.DataModule.Data
+    :param tau: temporal frequencies
+    :type tau: numpy.array of shape 2 x |tau|
+    :returns: a data object containing the gratings 
+    :rtype: natter.DataModule.Data
     """
 
+    
     if len(omega.shape) == 1:
         omega = omega.reshape((2,1))
-    # rotates the frequency vector
-    rot = lambda w,alpha: array([w[0]*cos(alpha) -w[1]*sin(alpha),w[0]*sin(alpha)+ w[1]*cos(alpha)])
+    
+    m = omega.shape[1]
+    t = max(tau.shape)
 
+    
     # sampling points
     [x,y] = meshgrid(arange(p),arange(p))
-    X = vstack((x.reshape((1,p**2),order='F'),y.reshape((1,p**2),order='F')))
+    X = vstack((x.reshape((1,p**2),order='F'),y.reshape((1,p**2),order='F'))) # X = 2 X p^2
+    X = kron(ones((1,T*m*t)),X) # make T*m*t copies of X
+    X = vstack((X,kron(ones((1,m*t)),kron(arange(T),ones((1,p**2))))))
+    
+    # frequencies
+    W = kron(omega / p,ones((1,T*p**2))) 
+    W = kron(ones((1,t)),W)
+    W = vstack((W,kron(tau/T,ones((1,T*m*p**2)))))
 
-    M = omega.shape[1]*len(c) * len(alpha) * T
+    g = cos(2*pi*sum(W*X,0))
+    G = zeros((p**2,m*T))
 
-    # matrix that holds the gratings later
-    G = zeros((p**2,M))
-    # will store the actual orientations and frequencies later
-    indices = {}
+    pointer = 0
+    index = 0
+    for i in xrange(T):
+        for j in xrange(m):
+            G[:,index] = g[pointer:pointer+p**2]
+            index+=1
+            pointer += p**2
 
-    # generate gratings
-    k = 0
-    for angle in alpha:
-        for i in xrange(omega.shape[1]):
-            for contrast in c:
-                indices[(angle,i,contrast)] = []
-                for t in arange(T):
-                    freq = rot(omega[:,i],angle)
-                    G[:,k] = contrast* cos(2*pi / p* dot(freq,X) + 2*pi/T *t* phi)
-                    G[:,k] *= contrast/std(G[:,k])
-                    indices[ (angle,i,contrast)].append(k)
-                    k += 1
-    return Data(G,"Gratings"), indices
+
+    return Data(G,"Gratings: %i spatial and %i temporal frequencies" % (m,T))
 
 
 def gauss(n,m,mu = None, sigma = None):
@@ -108,9 +123,6 @@ def img2PatchRand(img, p, N):
     """
 
     ny,nx = shape(img)
-
-    x = floor( rand( N, 1) * ( nx - p + 1)) 
-    y = floor( rand( N, 1) * ( ny - p + 1))
 
     p1 = p - 1
   
@@ -161,3 +173,23 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     return dat
         
         
+# if __name__=="__main__":
+#     from numpy import *
+#     from natter.DataModule import DataSampler
+#     from matplotlib.pyplot import show
+
+#     n = 5
+#     t = arange(0,2*pi,2*pi/100)
+#     W = vstack((cos(t),sin(t)))
+#     dat = DataSampler.gratings(n,9,array([0,1]),array([1]))
+
+#     z = fft2(reshape(dat.X[:,1],(n,n),order='F'))
+#     for i in xrange(n):
+#         print "\t".join(["%.2f + i%.2f" % (real(elem), imag(elem)) for elem in z[i,:]])
+        
+
+    
+
+    
+
+    
