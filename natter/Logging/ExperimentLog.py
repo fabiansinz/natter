@@ -136,7 +136,7 @@ class ExperimentLog(LogToken):
         joinfunc = lambda x: textwrap.fill(x,80) if type(x) == types.StringType else x.ascii()
 
         s = "\n%s\n" % (self._name.upper(),)
-        s +=  " ".join([joinfunc(elem) for elem in self._log]) + "\n"
+        s +=  "".join([joinfunc(elem) for elem in self._log]) + "\n"
 
         for k in self._sections:
             s += 80*"-" + "\n"

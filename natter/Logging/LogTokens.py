@@ -8,6 +8,9 @@ from numpy import float64, float32
 from subprocess import Popen, PIPE
 from os import path, chdir
 from time import time, strftime, localtime
+import sys
+import numpy
+import scipy
 
 class LogToken:
     """
@@ -31,6 +34,38 @@ class LogToken:
 
 
 
+##############################################
+class PyInfo(LogToken):
+    """
+    Represents information about the state of a python.
+    """
+
+    
+    def __init__(self):
+        info = {}
+        info['Python Version'] = sys.version
+        info['Numpy Version'] = numpy.version.version
+        info['Scipy Version'] = scipy.version.version
+        
+        
+        self.info = info
+        
+    def ascii(self):
+        """
+        :returns: An ascii representation of the python info.
+        :rtype: string
+        """
+
+        return "\n".join(["%s: %s" % (k,v) for k,v in self.info.items()])
+
+
+    
+    def html(self):
+        """
+        :returns: A html representation of the python info.
+        :rtype: string
+        """
+        return "<table border=\"0\"><tr>" + "</tr><tr>".join(["<td>%s</td><td> %s</td>" % (k,v) for k,v in self.info.items()]) + "</td></table>"
 ##############################################
 
 class Git(LogToken):
