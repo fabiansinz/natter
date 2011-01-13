@@ -1,6 +1,6 @@
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt
 from  natter.Auxiliary import  Errors, Plotting, save
-import matplotlib as mpl
+from matplotlib.pyplot import scatter,text
 import pylab as pl
 from numpy.linalg import qr, svd
 import types
@@ -98,7 +98,7 @@ class Data:
         if not len(self.X) == 2:
             raise Errors.DimensionalityError('Data object must have dimension 2 for plotting!')
         else:
-            h = mpl.pyplot.scatter(self.X[0],self.X[1],color='black',s=.5)
+            h = scatter(self.X[0],self.X[1],color='black',s=.5)
             pl.show()
             return h
 
@@ -209,7 +209,7 @@ class Data:
             
         return Data(tmp2,self.name,tmp)
         
-    def plotPatches(self,m=-1):
+    def plotPatches(self,m=-1, plotNumbers=False):
         """
         If the Data objects holds patches flattened into vectors (Fortran style), then plotPatches can plot those patches. If *m* is specified, only the first *m* patches are plotted.
 
@@ -221,6 +221,22 @@ class Data:
         nx = ceil(sqrt(m))
         ptchSz = int(sqrt(size(self.X,0)))
         Plotting.plotPatches(self.X[:,:m],nx,ptchSz)
+
+        if plotNumbers:
+            row = 0
+            col = 0
+            i = 0
+            while i < m:
+                text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
+                if col > (nx-2)*ptchSz:
+                    col = 0
+                    row += ptchSz
+                else:
+                    col += ptchSz
+                i += 1
+                
+                    
+            
 
     def var(self):
         """

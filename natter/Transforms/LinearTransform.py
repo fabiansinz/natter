@@ -6,6 +6,7 @@ from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
 from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape
 import types
+from matplotlib.pyplot import text
 
 class LinearTransform(Transform.Transform):
     """
@@ -34,28 +35,64 @@ class LinearTransform(Transform.Transform):
 
         self.name = name
 
-    def plotBasis(self):
+    def plotBasis(self, plotNumbers=False):
         """
 
         Plots the columns of the inverse linear transform matrix
         W. Works only if the square-root of the number of columns of W
         is an integer.
 
+        :param plotNumbers: Determines whether the index of the basis function should be plotted as well.
+        :type plotNumbers: bool
+
         """
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
         Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True)
+
+        if plotNumbers:
+            row = 0
+            col = 0
+            i = 0
+            
+            while i < self.W.shape[0]:
+                text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
+                if col > (nx-2)*ptchSz:
+                    col = 0
+                    row += ptchSz
+                else:
+                    col += ptchSz
+                i += 1
+
     
-    def plotFilters(self):
+    def plotFilters(self, plotNumbers=False):
         """
 
         Plots the rows of the linear transform matrix W. Works only if
         the square-root of the number of rows of W is an integer.
 
+        :param plotNumbers: Determines whether the index of the basis function should be plotted as well.
+        :type plotNumbers: bool
+
         """
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
         Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True)
+
+        if plotNumbers:
+            row = 0
+            col = 0
+            i = 0
+            
+            while i < self.W.shape[0]:
+                text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
+                if col > (nx-2)*ptchSz:
+                    col = 0
+                    row += ptchSz
+                else:
+                    col += ptchSz
+                i += 1
+
         
     def __invert__(self):
         """
