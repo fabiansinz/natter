@@ -50,6 +50,33 @@ class Data:
         s += 30*'-' + '\n'
         return s
 
+
+    def fade(self,dat,h):
+        """
+        Fades this dataset into the dataset dat via the mask
+        h. The mask is a vector of the same dimension as one data
+        sample in self or dat. For each example xi in this dataset and
+        the corresponding example yi in the dataset dat, the operation
+
+        :math:`z_{ij} = h_j \cdot x_{ij} + (1-h_j)\cdot y_{ij}`
+
+        is carried out. For that reason h must have entries between
+        zero and one.
+
+        :param dat: other dataset which is faded into this one. It must have the same dimension as this dataset.
+        :type dat: natter.DataModule.Data
+        :param h: mask of the same dimension as a single vector in dat. All entries must be between zero and one. 
+        :type h: numpy.array
+        """
+
+        if dat.size() != self.size():
+            raise Errors.DimensionalityError('Dimensionalities of two datasets do not match!')
+        if len(h.shape) < 2:
+            h = reshape(h,(self.X.shape[0],1))
+
+        self.X = self.X*h + (1-h)*dat.X
+        self.addToHistory(['Faded with dataset %s with history' % (dat.name), list(dat.history)])
+            
     def setHistory(self,h):
         """
         Sets a new history of the Data object.
