@@ -135,7 +135,7 @@ class Svn(LogToken):
         :rtype: string
         """
 
-        return "SVN information:\n %s\n" % (''.join(self.svninfo),)
+        return "\nSVN information:\n %s\n" % (''.join(self.svninfo),)
 
     
     def html(self):
