@@ -112,6 +112,38 @@ class Git(LogToken):
         return "<table border=\"0\"><tr><td>Git directory:</td><td>%s</td></tr><tr><td>commit:</td><td> %s</td></tr><tr><td>uncommited changes: </td><td>%s</td></tr></table>" % (self.gitdir, self.commit, self.boolPretty[self.modified])
 
 
+##############################################
+
+class Svn(LogToken):
+    """
+    Represents information about the state of a svn directory.
+    """
+
+    
+    def __init__(self,svndir='./'):
+        self.boolPretty = {True:'yes', False:'no'}
+        olddir = os.path.abspath('./')
+        chdir(svndir)
+        # get commit hash
+        pr1 = Popen(['svn', 'info'], stdout=PIPE)
+        self.svninfo = pr1.stdout.readlines()
+        chdir(olddir)
+
+    def ascii(self):
+        """
+        :returns: An ascii representation of the Git Repository.
+        :rtype: string
+        """
+
+        return "SVN information:\n %s\n" % (''.join(self.svninfo),)
+
+    
+    def html(self):
+        """
+        :returns: A html representation of the git directory.
+        :rtype: string
+        """
+        return "SVN information <br><table border=\"0\"><tr><td>" + '</td></tr><tr><td>'.join(self.svninfo) + '</td></tr></table>'
 
 ############################################################################
 class Table(LogToken):
