@@ -288,11 +288,11 @@ class LinearTransform(Transform.Transform):
         :returns:   Returns the 2D Fourier frequency that has the stronges amplitude. 
         :rtype: numpy.array
         """
-        p = sqrt(self.W.shape[0])
+        p = sqrt(self.W.shape[1])
         f = arange(0,ceil(p/2.0))
         w = zeros((2,self.W.shape[0]))
         for i in xrange(self.W.shape[0]):
-            z = reshape(self.W[i,:],(17 ,17), order='F') # reshape into patch
+            z = reshape(self.W[i,:],(p ,p), order='F') # reshape into patch
             z = abs(fft2(z))[:ceil(p/2.0),:ceil(p/2.0)] # get fourier amplitude spectrum
             a = max(z.flatten()) # get maximal amplitude
             a = where(z == a) # get index of maximal amplitude

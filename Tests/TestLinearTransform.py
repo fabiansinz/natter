@@ -3,7 +3,7 @@ import numpy as np
 from natter.Auxiliary import Errors
 import unittest
 from natter.Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
-from numpy import linalg, floor, array, pi
+from numpy import linalg, floor, array, pi, any
 from natter import Distributions
 from natter.DataModule import Data, DataSampler
 from numpy.random import rand
@@ -43,14 +43,11 @@ class TestFilter(unittest.TestCase):
     def test_MaxFourier(self):
         print "Max Fourier Function "
         p = 30
-        w = floor(p/2)*rand(2,1)
+        w = floor(p/2*rand(2,1))
         dat = DataSampler.gratings(p,1,w,array([2*pi*rand()]))
         F = LinearTransform(dat.X.T)
-        F.plotFilters()
-        show()
-        raw_input()
-        
-        
+        w2 = F.getFourierMaximum()
+        self.assertFalse(any(w2 != w),'2D frequency of grating and max Fourier do not match!')
         
 
     def test_LogDetRadialTransform(self):
@@ -70,7 +67,6 @@ class TestFilter(unittest.TestCase):
         dat2 = F*dat
         logDetJ =  F.logDetJacobian(dat)
         logDetJ2 = 0*logDetJ
-        n = dat.size(0)
 
         h = 1e-8
 
