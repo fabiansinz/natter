@@ -3,10 +3,13 @@ import numpy as np
 from natter.Auxiliary import Errors
 import unittest
 from natter.Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
-from numpy import linalg
+from numpy import linalg, floor, array, pi
 from natter import Distributions
-from natter.DataModule import Data
+from natter.DataModule import Data, DataSampler
+from numpy.random import rand
 import sys
+
+from matplotlib.pyplot import show
 
 class TestFilter(unittest.TestCase):
     
@@ -37,6 +40,15 @@ class TestFilter(unittest.TestCase):
         
 
         
+    def test_MaxFourier(self):
+        print "Max Fourier Function "
+        p = 30
+        w = floor(p/2)*rand(2,1)
+        dat = DataSampler.gratings(p,1,w,array([2*pi*rand()]))
+        F = LinearTransform(dat.X.T)
+        F.plotFilters()
+        show()
+        raw_input()
         
         
         
