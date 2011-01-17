@@ -358,28 +358,43 @@ class Link(LogToken):
         :returns: An ascii representation of the link.
         :rtype: string
         """
-        return self._name
+        if type(self._name) == types.StringType:
+            return self._name
+        else:
+            return self._name.ascii()
+            
 
     def wiki(self):
         """
         :returns: An wiki representation of the link.
         :rtype: string
         """
-        return "[%s %s]" % (self._target,self._name)
+        if type(self._name) == types.StringType:
+            return "[%s %s]" % (self._target,self._name)
+        else:
+            return "[%s %s]" % (self._target,self._name.wiki())
+            
     
     def html(self):
         """
         :returns: An html representation of the link.
         :rtype: string
         """
-        return "<a href=\"%s\">%s</a>" % (self._target,self._name)
+        if type(self._name) == types.StringType:
+            return "<a href=\"%s\">%s</a>" % (self._target,self._name)
+        else:
+            return "<a href=\"%s\">%s</a>" % (self._target,self._name.html())
+            
 
     def latex(self):
         """
         :returns: An latex representation of the link.
         :rtype: string
         """
-        return "%s" % (self._name,)
+        if type(self._name) == types.StringType:
+            return self._name
+        else:
+            return self._name.latex()
 
 ##############################################
 

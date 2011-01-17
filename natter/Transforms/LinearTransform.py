@@ -4,9 +4,10 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape
+from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape, arange, zeros, where
 import types
 from matplotlib.pyplot import text
+from numpy.fft import fft2
 
 class LinearTransform(Transform.Transform):
     """
@@ -280,6 +281,24 @@ class LinearTransform(Transform.Transform):
         
         return s
 
+    def getFourierMaximum(self):
+        """
+        Returns the 2D Fourier frequency that has the stronges amplitude. 
+
+        :returns:   Returns the 2D Fourier frequency that has the stronges amplitude. 
+        :rtype: numpy.array
+        """
+        p = sqrt(self.W.shape[0])
+        f = arange(0,ceil(p/2.0))
+        w = zeros((2,self.W.shape[0]))
+        for i in xrange(self.W.shape[0]):
+            z = reshape(self.W[i,:],(17 ,17), order='F') # reshape into patch
+            z = abs(fft2(z))[:ceil(p/2.0),:ceil(p/2.0)] # get fourier amplitude spectrum
+            a = max(z.flatten()) # get maximal amplitude
+            a = where(z == a) # get index of maximal amplitude
+            w[:,i] = array([f[a[1][0]],f[a[0][0]]])
+
+        return w
 
     def getHistory(self):
         """

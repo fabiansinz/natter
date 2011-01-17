@@ -12,7 +12,7 @@ IMPORTANT: Internally, all matrices are represented as numpy.array. So
 the initializing matrices W should also be arrays and not numpy.matrix.
 
 .. autoclass:: natter.Transforms.LinearTransform
-   :members:   plotBasis, plotFilters, __invert__, stack, transpose, T, apply,det,logDetJacobian,__getitem__,__str__,__getHistory__,copy,addToHistory
+   :members:   plotBasis, plotFilters, __invert__, stack, transpose, T, apply,det,logDetJacobian,__getitem__,__str__,__getHistory__,copy,addToHistory,getFourierMaximum
 
 
 
