@@ -7,7 +7,8 @@
 
 
 * Fabian
-** fix numpy version upgrade bugs
+** rename or reprogram testProtocol
+
 * Both
 ** DONE move to git
 ** DONE create stable and developer branch
