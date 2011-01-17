@@ -7,7 +7,7 @@
 
 
 * Fabian
-
+** fix numpy version upgrade bugs
 * Both
 ** DONE move to git
 ** DONE create stable and developer branch
