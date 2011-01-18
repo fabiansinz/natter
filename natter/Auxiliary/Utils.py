@@ -3,12 +3,14 @@ import os
 import cProfile
 import lsprofcalltree
 from copy import deepcopy
-
+from natter.Auxiliary.Errors import SpecificationError
 
 def parseParameters(args,kwargs):
     param = None
-    if len(args) > 0:
+    if len(args) == 1:
         param = args[0]
+    if len(args) > 1:
+        raise SpecificationError('*args may at most have length one!')
     if kwargs.has_key('param'):
         if param == None:
             param = kwargs['param']
@@ -34,14 +36,14 @@ def save(o,filename):
     pickle.dump(o,f)
     f.close()
 
-def testProtocol(value):
+def prettyPrintDict(value):
     s = "\n"
-    s+= "++++++++++++++++++++++++ Test Error Protocol ++++++++++++++++++++++++\n"
+    s+= 40*"=" + "\n"
     for (k,v) in value.items():
         s += str(k).upper()  + ": \n"
         s += str(v) + '\n'
-        s += 10*'- - ' + '\n'
-    s += "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        s += 40*'-' + '\n'
+    s+= 40*"=" + "\n"
     return s
 
 

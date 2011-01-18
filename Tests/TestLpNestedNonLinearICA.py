@@ -2,7 +2,7 @@ from __future__ import division
 import unittest
 from  natter.Distributions import ProductOfExponentialPowerDistributions, LpNestedSymmetric, LpSphericallySymmetric, LpGeneralizedNormal, Gamma
 import sys
-from  natter.Auxiliary import LpNestedFunction, testProtocol
+from  natter.Auxiliary import LpNestedFunction, prettyPrintDict
 from natter.Transforms import NonlinearTransformFactory
 import numpy as np
 import sys
@@ -43,7 +43,7 @@ class TestLpNestedNonLinearICA(unittest.TestCase):
         prot["ALL(ICA)"] = icaall
         prot["ALL(PND)"] = pndall
         prot["ALL(ICA) - 1/n/log(2) * <|det J|> - ALL(PND)"] = icaall + ld - pndall
-        self.assertFalse(np.abs(icaall + ld - pndall) > self.allTol,testProtocol(prot))
+        self.assertFalse(np.abs(icaall + ld - pndall) > self.allTol,prettyPrintDict(prot))
 
     def test_CheckDeterminant(self):
         print "Testing determinant ..."

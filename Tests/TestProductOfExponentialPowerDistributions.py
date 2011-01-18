@@ -41,7 +41,7 @@ class TestExponentialPower(unittest.TestCase):
         prot['max difference'] = np.max(np.abs( (df-df2).flatten()))
         prot['mean difference'] = np.mean(np.abs( (df-df2).flatten() ))
 
-        self.assertTrue(np.max(np.abs(df-df2)) < tol,Auxiliary.testProtocol(prot))
+        self.assertTrue(np.max(np.abs(df-df2)) < tol,Auxiliary.prettyPrintDict(prot))
 
 
 if __name__=="__main__":

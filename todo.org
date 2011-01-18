@@ -7,7 +7,6 @@
 
 
 * Fabian
-** rename or reprogram testProtocol
 
 * Both
 ** DONE move to git

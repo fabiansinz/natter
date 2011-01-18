@@ -18,3 +18,19 @@ distribution as keys and *deepcopies* of the parameters as
 values. When passed to a contructor of the same type of distribution,
 this dictionary must be enough to create a mathematically equivalent
 distribution object.
+
+3. **Parameters of Distribution 3** Distribution constructors must be
+compatible to be called in the following ways
+
+>>> d = mydistribution(n=3,p=3)
+
+>>> d = mydistribution({'n':3,'p':3})
+
+>>> d = mydistribution(n=3,param={'p':3})
+
+>>> d = mydistribution(param={'p':3})
+
+(see also natter.Utils.parseParameters). This basically means that a
+constructor may at least have one single element in args, which is the
+dictionary param. Other key value pairs of param may be passed via the
+"n=3" syntax.

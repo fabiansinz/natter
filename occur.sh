@@ -9,7 +9,7 @@
 ## Last update Mon Jun  2 12:42:34 2008 Fabian Sinz
 ##
 
-for f in `ls */*.py` `ls *.py` `ls */*.py`; 
+for f in `ls */*.py` `ls *.py` `ls */*.py` `ls */*/*.py`; 
 do 
     TMP=`grep -n $1 $f`;
     if [ -n "$TMP" ]

@@ -38,7 +38,7 @@ class TestExponentialPower(unittest.TestCase):
         prot['true model'] = p1
         prot ['estimated model'] = p2
         self.assertTrue(np.abs(p2.param['p'] - p1.param['p']) < self.TolParamP or np.abs(p2.param['s'] - p1.param['s']) < self.TolParamS,\
-                        Auxiliary.testProtocol(prot))
+                        Auxiliary.prettyPrintDict(prot))
 
 
     def test_derivatives(self):
@@ -60,7 +60,7 @@ class TestExponentialPower(unittest.TestCase):
         prot['max difference'] = np.max(np.abs(df-df2))
         prot['mean difference'] = np.mean(np.abs(df-df2))
 
-        self.assertTrue(np.max(np.abs(df-df2)) < tol,Auxiliary.testProtocol(prot))
+        self.assertTrue(np.max(np.abs(df-df2)) < tol,Auxiliary.prettyPrintDict(prot))
 
 
 if __name__=="__main__":

@@ -27,7 +27,7 @@ class TestMixtureOfLogNormals(unittest.TestCase):
         prot['max diff'] = np.max(np.abs(df-df2))
         prot['mean diff'] = np.mean(np.abs(df-df2))
 
-        self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.testProtocol(prot))
+        self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
 
     def test_pdfloglikconsistency(self):
         print "Testing consistency of pdf and loglik  ... "
@@ -45,7 +45,7 @@ class TestMixtureOfLogNormals(unittest.TestCase):
         prot['max diff'] = np.max(np.abs(pdf-ll))
         prot['mean diff'] = np.mean(np.abs(pdf-ll))
 
-        self.assertFalse(np.max(np.abs(ll-pdf) ) > tol,Auxiliary.testProtocol(prot))
+        self.assertFalse(np.max(np.abs(ll-pdf) ) > tol,Auxiliary.prettyPrintDict(prot))
 
 
 if __name__=="__main__":
