@@ -4,10 +4,11 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape, arange, zeros, where
+from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape, arange, zeros, where, meshgrid, sum, exp, pi, real, prod, floor, zeros, sqrt
 import types
 from matplotlib.pyplot import text
 from numpy.fft import fft2
+from scipy.optimize import fmin_l_bfgs_b
 
 class LinearTransform(Transform.Transform):
     """
@@ -291,12 +292,30 @@ class LinearTransform(Transform.Transform):
         p = sqrt(self.W.shape[1])
         f = arange(0,ceil(p/2.0))
         w = zeros((2,self.W.shape[0]))
+        nx,ny = meshgrid(arange(p),arange(p))
         for i in xrange(self.W.shape[0]):
-            z = reshape(self.W[i,:],(p ,p), order='F') # reshape into patch
-            z = abs(fft2(z))[:ceil(p/2.0),:ceil(p/2.0)] # get fourier amplitude spectrum
+            patch = reshape(self.W[i,:],(p ,p), order='F') # reshape into patch
+            z = abs(fft2(patch))[:ceil(p/2.0),:ceil(p/2.0)] # get fourier amplitude spectrum
             a = max(z.flatten()) # get maximal amplitude
             a = where(z == a) # get index of maximal amplitude
             w[:,i] = array([f[a[1][0]],f[a[0][0]]])
+            g = lambda x: gratingProjection(x,p,nx,ny,patch,False)
+            gprime = lambda x: gratingProjection(x,p,nx,ny,patch,True)
+
+            #=========== DEBUG GRADIENT CHECK====
+            # h = 1e-8
+            # wtmp = array(w[:,i])
+            # wtmph = array(wtmp)
+            # wtmph[0] += h
+            # print (g(wtmph) - g(wtmp))/h
+            # wtmp = array(w[:,i])
+            # wtmph = array(wtmp)
+            # wtmph[1] += h
+            # print (g(wtmph) - g(wtmp))/h
+            # print gprime(w[:,i])
+            # raw_input()
+            #======================================
+            w[:,i] =  fmin_l_bfgs_b(g, array([f[a[1][0]],f[a[0][0]]]) , fprime=gprime, bounds=( 2*[(0,floor(p/2.0))]))[0]
 
         return w
 
@@ -322,4 +341,22 @@ class LinearTransform(Transform.Transform):
         :rtype: natter.Transforms.LinearTransform
         """
         return LinearTransform(self.W.copy(),self.name,list(self.history))
+
+def gratingProjection(omega,p,nx,ny,f, fprime):
+    if not fprime:
+        tmp = sum( ( exp(1j*2*pi/p * (omega[0]*nx + omega[1]*ny))*f ).flatten())
+        return -real(tmp*tmp.conjugate()) / p**2
+    else:
+        # h = 1e-8
+        # ret = zeros((2,))
+        # for k in xrange(2):
+        #     tmp = array(omega)
+        #     tmp[k] += h
+        #     ret[k] = (gratingProjection(tmp,p,nx,ny,f,False) - gratingProjection(omega,p,nx,ny,f,False))/h
+        # return ret
+        dnx = reshape(nx,(prod(nx.shape),1))-reshape(nx,(1,prod(nx.shape)))
+        dny = reshape(ny,(prod(ny.shape),1))-reshape(ny,(1,prod(ny.shape)))
+        pf = reshape(f,(prod(f.shape),1))*reshape(f,(1,prod(f.shape)))
+        tmp = exp(1j*2*pi/p *( omega[0]*dnx + omega[1]*dny) ) * pf * 1j*2*pi/p
+        return -real(array([sum( (tmp*dnx).flatten() ), sum( (tmp*dny).flatten() ) ]) / p**2.0)
 
