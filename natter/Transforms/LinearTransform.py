@@ -4,11 +4,18 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array, ceil, sqrt, size, shape, concatenate, dot, log, abs, reshape, arange, zeros, where, meshgrid, sum, exp, pi, real, prod, floor, zeros, sqrt
+from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil
 import types
 from matplotlib.pyplot import text
-from numpy.fft import fft2
+from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
+# from scipy.signal import hanning
+from sys import stderr
+from numpy.random import rand
+
+
+# DEBUG
+from matplotlib.pyplot import *
 
 class LinearTransform(Transform.Transform):
     """
@@ -282,41 +289,48 @@ class LinearTransform(Transform.Transform):
         
         return s
 
-    def getFourierMaximum(self):
+    def getFourierMaximum(self, delta=.25,weightings=None):
         """
-        Returns the 2D Fourier frequency that has the stronges amplitude. 
+        This documentation needs an update once it is fixed.
 
         :returns:   Returns the 2D Fourier frequency that has the stronges amplitude. 
         :rtype: numpy.array
         """
+        stderr.write("\tComputing optimal frequency and orientation ")
         p = sqrt(self.W.shape[1])
-        f = arange(0,ceil(p/2.0))
         w = zeros((2,self.W.shape[0]))
+
+        wx,wy = meshgrid(arange(-floor(p/2.0),floor(p/2.0)+delta/2.0,delta), arange(0,floor(p/2.0)+delta/2.0,delta) )
+        W = vstack((wx.flatten('F'),wy.flatten('F')))
+        
         nx,ny = meshgrid(arange(p),arange(p))
+        F = zeros((W.shape[1],p**2))
+        for i in xrange(W.shape[1]):
+            tmp = exp(1j*2.0*pi/p * (W[0,i]*nx + W[1,i]*ny))
+            F[i,:] = tmp.flatten('F')
         for i in xrange(self.W.shape[0]):
-            patch = reshape(self.W[i,:],(p ,p), order='F') # reshape into patch
-            z = abs(fft2(patch))[:ceil(p/2.0),:ceil(p/2.0)] # get fourier amplitude spectrum
-            a = max(z.flatten()) # get maximal amplitude
-            a = where(z == a) # get index of maximal amplitude
-            w[:,i] = array([f[a[1][0]],f[a[0][0]]])
+            stderr.write(".")
+            # fit gaussian envelope to linear filter
+            h = fitGauss2Grating(reshape(array(self.W[i,:]),(p,p))).flatten('F')
+            # store envelopefunction if necessary
+            if weightings != None:
+                weightings[i,:] = h
+            tmp = abs(dot(F,self.W[i,:]*h)) # get the frequency responses
+
+
+            maxResponse = argmax(tmp) # extract maximal response
+            w[:,i] = W[:,maxResponse]
+           
+
+            patch = array(reshape(self.W[i,:],(p ,p), order='F')) # reshape into patch
+
+            # refine estimate
             g = lambda x: gratingProjection(x,p,nx,ny,patch,False)
             gprime = lambda x: gratingProjection(x,p,nx,ny,patch,True)
 
-            #=========== DEBUG GRADIENT CHECK====
-            # h = 1e-8
-            # wtmp = array(w[:,i])
-            # wtmph = array(wtmp)
-            # wtmph[0] += h
-            # print (g(wtmph) - g(wtmp))/h
-            # wtmp = array(w[:,i])
-            # wtmph = array(wtmp)
-            # wtmph[1] += h
-            # print (g(wtmph) - g(wtmp))/h
-            # print gprime(w[:,i])
-            # raw_input()
-            #======================================
-            w[:,i] =  fmin_l_bfgs_b(g, array([f[a[1][0]],f[a[0][0]]]) , fprime=gprime, bounds=( 2*[(0,floor(p/2.0))]))[0]
-
+            w[:,i] =  fmin_l_bfgs_b(g, array(w[:,i]) , fprime=gprime, bounds=( [(-floor(p/2.0),floor(p/2.0)),(0,floor(p/2.0))]))[0]
+            
+        stderr.write("\n")
         return w
 
     def getHistory(self):
@@ -360,3 +374,15 @@ def gratingProjection(omega,p,nx,ny,f, fprime):
         tmp = exp(1j*2*pi/p *( omega[0]*dnx + omega[1]*dny) ) * pf * 1j*2*pi/p
         return -real(array([sum( (tmp*dnx).flatten() ), sum( (tmp*dny).flatten() ) ]) / p**2.0)
 
+
+def fitGauss2Grating(w):
+    nx,ny = meshgrid(arange(w.shape[0]), arange(w.shape[1]))
+    w = abs(w).flatten('F')
+    w = w/sum(w)
+    pyplot.imshow(reshape(array(w),(17,17)),interpolation='nearest',cmap=pyplot.cm.winter)
+    N = vstack((nx.flatten('F'),ny.flatten('F')))
+    mu = reshape(dot(N,w),(2,1),order='F')
+    C = dot(N-mu,(N-mu).T*reshape(array(w),(w.shape[0],1),order='F'))
+    
+    N = N[[1,0],:] # account for image coordinates
+    return reshape(((2*pi)*sqrt(det(C)))**-1*exp(-0.5*sum((dot(inv(C),N-mu)*(N-mu))**2,0) ),nx.shape,order='F')
