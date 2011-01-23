@@ -7,6 +7,54 @@ from natter.Auxiliary import Errors
 
 ################################ NONLINEAR FILTERS ########################################
 
+def MarginalHistogramEqualization(psource,ptarget=None):
+    """
+    Creates a non-linear filter that changes the marginal distribution
+    of each single data dimension independently. For that sake it
+    takes two ISA models and performs a histogram equalization on each
+    of the marginal distributions.
+
+    *Important*: The ISA models must have one-dimensional subspaces!
+
+    If ptarget is omitted, it will be set to a N(0,I) Gaussian by default.
+    
+    :param psource: Source distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
+    :type psource: natter.Distributions.ISA
+    :param psource: Target distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
+    :type psource: natter.Distributions.ISA
+    :returns: A non-linear filter that changes for marginal distributions of the data from the respective psource into the respective ptarget
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    """
+    from natter.Distributions import ISA, Gaussian
+
+    if not isinstance(psource,ISA):
+        raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: psource must be an ISA model')
+
+    if not ptarget == None and not isinstance(ptarget,ISA):
+        raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: ptarget must be an ISA model')
+
+    for ss in psource['S']:
+        if len(ss) != 1:
+            raise Errors.DimensionalityError('Transform.TransformFactory.MarginalHistogramEqualization: psource must have one-dimensional subspaces')
+
+    if ptarget == None:
+        ptarget = ISA(S=[(k,) for k in range(psource['n'])],P=[Gaussian(n=1) for k in range(psource['n'])])
+
+
+    g = lambda dat: reduce(lambda x,y: x.stack(y),[ptarget['P'][k].ppf(psource['P'][k].cdf(dat[k,:])) for k in range(psource['n']) ]  )
+
+    
+
+    # p = ptarget.param['p']
+    name = 'Marginal Histogram Equalization Transform: %s --> %s' % (psource['P'][0].name, ptarget['P'][0].name)
+    # psource = psource.param['rp'].copy()
+    # ptarget = ptarget.param['rp'].copy()
+    # g = lambda x: x.scaleCopy( ptarget.ppf(psource.cdf(x.norm(p))).X / x.norm(p).X)
+    # gdet = lambda y: logDetJacobianRadialTransform(y,psource,ptarget,p)
+    return NonlinearTransform(g,name,logdetJ=None)
+    
+
 def RadialFactorization(psource):
     """
     Creates a non-linear transformation that maps a radial

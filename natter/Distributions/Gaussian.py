@@ -1,14 +1,14 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer, sqrt
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
 #from natter.Auxiliary import debug
 from scipy import optimize
 from copy import deepcopy
-
-
+from scipy.stats import norm
+from natter.Auxiliary.Errors import DimensionalityError
 class Gaussian(Distribution):
     """
     Gaussian Distribution
@@ -69,6 +69,37 @@ class Gaussian(Distribution):
         # internally, we represent the covariance in terms of the
         # cholesky factor of the precision matrix
         self.cholP = cholesky(inv(self.param['sigma'])) 
+
+    def cdf(self,dat):
+        '''
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''
+        if self.param['n'] > 1:
+            raise DimensionalityError("natter.Distributions.Gaussian: cdf only works for univariate Gaussians!")
+        return norm.cdf(dat.X,self.param['mu'][0],scale=sqrt(self.param['sigma'][0]))
+
+    def ppf(self,X):
+        '''
+
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        if self.param['n'] > 1:
+            raise DimensionalityError("natter.Distributions.Gaussian: ppf only works for univariate Gaussians!")
+        return Data(norm.ppf(X,self.param['mu'][0],scale=sqrt(self.param['sigma'][0])))
+
 
     def parameters(self,keyval=None):
         """
