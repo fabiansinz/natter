@@ -4,7 +4,7 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil
+from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones
 import types
 from matplotlib.pyplot import text
 from matplotlib import pyplot
@@ -289,11 +289,23 @@ class LinearTransform(Transform.Transform):
         
         return s
 
-    def getFourierMaximum(self, delta=.25,weightings=None):
-        """
-        This documentation needs an update once it is fixed.
 
-        :returns:   Returns the 2D Fourier frequency that has the stronges amplitude. 
+    def getOptimalOrientationAndFrequency(self,delta=.25,weight=False, weightings=None):
+        """
+        Computes the optimal orientation and spatial frequency for all
+        filters (rows). This is done by oversampling the Fourier space
+        and computing the maximal absolute response to
+
+        :math:`\sum_{\boldsymbol n} \exp(2*\pi*i * \langle\boldsymbol \omega, \boldsymbol x_{\boldsymbol n} \rangle  ) f(\boldsymbol x_{\boldsymbol n})`
+
+        :param delta: bin size for oversampling in the Fourier domain
+        :type delta: float
+        :param weight: Whether the filter is to be weighted with a Gaussian envelope function
+        :type weight: bool
+        :param weightings: Array that stores the envelope weighting functions if specified
+        :type weighting: numpy.array
+
+        :returns:   The frequency vectors that gives the maximal responses.
         :rtype: numpy.array
         """
         stderr.write("\tComputing optimal frequency and orientation ")
@@ -311,7 +323,10 @@ class LinearTransform(Transform.Transform):
         for i in xrange(self.W.shape[0]):
             stderr.write(".")
             # fit gaussian envelope to linear filter
-            h = fitGauss2Grating(reshape(array(self.W[i,:]),(p,p))).flatten('F')
+            if weight:
+                h = fitGauss2Grating(reshape(array(self.W[i,:]),(p,p))).flatten('F')
+            else:
+                h = ones((p**2,))
             # store envelopefunction if necessary
             if weightings != None:
                 weightings[i,:] = h
