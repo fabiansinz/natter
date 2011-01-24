@@ -1,4 +1,4 @@
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text
 import pylab as pl
@@ -76,7 +76,26 @@ class Data:
 
         self.X = self.X*h + (1-h)*dat.X
         self.addToHistory(['Faded with dataset %s with history' % (dat.name), list(dat.history)])
-            
+
+    def stack(self,dat):
+        """
+        Stacks the current dataset with a copy of the dataset dat. Both must
+        have the same number of examples.
+        
+
+        :param dat: Other data object with the same number of examples
+        :type dat: natter.DataModule.Data
+        """
+
+        if dat.numex() != self.numex():
+            raise Errors.DimensionalityError('Number of examples of two datasets do not match!')
+        
+        self.X = vstack((self.X,dat.copy().X))
+        
+        self.addToHistory(['Stacked with dataset %s with history' % (dat.name), list(dat.history)])
+
+        return self
+     
     def setHistory(self,h):
         """
         Sets a new history of the Data object.
