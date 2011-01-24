@@ -30,9 +30,12 @@ def MarginalHistogramEqualization(psource,ptarget=None):
 
     if not isinstance(psource,ISA):
         raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: psource must be an ISA model')
-
+    else:
+        psource = psource.copy()
+        
     if not ptarget == None and not isinstance(ptarget,ISA):
         raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: ptarget must be an ISA model')
+    
 
     for ss in psource['S']:
         if len(ss) != 1:
@@ -40,19 +43,15 @@ def MarginalHistogramEqualization(psource,ptarget=None):
 
     if ptarget == None:
         ptarget = ISA(S=[(k,) for k in range(psource['n'])],P=[Gaussian(n=1) for k in range(psource['n'])])
+    else:
+        ptarget = ptarget.copy()
 
 
     g = lambda dat: reduce(lambda x,y: x.stack(y),[ptarget['P'][k].ppf(psource['P'][k].cdf(dat[k,:])) for k in range(psource['n']) ]  )
+    gdet = lambda y: psource.loglik(y) - ptarget.loglik(g(y))
 
-    
-
-    # p = ptarget.param['p']
     name = 'Marginal Histogram Equalization Transform: %s --> %s' % (psource['P'][0].name, ptarget['P'][0].name)
-    # psource = psource.param['rp'].copy()
-    # ptarget = ptarget.param['rp'].copy()
-    # g = lambda x: x.scaleCopy( ptarget.ppf(psource.cdf(x.norm(p))).X / x.norm(p).X)
-    # gdet = lambda y: logDetJacobianRadialTransform(y,psource,ptarget,p)
-    return NonlinearTransform(g,name,logdetJ=None)
+    return NonlinearTransform(g,name,logdetJ=gdet)
     
 
 def RadialFactorization(psource):

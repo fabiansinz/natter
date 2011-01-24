@@ -36,6 +36,31 @@ class TestNonlinearFilter(unittest.TestCase):
         prot["ALL(SOURCE)"] = all_source
         prot["ALL(TARGET) + 1/n/log(2) * <|det J|> - ALL(SOURCE)"] = all_target + ld - all_source
 
+    def test_MarginalHistogramEqualization(self):
+        print "Testing MarginalHistogramEqualization ..."
+        sys.stdout.flush()
+        
+        psource = Distributions.ISA(n=10,P=[Distributions.MixtureOfGaussians(K=5) for k in range(10)],S=[(k,) for k in range(10)])
+        ptarget = Distributions.ISA(n=10,P=[Distributions.Gaussian(n=1) for k in range(10)],S=[(k,) for k in range(10)])
+        
+
+        F = NonlinearTransformFactory.MarginalHistogramEqualization(psource,ptarget)
+
+        dat = psource.sample(20000)
+        ld = F.logDetJacobian(dat)
+        ld = np.mean(np.abs(ld)) / dat.size(0) / np.log(2)
+
+        all_source = psource.all(dat)
+        all_target = ptarget.all(F*dat)
+        
+        tol = 1e-2
+        prot = {}
+        prot['message'] = 'Difference in logdet correted ALL >  ' + str(tol) 
+        prot["1/n/log(2) * <|det J|> "] = ld
+        prot["ALL(TARGET)"] = all_target
+        prot["ALL(SOURCE)"] = all_source
+        prot["ALL(TARGET) + 1/n/log(2) * <|det J|> - ALL(SOURCE)"] = all_target + ld - all_source
+
 
     def test_RadialFactorizationVsLpNestedNonlinearICA(self):
         print "Testing Radial Factorization vs. Lp-nested ICA..."
