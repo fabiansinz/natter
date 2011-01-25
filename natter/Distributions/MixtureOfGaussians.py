@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs
+from numpy import cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs, max
 from numpy.random import rand, randn 
 from scipy import stats
 import sys
@@ -275,4 +275,55 @@ class MixtureOfGaussians(Distribution):
         return ret
         
 
+        
+    def ppf(self,u,maxiter=500, tol = 1e-5):
+        '''
+
+        Evaluates the percent point function (i.e. the inverse c.d.f.)
+        of the mixture of Gaussians distribution.
+
+        It uses a Newton-Raphson method with preinitialization.
+        
+        :param u:  Points at which the p.p.f. will be computed.
+        :type dat: numpy.array
+        :returns:  Data object with the resulting points in the domain of this distribution. 
+        :rtype:    natter.DataModule.Data
+           
+        '''
+
+
+        # preinitialization: if there was just a single Gaussian
+        # weighted by pi_k, the cdf would saturize to pi_k, the cdf of
+        # this Gaussians mean would lie at pi_k/2. If the Gaussians
+        # were we separated, the cdf ranges would approximately split
+        # up [0,1] in [0,pi_1,pi-1+pi_2, ..., 1]. We initialize the x
+        # for each u with the mean of the Gaussian that corresponds to
+        # that interval.
+
+        print "\tpreinitialize ..."
+        U = cumsum(self.param['pi'])
+        X = 0*u
+        m = max(u.shape)
+        for i in xrange(m):
+            k = 0
+            while u[i] > U[k]:
+                k +=1
+            X[i] = self.param['mu'][k]
+        
+        
+        
+        dat = Data(X,'Function values of the p.p.f of %s' % (self.name,))
+        iteration = 0
+        sys.stderr.write("\tNewton-Raphson ...")
+        while iteration < maxiter and max(abs(u-self.cdf(dat))) > tol:
+            sys.stderr.write('%03i\b\b\b' % (iteration,))
+            iteration += 1
+            dat.X = dat.X - (self.cdf(dat)-u)/ 2 /(self.pdf(dat) + 1e-2)
+        print ""
+        if max(abs(u-self.cdf(dat))) > tol:
+            print "\tWARNING! natter.Distributions.MixtureOfGaussians: ppf did not converge!"
+            print max(abs(u-self.cdf(dat)))
+        
+        return dat
+        
         
