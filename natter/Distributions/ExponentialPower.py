@@ -1,11 +1,14 @@
+from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
 from numpy import log, abs, sign, exp, mean
 from numpy.random import gamma, randn
-from scipy.special import gammaln
+from scipy.special import gammaln,gammainc, gammaincinv
 from scipy.optimize import fminbound
 import types
 from copy import deepcopy
+
+
 class ExponentialPower(Distribution):
     """
     Exponential Power Distribution
@@ -142,8 +145,36 @@ class ExponentialPower(Distribution):
            
         '''
         return exp(self.loglik(dat))
-        
 
+    def cdf(self,dat):
+        '''
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''
+        return .5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s'])
+
+    def ppf(self,u):
+        '''
+
+        Evaluates the percent point function (i.e. the inverse c.d.f.)
+        of the current distribution.
+
+        :param u:  Points at which the p.p.f. will be computed.
+        :type dat: numpy.array
+        :returns:  Data object with the resulting points in the domain of this distribution. 
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        q = 1/self.param['p']
+        s = self.param['s']
+
+        return Data(sign(u-.5) * s**q *gammaincinv(q,abs(2*u-1))**q,'Function values of the p.p.f of %s' % (self.name,))
 
     def estimate(self,dat):
         '''
