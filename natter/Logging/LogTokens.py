@@ -6,11 +6,13 @@ import re
 import os
 from numpy import float64, float32
 from subprocess import Popen, PIPE
-from os import path, chdir
-from time import time, strftime, localtime
-import sys
+from time import time
 import numpy
+from numpy import random
 import scipy
+from os import chdir
+import sys
+
 
 class LogToken:
     """
@@ -46,8 +48,10 @@ class PyInfo(LogToken):
         info['Python Version'] = sys.version
         info['Numpy Version'] = numpy.version.version
         info['Scipy Version'] = scipy.version.version
-        
-        
+        info['Random Seed'] = int(time())
+        random.seed(info['Random Seed'])
+        info['Random Seed'] = str(info['Random Seed'])
+       
         self.info = info
         
     def ascii(self):
