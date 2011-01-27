@@ -5,7 +5,7 @@ from numpy import log, exp, mean, zeros, squeeze
 from numpy.random import gamma
 from scipy.special import gammaln, polygamma,digamma
 from scipy.stats import beta
-from scipy.optimize import b
+from scipy.optimize import fmin_l_bfgs_b
 from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
 
@@ -157,7 +157,7 @@ class Kumaraswamy(Distribution):
         
         """
 
-        m = data.size(1)
+        m = dat.size(1)
         grad = zeros((len(self.primary),m))
         ind =0
         a = self.param['a']
@@ -169,6 +169,8 @@ class Kumaraswamy(Distribution):
             ind +=1
         if 'b' in self.primary:
             grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
+#        print (a,b)
+        print -mean(grad,1)/log(2)/dat.size(0)
         return grad
      
 
@@ -186,8 +188,11 @@ class Kumaraswamy(Distribution):
         '''
 
         f = lambda p: self.array2primary(p).all(dat)
-        fprime = lambda p: self.array2primary(p).dldtheta(dat)
-        fmin_l_bfgs_b()
+        fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+        # TODO write test and check gradient
+#        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), approx_grad=True, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
+        self.array2primary(tmp)
     
     def primary2array(self):
         """
@@ -206,8 +211,14 @@ class Kumaraswamy(Distribution):
         :rtype: natter.Distributions.Kumaraswamy
             
         """
-        for ind,key in enumerate(self.primary):
-            self.param[key]=arr[ind]
+        ind = 0
+        if 'a' in self.primary:
+            self.param['a'] = arr[ind]
+            ind += 1
+        if 'b' in self.primary:
+            self.param['b'] = arr[ind]
+            ind += 1
+            
         return self
             
     
