@@ -109,9 +109,13 @@ class Gamma(Distribution):
          
            
         '''
-        return (abs(self.param['u'])-1.0) * log(dat.X)   \
-               - dat.X/abs(self.param['s'])\
-               - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
+        if self.param['u'] == 1.0: # case the gamma is an exponential distribution
+            return - dat.X/abs(self.param['s'])\
+                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
+        else:            
+            return (abs(self.param['u'])-1.0) * log(dat.X)   \
+                   - dat.X/abs(self.param['s'])\
+                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
 
 
     def pdf(self,dat):

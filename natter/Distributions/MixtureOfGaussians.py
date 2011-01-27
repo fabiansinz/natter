@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs, max
+from numpy import cumsum, array, log, pi, zeros, squeeze, Inf, floor, mean, exp, sum, dot, sqrt, abs, max, reshape
 from numpy.random import rand, randn 
 from scipy import stats
 import sys
@@ -115,7 +115,7 @@ class MixtureOfGaussians(Distribution):
                     k[i] = j
                     break
         k = tuple(k)
-        return Data(randn(m)*self.param['s'].take(k) + self.param['mu'].take(k),str(m) + ' sample from ' + self.name)
+        return Data(randn(1,m)*self.param['s'].take(k) + self.param['mu'].take(k),str(m) + ' sample from ' + self.name)
                 
 
     def pdf(self,dat):
@@ -194,7 +194,9 @@ class MixtureOfGaussians(Distribution):
         :param maxiter: int
         
         '''
-        
+        if len(dat.X.shape) == 1:
+            print "\tReshaping data to right shape"
+            dat.X = reshape(dat.X,(1,dat.X.shape[0]))
         print "\tEstimating Mixture of Gaussians with EM ..."
         errTol=1e-5
 
@@ -213,7 +215,7 @@ class MixtureOfGaussians(Distribution):
 
         nr = floor(m/K)
         for k in range(K):
-            mu[k] = mean(X[k*nr:(k+1)*nr+1])
+            mu[k] = mean(X[0,k*nr:(k+1)*nr+1])
 
         for i in range(maxiter):
             ALLold = ALL
@@ -237,7 +239,7 @@ class MixtureOfGaussians(Distribution):
 
 
             if 'mu' in self.primary:
-                mu = dot(H,X.transpose())/sumHk
+                mu = squeeze(dot(H,X.T))/sumHk
                 self.param['mu'] = mu
             if 'pi' in self.primary:
                 p = squeeze(mean(H,1))

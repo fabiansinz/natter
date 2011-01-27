@@ -232,14 +232,16 @@ class Distribution:
         return self.__str__()
 
 
-    def histogram(self,dat,cdf = False):
+    def histogram(self,dat,cdf = False, ax=None,plotlegend=True):
 
         sh = shape(dat.X)
         if len(sh) > 1 and sh[0] > 1:
             raise Errors.DimensionalityError('Cannont plot data with more than one dimension!')
     
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        if ax == None:
+            fig = plt.figure()
+            ax = fig.add_axes([.05,.05,.9,.9])
+
         x =squeeze(dat.X)
         
         n, bins, patches = ax.hist(x, max(sh)/400, normed=1, facecolor='blue', alpha=0.8)
@@ -247,13 +249,14 @@ class Distribution:
         bincenters = 0.5*(bins[1:]+bins[:-1])
 
         y = self.pdf( Data(bincenters))
-        l = ax.plot(bincenters, y, 'k--', linewidth=2)
+        ax.plot(bincenters, y, 'k--', linewidth=2)
 
         if hasattr(self,'cdf') and cdf:
             z = self.cdf( Data(bincenters))
-            l = ax.plot(bincenters, z, 'k.-', linewidth=2)
-            plt.legend( ('p.d.f.','c.d.f.','Histogram') )
-        else:
+            ax.plot(bincenters, z, 'k.-', linewidth=2)
+            if plotlegend:
+                plt.legend( ('p.d.f.','c.d.f.','Histogram') )
+        elif plotlegend:
             plt.legend( ('p.d.f.','Histogram') )
        
         ax.set_xlabel('x')
@@ -261,7 +264,7 @@ class Distribution:
         ax.set_xlim(min(x),max(x))
         ax.grid(True)
 
-        plt.show()
+        #plt.show()
 
     def save(self,filename):
         save(self,filename)

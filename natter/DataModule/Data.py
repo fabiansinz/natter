@@ -1,4 +1,4 @@
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text
 import pylab as pl
@@ -50,6 +50,12 @@ class Data:
         s += 30*'-' + '\n'
         return s
 
+
+    def rectify(self):
+        self.X[where(self.X <0)] = 0.0
+
+    def abs(self):
+        return Data(abs(self.X),self.name,list(self.history + ['Absolute value taken']))
 
     def fade(self,dat,h):
         """
