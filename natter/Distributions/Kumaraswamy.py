@@ -1,0 +1,214 @@
+from __future__ import division
+from Distribution import Distribution
+from natter.DataModule import Data
+from numpy import log, exp, mean, zeros, squeeze
+from numpy.random import gamma
+from scipy.special import gammaln, polygamma,digamma
+from scipy.stats import beta
+from scipy.optimize import b
+from copy import deepcopy
+from natter.Auxiliary.Utils import parseParameters
+
+class Kumaraswamy(Distribution):
+    """
+    Kumaraswamy Distribution
+
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+
+    :param param:
+        dictionary which might containt parameters for the Kumaraswamy distribution
+              'a'    :    Shape parameter  1 (default = 1.0)
+              
+              'b'    :    Scale parameter  2 (default = 1.0)
+
+              'B'    :    Upper bound on the range. The distribution is defined on the interval [0,B]. Default is B=1.0.
+              
+    :type param: dict
+
+    Primary parameters are ['a','b'].
+        
+    """
+
+    
+    def __init__(self, *args,**kwargs):
+        # parse parameters correctly
+        param = parseParameters(args,kwargs)
+        
+        # set default parameters
+        self.name = 'Kumaraswamy Distribution'
+        self.param = {'a':1.0,'b':1.0,'B':1.0}
+        if param != None:
+            for k in param.keys():
+                self.param[k] = float(param[k])
+        self.primary = ['a','b']
+
+    def parameters(self,keyval=None):
+        """
+
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
+        
+    def sample(self,m):
+        """
+
+        Samples m samples from the current Kumaraswamy distribution.
+
+        :param m: Number of samples to draw.
+        :type name: int.
+        :rtype: natter.DataModule.Data
+        :returns:  A Data object containing the samples
+
+
+        """
+        return Data(self.param['B']*beta.rvs(1,self.param['b'],size=m)**(1/self.param['a']),'%i samples from %s' % (m,self.name))
+        
+
+    def loglik(self,dat):
+        '''
+
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+         
+           
+        '''
+        a = self.param['a']
+        b = self.param['b']
+        B = self.param['B']
+        return squeeze(log(a*b) - a*b*log(B) + (a-1)*log(dat.X) + (b-1)*log(B**a - dat.X**a))
+
+    def pdf(self,dat):
+        '''
+
+        Evaluates the probability density function on the data points in dat. 
+
+        :param dat: Data points for which the p.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the values of the density.
+        :rtype:    numpy.array
+           
+        '''
+        return exp(self.loglik(dat))
+        
+
+    def cdf(self,dat):
+        '''
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''
+        a = self.param['a']
+        b = self.param['b']
+        B = self.param['B']
+        return squeeze(1-(B**a-dat.X**a)**b/B**(a*b))
+
+
+    def ppf(self,u):
+        '''
+
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        a = self.param['a']
+        b = self.param['b']
+        B = self.param['B']
+        return Data((B**a - B**a*(1-u)**(1/b))**(1/a),'Function values of the ppf of the Kumaraswamy distribution')
+
+
+    def dldtheta(self,dat):
+        """
+        Evaluates the gradient of the Kumaraswamy function with respect to the primary parameters.
+
+        :param data: Data on which the gradient should be evaluated.
+        :type data: DataModule.Data
+        
+        """
+
+        m = data.size(1)
+        grad = zeros((len(self.primary),m))
+        ind =0
+        a = self.param['a']
+        b = self.param['b']
+        B = self.param['B']
+        
+        if 'a' in self.primary:
+            grad[ind,:] = 1.0/a - b*log(B) + log(dat.X) + dat.X**a*log(dat.X)*(b-1)/(B**a-dat.X**a)
+            ind +=1
+        if 'b' in self.primary:
+            grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
+        return grad
+     
+
+
+
+    def estimate(self,dat):
+        '''
+
+        Estimates the parameters from the data in dat. It is possible
+        to only selectively fit parameters of the distribution by
+        setting the primary array accordingly.
+
+        :param dat: Data points on which the Kumaraswamy distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
+
+        f = lambda p: self.array2primary(p).all(dat)
+        fprime = lambda p: self.array2primary(p).dldtheta(dat)
+        fmin_l_bfgs_b()
+    
+    def primary2array(self):
+        """
+        converts primary parameters into an array.
+        """
+        ret = zeros(len(self.primary))
+        for ind,key in enumerate(self.primary):
+            ret[ind]=self.param[key]
+        return ret
+
+    def array2primary(self,arr):
+        """
+        Converts the given array into primary parameters.
+
+        :returns: The object itself.
+        :rtype: natter.Distributions.Kumaraswamy
+            
+        """
+        for ind,key in enumerate(self.primary):
+            self.param[key]=arr[ind]
+        return self
+            
+    
+    
