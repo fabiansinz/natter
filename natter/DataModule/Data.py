@@ -25,6 +25,8 @@ class Data:
         if X == None:
             X=array([])
         else:
+            if len(X.shape) == 1:
+                X = reshape(X,(1,X.shape[0]))
             self.X = X
         self.name = name
         if history == None:

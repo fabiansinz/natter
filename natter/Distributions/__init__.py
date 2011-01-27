@@ -14,6 +14,7 @@ implements. At the moment it provides the following distributions.
    Distributions_GammaP.rst
    Distributions_Gaussian.rst
    Distributions_ISA.rst
+   Distributions_Kumaraswamy.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst
@@ -42,3 +43,4 @@ from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDist
 from EllipticallyContourGamma import EllipticallyContourGamma
 from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
+from Kumaraswamy import Kumaraswamy
