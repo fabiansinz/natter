@@ -2,8 +2,6 @@ from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
 from numpy import log, exp, mean, zeros, squeeze
-from numpy.random import gamma
-from scipy.special import gammaln, polygamma,digamma
 from scipy.stats import beta
 from scipy.optimize import fmin_l_bfgs_b
 from copy import deepcopy
@@ -165,12 +163,10 @@ class Kumaraswamy(Distribution):
         B = self.param['B']
         
         if 'a' in self.primary:
-            grad[ind,:] = 1.0/a - b*log(B) + log(dat.X) + dat.X**a*log(dat.X)*(b-1)/(B**a-dat.X**a)
+            grad[ind,:] = 1.0/a - b*log(B) + log(dat.X) + (B**a*log(B)-dat.X**a*log(dat.X))*(b-1)/(B**a-dat.X**a)
             ind +=1
         if 'b' in self.primary:
             grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
-#        print (a,b)
-        print -mean(grad,1)/log(2)/dat.size(0)
         return grad
      
 
@@ -189,9 +185,10 @@ class Kumaraswamy(Distribution):
 
         f = lambda p: self.array2primary(p).all(dat)
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+        
         # TODO write test and check gradient
 #        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
-        tmp = fmin_l_bfgs_b(f, self.primary2array(), approx_grad=True, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
         self.array2primary(tmp)
     
     def primary2array(self):
