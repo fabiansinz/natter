@@ -6,7 +6,8 @@ import pickle
 import types
 import pylab as plt
 import string
-from scipy.optimize import newton
+from copy import deepcopy
+
 class Distribution:
 
     def __init__(self, *args,**kwargs):
@@ -157,6 +158,30 @@ class Distribution:
     def estimate(self,dat):
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
 
+
+    def parameters(self,keyval=None):
+        """
+
+        Returns the parameters of the distribution as dictionary. This
+        dictionary can be used to initialize a new distribution of the
+        same type. If *keyval* is set, only the keys or the values of
+        this dictionary can be returned (see below). The keys can be
+        used to find out which parameters can be accessed via the
+        __getitem__ and __setitem__ methods.
+
+        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
+        :type keyval: string
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :rtype: dict or list
+           
+        """
+        if keyval == None:
+            return deepcopy(self.param)
+        elif keyval== 'keys':
+            return self.param.keys()
+        elif keyval == 'values':
+            return self.param.value()
+
     def score(self, param, dat, compute_derivative=False):
         """
         score(param,dat, compute_derivative=False)
@@ -245,11 +270,11 @@ class Distribution:
         n, bins, patches = ax.hist(x, max(sh)/400, normed=1, facecolor='blue', alpha=0.8)
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
-        y = self.pdf( Data(bincenters))
+        y = squeeze(self.pdf( Data(bincenters)))
         ax.plot(bincenters, y, 'k--', linewidth=2)
 
         if hasattr(self,'cdf') and cdf:
-            z = self.cdf( Data(bincenters))
+            z = squeeze(self.cdf( Data(bincenters)))
             ax.plot(bincenters, z, 'k.-', linewidth=2)
             if plotlegend:
                 plt.legend( ('p.d.f.','c.d.f.','Histogram') )

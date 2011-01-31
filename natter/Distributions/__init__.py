@@ -22,6 +22,7 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
+   Distributions_TruncatedGaussian.rst
 """
 
 
@@ -44,3 +45,4 @@ from EllipticallyContourGamma import EllipticallyContourGamma
 from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
+from TruncatedGaussian import TruncatedGaussian

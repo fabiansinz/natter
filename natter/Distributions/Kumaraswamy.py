@@ -148,7 +148,7 @@ class Kumaraswamy(Distribution):
 
     def dldtheta(self,dat):
         """
-        Evaluates the gradient of the Kumaraswamy function with respect to the primary parameters.
+        Evaluates the gradient of the Kumaraswamy loglikelihood with respect to the primary parameters.
 
         :param data: Data on which the gradient should be evaluated.
         :type data: DataModule.Data
@@ -186,7 +186,7 @@ class Kumaraswamy(Distribution):
         f = lambda p: self.array2primary(p).all(dat)
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
         
-        # TODO write test and check gradient
+   
 #        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
         tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
         self.array2primary(tmp)
