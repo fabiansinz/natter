@@ -9,6 +9,7 @@
 * Fabian
 ** TODO inverse cdf mog: log(u) - log Phi			      :CODING:
 
+** TODO fix plot filters bug when number of filters are less than the dimensions of  the data. :CODING:
 
 * Both
 ** DONE move to git

@@ -40,7 +40,7 @@ def fastICA(dat,whitened=True):
     
     
 
-def wPCA(dat):
+def wPCA(dat,m=None):
     """
     Creates a linear filter that projects the data onto the principal
     components and scales it by the inverse standard deviation along
@@ -48,12 +48,16 @@ def wPCA(dat):
 
     :param dat: Data on which the whitening will be computed.
     :type dat: natter.DataModule.Data
+    :param m:  Number of components to be kept.
+    :type m: int
     :returns: A linear filter containing the whitening matrix.
     :rtype: natter.Transforms.LinearTransform
     
     
     """
-    wPCA = mdp.nodes.WhiteningNode(input_dim=dat.size(0),output_dim=dat.size(0))
+    if m==None:
+        m = dat.size(0)
+    wPCA = mdp.nodes.WhiteningNode(input_dim=dat.size(0),output_dim=m)
     wPCA.verbose=True
     wPCA.train(dat.X.transpose())
     return LinearTransform(wPCA.get_projmatrix().transpose(),'Whitening PCA filter computed on ' + dat.name)
