@@ -96,7 +96,10 @@ class Kumaraswamy(Distribution):
         a = self.param['a']
         b = self.param['b']
         B = self.param['B']
-        return squeeze(log(a*b) - a*b*log(B) + (a-1)*log(dat.X) + (b-1)*log(B**a - dat.X**a))
+        if a == 1:
+            return squeeze(log(a*b) - a*b*log(B) + (b-1)*log(B**a - dat.X**a))
+        else:
+            return squeeze(log(a*b) - a*b*log(B) + (a-1)*log(dat.X) + (b-1)*log(B**a - dat.X**a))
 
     def pdf(self,dat):
         '''

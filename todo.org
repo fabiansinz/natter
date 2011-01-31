@@ -9,7 +9,7 @@
 * Fabian
 ** TODO inverse cdf mog: log(u) - log Phi			      :CODING:
 
-
+** TODO convert pdf and logliks to (1,m) convertion		      :CODING:
 * Both
 ** DONE move to git
 ** DONE create stable and developer branch
