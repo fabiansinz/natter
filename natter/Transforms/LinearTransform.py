@@ -84,8 +84,8 @@ class LinearTransform(Transform.Transform):
         :type plotNumbers: bool
 
         """
-        nx = ceil(sqrt(size(self.W,1)))
-        ptchSz = sqrt(size(self.W,0))
+        nx = ceil(sqrt(size(self.W,0)))
+        ptchSz = sqrt(size(self.W,1))
         Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True)
 
         if plotNumbers:
