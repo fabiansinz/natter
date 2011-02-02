@@ -37,6 +37,7 @@ from LpGeneralizedNormal import LpGeneralizedNormal
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from Gaussian import Gaussian
+from Gaussian import Gaussian as MultivariateNormal
 from ExponentialPower import ExponentialPower
 from LogNormal import LogNormal
 from Distribution import load
@@ -46,3 +47,6 @@ from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian
+from TruncatedGaussian import TruncatedGaussian as TruncatedNormal
+# from TruncatedSkewedGaussian import TruncatedSkewedGaussian
+# from TruncatedSkewedGaussian import TruncatedSkewedNormal
