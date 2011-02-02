@@ -1,7 +1,7 @@
 from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
-from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign
 import pickle
 import types
 import pylab as plt
@@ -91,47 +91,8 @@ class Distribution:
     def cdf(self,dat):
         raise Errors.AbstractError('Abstract method cdf not implemented in ' + self.name)
 
-    def ppf(self,u,maxiter=400, tol = 1e-6):
-        '''
-
-        Evaluates the percent point function (i.e. the inverse c.d.f.)
-        of the current distribution.
-
-        This is the generic implementation of the p.p.f which uses
-        Newton-Raphson to invert the c.d.f.
-
-        NOTE:
-
-        1) Your current distribution must implement a c.d.f. Otherwise
-        this will not work.
-
-        2) This works only for univariate distributions. Strange
-        things will happen for multivariate distributions.
-        
-        :param u:  Points at which the p.p.f. will be computed.
-        :type dat: numpy.array
-        :returns:  Data object with the resulting points in the domain of this distribution. 
-        :rtype:    natter.DataModule.Data
-           
-        '''
-        
-        dat = Data(0*u,'Function values of the p.p.f of %s' % (self.name,))
-        iteration = 0
-        ridge = 1e-2
-        while iteration < maxiter and max(abs(u-self.cdf(dat))) > tol:
-            iteration += 1
-            dat.X = dat.X - (self.cdf(dat)-u)/ 2 /(self.pdf(dat) + 1e-2)
-            ridge *= 0.5
-
-        if max(abs(u-self.cdf(dat))) > tol:
-            print "\tWARNING! natter.Distributions.Distribution: generic ppf did not converge!"
-            print max(abs(u-self.cdf(dat)))
-        return dat
-        
-        
-        
-        
-
+    def ppf(self,dat):
+        raise Errors.AbstractError('Abstract method ppf not implemented in ' + self.name)
 
     def dldx(self,dat):
         raise Errors.AbstractError('Abstract method dldx not implemented in ' + self.name)

@@ -26,21 +26,23 @@ def owensT(h,a):
         if min(h.shape) > 1:
             raise DimensionalityError("natter.Auxiliary.Numerics.owensT: h may only be (n,1), (1,n) or (n,) in size!")
         else:
-            h = reshape(array(h),(max(h,shape),))
+            h = reshape(array(h),(max(h.shape),))
     if type(a) == ndarray and len(a.shape) > 1:
         if min(a.shape) > 1:
             raise DimensionalityError("natter.Auxiliary.Numerics.owensT: a may only be (n,1), (1,n) or (n,) in size!")
         else:
-            a = reshape(array(a),(max(a,shape),))
+            a = reshape(array(a),(max(a.shape),))
     if type(h) == ndarray and type(a) == ndarray:
         n = max(h.shape)
         m = max(a.shape)
     elif type(h) == ndarray:
         n = max(h.shape)
         m = 1
+        a = reshape(a,(1,))
     elif type(a) == ndarray:
         n = 1
         m = max(a.shape)
+        h = reshape(h,(1,))
     else:
         n=1
         m=1

@@ -11,6 +11,7 @@
 
 ** TODO fix plot filters bug when number of filters are less than the dimensions of  the data. :CODING:
 
+** TODO Write a test that checks the output of pdf, cdf, ppf, sample for univariate densities.
 * Both
 ** DONE move to git
 ** DONE create stable and developer branch

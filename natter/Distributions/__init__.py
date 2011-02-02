@@ -22,7 +22,10 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
+   Distributions_SkewedGaussian.rst
+   Distributions_SkewedNormal.rst
    Distributions_TruncatedGaussian.rst
+   Distributions_TruncatedNormal.rst
 """
 
 
@@ -48,5 +51,5 @@ from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian
 from TruncatedGaussian import TruncatedGaussian as TruncatedNormal
-# from TruncatedSkewedGaussian import TruncatedSkewedGaussian
-# from TruncatedSkewedGaussian import TruncatedSkewedNormal
+from SkewedGaussian import SkewedGaussian
+from SkewedGaussian import SkewedGaussian as SkewedNormal
