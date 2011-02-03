@@ -2,7 +2,7 @@ from __future__ import division
 from Distribution import Distribution
 from ExponentialPower import ExponentialPower
 from natter.DataModule import Data
-from numpy import log, abs, sign, exp, mean, array, squeeze, zeros
+from numpy import log, abs, sign, exp, mean, array, squeeze, zeros,min,max
 from numpy.random import gamma, randn, rand
 from scipy.special import gammainc, gammaincinv,  digamma, gammaln
 from scipy.special import gamma as gammafunc
@@ -68,7 +68,7 @@ class TruncatedExponentialPower(Distribution):
 
         u = array([self.param['a'],self.param['b']])
         u = .5 + 0.5*sign(u)*gammainc(1/self.param['p'],abs(u)**self.param['p'] / self.param['s'])
-        u = rand(m)*(u[1]-u[0]) + u[0]
+        u = rand(m)
         return Data(self.ppf(u).X, str(m) + ' samples from an exponential power distribution.')
         
     
@@ -100,7 +100,7 @@ class TruncatedExponentialPower(Distribution):
         '''
         u = array([self.param['a'],self.param['b']])
         u = .5 + 0.5*sign(u)*gammainc(1/self.param['p'],abs(u)**self.param['p'] / self.param['s'])
-        return squeeze(.5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s']))/(u[1]-u[0])
+        return squeeze(.5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s']) - u[0])/(u[1]-u[0])
 
     def ppf(self,u):
         '''
@@ -118,29 +118,29 @@ class TruncatedExponentialPower(Distribution):
         s = self.param['s']
         v = array([self.param['a'],self.param['b']])
         v = .5 + 0.5*sign(v)*gammainc(1/self.param['p'],abs(v)**self.param['p'] / self.param['s'])
-        v = v[1]-v[0]
-        return Data(sign(v*u-.5) * s**q *gammaincinv(q,abs(2*v*u-1))**q,'Percentiles of %s' % (self.name,))
+        dv = v[1]-v[0]
+        return Data(sign(dv*u+v[0]-.5) * s**q *gammaincinv(q,abs(2*(dv*u+v[0])-1))**q,'Percentiles of %s' % (self.name,))
 
-    def estimate(self,dat):
-        '''
+    # def estimate(self,dat):
+    #     '''
 
-        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
-
-
-        :param dat: Data points on which the TruncatedExponentialPower distribution will be estimated.
-        :type dat: natter.DataModule.Data
-        '''
+    #     Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
 
 
-        if 'p' in self.primary:
-            func = lambda t: self.__objective(t,dat,'s' in self.primary)
-            p = fminbound(func, 0.0, 100.0)
-            if type(p) == types.TupleType:
-                p = p[0]
-            self.param['p'] = p
+    #     :param dat: Data points on which the TruncatedExponentialPower distribution will be estimated.
+    #     :type dat: natter.DataModule.Data
+    #     '''
 
-        if 's' in self.primary:
-            self.param['s'] = self.param['p'] * mean(abs(dat.X)**self.param['p'])
+
+    #     if 'p' in self.primary:
+    #         func = lambda t: self.__objective(t,dat,'s' in self.primary)
+    #         p = fminbound(func, 0.0, 100.0)
+    #         if type(p) == types.TupleType:
+    #             p = p[0]
+    #         self.param['p'] = p
+
+    #     if 's' in self.primary:
+    #         self.param['s'] = self.param['p'] * mean(abs(dat.X)**self.param['p'])
         
     def loglik(self,dat):
         '''
