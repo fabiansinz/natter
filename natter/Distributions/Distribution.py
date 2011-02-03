@@ -8,6 +8,8 @@ import pylab as plt
 import string
 from copy import deepcopy
 
+
+
 class Distribution:
 
     def __init__(self, *args,**kwargs):
@@ -38,6 +40,7 @@ class Distribution:
         self.name = 'Abstract Distribution'
         self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted        
     
+
     def loglik(self,dat):
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
 
@@ -52,9 +55,6 @@ class Distribution:
             self.param[key] = value
         else:
             raise KeyError("Parameter %s not defined for %s" % (key,self.name))
-
-    def parameters(self,keyval=None):
-        raise Errors.AbstractError('Abstract method parameters not implemented in ' + self.name)
         
 
     def sample(self,m):
@@ -70,6 +70,7 @@ class Distribution:
         """
         
         raise Errors.AbstractError('Abstract method sample not implemented in ' + self.name)
+
 
     def pdf(self,dat):
         '''
@@ -87,6 +88,7 @@ class Distribution:
         if hasattr(self,'loglik'):
             return exp(self.loglik(dat))
         raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
+
 
     def cdf(self,dat):
         raise Errors.AbstractError('Abstract method cdf not implemented in ' + self.name)

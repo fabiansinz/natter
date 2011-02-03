@@ -10,6 +10,7 @@ from scipy.optimize import fminbound
 import types
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Numerics import totalDerivativeOfIncGamma
+from scipy.optimize import fmin_l_bfgs_b
 
 class TruncatedExponentialPower(Distribution):
     """
@@ -121,26 +122,20 @@ class TruncatedExponentialPower(Distribution):
         dv = v[1]-v[0]
         return Data(sign(dv*u+v[0]-.5) * s**q *gammaincinv(q,abs(2*(dv*u+v[0])-1))**q,'Percentiles of %s' % (self.name,))
 
-    # def estimate(self,dat):
-    #     '''
+    def estimate(self,dat):
+        '''
 
-    #     Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
-
-
-    #     :param dat: Data points on which the TruncatedExponentialPower distribution will be estimated.
-    #     :type dat: natter.DataModule.Data
-    #     '''
+        Estimates the parameters from the data in dat. It is possible to only selectively fit parameters of the distribution by setting the primary array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
 
 
-    #     if 'p' in self.primary:
-    #         func = lambda t: self.__objective(t,dat,'s' in self.primary)
-    #         p = fminbound(func, 0.0, 100.0)
-    #         if type(p) == types.TupleType:
-    #             p = p[0]
-    #         self.param['p'] = p
+        :param dat: Data points on which the TruncatedExponentialPower distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
+        f = lambda p: self.array2primary(p).all(dat)
+        fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
+        self.array2primary(tmp)        
 
-    #     if 's' in self.primary:
-    #         self.param['s'] = self.param['p'] * mean(abs(dat.X)**self.param['p'])
         
     def loglik(self,dat):
         '''

@@ -2,9 +2,14 @@ from __future__ import division
 from scipy.maxentropy import maxentutils 
 from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros
 from scipy import special
+from scipy.special import  gammaincc
+from scipy.special import gamma as gammafunc, digamma
 import types
 from Errors import DimensionalityError
 from scipy.integrate import quad
+from mpmath import meijerg 
+
+
 
 def owensT(h,a):
     """
@@ -99,20 +104,20 @@ def inv_digamma(y,niter=5):
     return reshape(x,s)
 
 
-def digamma(x):
-    """
-    Computed the digamma function for a whole array of numbers.
+# def digamma(x):
+#     """
+#     Computed the digamma function for a whole array of numbers.
 
-    :param x: array where the digamma function is to be evaluated
-    :type x: numpy.array
-    :returns: array with function values
-    :rtype: numpy.array
-    """
-    if type(x) == float64 or type(x) == types.FloatType:
-        return special.polygamma(0,x)
-    else:
-        s = shape(x)
-        return  reshape(array([special.polygamma(0,e) for e in x.flatten()]),s)
+#     :param x: array where the digamma function is to be evaluated
+#     :type x: numpy.array
+#     :returns: array with function values
+#     :rtype: numpy.array
+#     """
+#     if type(x) == float64 or type(x) == types.FloatType:
+#         return special.polygamma(0,x)
+#     else:
+#         s = shape(x)
+#         return  reshape(array([special.polygamma(0,e) for e in x.flatten()]),s)
 
 def trigamma(x):
     """
@@ -129,3 +134,23 @@ def trigamma(x):
         s = shape(x)
         return  reshape(array([special.polygamma(1,e) for e in x.flatten()]),s)
 
+
+            
+    
+def totalDerivativeOfIncGamma(x,a,b,da,db):
+    """
+    Computes the total derivative for the (non-normalized) incomplete gamma function, i.e.
+
+    d/dx gamma(f(x))*gammainc(f(x),g(x))
+
+    :param y: Positions where the function is to be computed.
+    :param f: function handle for f
+    :param g: function handle for g
+    :param df: function handle for df/dx
+    :param dg: function handle for dg/dx
+    :returns: derivative values
+    :rtype:   numpy.array
+    
+    """
+    return digamma(a(x))*gammafunc(a(x))*da(x) + exp(-b(x))*b(x)**(a(x)-1)*db(x) \
+     - (meijerg([[],[1,1],],[[0,0,a(x)],[]],b(x)) + log(b(x))*gammaincc(a(x),b(x))*gammafunc(a(x)))  * da(x)

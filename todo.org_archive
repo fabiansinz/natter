@@ -11,7 +11,7 @@ Archived entries from file /kyb/agmb/fabee/code/lib/python/natter/todo.org
   :ARCHIVE_CATEGORY: todo
   :ARCHIVE_TODO: DONE
   :END:
-* DONE inverse cdf mog: log(u) - log Phi			      :CODING:
+* inverse cdf mog: log(u) - log Phi 				      :CODING:
   :PROPERTIES:
   :ARCHIVE_TIME: 2011-02-02 Wed 19:11
   :ARCHIVE_FILE: ~/code/lib/python/natter/todo.org

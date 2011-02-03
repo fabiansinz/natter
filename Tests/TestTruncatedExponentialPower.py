@@ -17,8 +17,8 @@ class TestTruncatedExponentialPower(unittest.TestCase):
     TolParam = 1e-1
     
     def test_loglik(self):
-        p1 = Distributions.TruncatedExponentialPower({'a':1.0,'b':3.0,'p':1.0,'s':2.0})
-        p2 = Distributions.TruncatedExponentialPower({'a':1.0,'b':3.0,'p':.5,'s':1.5})
+        p1 = Distributions.TruncatedExponentialPower({'a':-1.0,'b':2.0,'p':1.0,'s':2.0})
+        p2 = Distributions.TruncatedExponentialPower({'a':-1.0,'b':2.0,'p':1.5,'s':2.0})
         nsamples = 1000000
         data = p2.sample(nsamples)
         logZ = logsumexp(p1.loglik(data) -p2.loglik(data) - np.log(nsamples))
@@ -26,21 +26,20 @@ class TestTruncatedExponentialPower(unittest.TestCase):
         self.assertTrue(np.abs(np.exp(logZ)-1.0) < 0.1*self.TolParam,'Difference in estimated partition function (1.0) greater than' + str(0.1*self.TolParam))
 
 
-#    def test_cdf(self):
-    #     print "Testing consistency of cdf and ppf"
-    #     sys.stdout.flush()
-    #     a = 1.0*rand()
-    #     b = a
-    #     while b <= a:
-    #         b = 10.0*rand()
-    #     mu = 10*rand()
-    #     s = 2.0*rand()+1.0
+    def test_cdf(self):
+        print "Testing consistency of cdf and ppf"
+        sys.stdout.flush()
+        a = 1.0*rand()
+        b = a
+        while b <= a:
+            b = 10.0*rand()
+        mu = 3*rand()
+        s = 2.0*rand()+1.0
             
-    #     p = Distributions.TruncatedExponentialPower({'a':a,'b':b,'p':mu,'s':s})   
-    #     u = rand(10)
-    #     u2 = p.cdf(p.ppf(u))
-
-    #     self.assertFalse(np.sum(np.abs(u-u2)) > self.TolParam,'Difference u - cdf(ppf(u)) greater than %.4g' %( self.Tol,))
+        p = Distributions.TruncatedExponentialPower({'a':a,'b':b,'p':mu,'s':s})   
+        u = rand(10)
+        u2 = p.cdf(p.ppf(u))
+        self.assertFalse(np.sum(np.abs(u-u2)) > self.TolParam,'Difference u - cdf(ppf(u)) greater than %.4g' %( self.Tol,))
 
 
 

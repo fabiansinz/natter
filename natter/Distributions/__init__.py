@@ -24,6 +24,7 @@ implements. At the moment it provides the following distributions.
    Distributions_SchwartzSimoncelliModel.rst
    Distributions_SkewedGaussian.rst
    Distributions_SkewedNormal.rst
+   Distributions_TruncatedExponentialPower.rst
    Distributions_TruncatedGaussian.rst
    Distributions_TruncatedNormal.rst
 """
@@ -53,3 +54,4 @@ from TruncatedGaussian import TruncatedGaussian
 from TruncatedGaussian import TruncatedGaussian as TruncatedNormal
 from SkewedGaussian import SkewedGaussian
 from SkewedGaussian import SkewedGaussian as SkewedNormal
+from TruncatedExponentialPower import TruncatedExponentialPower
