@@ -19,6 +19,34 @@ Archived entries from file /kyb/agmb/fabee/code/lib/python/natter/todo.org
   :ARCHIVE_CATEGORY: todo
   :ARCHIVE_TODO: DONE
   :END:
+* DONE move to git
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2011-02-03 Thu 21:21
+  :ARCHIVE_FILE: ~/code/lib/python/natter/todo.org
+  :ARCHIVE_OLPATH: Both
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+* DONE create stable and developer branch
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2011-02-03 Thu 21:22
+  :ARCHIVE_FILE: ~/code/lib/python/natter/todo.org
+  :ARCHIVE_OLPATH: Both
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+* CANCELLED Write a test that checks the output of pdf, cdf, ppf, sample for univariate densities.
+  CLOSED: [2011-02-03 Thu 21:30]
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2011-02-03 Thu 21:30
+  :ARCHIVE_FILE: ~/code/lib/python/natter/todo.org
+  :ARCHIVE_OLPATH: Fabian
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: CANCELLED
+  :END:
+
+
+
 
 
 

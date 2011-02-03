@@ -1,6 +1,6 @@
 from Gamma  import  Gamma
 from natter.DataModule import Data
-from numpy import log, exp, mean
+from numpy import log, exp, mean,squeeze
 from natter import Auxiliary
 from scipy.stats import gamma
 from copy import deepcopy
@@ -90,7 +90,7 @@ class GammaP(Gamma):
         :rtype: numpy.array
            
         '''
-        return Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) 
+        return squeeze(Gamma.loglik(self,dat**self.param['p']) + log(self.param['p']) + (self.param['p']-1)*log(dat.X) )
 
     def dldx(self,dat):
         """
@@ -104,7 +104,7 @@ class GammaP(Gamma):
         
         """        
         return Gamma.dldx(self,dat**self.param['p'])*self.param['p']*dat.X**(self.param['p']-1.0) \
-               +(self.param['p']-1)/dat.X
+               +(self.param['p']-1)/squeeze(dat.X)
     
 
     def pdf(self,dat):
@@ -132,7 +132,7 @@ class GammaP(Gamma):
         :rtype:    numpy.array
            
         '''
-        return gamma.cdf(dat.X**self.param['p'],self.param['u'],scale=self.param['s'])
+        return gamma.cdf(squeeze(dat.X)**self.param['p'],self.param['u'],scale=self.param['s'])
 
     def ppf(self,U):
         '''

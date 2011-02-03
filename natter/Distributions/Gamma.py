@@ -1,10 +1,9 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros
+from numpy import log, exp, mean, zeros, squeeze
 from numpy.random import gamma
 from scipy.special import gammaln, polygamma,digamma
 from scipy.stats import gamma as gammastats
-from copy import deepcopy
 
 class Gamma(Distribution):
     """
@@ -89,12 +88,12 @@ class Gamma(Distribution):
            
         '''
         if self.param['u'] == 1.0: # case the gamma is an exponential distribution
-            return - dat.X/abs(self.param['s'])\
-                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
+            return squeeze(- dat.X/abs(self.param['s'])\
+                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) )
         else:            
-            return (abs(self.param['u'])-1.0) * log(dat.X)   \
+            return squeeze((abs(self.param['u'])-1.0) * log(dat.X)   \
                    - dat.X/abs(self.param['s'])\
-                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) 
+                   - abs(self.param['u']) * log(abs(self.param['s'])) -  gammaln(abs(self.param['u'])) )
 
 
     def pdf(self,dat):
@@ -122,7 +121,7 @@ class Gamma(Distribution):
         :rtype:    numpy.array
            
         '''
-        return gammastats.cdf(dat.X,self.param['u'],scale=self.param['s'])
+        return gammastats.cdf(squeeze(dat.X),self.param['u'],scale=self.param['s'])
 
 
     def ppf(self,X):
@@ -171,7 +170,7 @@ class Gamma(Distribution):
         :rtype:    numpy.array
         
         """
-        return (self.param['u']-1.0)/dat.X  - 1.0/self.param['s']
+        return squeeze((self.param['u']-1.0)/dat.X  - 1.0/self.param['s'])
         
 
     def estimate(self,dat):

@@ -5,12 +5,8 @@
 ** TODO Comment [[./natter/Distributions/EllipticallyContourGamma.py][EllipticallyContourGamma.py]]
 ** TODO Write a short help file for how to use the profiler
 
-
 * Fabian
-** TODO Write a test that checks the output of pdf, cdf, ppf, sample for univariate densities.
 * Both
-** DONE move to git
-** DONE create stable and developer branch
 
 * Configuration
 #+STARTUP: overview

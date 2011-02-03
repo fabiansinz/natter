@@ -1,12 +1,11 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, abs, sign, exp, mean
+from numpy import log, abs, sign, exp, mean, squeeze
 from numpy.random import gamma, randn
 from scipy.special import gammaln,gammainc, gammaincinv
 from scipy.optimize import fminbound
 import types
-from copy import deepcopy
 
 
 class ExponentialPower(Distribution):
@@ -76,8 +75,8 @@ class ExponentialPower(Distribution):
          
            
         '''
-        return log(self.param['p']) - log(2.0) - 1.0/self.param['p']*log(self.param['s']) \
-               -gammaln(1.0/self.param['p']) - abs(dat.X)**self.param['p']/self.param['s']
+        return squeeze(log(self.param['p']) - log(2.0) - 1.0/self.param['p']*log(self.param['s']) \
+               -gammaln(1.0/self.param['p']) - abs(dat.X)**self.param['p']/self.param['s'])
 
 
     def dldx(self,dat):
@@ -91,7 +90,7 @@ class ExponentialPower(Distribution):
         :rtype:    numpy.array
         
         """
-        return - sign(dat.X) * abs(dat.X)**(self.param['p']-1) *self.param['p'] / self.param['s']
+        return squeeze(- sign(dat.X) * abs(dat.X)**(self.param['p']-1) *self.param['p'] / self.param['s'])
 
 
 
@@ -135,7 +134,7 @@ class ExponentialPower(Distribution):
         :rtype:    numpy.array
            
         '''
-        return .5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s'])
+        return squeeze(.5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s']))
 
     def ppf(self,u):
         '''

@@ -132,7 +132,7 @@ class MixtureOfGaussians(Distribution):
         ret = 0.0*dat.X
         for k in range(self.param['K']):
             ret += self.param['pi'][k] * stats.norm.pdf(dat.X,loc=self.param['mu'][k],scale=self.param['s'][k])
-        return ret
+        return squeeze(ret)
 
 
     def __kloglik(self,dat,k):
@@ -155,7 +155,7 @@ class MixtureOfGaussians(Distribution):
         ret = zeros((self.param['K'],dat.size(1)))
         for k in range(self.param['K']):
             ret[k,:]  = log(self.param['pi'][k]) + squeeze(self.__kloglik(dat,k))
-        return logsumexp(ret,0)
+        return squeeze(logsumexp(ret,0))
 
 
 
@@ -176,7 +176,7 @@ class MixtureOfGaussians(Distribution):
             ret +=  self.param['pi'][k] * stats.norm.pdf(dat.X,loc=self.param['mu'][k],scale=self.param['s'][k])\
                    * -self.param['s'][k]**(-2.0)  * (dat.X-self.param['mu'][k])
         ret /= tmp
-        return ret
+        return squeeze(ret)
 
 
     def estimate(self,dat, errTol=1e-4,maxiter=1000):
@@ -274,7 +274,7 @@ class MixtureOfGaussians(Distribution):
         ret = 0.0*dat.X
         for k in range(self.param['K']):
             ret += self.param['pi'][k] * stats.norm.cdf(dat.X,loc=self.param['mu'][k],scale=self.param['s'][k])
-        return ret
+        return squeeze(ret)
         
 
         
