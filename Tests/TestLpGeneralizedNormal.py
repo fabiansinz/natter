@@ -23,8 +23,8 @@ class TestLpGeneralizedNormal(unittest.TestCase):
             p = Distributions.LpGeneralizedNormal({'s':2*dat['s'],'p':dat['p'],'n':dat['n']})
             dat = Data(dat['X'])
             ll = p.loglik(dat)
-            for i in range(len(ll)):
-                self.assertFalse( np.abs(ll[i]-truell[0,i]) > self.Tol,\
+            for i in range(ll.shape[0]):
+                self.assertFalse( np.any(np.abs(ll[i]-np.squeeze(truell[0,i])) > self.Tol),\
                     'Log-likelihood for p-generalized normal deviates from test case')
 
     def test_estimate(self):

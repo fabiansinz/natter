@@ -107,8 +107,8 @@ class LpSphericallySymmetric(Distribution):
            
         '''
         r = dat.norm(self.param['p'])
-        return self.param['rp'].loglik(r) \
-               - self.logSurfacePSphere() - (self.param['n']-1)*log(r.X)
+        return squeeze(self.param['rp'].loglik(r) \
+               - self.logSurfacePSphere() - (self.param['n']-1)*log(r.X))
 
     def dldx(self,dat):
         """
@@ -128,7 +128,7 @@ class LpSphericallySymmetric(Distribution):
         drdx *= tmp
         # for k in range(drdx.shape[0]):
         #     drdx[k,:] *= squeeze(tmp)
-        return drdx
+        return squeeze(drdx)
         
     def estimate(self,dat,prange=None):
         '''

@@ -46,7 +46,7 @@ class TestFilter(unittest.TestCase):
         w = floor(p/2*rand(2,1))
         dat = DataSampler.gratings(p,1,w,array([2*pi*rand()]))
         F = LinearTransform(dat.X.T)
-        w2 = F.getFourierMaximum()
+        w2 = F.getOptimalOrientationAndFrequency()
         self.assertFalse(any(w2 != w),'2D frequency of grating and max Fourier do not match!')
         
 
@@ -77,8 +77,8 @@ class TestFilter(unittest.TestCase):
         tmp = Data(dat.X.copy())
         tmp.X[1,:] += h
         W2 = ((F*tmp).X-dat2.X)/h
+        for i in range(dat.numex()):
             
-        for i in range(dat.size(1)):
             logDetJ2[i] = np.log(np.abs(W1[0,i]*W2[1,i] - W1[1,i]*W2[0,i]))
 
         self.assertFalse(np.max(np.abs(logDetJ - logDetJ2)) > self.detTol,\

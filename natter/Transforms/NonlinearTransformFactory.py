@@ -1,4 +1,4 @@
-from numpy import log, abs
+from numpy import log,squeeze
 from natter.Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
 from scipy import special
@@ -119,7 +119,7 @@ def logDetJacobianRadialTransform(dat,psource,ptarget,p):
     r = dat.norm(p)
     r2 = ptarget.ppf(psource.cdf(r))
     n = dat.size(0)
-    return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+    return squeeze((n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2))
 
     
 
@@ -183,5 +183,5 @@ def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     r = L(dat)
     r2 = ptarget.ppf(psource.cdf(r))
     n = L.n[()]
-    return (n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2)
+    return squeeze((n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2))
 

@@ -96,8 +96,8 @@ class LpNestedSymmetric(Distribution):
            
         '''
         r = self.param['f'].f(dat)
-        return self.param['rp'].loglik(r) \
-               - self.param['f'].logSurface() - (self.param['n']-1)*log(r.X)
+        return squeeze(self.param['rp'].loglik(r) \
+               - self.param['f'].logSurface() - (self.param['n']-1)*log(r.X))
 
     def sample(self,m):
         """
@@ -133,9 +133,7 @@ class LpNestedSymmetric(Distribution):
         drdx = self.param['f'].dfdx(dat)
         r = self.param['f'].f(dat)
         tmp = (self.param['rp'].dldx(r) - (self.param['n']-1.0)*1.0/r.X)
-        for k in range(len(drdx)):
-            drdx[k] *= tmp
-        return drdx
+        return squeeze(drdx*tmp)
 
 
     def estimate(self,dat,method="neldermead"):
