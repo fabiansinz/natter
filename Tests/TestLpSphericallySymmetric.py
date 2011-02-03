@@ -42,12 +42,12 @@ class TestLpSphericallySymmetric(unittest.TestCase):
         for k in range(5):
             print '\t--> test case ' + str(k)
             dat = io.loadmat(self.matpath + '/TestPSphericallySymmetric'+ str(k) + '.mat',struct_as_record=True)
-            truell = dat['ll']
+            truell = np.squeeze(dat['ll'])
             p = Distributions.LpSphericallySymmetric({'p':dat['p'],'n':dat['n'],'rp':Distributions.Gamma({'s':dat['s'],'u':dat['u']})})
             dat = Data(dat['X'])
             ll = p.loglik(dat)
             for i in range(len(ll)):
-                self.assertFalse(np.abs(ll[0,i]-truell[0,i]) > self.Tol,\
+                self.assertFalse(np.abs(ll[i]-truell[i]) > self.Tol,\
                    'Log-likelihood for p-spherically symmetric with radial gamma deviates from test case')
 
     def test_estimate(self):
