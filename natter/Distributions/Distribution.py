@@ -7,10 +7,10 @@ import types
 import pylab as plt
 import string
 from copy import deepcopy
+from natter.Logging.LogTokens import LogToken
 
 
-
-class Distribution:
+class Distribution(LogToken):
 
     def __init__(self, *args,**kwargs):
                 # parse parameters correctly
@@ -178,8 +178,11 @@ class Distribution:
         """        
         
         return -mean(self.loglik(dat)) / dat.size(0) / log(2)
-    
+
     def __str__(self):
+        return self.ascii()
+    
+    def ascii(self):
         s = 30*'-'
         s += '\n' + self.name + '\n'
         later = []
@@ -215,6 +218,46 @@ class Distribution:
         s += '[' + string.join(self.primary,', ') + ']\n'
         s += 30*'-' + '\n'
         return s
+
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><b><tt>%s</tt></b></td></tr></thead>\n" % (self.name,)
+
+        s += "<tbody>"
+        later = []
+        for k in self.parameters('keys'):
+            if not (type(self[k]) == types.FloatType)  \
+                   and not (type(self[k]) == type('dummy')) \
+                   and not (type(self[k]) == float64) \
+                   and not (type(self[k]) == float32) \
+                   and not (type(self[k]) == float) \
+                   and not (type(self[k]) == type(1)):
+                later.append(k)
+            else:
+                s += '<tr><td><tt><i><b>%s</b></i></tt></td><td><tt>%s</tt></td><tr>\n' % (k,str(self[k]))
+            
+        for k in later:
+            s += "<tr><td valign=\"top\"><tt><i><b>%s</b></i></tt></td>" % (k,)
+            if type(self[k]) == types.ListType:
+                if isinstance(self[k][0],Distribution):
+                    ss = "<td valign=\"top\"><tt>list of %d \"%s</tt>\" objects</td></tr>" % (len(self[k]),self[k][0].name)
+                elif type(self[k][0]) == types.ListType:
+                    ss = "<td valign=\"top\"><tt>list of %d lists</tt></td></tr>" % (len(self[k]),)
+                elif type(self[k][0]) == types.TupleType:
+                    ss = "<td valign=\"top\"><tt>list of %d tuples</tt></td></tr>" % (len(self[k]),)
+                else:
+                    ss = "<td valign=\"top\"><tt>list of %d \"%s\" objects</tt></td></tr>" % (len(self[k]),str(self[k][0]))
+            else:
+                if isinstance(self[k],LogToken):
+                    ss = "<td valign=\"top\"><tt>%s</tt></td></tr>" % ( self[k].html(),)
+                else:
+                    ss = "<td valign=\"top\"><tt><pre>%s</pre></tt></td></tr>" % ( str(self[k]),)
+            s += ss + '\n'
+        s += "</tbody>"
+        s += "<tfoot><tr><td valign=\"top\"><tt>Primary Parameters:</tt></td><td><tt>%s</tt></td></tr></tfoot>"'\n\t' % ('[' + string.join(self.primary,', ') + ']',)
+        s += "</table>"
+        return s
+
 
     def __repr__(self):
         return self.__str__()
