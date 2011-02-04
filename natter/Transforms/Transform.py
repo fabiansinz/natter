@@ -76,7 +76,7 @@ def displayHistoryRec(h,recDepth=0):
     s = ""
     for elem in h:
         if type(elem) == types.ListType:
-            s += displayHistoryRec(elem,recDepth+1)
+            s += (recDepth-1)*'   ' +  displayHistoryRec(elem,recDepth+1)
         else:
-            s += recDepth*'  ' + '* ' + elem + '\n'
+            s += recDepth*'   ' + ' |-' + elem + '\n'
     return s
