@@ -1,15 +1,16 @@
 import pickle
 from natter import Auxiliary
 import types
+from natter.Logging.LogTokens import LogToken
 
-class Transform:
+class Transform(LogToken):
     '''
     Mother class of all transformations.
 
     '''
 
     def __init__(self):
-        raise Errors.AbstractError('Filter is only an abstract class!')
+        raise Auxiliary.Errors.AbstractError('Filter is only an abstract class!')
 
     def logDetJacobian(self):
         """
@@ -17,7 +18,7 @@ class Transform:
         which is to be implemented by the children that inherit from
         Transform.
         """
-        raise Errors.AbstractError('Abstract method logDetJacobian() not implemented in ' + self.name)
+        raise Auxiliary.Errors.AbstractError('Abstract method logDetJacobian() not implemented in ' + self.name)
         
 
     def addToHistory(self,hi):
@@ -46,7 +47,7 @@ class Transform:
         which is to be implemented by the children that inherit from
         Transform.
         """
-        raise Errors.AbstractError('Abstract method apply() not implemented in ' + self.name)
+        raise Auxiliary.Errors.AbstractError('Abstract method apply() not implemented in ' + self.name)
 
             
     def save(self,filename):
@@ -57,6 +58,13 @@ class Transform:
         :type filename: string
         """
         Auxiliary.save(self,filename)
+
+    def ascii(self):
+        return self.__str__()
+
+        
+
+
 
 def load(path):
     """

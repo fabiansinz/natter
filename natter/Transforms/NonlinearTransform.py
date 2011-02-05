@@ -135,6 +135,16 @@ class NonlinearTransform(Transform.Transform):
         
         return s
 
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><tt><b>Nonlinear Transform: %s</b></tt></td></tr></thead>\n" % (self.name,)
+        s += "<tbody>"
+        s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
+        if len(self.history) > 0:
+            s += Transform.displayHistoryRec(self.history,1)
+        s += "</pre></td></tr></table>"
+        return s
+
     def getHistory(self):
         """
         Returns the history of the object. The history is a list of

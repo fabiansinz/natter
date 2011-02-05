@@ -11,7 +11,7 @@ from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
 from sys import stderr
-from numpy.random import rand
+
 
 
 # DEBUG
@@ -289,7 +289,17 @@ class LinearTransform(Transform.Transform):
         
         return s
 
-
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><tt><b>Linear Transform (%s): %s</b></tt></td></tr></thead>\n" \
+             % (string.join([str(elem) for elem in list(shape(self.W))],' X '),self.name,)
+        s += "<tbody>"
+        s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
+        if len(self.history) > 0:
+            s += Transform.displayHistoryRec(self.history,1)
+        s += "</pre></td></tr></table>"
+        return s
+    
     def getOptimalOrientationAndFrequency(self,delta=.25,weight=False, weightings=None):
         """
         Computes the optimal orientation and spatial frequency for all
