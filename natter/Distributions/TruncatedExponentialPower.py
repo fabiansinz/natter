@@ -1,13 +1,10 @@
 from __future__ import division
 from Distribution import Distribution
-from ExponentialPower import ExponentialPower
 from natter.DataModule import Data
-from numpy import log, abs, sign, exp, mean, array, squeeze, zeros,min,max
-from numpy.random import gamma, randn, rand
+from numpy import log, abs, sign, exp, mean, array, squeeze, zeros
+from numpy.random import rand
 from scipy.special import gammainc, gammaincinv,  digamma, gammaln
 from scipy.special import gamma as gammafunc
-from scipy.optimize import fminbound
-import types
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Numerics import totalDerivativeOfIncGamma
 from scipy.optimize import fmin_l_bfgs_b
