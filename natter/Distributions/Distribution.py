@@ -1,14 +1,16 @@
 from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
-from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign
 import pickle
 import types
 import pylab as plt
 import string
 from copy import deepcopy
+from natter.Logging.LogTokens import LogToken
 
-class Distribution:
+
+class Distribution(LogToken):
 
     def __init__(self, *args,**kwargs):
                 # parse parameters correctly
@@ -38,6 +40,7 @@ class Distribution:
         self.name = 'Abstract Distribution'
         self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted        
     
+
     def loglik(self,dat):
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
 
@@ -52,9 +55,6 @@ class Distribution:
             self.param[key] = value
         else:
             raise KeyError("Parameter %s not defined for %s" % (key,self.name))
-
-    def parameters(self,keyval=None):
-        raise Errors.AbstractError('Abstract method parameters not implemented in ' + self.name)
         
 
     def sample(self,m):
@@ -70,6 +70,7 @@ class Distribution:
         """
         
         raise Errors.AbstractError('Abstract method sample not implemented in ' + self.name)
+
 
     def pdf(self,dat):
         '''
@@ -88,50 +89,12 @@ class Distribution:
             return exp(self.loglik(dat))
         raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
 
+
     def cdf(self,dat):
         raise Errors.AbstractError('Abstract method cdf not implemented in ' + self.name)
 
-    def ppf(self,u,maxiter=400, tol = 1e-6):
-        '''
-
-        Evaluates the percent point function (i.e. the inverse c.d.f.)
-        of the current distribution.
-
-        This is the generic implementation of the p.p.f which uses
-        Newton-Raphson to invert the c.d.f.
-
-        NOTE:
-
-        1) Your current distribution must implement a c.d.f. Otherwise
-        this will not work.
-
-        2) This works only for univariate distributions. Strange
-        things will happen for multivariate distributions.
-        
-        :param u:  Points at which the p.p.f. will be computed.
-        :type dat: numpy.array
-        :returns:  Data object with the resulting points in the domain of this distribution. 
-        :rtype:    natter.DataModule.Data
-           
-        '''
-        
-        dat = Data(0*u,'Function values of the p.p.f of %s' % (self.name,))
-        iteration = 0
-        ridge = 1e-2
-        while iteration < maxiter and max(abs(u-self.cdf(dat))) > tol:
-            iteration += 1
-            dat.X = dat.X - (self.cdf(dat)-u)/ 2 /(self.pdf(dat) + 1e-2)
-            ridge *= 0.5
-
-        if max(abs(u-self.cdf(dat))) > tol:
-            print "\tWARNING! natter.Distributions.Distribution: generic ppf did not converge!"
-            print max(abs(u-self.cdf(dat)))
-        return dat
-        
-        
-        
-        
-
+    def ppf(self,dat):
+        raise Errors.AbstractError('Abstract method ppf not implemented in ' + self.name)
 
     def dldx(self,dat):
         raise Errors.AbstractError('Abstract method dldx not implemented in ' + self.name)
@@ -215,8 +178,11 @@ class Distribution:
         """        
         
         return -mean(self.loglik(dat)) / dat.size(0) / log(2)
-    
+
     def __str__(self):
+        return self.ascii()
+    
+    def ascii(self):
         s = 30*'-'
         s += '\n' + self.name + '\n'
         later = []
@@ -252,6 +218,46 @@ class Distribution:
         s += '[' + string.join(self.primary,', ') + ']\n'
         s += 30*'-' + '\n'
         return s
+
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><b><tt>%s</tt></b></td></tr></thead>\n" % (self.name,)
+
+        s += "<tbody>"
+        later = []
+        for k in self.parameters('keys'):
+            if not (type(self[k]) == types.FloatType)  \
+                   and not (type(self[k]) == type('dummy')) \
+                   and not (type(self[k]) == float64) \
+                   and not (type(self[k]) == float32) \
+                   and not (type(self[k]) == float) \
+                   and not (type(self[k]) == type(1)):
+                later.append(k)
+            else:
+                s += '<tr><td><tt><i><b>%s</b></i></tt></td><td><tt>%s</tt></td><tr>\n' % (k,str(self[k]))
+            
+        for k in later:
+            s += "<tr><td valign=\"top\"><tt><i><b>%s</b></i></tt></td>" % (k,)
+            if type(self[k]) == types.ListType:
+                if isinstance(self[k][0],Distribution):
+                    ss = "<td valign=\"top\"><tt>list of %d \"%s</tt>\" objects</td></tr>" % (len(self[k]),self[k][0].name)
+                elif type(self[k][0]) == types.ListType:
+                    ss = "<td valign=\"top\"><tt>list of %d lists</tt></td></tr>" % (len(self[k]),)
+                elif type(self[k][0]) == types.TupleType:
+                    ss = "<td valign=\"top\"><tt>list of %d tuples</tt></td></tr>" % (len(self[k]),)
+                else:
+                    ss = "<td valign=\"top\"><tt>list of %d \"%s\" objects</tt></td></tr>" % (len(self[k]),str(self[k][0]))
+            else:
+                if isinstance(self[k],LogToken):
+                    ss = "<td valign=\"top\"><tt>%s</tt></td></tr>" % ( self[k].html(),)
+                else:
+                    ss = "<td valign=\"top\"><tt><pre>%s</pre></tt></td></tr>" % ( str(self[k]),)
+            s += ss + '\n'
+        s += "</tbody>"
+        s += "<tfoot><tr><td valign=\"top\"><tt>Primary Parameters:</tt></td><td><tt>%s</tt></td></tr></tfoot>"'\n\t' % ('[' + string.join(self.primary,', ') + ']',)
+        s += "</table>"
+        return s
+
 
     def __repr__(self):
         return self.__str__()

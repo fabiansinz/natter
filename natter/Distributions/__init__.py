@@ -22,7 +22,11 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfLogNormals.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
+   Distributions_SkewedGaussian.rst
+   Distributions_SkewedNormal.rst
+   Distributions_TruncatedExponentialPower.rst
    Distributions_TruncatedGaussian.rst
+   Distributions_TruncatedNormal.rst
 """
 
 
@@ -37,6 +41,7 @@ from LpGeneralizedNormal import LpGeneralizedNormal
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from Gaussian import Gaussian
+from Gaussian import Gaussian as MultivariateNormal
 from ExponentialPower import ExponentialPower
 from LogNormal import LogNormal
 from Distribution import load
@@ -46,3 +51,7 @@ from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian
+from TruncatedGaussian import TruncatedGaussian as TruncatedNormal
+from SkewedGaussian import SkewedGaussian
+from SkewedGaussian import SkewedGaussian as SkewedNormal
+from TruncatedExponentialPower import TruncatedExponentialPower

@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, squeeze, sqrt, pi
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 
@@ -83,7 +83,7 @@ class TruncatedGaussian(Distribution):
         s = lambda y: (y-mu)/sigma
         phi = norm.pdf
         Phi = norm.cdf        
-        return -log(sigma) + log(phi(s(dat.X))) - log(Phi(s(b))-Phi(s(a)))
+        return squeeze(-log(sigma) + log(phi(s(dat.X))) - log(Phi(s(b))-Phi(s(a))))
     
     
     def pdf(self,dat):
@@ -97,17 +97,7 @@ class TruncatedGaussian(Distribution):
         :rtype:    numpy.array
            
         '''
-        # a,b = (self.param['a']-self.param['mu'])/self.param['sigma'],(self.param['b']-self.param['mu'])/self.param['sigma']
-        # return truncnorm.pdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma'])
-        a = self.param['a']
-        b = self.param['b']
-        mu = self.param['mu']
-        sigma = self.param['sigma']
-        s = lambda y: (y-mu)/sigma
-        phi = norm.pdf
-        Phi = norm.cdf
         return exp(self.loglik(dat))
-#        return 1.0/sigma*phi(s(dat.X)) / (Phi(s(b))-Phi(s(a)))
 
 
     def cdf(self,dat):
@@ -122,7 +112,7 @@ class TruncatedGaussian(Distribution):
            
         '''
         a,b = (self.param['a']-self.param['mu'])/self.param['sigma'],(self.param['b']-self.param['mu'])/self.param['sigma']
-        return truncnorm.cdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma'])
+        return squeeze(truncnorm.cdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma']))
 
 
     def ppf(self,u):

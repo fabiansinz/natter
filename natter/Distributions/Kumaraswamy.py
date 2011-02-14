@@ -149,6 +149,7 @@ class Kumaraswamy(Distribution):
         return Data((B**a - B**a*(1-u)**(1/b))**(1/a),'Function values of the ppf of the Kumaraswamy distribution')
 
 
+
     def dldtheta(self,dat):
         """
         Evaluates the gradient of the Kumaraswamy loglikelihood with respect to the primary parameters.

@@ -130,7 +130,7 @@ class MixtureOfLogNormals(Distribution):
         ret = 0.0*dat.X
         for k in range(self.param['K']):
             ret += self.param['pi'][k] * norm.pdf(log(dat.X),loc=self.param['mu'][k],scale=self.param['s'][k]) / dat.X
-        return ret
+        return squeeze(ret)
 
 
     def loglik(self,dat):
@@ -148,7 +148,7 @@ class MixtureOfLogNormals(Distribution):
         ret = zeros((self.param['K'],dat.size(1)))
         for k in xrange(self.param['K']):
             ret[k,:]  = log(self.param['pi'][k]) + squeeze(self.__kloglik(dat,k))
-        return logsumexp(ret,0)
+        return squeeze(logsumexp(ret,0))
         
     def __kloglik(self,dat,k):
         return -log(dat.X) - .5*log(pi*2.0) - log(self.param['s'][k]) \
@@ -171,7 +171,7 @@ class MixtureOfLogNormals(Distribution):
             ret += - self.param['pi'][k] * norm.pdf(log(dat.X),loc=self.param['mu'][k],scale=self.param['s'][k]) / dat.X \
                    * (1.0/dat.X + (log(dat.X) - self.param['mu'][k])/(self.param['s'][k]**2.0 * dat.X))
         ret /= tmp
-        return ret
+        return squeeze(ret)
         
 
 
@@ -211,7 +211,7 @@ class MixtureOfLogNormals(Distribution):
         ret = 0.0*dat.X
         for k in range(self.param['K']):
             ret += self.param['pi'][k] * norm.cdf(log(dat.X),loc=self.param['mu'][k],scale=self.param['s'][k])
-        return ret
+        return squeeze(ret)
         
 
         

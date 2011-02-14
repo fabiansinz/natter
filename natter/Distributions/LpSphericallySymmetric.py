@@ -1,7 +1,7 @@
 from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
-from numpy import log, abs, sign
+from numpy import log, abs, sign, squeeze
 from numpy.random import gamma, randn
 from scipy.special import gammaln
 from natter.Auxiliary.Optimization import goldenMinSearch
@@ -107,8 +107,8 @@ class LpSphericallySymmetric(Distribution):
            
         '''
         r = dat.norm(self.param['p'])
-        return self.param['rp'].loglik(r) \
-               - self.logSurfacePSphere() - (self.param['n']-1)*log(r.X)
+        return squeeze(self.param['rp'].loglik(r) \
+               - self.logSurfacePSphere() - (self.param['n']-1)*log(r.X))
 
     def dldx(self,dat):
         """
@@ -125,9 +125,10 @@ class LpSphericallySymmetric(Distribution):
         drdx = dat.dnormdx(self.param['p'])
         r = dat.norm(self.param['p'])
         tmp = (self.param['rp'].dldx(r) - (self.param['n']-1.0)*1.0/r.X)
-        for k in range(len(drdx)):
-            drdx[k] *= tmp
-        return drdx
+        drdx *= tmp
+        # for k in range(drdx.shape[0]):
+        #     drdx[k,:] *= squeeze(tmp)
+        return squeeze(drdx)
         
     def estimate(self,dat,prange=None):
         '''

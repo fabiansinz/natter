@@ -5,9 +5,9 @@ import pylab as pl
 from numpy.linalg import qr, svd
 import types
 import sys
+from natter.Logging.LogTokens import LogToken
 
-
-class Data:
+class Data(LogToken):
     """
     Data
 
@@ -33,6 +33,21 @@ class Data:
             self.history = []
         else:
             self.history = history
+
+    def ascii(self):
+        return self.__str__()
+
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><tt><b>Data: %s</b></tt></td></tr></thead>\n" % (self.name,)
+        s += "<tbody>"
+        s += "<tr><td><tt>Examples: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[1],)
+        s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
+        s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
+        if len(self.history) > 0:
+            s += displayHistoryRec(self.history,1)
+        s += "</pre></td></tr></table>"
+        return s
 
     def __str__(self):
         sh = shape(self.X)
@@ -476,7 +491,7 @@ def displayHistoryRec(h,recDepth=0):
     s = ""
     for elem in h:
         if type(elem) == types.ListType:
-            s += displayHistoryRec(elem,recDepth+1)
+            s += (recDepth-1)*'   ' +  displayHistoryRec(elem,recDepth+1)
         else:
-            s += recDepth*'  ' + '* '+ elem + '\n'
+            s += recDepth*'   ' + ' |-' + elem + '\n'
     return s

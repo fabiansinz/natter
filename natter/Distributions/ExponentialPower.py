@@ -1,12 +1,11 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, abs, sign, exp, mean
+from numpy import log, abs, sign, exp, mean, squeeze
 from numpy.random import gamma, randn
 from scipy.special import gammaln,gammainc, gammaincinv
 from scipy.optimize import fminbound
 import types
-from copy import deepcopy
 
 
 class ExponentialPower(Distribution):
@@ -63,28 +62,6 @@ class ExponentialPower(Distribution):
         self.primary = ['p','s']
 
         
-    def parameters(self,keyval=None):
-        """
-
-        Returns the parameters of the distribution as dictionary. This
-        dictionary can be used to initialize a new distribution of the
-        same type. If *keyval* is set, only the keys or the values of
-        this dictionary can be returned (see below). The keys can be
-        used to find out which parameters can be accessed via the
-        __getitem__ and __setitem__ methods.
-
-        :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
-        :type keyval: string
-        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
-        :rtype: dict or list
-           
-        """
-        if keyval == None:
-            return deepcopy(self.param)
-        elif keyval== 'keys':
-            return self.param.keys()
-        elif keyval == 'values':
-            return self.param.value()      
 
     def loglik(self,dat):
         '''
@@ -98,8 +75,8 @@ class ExponentialPower(Distribution):
          
            
         '''
-        return log(self.param['p']) - log(2.0) - 1.0/self.param['p']*log(self.param['s']) \
-               -gammaln(1.0/self.param['p']) - abs(dat.X)**self.param['p']/self.param['s']
+        return squeeze(log(self.param['p']) - log(2.0) - 1.0/self.param['p']*log(self.param['s']) \
+               -gammaln(1.0/self.param['p']) - abs(dat.X)**self.param['p']/self.param['s'])
 
 
     def dldx(self,dat):
@@ -113,7 +90,7 @@ class ExponentialPower(Distribution):
         :rtype:    numpy.array
         
         """
-        return - sign(dat.X) * abs(dat.X)**(self.param['p']-1) *self.param['p'] / self.param['s']
+        return squeeze(- sign(dat.X) * abs(dat.X)**(self.param['p']-1) *self.param['p'] / self.param['s'])
 
 
 
@@ -157,7 +134,7 @@ class ExponentialPower(Distribution):
         :rtype:    numpy.array
            
         '''
-        return .5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s'])
+        return squeeze(.5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s']))
 
     def ppf(self,u):
         '''

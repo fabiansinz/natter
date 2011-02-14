@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import exp, log, pi, mean, std
+from numpy import exp, log, pi, mean, std,squeeze
 from numpy.random import randn
 from scipy.stats import norm
 from copy import deepcopy
@@ -106,8 +106,8 @@ class LogNormal(Distribution):
         :rtype: numpy.array
            
         '''
-        return -log(dat.X) - .5*log(pi*2.0) - log(self.param['s']) \
-               - .5 / self.param['s']**2.0 * (log(dat.X) - self.param['mu'])**2
+        return squeeze(-log(dat.X) - .5*log(pi*2.0) - log(self.param['s']) \
+               - .5 / self.param['s']**2.0 * (log(dat.X) - self.param['mu'])**2)
 
 
     def pdf(self,dat):
@@ -136,7 +136,7 @@ class LogNormal(Distribution):
         :rtype:    numpy.array
            
         '''
-        return norm.cdf(log(dat.X),loc=self.param['mu'],scale=self.param['s'])
+        return squeeze(norm.cdf(log(dat.X),loc=self.param['mu'],scale=self.param['s']))
 
 
     def ppf(self,X):
@@ -165,7 +165,7 @@ class LogNormal(Distribution):
         :rtype:    numpy.array
         
         """        
-        return -1.0/dat.X  - 1.0 / self.param['s']**2.0 * (log(dat.X) - self.param['mu']) / dat.X
+        return squeeze(-1.0/dat.X  - 1.0 / self.param['s']**2.0 * (log(dat.X) - self.param['mu']) / dat.X)
         
 
     def estimate(self,dat):

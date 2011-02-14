@@ -166,7 +166,7 @@ class TestNonlinearFilter(unittest.TestCase):
             print "\t ... testing " + tk
             sys.stdout.flush()
             n,m = dat.size()
-            h = 1e-7
+            h = 5*1e-7
 
 
             logdetJ = F.logDetJacobian(dat)
@@ -182,7 +182,7 @@ class TestNonlinearFilter(unittest.TestCase):
                 logdet2 = np.sum(np.log(np.diag(R)))
                 #print np.abs(logdet2 - logdetJ[i])
                 self.assertFalse(np.abs(logdet2 - logdetJ[i]) > self.DetTol,\
-                    'Determinant of Jacobian deviates by more than ' + str(self.DetTol) + '!')
+                    'Determinant of Jacobian deviates by %.4g which is more than more than %.4g' % (np.abs(logdet2 - logdetJ[i]), self.DetTol))
 
             
 
