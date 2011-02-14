@@ -17,7 +17,6 @@ Contents:
    Distributions.rst
    Logging.rst
    Transforms.rst
-   Coding_Guidelines.rst
    
 Indices and tables
 ==================

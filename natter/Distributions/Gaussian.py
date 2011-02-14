@@ -155,10 +155,8 @@ class Gaussian(Distribution):
          
            
         '''
-
         n = self.param['n']
         m = dat.size(1)
-        C = self.param['sigma']
         mu = self.param['mu']
         X = dat.X - kron(reshape(mu,(n,1)),ones((1,m)))
         Y = sum(dot(self.cholP.T,X)**2,axis=0)
