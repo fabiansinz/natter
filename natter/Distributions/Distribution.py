@@ -294,10 +294,6 @@ class Distribution(LogToken):
 
         #plt.show()
 
-    def save(self,filename):
-        save(self,filename)
-
-
     def __call__(self,dat,pa=None):
         if pa == None:
             return self.loglik(dat)
@@ -307,10 +303,3 @@ class Distribution(LogToken):
             ret = self.loglik(dat)
             self.array2primary(pold)
             return ret
-            
-
-def load(path):
-    f = open(path,'r')
-    ret = pickle.load(f)
-    f.close()
-    return ret
