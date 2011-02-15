@@ -37,7 +37,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         alpha = alpha/sum(alpha)
         P = [Gamma(u=3*rand(),s=3*rand()) for k in xrange(self.K)]
         self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
-        self.mog.primary=['alpha']
+        self.mog.primary=['alpha','P']
         self.dat = self.mog.sample(self.nsamples)
 
 
