@@ -1,7 +1,7 @@
 from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
-from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign, unique,array
 import pickle
 import types
 import pylab as plt
@@ -203,7 +203,7 @@ class Distribution(LogToken):
             s += '\t' + k + ': '
             if type(self[k]) == types.ListType:
                 if isinstance(self[k][0],Distribution):
-                    ss = "list of %d \"%s\" objects" % (len(self[k]),self[k][0].name)
+                    ss = "list of %d distributions from %s" % (len(self[k]), ", ".join(unique(array([p.name for p in self[k]],dtype=object))),)
                 elif type(self[k][0]) == types.ListType:
                     ss = "list of %d lists" % (len(self[k]),)
                 elif type(self[k][0]) == types.TupleType:

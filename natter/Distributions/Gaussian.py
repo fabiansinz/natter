@@ -171,7 +171,7 @@ class Gaussian(Distribution):
         """
         ret = array([])
         if 'mu' in self.primary:
-            ret = hstack((ret,self.param['mu']))
+            ret = hstack((ret,squeeze(self.param['mu'])))
         if 'sigma' in self.primary:
             ret = hstack((ret,squeeze(self.cholP[self.I])))
         return ret
