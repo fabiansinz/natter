@@ -1,5 +1,5 @@
 from __future__ import division
-from natter.Distributions import FiniteMixtureDistribution,  Gaussian, TruncatedGaussian
+from natter.Distributions import FiniteMixtureDistribution,  Gaussian, TruncatedGaussian, Gamma
 from natter.Distributions import Gaussian
 from numpy import log,pi,sum,array,ones,eye,sqrt,exp,mean
 from numpy.linalg import norm,cholesky,inv
@@ -31,62 +31,32 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     
     def setUp(self):
         self.n = 1
-        K = 2
-        self.nsamples = 5000
-        P = [TruncatedGaussian(a=0,b=10,n=self.n,mu=2*randn(1,1),sigma=2*rand(1,1)) for k in xrange(K)]
-        self.mog = FiniteMixtureDistribution(P=P)
+        self.K = 3
+        self.nsamples = 10000
+        alpha = rand(self.K)
+        alpha = alpha/sum(alpha)
+        P = [Gamma(u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+        self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
+        self.mog.primary=['alpha']
         self.dat = self.mog.sample(self.nsamples)
 
 
-    #     dim = 2
-    #     self.dim=dim
-    #     self.baseDistribution = Gaussian({'n':dim})
-    #     self.baseDistribution.primary = ['sigma']
-    #     self.numberOfMixtureComponents = 2;
-    #     self.nsamples = 5000
-    #     self.mixture = FiniteMixtureDistribution(numberOfMixtureComponents=self.numberOfMixtureComponents,
-    #                                              baseDistribution=self.baseDistribution)
-    #     C1 =  eye(dim)*5 + ones((dim,dim)) + symrand(dim)
-    #     C2 =  eye(dim)*5  -ones((dim,dim))+ symrand(dim)
-    #     self.mixture.param['ps'][0].param['sigma'] =C1
-    #     self.mixture.param['ps'][0].cholP  = cholesky(inv(C1))
-    #     self.mixture.param['ps'][1].param['sigma'] =C2
-    #     self.mixture.param['ps'][1].cholP  = cholesky(inv(C2))
-    #     self.mixture.alphas = array([0.6,0.4])
-    #     self.mixture.etas = array([log(1/self.mixture.alphas[0] -1)])
-    #     self.GaussMixture = FiniteMixtureOfGaussians(numberOfMixtureComponents=2,dim=dim,primary=['sigma'])
-    #     C1 =  eye(dim)*5 + ones((dim,dim))
-    #     C2 =  eye(dim)*5  -ones((dim,dim))
-    #     self.GaussMixture.param['ps'][0].param['sigma'] =C1
-    #     self.GaussMixture.param['ps'][0].cholP  = cholesky(inv(C1))
-    #     self.GaussMixture.param['ps'][1].param['sigma'] =C2
-    #     self.GaussMixture.param['ps'][1].cholP  = cholesky(inv(C2))
-    #     self.GaussMixture.alphas = array([0.6,0.4])
-    #     self.GaussMixture.etas = array([log(1/self.GaussMixture.alphas[0] -1)])
-    #     self.data = self.mixture.sample(self.nsamples)
-    #     self.ALL = sum(self.mixture.loglik(self.data))
-        
-#     def test_init(self):
-#         pass
 
-#     def test_sample(self):
-#         nsamples = 1000000
-#         Gauss = Gaussian({'n':self.dim})
-#         data = self.mixture.sample(nsamples)
-#         logWeights = Gauss.loglik(data) -self.mixture.loglik(data)
-#         Z = logsumexp(logWeights)-log(nsamples)
-#         print "test_sample: z: " ,exp(Z)
-#         self.assertTrue(abs(exp(Z)-1)<1e-01)
-
-    def test_loglik(self):
+    def test_primary2arrayConversion(self):
+        p = self.mog.primary2array()
+        mog2 = self.mog.copy()
+        mog2.array2primary(p)
+        p2 = mog2.primary2array()
+        self.assertTrue(all(abs(p2-p)) < 1e-6,'Primary2array conversion does not leave parameters invariant')
+    # def test_loglik(self):
         
-        nsamples = 1000000
-        Gauss = TruncatedGaussian(n=self.n,a=0,b=10)
-        dat = Gauss.sample(nsamples)
-        logWeights = self.mog.loglik(dat) - Gauss.loglik(dat)
-        Z = logsumexp(logWeights)-log(nsamples)
-        print "test_loglik: z: " ,exp(Z)
-        self.assertTrue(abs(exp(Z)-1)<1e-01)
+    #     nsamples = 1000000
+    #     Gauss = Gamma(u=5,s=1)
+    #     dat = Gauss.sample(nsamples)
+    #     logWeights = self.mog.loglik(dat) - Gauss.loglik(dat)
+    #     Z = logsumexp(logWeights)-log(nsamples)
+    #     print "test_loglik: z: " ,exp(Z)
+    #     self.assertTrue(abs(exp(Z)-1)<1e-01)
 
 
     def test_dldtheta(self):
@@ -101,13 +71,24 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
             gv = self.mog.dldtheta(self.dat)
             sgv = mean(gv, axis=1);
             return sgv
-
-        arr0 = abs(randn(len(arr0)))+1
+        # arr0 = abs(randn(len(arr0)))+1
         err = check_grad(f,df,arr0)
         print "error in gradient: ", err
         self.assertTrue(err < 1e-01)
 
-        
+    def test_estimate(self):
+        P = [Gamma(u=2*rand(),s=2*rand()) for k in xrange(self.K)]
+        mog = FiniteMixtureDistribution(P=P)
+        print mog
+        mog.histogram(self.dat)
+        show()
+        mog.estimate(self.dat,method='gradient')
+        mog.histogram(self.dat)
+        show()
+        raw_input()
+        print self.mog
+
+    #     self.assertTrue(True)
 #     def test_estimate(self):
 #         """
 #         test, if we can learn the same parameters with which we generated the data.
