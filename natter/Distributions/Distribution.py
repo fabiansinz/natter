@@ -273,7 +273,7 @@ class Distribution(LogToken):
             fig = plt.figure()
             ax = fig.add_axes([.05,.05,.9,.9])
         x =squeeze(dat.X)
-        n, bins, patches = ax.hist(x, max(sh)/400, normed=1, facecolor='blue', alpha=0.8)
+        n, bins, patches = ax.hist(x, max(sh)/200, normed=1, facecolor='blue', alpha=0.8)
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
         y = squeeze(self.pdf( Data(bincenters)))
