@@ -31,7 +31,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     
     def setUp(self):
         self.n = 1
-        self.K = 3
+        self.K = 4
         self.nsamples = 10000
         alpha = rand(self.K)
         alpha = alpha/sum(alpha)
@@ -82,7 +82,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         print mog
         mog.histogram(self.dat)
         show()
-        mog.estimate(self.dat,method='gradient')
+        mog.estimate(self.dat,method='hybrid')
         mog.histogram(self.dat)
         show()
         raw_input()

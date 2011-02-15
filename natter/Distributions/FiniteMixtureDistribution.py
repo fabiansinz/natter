@@ -297,7 +297,9 @@ class FiniteMixtureDistribution(Distribution):
 
             diff = 10000000
             oldS = estep()
-            while abs(diff)>1e-2:
+            tol = 1e-10
+            if method == 'hybrid': tol *=2
+            while abs(diff)>tol:
                 mstep()
                 fv= estep()
                 diff = oldS-fv
