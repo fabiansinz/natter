@@ -6,6 +6,7 @@
 Welcome to natter - a natural image statistics toolbox's documentation!
 =======================================================================
 
+
 Contents:
 
 .. toctree::
@@ -17,6 +18,7 @@ Contents:
    Distributions.rst
    Logging.rst
    Transforms.rst
+   License.rst
    
 Indices and tables
 ==================

@@ -54,3 +54,4 @@ from TruncatedGaussian import TruncatedGaussian as TruncatedNormal
 from SkewedGaussian import SkewedGaussian
 from SkewedGaussian import SkewedGaussian as SkewedNormal
 from TruncatedExponentialPower import TruncatedExponentialPower
+from FiniteMixtureDistribution import FiniteMixtureDistribution
