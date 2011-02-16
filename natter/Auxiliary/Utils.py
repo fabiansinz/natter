@@ -4,6 +4,10 @@ import cProfile
 import lsprofcalltree
 from copy import deepcopy
 from natter.Auxiliary.Errors import SpecificationError
+from numpy.linalg import cholesky
+from numpy import array, eye, dot, tile
+from numpy.random import randn
+
 
 def parseParameters(args,kwargs):
     param = None
@@ -56,6 +60,33 @@ except:
         pass
     pass
 
+
+
+
+def mnorm(nsamples=None,mu=None,sig=None):
+    """
+    generate nsamples of a gaussian random variable with mean mu and covariance
+    sig, if none is given 1 sample of a gaussian random variable with mean=0 and
+    covariance=1 is generated. This should be faster than the previous one.
+    """
+    if mu==None:
+        mean = array([0.0])
+    else:
+        mean = mu.flatten()
+    if sig ==None:
+        cov = eye(len(mean))
+    else:
+        cov = sig
+    if cov.shape[0]!=cov.shape[1] or cov.shape[0]!=len(mean):
+        raise IndexError,"Given Covariance has inappropiate dimensions!"
+    if nsamples==None:
+        N=1
+    else:
+        N=nsamples
+    L = cholesky(cov)
+    r= randn(len(mu.flatten()),N)
+    n=dot(L,r) + tile(mu.reshape(len(mu),1),N)
+    return n
 
 
 def profileFunction(f):

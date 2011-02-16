@@ -241,22 +241,14 @@ class FiniteMixtureDistribution(Distribution):
 
         if method=="EM" or method == 'hybrid':
             n,m = dat.size()
-            T = zeros((K,m))
-            LP = zeros((K,m))
-            for k in xrange(K):
-                LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
-            for k in xrange(K):
-                T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+            T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
+            LP = zeros((K,m)) # log likelihoods of the single mixture components
 
             def estep():
-                print "\rE",
-                sys.stdout.flush()
                 for k in xrange(K):
                     LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
                 for k in xrange(K):
                     T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-                print ".",
-                sys.stdout.flush()
                 return sum((T*LP).flatten())
 
             def mstep():
@@ -264,47 +256,55 @@ class FiniteMixtureDistribution(Distribution):
                 def f(ar):
                     par = ar.copy()
                     L = T.copy()
-                    mg = len(self.param['P'][0].primary2array())
                     for k in xrange(K):
-                        self.param['P'][k].array2primary(par[0:mg])
-                        par = par[mg::]
+                        mg = len(self.param['P'][k].primary2array())
+                        self.param['P'][k].array2primary(par[:mg])
+                        par = par[mg:]
                         X = self.param['P'][k].loglik(dat)
                         L[k,:] = T[k,:]*X
-                    print "\rcurrent ALL : ", -mean(L.flatten())
-                    return -sum(L.flatten())
+                    sys.stdout.write("\rcurrent ALL : %.6g"% (-mean(L.flatten()),))
+                    sys.stdout.flush()
+                    return -sum(L.flatten())/K/m
                 def df(ar):
                     par = ar.copy()
                     grad = zeros(len(ar))
                     ind =0
-                    mg = len(self.param['P'][0].primary2array())
                     for k in xrange(K):
+                        mg = len(self.param['P'][k].primary2array())
                         self.param['P'][k].array2primary(par[0:mg])
                         par = par[mg:]
                         dX = self.param['P'][k].dldtheta(dat)
                         grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
-                        ind = ind+mg
-                    return -grad
-                def fdf(ar):
-                    fv = f(ar)
-                    grad = df(ar)
-                    return fv,grad
+                        ind += mg
+                    return -grad/K/m
                 def check(arr):
                     err = optimize.check_grad(f,df,arr)
                     print "Error in gradient: ",err
+                    sys.stdout.flush()
+                
+                arr = self.primary2array()
+                if 'alpha' in self.primary:
+                    arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
+                #check(arr)
+                optimize.fmin_bfgs(f,arr,df,gtol=1e-3,disp=0,full_output=0)
+                    
                 if 'alpha' in self.primary:
                     self.param['alpha'] = mean(T,axis=1)
 
 
+            
             diff = 10000000
             oldS = estep()
-            tol = 1e-10
-            if method == 'hybrid': tol *=2
+            tol = 1e-8
+            if method == 'hybrid': tol = tol**.25
+            
             while abs(diff)>tol:
                 mstep()
                 fv= estep()
                 diff = oldS-fv
                 oldS=fv
-                print "Diff: ",diff
+                sys.stdout.write(50*" " +  "\rDiff: %.4g" % (diff,))
+                sys.stdout.flush()
                 
         if method=='gradient' or method=='hybrid':
             n,m = dat.size()
@@ -312,8 +312,7 @@ class FiniteMixtureDistribution(Distribution):
             def f(arr):
                 self.array2primary(arr)
                 LL=-sum(self.loglik(dat))
-                print "\rnLL: ",(LL/(m*n)),
-                print "\tcurrent ALL: ", self.all(dat)
+                sys.stdout.write(50*" "+ "\rnLL: %.10g \tcurrent ALL: %.10g" % (LL/(m*n),self.all(dat)))
                 sys.stdout.flush()
                 return LL/(m*n)
             
@@ -321,11 +320,11 @@ class FiniteMixtureDistribution(Distribution):
                 self.array2primary(arr)
                 grad = sum(self.dldtheta(dat),axis=1)
                 return -grad/(m*n)
-            arr0 = self.primary2array()
 
+            arr0 = self.primary2array()
             diff = 100000;
             arr0 = self.primary2array()
 
-            arropt = optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=1000,gtol=1e-08)
-            self.array2primary(arropt)
+            optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=1000,gtol=1e-10)
+            
 

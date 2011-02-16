@@ -11,7 +11,7 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
 
 """
 
-from Utils import save, prettyPrintDict, debug , profileFunction, fillDict
+from Utils import save, debug , profileFunction, fillDict, mnorm
 import Errors 
 import Optimization
 import Plotting

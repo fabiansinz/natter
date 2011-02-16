@@ -13,6 +13,11 @@ import scipy
 from os import chdir
 import sys
 
+from os import path, chdir
+from time import time, strftime, localtime
+import sys
+import numpy
+import scipy
 
 class LogToken:
     """
@@ -51,7 +56,6 @@ class PyInfo(LogToken):
         info['Random Seed'] = int(time())
         random.seed(info['Random Seed'])
         info['Random Seed'] = str(info['Random Seed'])
-       
         self.info = info
         
     def ascii(self):

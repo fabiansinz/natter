@@ -13,10 +13,6 @@ from scipy.optimize import fmin_l_bfgs_b
 from sys import stderr
 
 
-
-# DEBUG
-from matplotlib.pyplot import *
-
 class LinearTransform(Transform.Transform):
     """
     LinearTransform class
@@ -356,7 +352,6 @@ class LinearTransform(Transform.Transform):
             w[:,i] =  fmin_l_bfgs_b(g, array(w[:,i]) , fprime=gprime, bounds=( [(-floor(p/2.0),floor(p/2.0)),(0,floor(p/2.0))]))[0]
             
         stderr.write("\n")
-        return w
 
     def getHistory(self):
         """

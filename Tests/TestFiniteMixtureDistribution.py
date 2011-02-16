@@ -31,28 +31,29 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     
     def setUp(self):
         self.n = 1
-        self.K = 4
+        self.K = 2
         self.nsamples = 10000
         alpha = rand(self.K)
         alpha = alpha/sum(alpha)
-        P = [Gaussian(mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        #P = [Gaussian(n=1,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        P = [TruncatedGaussian(a=0,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        #P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
         self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
         self.mog.primary=['alpha','P']
         self.dat = self.mog.sample(self.nsamples)
 
 
 
-    def test_primary2arrayConversion(self):
-        p = self.mog.primary2array()
-        mog2 = self.mog.copy()
-        mog2.array2primary(p)
-        p2 = mog2.primary2array()
-        self.assertTrue(all(abs(p2-p)) < 1e-6,'Primary2array conversion does not leave parameters invariant')
+    # def test_primary2arrayConversion(self):
+    #     p = self.mog.primary2array()
+    #     mog2 = self.mog.copy()
+    #     mog2.array2primary(p)
+    #     p2 = mog2.primary2array()
+    #     self.assertTrue(all(abs(p2-p)) < 1e-6,'Primary2array conversion does not leave parameters invariant')
 
     # def test_loglik(self):
-        
     #     nsamples = 1000000
-    #     Gauss = Gaussian(mu=array([0]),sigma=array([[4]]))
+    #     Gauss = Gaussian(n=1,mu=array([0]),sigma=array([[4]]))
     #     dat = Gauss.sample(nsamples)
     #     logWeights = self.mog.loglik(dat) - Gauss.loglik(dat)
     #     Z = logsumexp(logWeights)-log(nsamples)
@@ -77,17 +78,21 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     #     print "error in gradient: ", err
     #     self.assertTrue(err < 1e-01)
 
-    # def test_estimate(self):
-    #     P = [Gaussian(mu=2*randn(1,1),sigma=2*rand(1,1)) for k in xrange(self.K)]
-    #     mog = FiniteMixtureDistribution(P=P)
-    #     print mog
-    #     mog.histogram(self.dat)
-    #     show()
-    #     mog.estimate(self.dat,method='hybrid')
-    #     mog.histogram(self.dat)
-    #     show()
-    #     raw_input()
-    #     print self.mog
+    def test_estimate(self):
+        # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
+        # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+        P = [TruncatedGaussian(a=0,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+
+        mog = FiniteMixtureDistribution(P=P)
+        print mog
+        mog.histogram(self.dat)
+        show()
+        mog.estimate(self.dat,method='hybrid')
+        print mog
+        mog.histogram(self.dat)
+        print self.mog
+        show()
+        raw_input()
 
     #     self.assertTrue(True)
 #     def test_estimate(self):

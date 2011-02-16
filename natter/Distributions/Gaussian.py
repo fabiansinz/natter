@@ -1,14 +1,15 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer, sqrt
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
 #from natter.Auxiliary import debug
 from scipy import optimize
 from copy import deepcopy
-from scipy.stats import norm
-from natter.Auxiliary.Errors import DimensionalityError
+from scipy.linalg import solve_triangular
+
+
 class Gaussian(Distribution):
     """
     Gaussian Distribution
@@ -70,37 +71,6 @@ class Gaussian(Distribution):
         # cholesky factor of the precision matrix
         self.cholP = cholesky(inv(self.param['sigma'])) 
 
-    def cdf(self,dat):
-        '''
-
-        Evaluates the cumulative distribution function on the data points in dat. 
-
-        :param dat: Data points for which the c.d.f. will be computed.
-        :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the probabilities.
-        :rtype:    numpy.array
-           
-        '''
-        if self.param['n'] > 1:
-            raise DimensionalityError("natter.Distributions.Gaussian: cdf only works for univariate Gaussians!")
-        return norm.cdf(dat.X,self.param['mu'][0],scale=sqrt(self.param['sigma'][0]))
-
-    def ppf(self,X):
-        '''
-
-        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
-
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
-        :returns:  A Data object containing the values of the ppf.
-        :rtype:    natter.DataModule.Data
-           
-        '''
-        if self.param['n'] > 1:
-            raise DimensionalityError("natter.Distributions.Gaussian: ppf only works for univariate Gaussians!")
-        return Data(norm.ppf(X,self.param['mu'][0],scale=sqrt(self.param['sigma'][0])))
-
-
     def parameters(self,keyval=None):
         """
 
@@ -155,6 +125,7 @@ class Gaussian(Distribution):
          
            
         '''
+
         n = self.param['n']
         m = dat.size(1)
         mu = self.param['mu']
@@ -165,13 +136,13 @@ class Gaussian(Distribution):
     
     def primary2array(self):
         """
-        :return: array containing primary parameters. If 'Sigma' is in
+        :return: array containing primary parameters. If 'sigma' is in
         the primary parameters, then the cholesky factor of the
         precision matrix is filled in the array.
         """
         ret = array([])
         if 'mu' in self.primary:
-            ret = hstack((ret,squeeze(self.param['mu'])))
+            ret = hstack((ret,self.param['mu']))
         if 'sigma' in self.primary:
             ret = hstack((ret,squeeze(self.cholP[self.I])))
         return ret
@@ -184,14 +155,23 @@ class Gaussian(Distribution):
             arr = arr[n:]
         if 'sigma' in self.primary:
             self.cholP[self.I] = arr
-            self.cholP[where(eye(n)>0)] = map(lambda x: max(x,1e-08),diag(self.cholP))
+            #self.cholP[where(eye(n)>0)] = map(lambda x: max(x,1e-08),diag(self.cholP))
             self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(n)))
 
-
+    def __setitem__(self,key,value):
+        Distribution.__setitem__(self,key,value)
+        if key == 'mu':
+            self.param['mu'] = value
+        if key == 'sigma':
+            self.param['sigma'] = value
+            self.cholP = solve_triangular(cholesky(self.param['sigma']).T,eye(self['n'])).T
+        if key == 'CholP':
+            self.cholP = value
+            self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(self.param['n'])))
     def dldtheta(self,dat):
         """
         Calculates the gradient with respect to the primary
-        parameters. Note: if 'Sigma' is in the primary parameters the
+        parameters. Note: if 'sigma' is in the primary parameters the
         gradient is calculated with respect to the cholesky factor of
         the inverse covariance matrix.
         
@@ -199,7 +179,7 @@ class Gaussian(Distribution):
         ret = array([])
         n,m = dat.size()
         if 'mu' in self.primary:
-            ret = solve(self.cholP,solve(self.cholP.T, dat.X -reshape(self.param['mu'],(n,1))))
+            ret = dot(self.cholP,dot(self.cholP.T, dat.X -reshape(self.param['mu'].copy(),(n,1))))
         if 'sigma' in self.primary:
             v = diag(1.0/diag(self.cholP))[self.I]
             retC = zeros((len(self.I[0]),m));
