@@ -1,6 +1,6 @@
 from __future__ import division
 from natter.Distributions import Gaussian
-from numpy import log,pi,sum,ones,sqrt,logspace
+from numpy import log,pi,sum,ones,sqrt,logspace,array
 from numpy.random import randn
 from numpy.linalg import norm
 import unittest
@@ -11,9 +11,9 @@ import numpy
 
 class TestGaussian(unittest.TestCase):
     def setUp(self):
-        self.Gauss = Gaussian({'n':1})
+        self.Gauss = Gaussian(n=1,mu = array([1]), sigma=array([[2]]))
         self.entropy = 0.5*(1+log(2*pi))
-        self.Gauss2D = Gaussian({'n':2})
+        self.Gauss2D = Gaussian(n=2)
         self.Gauss2D.primary=['sigma']
     def test_init(self):
         pass
