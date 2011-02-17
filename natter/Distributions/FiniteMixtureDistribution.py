@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from Gaussian import Gaussian
-from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique
+from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze
 from numpy.random.mtrand import multinomial
 from natter.DataModule import Data
 from numpy.random import shuffle
@@ -12,6 +12,7 @@ from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Errors import ValueError
 from natter.Auxiliary.Numerics import logsumexp
+from scipy.optimize import check_grad
 
 def logistic(eta):
     return 1/(1+exp(-eta))
@@ -154,7 +155,49 @@ class FiniteMixtureDistribution(Distribution):
         '''
         return exp(self.loglik(dat))
 
-    
+    def ppf(self,u):
+        '''
+
+        Evaluates the percentile function (inverse c.d.f.) for a given
+        array of quantiles. The single mixture components must
+        implement ppf and pdf.
+
+        NOTE: ppf works only for one dimensional mixture distributions.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        # 1st: get a rough estimate where the point will be
+        K = len(self.param['P'])
+        a = cumsum(self.param['alpha'])
+        U = -(reshape(a,(K,1))-reshape(u,(1,len(u))))
+        U[where(U <=0)] = 0
+        U[where(U > 0)] = 1
+        I = sum(U,0)
+
+        ret = Data(u,'Percentiles from ' + self.name)
+        for k in xrange(K):
+            i = where(I == k)
+            ret.X[:,i[0]] = self.param['P'][k].ppf(u[i[0]]).X
+
+        # 2nd use Newton Raphson with log function to invert it
+        v = squeeze(log(u/(1-u)))
+        def f(dat):
+            c = self.cdf(dat)
+            return v - log(c/(1-c))
+        def df(dat):
+            c = self.cdf(dat)
+            return - self.pdf(dat)/(c*(1-c))
+
+        err = check_grad(f,df,ret)
+        print err
+            
+
+        return ret
+
 
     def primary2array(self):
         ret = array([])
@@ -177,7 +220,6 @@ class FiniteMixtureDistribution(Distribution):
                 self.param['P'][k].array2primary(arr[0:lp])
                 arr = arr[lp::]
 
-#=================================================================================
     def dldtheta(self,dat):
         K = len(self.param['P'])
         self.checkAlpha()
@@ -209,6 +251,24 @@ class FiniteMixtureDistribution(Distribution):
             else:
                 ret = vstack((ret,ret0))
         return ret
+
+    def cdf(self,dat):
+        """
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the quantiles.
+        :rtype:    numpy.array
+           
+        """
+        u = self.param['P'][0].cdf(dat)*self.param['alpha'][0]
+        
+        for k in xrange(1,len(self.param['P'])):
+            u += self.param['P'][k].cdf(dat)*self.param['alpha'][k]
+        return u
+            
 
     def estimate(self,dat,method=None,maxiter=100):
         """
@@ -295,7 +355,7 @@ class FiniteMixtureDistribution(Distribution):
             
             diff = 10000000
             oldS = estep()
-            tol = 1e-8
+            tol = 1e-6
             if method == 'hybrid': tol = tol**.25
             
             while abs(diff)>tol:

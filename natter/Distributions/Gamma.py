@@ -117,7 +117,7 @@ class Gamma(Distribution):
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the probabilities.
+        :returns:  A numpy array containing the quantiles.
         :rtype:    numpy.array
            
         '''

@@ -1,11 +1,11 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, sqrt, pi,squeeze
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
-
 from natter.Auxiliary.Utils import parseParameters
+from warnings import warn
 
 class TruncatedGaussian(Distribution):
     """
@@ -75,7 +75,6 @@ class TruncatedGaussian(Distribution):
          
            
         '''
-#        return log(self.pdf(dat))
         a = self.param['a']
         b = self.param['b']
         mu = self.param['mu']
@@ -83,7 +82,21 @@ class TruncatedGaussian(Distribution):
         s = lambda y: (y-mu)/sigma
         phi = norm.pdf
         Phi = norm.cdf        
-        return squeeze(-log(sigma) + log(phi(s(dat.X))) - log(Phi(s(b))-Phi(s(a))))
+        ll = squeeze(-log(sigma) + log(phi(s(dat.X))) - log(Phi(s(b))-Phi(s(a))))
+        if any(isnan(ll)):
+            print self
+            print "s(b)" + str(s(b))
+            print "s(a)" + str(s(a))
+            print "PHI(a)/PHI(b)" + str(Phi(s(a))/Phi(s(b)))
+            print "log(PHI(b) - PHI(a))" + str(- log(Phi(s(b))-Phi(s(a))))
+            print "log(PHI(s(X)))" + str(log(phi(s(dat.X))))
+            print "sigma" + str(sigma)
+            print "mu" + str(mu)
+            print "a" + str(a)
+            print "b" + str(b)
+            print "LL" + str(ll)
+            raw_input()
+        return ll
     
     
     def pdf(self,dat):
@@ -112,7 +125,7 @@ class TruncatedGaussian(Distribution):
            
         '''
         a,b = (self.param['a']-self.param['mu'])/self.param['sigma'],(self.param['b']-self.param['mu'])/self.param['sigma']
-        return squeeze(truncnorm.cdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma']))
+        return  squeeze(truncnorm.cdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma']))
 
 
     def ppf(self,u):
@@ -146,7 +159,12 @@ class TruncatedGaussian(Distribution):
         '''
         f = lambda p: self.array2primary(p).all(dat)
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
-        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
+        bounds = []
+        if 'mu' in self.primary:
+            bounds.append((None,None))
+        if 'sigma' in self.primary:
+            bounds.append((1e-6,None))
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=bounds,factr=10.0)[0]
         self.array2primary(tmp)        
 
 
@@ -202,13 +220,31 @@ class TruncatedGaussian(Distribution):
         """
         ind = 0
         if 'mu' in self.primary:
-            self.param['mu'] = arr[ind]
+            self['mu'] = arr[ind]
             ind += 1
         if 'sigma' in self.primary:
-            self.param['sigma'] = arr[ind]
+            self['sigma'] = arr[ind]
             ind += 1
             
         return self
             
     
     
+    def __setitem__(self,key,value):
+        if key == 'mu':
+            if norm.cdf( (self.param['b']-value)/self.param['sigma']) - norm.cdf( (self.param['a']-value)/self.param['sigma']) < 1e-12:
+                warn("TruncatedGaussian.__setitem__: new value of mu too far from the interval [a,b]! leaving it as it is")
+            else:
+                self.param['mu'] = value
+        elif key == 'sigma':
+            if norm.cdf( (self.param['b']-self.param['mu'])/value) - norm.cdf( (self.param['a']-self.param['mu'])/value) < 1e-12:
+                warn("TruncatedGaussian.__setitem__: new value of sigma too extreme from the interval [a,b]! leaving it as it is")
+            else:
+                if value <0:
+                    warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)")
+                self.param[key] = abs(value)
+
+        elif key in self.parameters('keys'):
+            self.param[key] = value
+        else:
+            raise KeyError("Parameter %s not defined for %s" % (key,self.name))

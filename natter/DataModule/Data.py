@@ -25,6 +25,7 @@ class Data(LogToken):
         if X == None:
             X=array([])
         else:
+            X = array(X) # copy X
             if len(X.shape) == 1:
                 X = reshape(X,(1,X.shape[0]))
             self.X = X

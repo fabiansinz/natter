@@ -31,12 +31,12 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     
     def setUp(self):
         self.n = 1
-        self.K = 2
+        self.K = 3
         self.nsamples = 10000
         alpha = rand(self.K)
         alpha = alpha/sum(alpha)
         #P = [Gaussian(n=1,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
-        P = [TruncatedGaussian(a=0,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)+1) for k in xrange(self.K)]
         #P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
         self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
         self.mog.primary=['alpha','P']
@@ -78,50 +78,30 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     #     print "error in gradient: ", err
     #     self.assertTrue(err < 1e-01)
 
-    def test_estimate(self):
-        # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
-        # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
-        P = [TruncatedGaussian(a=0,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+    # def test_estimate(self):
+    #     # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
+    #     # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+    #     P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
 
-        mog = FiniteMixtureDistribution(P=P)
-        print mog
-        mog.histogram(self.dat)
-        show()
-        mog.estimate(self.dat,method='hybrid')
-        print mog
-        mog.histogram(self.dat)
-        print self.mog
+    #     mog = FiniteMixtureDistribution(P=P)
+    #     print mog
+    #     mog.histogram(self.dat,cdf=True)
+    #     show()
+    #     mog.estimate(self.dat,method='hybrid')
+    #     print mog
+    #     mog.histogram(self.dat,cdf=True)
+    #     print self.mog
+    #     show()
+    #     raw_input()
+
+
+    def test_ppf(self):
+        u = rand(10)
+        dat = self.mog.ppf(u)
+        # self.mog.histogram(dat)
         show()
         raw_input()
-
-    #     self.assertTrue(True)
-#     def test_estimate(self):
-#         """
-#         test, if we can learn the same parameters with which we generated the data.
-#         """
-#         # arrStart = self.mixture.primary2array()
-#         # self.mixture.alphas = array([0.8,0.2])
-#         # self.mixture.etas = array([log(1/self.mixture.alphas[0] -1)])
-#         # self.mixture.estimate(self.data,verbose=True)
-#         # arrEnd   = self.mixture.primary2array()
-#         # print "ground truth: " , arrStart
-#         # print "ended with : ", arrEnd
-#         # ALL = sum(self.mixture.loglik(self.data))
-#         # print "Difference in ALL : " , abs(ALL - self.ALL)
-
-
-#         # arrStart = self.GaussMixture.primary2array()
-#         # self.GaussMixture.alphas = array([0.8,0.2])
-#         # self.GaussMixture.etas = array([log(1/self.GaussMixture.alphas[0] -1)])
-#         # self.GaussMixture.estimate(self.data,verbose=True)
-#         # arrEnd   = self.GaussMixture.primary2array()
-#         # print "ground truth: " , arrStart
-#         # print "ended with : ", arrEnd
-#         # ALL = sum(self.GaussMixture.loglik(self.data))
-#         # print "Difference in ALL : " , abs(ALL - self.ALL)
-#         pass
         
-
 
  
 
