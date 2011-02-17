@@ -191,8 +191,8 @@ class FiniteMixtureDistribution(Distribution):
             lb = Data(bounds[0])
             ub = Data(bounds[1])
         else:
-            lb = Data(u*0-1)
-            ub = Data(u*0+1)
+            lb = Data(u*0-1e6)
+            ub = Data(u*0+1e6)
         def f(dat):
             c = self.cdf(dat)
             return v - log(c/(1-c))
@@ -202,8 +202,15 @@ class FiniteMixtureDistribution(Distribution):
         while max(ub.X-lb.X) > 5*1e-10 and iterC < maxiter:
             ret.X = (ub.X+lb.X)/2
             mf = f(ret)
-            ind0 = where(mf*f(lb) < 0)
-            ind1 = where(mf*f(ub) < 0)
+            lf = f(lb)
+            uf = f(ub)
+            if any(lf*uf>0):
+                warn("ppf lost the root! resetting boundaries")
+                ind0 = where(lf*uf > 0)
+                ub[ind0] = 4*abs(ub[ind0])
+                lb[ind0] = -4*abs(lb[ind0])
+            ind0 = where(mf*lf < 0)
+            ind1 = where(mf*uf < 0)
             ub.X[0,ind0[0]] = ret.X[0,ind0[0]]
             lb.X[0,ind1[0]] = ret.X[0,ind1[0]]
             iterC +=1
