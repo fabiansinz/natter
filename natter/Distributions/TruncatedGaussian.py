@@ -254,6 +254,9 @@ class TruncatedGaussian(Distribution):
             if value <0:
                 warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)")
                 value = abs(value)
+            if abs(value) < 1e-3:
+                warn("TruncatedGaussian.__setitem__: sigma cannot be too small! Setting it to 1e-3")
+                value = 1e-3
             self.param[key] = value
 
         elif key in self.parameters('keys'):
