@@ -172,20 +172,9 @@ class FiniteMixtureDistribution(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
-        # 1st: get a rough estimate where the point will be
-        # K = len(self.param['P'])
-        # a = cumsum(self.param['alpha'])
-        # U = -(reshape(a,(K,1))-reshape(u,(1,len(u))))
-        # U[where(U <=0)] = 0
-        # U[where(U > 0)] = 1
-        # I = sum(U,0)
 
         ret = Data(u,'Percentiles from ' + self.name)
-        # for k in xrange(K):
-        #     i = where(I == k)
-        #     ret.X[:,i[0]] = self.param['P'][k].ppf(u[i[0]]).X
-
-        # 2nd use bisection method to invert
+        # use bisection method on to invert
         v = squeeze(log(u/(1-u)))
         if bounds is not None:
             lb = Data(bounds[0])
@@ -194,9 +183,9 @@ class FiniteMixtureDistribution(Distribution):
             lb = Data(u*0-1e6)
             ub = Data(u*0+1e6)
         def f(dat):
-            c = self.cdf(dat)
-            return v - log(c/(1-c))
-            # return u-self.cdf(dat)
+            # c = self.cdf(dat)
+            # return v - log(c/(1-c))
+            return u-self.cdf(dat)
 
         iterC = 0
         while max(ub.X-lb.X) > 5*1e-10 and iterC < maxiter:
@@ -217,7 +206,7 @@ class FiniteMixtureDistribution(Distribution):
         if iterC == maxiter:
             warn("FiniteMixtureDistribution.ppf: Maxiter reached! Exiting. Bisection method might not have been converged. Maxdiff is %.10g" % ( max(ub.X-lb.X),))
 
-        
+        print ret.X
         return ret
 
 
@@ -233,8 +222,17 @@ class FiniteMixtureDistribution(Distribution):
     def array2primary(self,arr):
         K = len(self.param['P'])
         if 'alpha' in self.primary:
-            self.param['alpha'][0:K-1]= logistic(arr[0:K-1])
-            self.param['alpha'][-1]=1-sum(self.param['alpha'][0:K-1])
+            if any(arr[:K] > 40) or any(arr[:K] < -40):
+                warn("FiniteMixtureDistribution.array2primary: values of alpha to extreme. fixing that")
+                arr[:K][where(arr[:K] > 30)] = 30
+                arr[:K][where(arr[:K] < -30)] = -30
+                self.param['alpha'][0:K-1]= logistic(arr[0:K-1])
+                self.param['alpha'][-1]=1-sum(self.param['alpha'][0:K-1])
+                self.param['alpha'] = self.param['alpha']/sum(self.param['alpha'])
+            else:
+                self.param['alpha'][0:K-1]= logistic(arr[0:K-1])
+                self.param['alpha'][-1]=1-sum(self.param['alpha'][0:K-1])
+                
             arr = arr[K-1::]
         if 'P' in self.primary:
             for k in xrange(K):
@@ -344,7 +342,7 @@ class FiniteMixtureDistribution(Distribution):
                         par = par[mg:]
                         X = self.param['P'][k].loglik(dat)
                         L[k,:] = T[k,:]*X
-                    sys.stdout.write("\rcurrent ALL : %.6g"% (-mean(L.flatten()),))
+                    sys.stdout.write(80*" " + "\r" + 5*"\t" + "current ALL : %.10g"% (-mean(L.flatten()),))
                     sys.stdout.flush()
                     return -sum(L.flatten())/K/m
                 def df(ar):
@@ -379,14 +377,18 @@ class FiniteMixtureDistribution(Distribution):
             oldS = estep()
             tol = 1e-6
             if method == 'hybrid': tol = tol**.25
-            
-            while abs(diff)>tol:
+
+            iterC= 0
+            while abs(diff)>tol and iterC < maxiter:
                 mstep()
                 fv= estep()
                 diff = oldS-fv
                 oldS=fv
-                sys.stdout.write(50*" " +  "\rDiff: %.4g" % (diff,))
+                sys.stdout.write(80*" " +  "\r\tDiff: %.4g\t" % (diff,))
                 sys.stdout.flush()
+                iterC += 1
+            sys.stdout.write("\n")
+            sys.stdout.flush()
                 
         if method=='gradient' or method=='hybrid':
             n,m = dat.size()
@@ -394,7 +396,7 @@ class FiniteMixtureDistribution(Distribution):
             def f(arr):
                 self.array2primary(arr)
                 LL=-sum(self.loglik(dat))
-                sys.stdout.write(50*" "+ "\rnLL: %.10g \tcurrent ALL: %.10g" % (LL/(m*n),self.all(dat)))
+                sys.stdout.write(80*" "+ "\r\tnLL: %.10g \t\t\tcurrent ALL: %.10g" % (LL/(m*n),self.all(dat)))
                 sys.stdout.flush()
                 return LL/(m*n)
             
@@ -407,6 +409,6 @@ class FiniteMixtureDistribution(Distribution):
             diff = 100000;
             arr0 = self.primary2array()
 
-            optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=1000,gtol=1e-10)
+            optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=maxiter,gtol=1e-10)
             
 

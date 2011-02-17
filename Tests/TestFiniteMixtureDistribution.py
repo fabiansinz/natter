@@ -80,33 +80,33 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
     #     print "error in gradient: ", err
     #     self.assertTrue(err < 1e-01)
 
-    # def test_estimate(self):
-    #     # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
-    #     # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
-    #     P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+    def test_estimate(self):
+        # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
+        # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+        P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
 
-    #     mog = FiniteMixtureDistribution(P=P)
-    #     print mog
-    #     mog.histogram(self.dat,cdf=True)
-    #     show()
-    #     mog.estimate(self.dat,method='hybrid')
-    #     print mog
-    #     mog.histogram(self.dat,cdf=True)
-    #     print self.mog
-    #     show()
-    #     raw_input()
-
-
-    def test_ppf(self):
-        u = rand(100000)
-        dat = self.mog.ppf(u,(0*u+self.a+1e-6,0*u+self.b-1e-6))
-        self.mog.histogram(dat)
-
-        dat2 = self.mog.sample(100000)
-        self.mog.histogram(dat2)
-        
+        mog = FiniteMixtureDistribution(P=P)
+        print mog
+        mog.histogram(self.dat)
+        show()
+        mog.estimate(self.dat,method='hybrid')
+        print mog
+        mog.histogram(self.dat)
+        print self.mog
         show()
         raw_input()
+
+
+    # def test_ppf(self):
+    #     u = rand(100)
+    #     dat = self.mog.ppf(u,(0*u+self.a,0*u+self.b))
+    #     # self.mog.histogram(dat)
+
+    #     # dat2 = self.mog.sample(100000)
+    #     # self.mog.histogram(dat2)
+        
+    #     # show()
+    #     # raw_input()
         
 
  

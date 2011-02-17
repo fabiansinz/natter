@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
@@ -35,6 +35,7 @@ class TruncatedGaussian(Distribution):
 
     
     def __init__(self, *args,**kwargs):
+        self.numericalSigmaBoundary = 5.0
         # parse parameters correctly
         param = parseParameters(args,kwargs)
         
@@ -42,8 +43,8 @@ class TruncatedGaussian(Distribution):
         self.name = 'TruncatedGaussian Distribution'
         self.param = {'a':0.0,'b':1.0,'mu':1.0,'sigma':1.0}
         if param != None:
-            for k in param.keys():
-                self.param[k] = float(param[k])
+            for k,v in param.items():
+                self[k] = float(v)
         self.primary = ['mu','sigma']
 
 
@@ -236,17 +237,24 @@ class TruncatedGaussian(Distribution):
     
     def __setitem__(self,key,value):
         if key == 'mu':
-            if norm.cdf( (self.param['b']-value)/self.param['sigma']) - norm.cdf( (self.param['a']-value)/self.param['sigma']) < 1e-12:
-                warn("TruncatedGaussian.__setitem__: new value of mu too far from the interval [a,b]! leaving it as it is")
-            else:
-                self.param['mu'] = value
+            if value - self.param['a'] < -self.numericalSigmaBoundary*self.param['sigma']:
+                warn("TruncatedGaussian.__setitem__: new value of mu too low compared to a! Setting it to a-%i*sigma!" % (self.numericalSigmaBoundary,))
+                value = self.param['a']-self.numericalSigmaBoundary*self.param['sigma']
+            if value - self.param['b'] > self.numericalSigmaBoundary*self.param['sigma']:
+                warn("TruncatedGaussian.__setitem__: new value of mu too large compared to b! Setting it to b+%i*sigma!" % (self.numericalSigmaBoundary,))
+                value = self.param['b']+self.numericalSigmaBoundary*self.param['sigma']
+            self.param['mu'] = value
         elif key == 'sigma':
-            if norm.cdf( (self.param['b']-self.param['mu'])/value) - norm.cdf( (self.param['a']-self.param['mu'])/value) < 1e-12:
-                warn("TruncatedGaussian.__setitem__: new value of sigma too extreme from the interval [a,b]! leaving it as it is")
-            else:
-                if value <0:
-                    warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)")
-                self.param[key] = abs(value)
+            if self.param['mu'] < self.param['a'] and value < 1.0/self.numericalSigmaBoundary*(self.param['a'] - self.param['mu']):
+                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(a-mu)!" % (self.numericalSigmaBoundary,))
+                value = 1.0/self.numericalSigmaBoundary*(self.param['a'] - self.param['mu'])
+            if self.param['mu'] > self.param['b'] and value < 1.0/self.numericalSigmaBoundary*(self.param['mu'] - self.param['b']):
+                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(mu-b)!" % (self.numericalSigmaBoundary,))
+                value = 1.0/self.numericalSigmaBoundary*(self.param['mu'] - self.param['b'])
+            if value <0:
+                warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)")
+                value = abs(value)
+            self.param[key] = value
 
         elif key in self.parameters('keys'):
             self.param[key] = value
