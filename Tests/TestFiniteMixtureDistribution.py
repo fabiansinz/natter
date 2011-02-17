@@ -46,55 +46,55 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
 
 
 
-    # def test_primary2arrayConversion(self):
-    #     p = self.mog.primary2array()
-    #     mog2 = self.mog.copy()
-    #     mog2.array2primary(p)
-    #     p2 = mog2.primary2array()
-    #     self.assertTrue(all(abs(p2-p)) < 1e-6,'Primary2array conversion does not leave parameters invariant')
+    def test_primary2arrayConversion(self):
+        p = self.mog.primary2array()
+        mog2 = self.mog.copy()
+        mog2.array2primary(p)
+        p2 = mog2.primary2array()
+        self.assertTrue(all(abs(p2-p)) < 1e-6,'Primary2array conversion does not leave parameters invariant')
 
-    # def test_loglik(self):
-    #     nsamples = 1000000
-    #     Gauss = Gaussian(n=1,mu=array([0]),sigma=array([[4]]))
-    #     dat = Gauss.sample(nsamples)
-    #     logWeights = self.mog.loglik(dat) - Gauss.loglik(dat)
-    #     Z = logsumexp(logWeights)-log(nsamples)
-    #     print "test_loglik: z: " ,exp(Z)
-    #     self.assertTrue(abs(exp(Z)-1)<1e-01)
+    def test_loglik(self):
+        nsamples = 1000000
+        Gauss = Gaussian(n=1,mu=array([0]),sigma=array([[4]]))
+        dat = Gauss.sample(nsamples)
+        logWeights = self.mog.loglik(dat) - Gauss.loglik(dat)
+        Z = logsumexp(logWeights)-log(nsamples)
+        print "test_loglik: z: " ,exp(Z)
+        self.assertTrue(abs(exp(Z)-1)<1e-01)
 
 
-    # def test_dldtheta(self):
-    #     arr0 = self.mog.primary2array()
-    #     def f(X):
-    #         self.mog.array2primary(X)
-    #         lv = self.mog.loglik(self.dat);
-    #         slv = mean(lv)
-    #         return slv
-    #     def df(X):
-    #         self.mog.array2primary(X)
-    #         gv = self.mog.dldtheta(self.dat)
-    #         sgv = mean(gv, axis=1);
-    #         return sgv
-    #     # arr0 = abs(randn(len(arr0)))+1
-    #     err = check_grad(f,df,arr0)
-    #     print "error in gradient: ", err
-    #     self.assertTrue(err < 1e-01)
+    def test_dldtheta(self):
+        arr0 = self.mog.primary2array()
+        def f(X):
+            self.mog.array2primary(X)
+            lv = self.mog.loglik(self.dat);
+            slv = mean(lv)
+            return slv
+        def df(X):
+            self.mog.array2primary(X)
+            gv = self.mog.dldtheta(self.dat)
+            sgv = mean(gv, axis=1);
+            return sgv
+        # arr0 = abs(randn(len(arr0)))+1
+        err = check_grad(f,df,arr0)
+        print "error in gradient: ", err
+        self.assertTrue(err < 1e-01)
 
-    def test_estimate(self):
-        # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
-        # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
-        P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+    # def test_estimate(self):
+    #     # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
+    #     # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+    #     P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
 
-        mog = FiniteMixtureDistribution(P=P)
-        print mog
-        mog.histogram(self.dat)
-        show()
-        mog.estimate(self.dat,method='hybrid')
-        print mog
-        mog.histogram(self.dat)
-        print self.mog
-        show()
-        raw_input()
+    #     mog = FiniteMixtureDistribution(P=P)
+    #     print mog
+    #     mog.histogram(self.dat)
+    #     show()
+    #     mog.estimate(self.dat,method='hybrid')
+    #     print mog
+    #     mog.histogram(self.dat)
+    #     print self.mog
+    #     show()
+    #     raw_input()
 
 
     # def test_ppf(self):
