@@ -192,7 +192,8 @@ class FiniteMixtureDistribution(Distribution):
             c = self.cdf(dat)
             return - self.pdf(dat)/(c*(1-c))
 
-        err = check_grad(f,df,ret)
+        print f(ret)
+        print df(ret)
         print err
             
 
