@@ -1,6 +1,6 @@
 from __future__ import division
 from Distribution import Distribution
-from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer
+from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer,sqrt
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
 from natter.DataModule import Data 
@@ -8,7 +8,8 @@ from natter.DataModule import Data
 from scipy import optimize
 from copy import deepcopy
 from scipy.linalg import solve_triangular
-
+from scipy.stats import norm 
+from natter.Auxiliary.Errors import DimensionalityError
 
 class Gaussian(Distribution):
     """
@@ -220,8 +221,42 @@ class Gaussian(Distribution):
                 self.array2primary(arr)
                 return -sum(self.dldtheta(dat),axis=1)
             arr0 = self.primary2array()
-            arropt = optimize.fmin_bfgs(f,arr0,df)
+            optimize.fmin_bfgs(f,arr0,df)
                 
             
         
     
+    def cdf(self,dat):
+        '''
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        Works only for n=1.
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the quantiles.
+        :rtype:    numpy.array
+           
+        '''
+        if self.param['n'] == 1:
+            return squeeze(norm.cdf(dat.X,loc=self.param['mu'],scale=sqrt(self.param['sigma'])))
+        else:
+            raise DimensionalityError('Gaussian cdf only works for n=1!')
+
+
+    def ppf(self,u):
+        '''
+
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        if self.param['n'] == 1:
+            return Data(norm.ppf(u,loc=self.param['mu'],scale=sqrt(self.param['sigma'])),"Percentiles from a Gaussian distribution")
+        else:
+            raise DimensionalityError('Gaussian ppf only works for n=1!')

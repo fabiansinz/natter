@@ -175,7 +175,7 @@ class FiniteMixtureDistribution(Distribution):
 
         ret = Data(u,'Percentiles from ' + self.name)
         # use bisection method on to invert
-        v = squeeze(log(u/(1-u)))
+        #v = squeeze(log(u/(1-u)))
         if bounds is not None:
             lb = Data(bounds[0])
             ub = Data(bounds[1])
@@ -206,7 +206,6 @@ class FiniteMixtureDistribution(Distribution):
         if iterC == maxiter:
             warn("FiniteMixtureDistribution.ppf: Maxiter reached! Exiting. Bisection method might not have been converged. Maxdiff is %.10g" % ( max(ub.X-lb.X),))
 
-        print ret.X
         return ret
 
 

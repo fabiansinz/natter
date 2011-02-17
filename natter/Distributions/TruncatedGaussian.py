@@ -35,7 +35,7 @@ class TruncatedGaussian(Distribution):
 
     
     def __init__(self, *args,**kwargs):
-        self.numericalSigmaBoundary = 5.0
+        self.numericalSigmaBoundary = 4.0
         # parse parameters correctly
         param = parseParameters(args,kwargs)
         

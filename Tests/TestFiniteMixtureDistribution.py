@@ -1,7 +1,7 @@
 from __future__ import division
 from natter.Distributions import FiniteMixtureDistribution,  Gaussian, TruncatedGaussian, Gamma
 from natter.Distributions import Gaussian
-from numpy import log,pi,sum,array,ones,eye,sqrt,exp,mean
+from numpy import log,pi,sum,array,ones,eye,sqrt,exp,mean,all
 from numpy.linalg import norm,cholesky,inv
 import unittest
 from numpy.random import randn, rand
@@ -15,20 +15,6 @@ from matplotlib.pyplot import show
 class TestFiniteMixtureDistribution(unittest.TestCase):
 
 
-    # def test_init(self):
-    #     P = [Gaussian(n=1,mu=10*randn(1,1),sigma=5*rand(1,1)) for k in xrange(10)]
-    #     p = FiniteMixtureDistribution(P=P)
-    #     theta =  p.primary2array()
-    #     theta *=2
-    #     print p
-    #     p.array2primary(theta)
-    #     print p
-    #     # dat =  p.sample(100000)
-    #     # p.histogram(dat)
-    #     # show()
-    #     # raw_input()
-    #     self.assertTrue(True)
-    
     def setUp(self):
         self.n = 1
         self.K = 3
@@ -37,8 +23,8 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         self.b = 10
         alpha = rand(self.K)
         alpha = alpha/sum(alpha)
-        #P = [Gaussian(n=1,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
-        P = [TruncatedGaussian(a=self.a,b=self.b,mu=3*randn(1),sigma=3*rand(1,1)+1) for k in xrange(self.K)]
+        P = [Gaussian(n=1,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        #P = [TruncatedGaussian(a=self.a,b=self.b,mu=3*randn(1),sigma=3*rand(1,1)+1) for k in xrange(self.K)]
         #P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
         self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
         self.mog.primary=['alpha','P']
@@ -79,6 +65,11 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         err = check_grad(f,df,arr0)
         print "error in gradient: ", err
         self.assertTrue(err < 1e-01)
+
+    def test_cdf_ppf(self):
+        u = rand(10)
+        u2 = self.mog.cdf(self.mog.ppf(u))
+        self.assertTrue(all(abs(u-u2)< 1e-6),'ppf and cdf are not consistent!')
 
     # def test_estimate(self):
     #     # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
