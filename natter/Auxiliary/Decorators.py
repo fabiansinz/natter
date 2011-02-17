@@ -38,10 +38,10 @@ class DataSupportChecker:
                 self.ub = args[0].param[self.ub]
             if any(args[self.nArg].X < self.lb):
                 warn("Data is outside the distributions support. Setting %i data points to support boundary." % (sum( (args[self.nArg].X < self.lb).flatten() ),))
-                args[self.nArg].X[where(args[self.nArg].X < self.lb)] = self.lb 
+                args[self.nArg].X[where(args[self.nArg].X < self.lb)] = self.lb
             if any(args[self.nArg].X > self.ub):
                 warn("Data is outside the distributions support. Setting %i data points to support boundary."% (sum( (args[self.nArg].X > self.ub).flatten() ),))
-                args[self.nArg].X[where(args[self.nArg].X > self.ub)] = self.ub 
+                args[self.nArg].X[where(args[self.nArg].X > self.ub)] = self.ub
 
             return f(*args)
         return wrapped_f
