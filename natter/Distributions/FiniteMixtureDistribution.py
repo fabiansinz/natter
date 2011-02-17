@@ -314,7 +314,7 @@ class FiniteMixtureDistribution(Distribution):
         """
         K = len(self.param['P'])
         if method==None:
-            method = 'hybrid'
+            method = 'EM'
             print "Using: %s-method " % (method,)
 
 
