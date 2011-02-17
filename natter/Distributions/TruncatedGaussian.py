@@ -6,6 +6,7 @@ from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
 from warnings import warn
+from natter.Auxiliary.Decorators import DataSupportChecker
 
 class TruncatedGaussian(Distribution):
     """
@@ -63,6 +64,7 @@ class TruncatedGaussian(Distribution):
         return Data(truncnorm.rvs(a,b,loc=self.param['mu'],scale=self.param['sigma'],size=m),'%i samples from %s' % (m,self.name))
         
 
+    @DataSupportChecker(1,'a','b')
     def loglik(self,dat):
         '''
 
@@ -99,6 +101,7 @@ class TruncatedGaussian(Distribution):
         return ll
     
     
+    @DataSupportChecker(1,'a','b')
     def pdf(self,dat):
         '''
 
@@ -112,7 +115,7 @@ class TruncatedGaussian(Distribution):
         '''
         return exp(self.loglik(dat))
 
-
+    @DataSupportChecker(1,'a','b')
     def cdf(self,dat):
         '''
 
@@ -146,7 +149,7 @@ class TruncatedGaussian(Distribution):
      
 
 
-
+    @DataSupportChecker(1,'a','b')
     def estimate(self,dat):
         '''
 
@@ -168,6 +171,7 @@ class TruncatedGaussian(Distribution):
         self.array2primary(tmp)        
 
 
+    @DataSupportChecker(1,'a','b')
     def dldtheta(self,dat):
         """
         Evaluates the gradient of the TruncatedGaussian loglikelihood with respect to the primary parameters.

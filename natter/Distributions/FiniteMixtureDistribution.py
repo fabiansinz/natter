@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from Gaussian import Gaussian
-from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze
+from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze, Inf, max, abs
 from numpy.random.mtrand import multinomial
 from natter.DataModule import Data
 from numpy.random import shuffle
@@ -12,7 +12,7 @@ from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Errors import ValueError
 from natter.Auxiliary.Numerics import logsumexp
-from scipy.optimize import check_grad
+from warnings import warn
 
 def logistic(eta):
     return 1/(1+exp(-eta))
@@ -155,7 +155,7 @@ class FiniteMixtureDistribution(Distribution):
         '''
         return exp(self.loglik(dat))
 
-    def ppf(self,u):
+    def ppf(self,u,bounds=None,maxiter=80):
         '''
 
         Evaluates the percentile function (inverse c.d.f.) for a given
@@ -166,37 +166,51 @@ class FiniteMixtureDistribution(Distribution):
 
         :param X: Percentiles for which the ppf will be computed.
         :type X: numpy.array
+        :param bounds: a tuple of two array of the same size of u that specifies the initial upper and lower boundaries for the bisection method.
+        :type bounds: tuple of two numpy.array 
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
         '''
         # 1st: get a rough estimate where the point will be
-        K = len(self.param['P'])
-        a = cumsum(self.param['alpha'])
-        U = -(reshape(a,(K,1))-reshape(u,(1,len(u))))
-        U[where(U <=0)] = 0
-        U[where(U > 0)] = 1
-        I = sum(U,0)
+        # K = len(self.param['P'])
+        # a = cumsum(self.param['alpha'])
+        # U = -(reshape(a,(K,1))-reshape(u,(1,len(u))))
+        # U[where(U <=0)] = 0
+        # U[where(U > 0)] = 1
+        # I = sum(U,0)
 
         ret = Data(u,'Percentiles from ' + self.name)
-        for k in xrange(K):
-            i = where(I == k)
-            ret.X[:,i[0]] = self.param['P'][k].ppf(u[i[0]]).X
+        # for k in xrange(K):
+        #     i = where(I == k)
+        #     ret.X[:,i[0]] = self.param['P'][k].ppf(u[i[0]]).X
 
-        # 2nd use Newton Raphson with log function to invert it
+        # 2nd use bisection method to invert
         v = squeeze(log(u/(1-u)))
+        if bounds is not None:
+            lb = Data(bounds[0])
+            ub = Data(bounds[1])
+        else:
+            lb = Data(u*0-1)
+            ub = Data(u*0+1)
         def f(dat):
             c = self.cdf(dat)
             return v - log(c/(1-c))
-        def df(dat):
-            c = self.cdf(dat)
-            return - self.pdf(dat)/(c*(1-c))
+            # return u-self.cdf(dat)
 
-        print f(ret)
-        print df(ret)
-        print err
-            
+        iterC = 0
+        while max(ub.X-lb.X) > 5*1e-10 and iterC < maxiter:
+            ret.X = (ub.X+lb.X)/2
+            mf = f(ret)
+            ind0 = where(mf*f(lb) < 0)
+            ind1 = where(mf*f(ub) < 0)
+            ub.X[0,ind0[0]] = ret.X[0,ind0[0]]
+            lb.X[0,ind1[0]] = ret.X[0,ind1[0]]
+            iterC +=1
+        if iterC == maxiter:
+            warn("FiniteMixtureDistribution.ppf: Maxiter reached! Exiting. Bisection method might not have been converged. Maxdiff is %.10g" % ( max(ub.X-lb.X),))
 
+        
         return ret
 
 

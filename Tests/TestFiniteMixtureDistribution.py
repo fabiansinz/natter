@@ -33,10 +33,12 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         self.n = 1
         self.K = 3
         self.nsamples = 10000
+        self.a = 0.1
+        self.b = 10
         alpha = rand(self.K)
         alpha = alpha/sum(alpha)
         #P = [Gaussian(n=1,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
-        P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)+1) for k in xrange(self.K)]
+        P = [TruncatedGaussian(a=self.a,b=self.b,mu=3*randn(1),sigma=3*rand(1,1)+1) for k in xrange(self.K)]
         #P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
         self.mog = FiniteMixtureDistribution(P=P,alpha=alpha)
         self.mog.primary=['alpha','P']
@@ -96,9 +98,13 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
 
 
     def test_ppf(self):
-        u = rand(10)
-        dat = self.mog.ppf(u)
-        # self.mog.histogram(dat)
+        u = rand(100000)
+        dat = self.mog.ppf(u,(0*u+self.a+1e-6,0*u+self.b-1e-6))
+        self.mog.histogram(dat)
+
+        dat2 = self.mog.sample(100000)
+        self.mog.histogram(dat2)
+        
         show()
         raw_input()
         
