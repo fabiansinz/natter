@@ -1,5 +1,5 @@
 import types
-from numpy import where, any,squeeze
+from numpy import where, any,squeeze, sum
 from warnings import warn
 
 class DataSupportChecker:
@@ -37,10 +37,10 @@ class DataSupportChecker:
             if type(self.ub) == types.StringType:
                 self.ub = args[0].param[self.ub]
             if any(args[self.nArg].X < self.lb):
-                warn("Data is outside the distributions support. Setting data points to support boundary.")
+                warn("Data is outside the distributions support. Setting %i data points to support boundary." % (sum( (args[self.nArg].X < self.lb).flatten() ),))
                 args[self.nArg].X[where(args[self.nArg].X < self.lb)] = self.lb 
             if any(args[self.nArg].X > self.ub):
-                warn("Data is outside the distributions support. Setting data points to support boundary.")
+                warn("Data is outside the distributions support. Setting %i data points to support boundary."% (sum( (args[self.nArg].X > self.ub).flatten() ),))
                 args[self.nArg].X[where(args[self.nArg].X > self.ub)] = self.ub 
 
             return f(*args)

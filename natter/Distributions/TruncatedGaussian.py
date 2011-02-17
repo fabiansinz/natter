@@ -35,7 +35,7 @@ class TruncatedGaussian(Distribution):
 
     
     def __init__(self, *args,**kwargs):
-        self.numericalSigmaBoundary = 4.0
+        self.numericalSigmaBoundary = 6.0
         # parse parameters correctly
         param = parseParameters(args,kwargs)
         
@@ -167,7 +167,7 @@ class TruncatedGaussian(Distribution):
         if 'mu' in self.primary:
             bounds.append((None,None))
         if 'sigma' in self.primary:
-            bounds.append((1e-2,None))
+            bounds.append((1e-6,None))
         tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=bounds,factr=10.0)[0]
         self.array2primary(tmp)        
 
@@ -238,22 +238,22 @@ class TruncatedGaussian(Distribution):
     def __setitem__(self,key,value):
         if key == 'mu':
             if value - self.param['a'] < -self.numericalSigmaBoundary*self.param['sigma']:
+                warn("TruncatedGaussian.__setitem__: new value of mu too low compared to a! Setting it to a-%i*sigma!" % (self.numericalSigmaBoundary,))
                 value = self.param['a']-self.numericalSigmaBoundary*self.param['sigma']
-                warn("TruncatedGaussian.__setitem__: new value of mu too low compared to a! Setting it to a-%i*sigma=%.8g!" % (self.numericalSigmaBoundary,value))
             if value - self.param['b'] > self.numericalSigmaBoundary*self.param['sigma']:
+                warn("TruncatedGaussian.__setitem__: new value of mu too large compared to b! Setting it to b+%i*sigma!" % (self.numericalSigmaBoundary,))
                 value = self.param['b']+self.numericalSigmaBoundary*self.param['sigma']
-                warn("TruncatedGaussian.__setitem__: new value of mu too large compared to b! Setting it to b+%i*sigma=%.8g!" % (self.numericalSigmaBoundary,value))
             self.param['mu'] = value
         elif key == 'sigma':
             if self.param['mu'] < self.param['a'] and value < 1.0/self.numericalSigmaBoundary*(self.param['a'] - self.param['mu']):
+                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(a-mu)!" % (self.numericalSigmaBoundary,))
                 value = 1.0/self.numericalSigmaBoundary*(self.param['a'] - self.param['mu'])
-                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(a-mu)=%.8g!" % (self.numericalSigmaBoundary,value))
             if self.param['mu'] > self.param['b'] and value < 1.0/self.numericalSigmaBoundary*(self.param['mu'] - self.param['b']):
+                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(mu-b)!" % (self.numericalSigmaBoundary,))
                 value = 1.0/self.numericalSigmaBoundary*(self.param['mu'] - self.param['b'])
-                warn("TruncatedGaussian.__setitem__: new value of sigma too small! Setting it to 1/%i*(mu-b)=%.8g!" % (self.numericalSigmaBoundary,value))
             if value <0:
+                warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)")
                 value = abs(value)
-                warn("TruncatedGaussian.__setitem__: sigma cannot be negative! Setting it to abs(sigma)=%.8g" % (value,))
             if abs(value) < 1e-3:
                 warn("TruncatedGaussian.__setitem__: sigma cannot be too small! Setting it to 1e-3")
                 value = 1e-3

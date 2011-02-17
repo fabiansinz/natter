@@ -317,7 +317,6 @@ class FiniteMixtureDistribution(Distribution):
             method = 'EM'
             print "Using: %s-method " % (method,)
 
-
         if method=="EM" or method == 'hybrid':
             n,m = dat.size()
             T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
@@ -374,7 +373,7 @@ class FiniteMixtureDistribution(Distribution):
             
             diff = 10000000
             oldS = estep()
-            tol = 1e-6
+            tol = 1e-7
             if method == 'hybrid': tol = tol**.25
 
             iterC= 0
@@ -386,6 +385,8 @@ class FiniteMixtureDistribution(Distribution):
                 sys.stdout.write(80*" " +  "\r\tDiff: %.4g\t" % (diff,))
                 sys.stdout.flush()
                 iterC += 1
+            if iterC == maxiter:
+                sys.stdout.write("\n\tEM maxiter reached! EM might not have converged!")
             sys.stdout.write("\n")
             sys.stdout.flush()
                 
