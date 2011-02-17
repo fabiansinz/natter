@@ -1,5 +1,5 @@
 import types
-from numpy import where, any
+from numpy import where, any,squeeze
 from warnings import warn
 
 class DataSupportChecker:
@@ -48,3 +48,18 @@ class DataSupportChecker:
 
 
 
+def Squeezer(n):
+    """
+    Decorator that squeezes the nth argument.
+
+    :param n: number of the argument to be squeezed
+    :type n: int
+    
+    """
+    def wrap(f):
+        def wrapped_f(*args):
+            args[n] = squeeze(args[n])
+            return f(*args)
+        return wrapped_f
+    return wrap
+ 

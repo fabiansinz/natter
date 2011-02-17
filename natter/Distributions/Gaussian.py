@@ -10,6 +10,7 @@ from copy import deepcopy
 from scipy.linalg import solve_triangular
 from scipy.stats import norm 
 from natter.Auxiliary.Errors import DimensionalityError
+from natter.Auxiliary.Decorators import Squeezer
 
 class Gaussian(Distribution):
     """
@@ -169,6 +170,7 @@ class Gaussian(Distribution):
         if key == 'CholP':
             self.cholP = value
             self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(self.param['n'])))
+            
     def dldtheta(self,dat):
         """
         Calculates the gradient with respect to the primary
@@ -244,7 +246,7 @@ class Gaussian(Distribution):
         else:
             raise DimensionalityError('Gaussian cdf only works for n=1!')
 
-
+    @Squeezer(1)
     def ppf(self,u):
         '''
 
