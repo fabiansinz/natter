@@ -4,7 +4,7 @@ import string
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones
+from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones, complex_
 import types
 from matplotlib.pyplot import text
 from matplotlib import pyplot
@@ -322,7 +322,7 @@ class LinearTransform(Transform.Transform):
         W = vstack((wx.flatten('F'),wy.flatten('F')))
         
         nx,ny = meshgrid(arange(p),arange(p))
-        F = zeros((W.shape[1],p**2))
+        F = zeros((W.shape[1],p**2),dtype=complex_)
         for i in xrange(W.shape[1]):
             tmp = exp(1j*2.0*pi/p * (W[0,i]*nx + W[1,i]*ny))
             F[i,:] = tmp.flatten('F')
