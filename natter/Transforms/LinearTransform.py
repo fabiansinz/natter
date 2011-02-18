@@ -352,6 +352,7 @@ class LinearTransform(Transform.Transform):
             w[:,i] =  fmin_l_bfgs_b(g, array(w[:,i]) , fprime=gprime, bounds=( [(-floor(p/2.0),floor(p/2.0)),(0,floor(p/2.0))]))[0]
             
         stderr.write("\n")
+        return w
 
     def getHistory(self):
         """
