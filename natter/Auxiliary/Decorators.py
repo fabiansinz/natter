@@ -58,6 +58,7 @@ def Squeezer(n):
     """
     def wrap(f):
         def wrapped_f(*args):
+            args = list(args)
             args[n] = squeeze(args[n])
             return f(*args)
         return wrapped_f

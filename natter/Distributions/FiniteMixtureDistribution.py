@@ -13,6 +13,7 @@ from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Errors import ValueError
 from natter.Auxiliary.Numerics import logsumexp
 from warnings import warn
+from natter.Auxiliary.Decorators import Squeezer
 
 def logistic(eta):
     return 1/(1+exp(-eta))
@@ -155,6 +156,7 @@ class FiniteMixtureDistribution(Distribution):
         '''
         return exp(self.loglik(dat))
 
+    @Squeezer(1)
     def ppf(self,u,bounds=None,maxiter=80):
         '''
 
@@ -196,8 +198,8 @@ class FiniteMixtureDistribution(Distribution):
             if any(lf*uf>0):
                 warn("ppf lost the root! resetting boundaries")
                 ind0 = where(lf*uf > 0)
-                ub[ind0] = 4*abs(ub[ind0])
-                lb[ind0] = -4*abs(lb[ind0])
+                ub.X[0,ind0[0]] = 4*abs(ub.X[0,ind0[0]]+1)
+                lb.X[0,ind0[0]] = -4*abs(lb.X[0,ind0[0]]+1)
             ind0 = where(mf*lf < 0)
             ind1 = where(mf*uf < 0)
             ub.X[0,ind0[0]] = ret.X[0,ind0[0]]
