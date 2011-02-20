@@ -182,7 +182,7 @@ class FiniteMixtureDistribution(Distribution):
             lb = Data(bounds[0])
             ub = Data(bounds[1])
         elif self.param['P'][0].param.has_key('a') and self.param['P'][0].param.has_key('b'):
-            warn("\tAssuming that the keys a and b in %s refer to boundaries. Using those..." % (self.param['P'][0].name,))
+            warn("\tAssuming that the keys a=%.2g and b=%.2g in %s refer to boundaries. Using those..." % (self.param['P'][0]['a'],self.param['P'][0]['b'],self.param['P'][0].name,))
             lb = Data(0*u+self.param['P'][0]['a'])
             ub = Data(0*u+self.param['P'][0]['b'])
         else:
@@ -209,8 +209,8 @@ class FiniteMixtureDistribution(Distribution):
             ub.X[0,ind0[0]] = ret.X[0,ind0[0]]
             lb.X[0,ind1[0]] = ret.X[0,ind1[0]]
             iterC +=1
-            # sys.stdout.write(80*" " + "\r\tFiniteMixtureDistribution.ppf maxdiff: %.4g, meandiff: %.4g" % (max(ub.X-lb.X),mean(ub.X-lb.X)))
-            # sys.stdout.flush()
+            sys.stdout.write(80*" " + "\r\tFiniteMixtureDistribution.ppf maxdiff: %.4g, meandiff: %.4g" % (max(ub.X-lb.X),mean(ub.X-lb.X)))
+            sys.stdout.flush()
         if iterC == maxiter:
             warn("FiniteMixtureDistribution.ppf: Maxiter reached! Exiting. Bisection method might not have been converged. Maxdiff is %.10g. Mean diff is %.4g" % ( max(ub.X-lb.X),mean(ub.X-lb.X)))
         #sys.stdout.write("\n")

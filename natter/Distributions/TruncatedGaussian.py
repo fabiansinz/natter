@@ -1,12 +1,12 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array,where
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
 from warnings import warn
-from natter.Auxiliary.Decorators import DataSupportChecker
+from natter.Auxiliary.Decorators import DataSupportChecker, ArraySupportChecker
 
 class TruncatedGaussian(Distribution):
     """
@@ -128,10 +128,11 @@ class TruncatedGaussian(Distribution):
         :rtype:    numpy.array
            
         '''
+        #print dat.X
         a,b = (self.param['a']-self.param['mu'])/self.param['sigma'],(self.param['b']-self.param['mu'])/self.param['sigma']
         return  squeeze(truncnorm.cdf(dat.X,a,b,loc=self.param['mu'],scale=self.param['sigma']))
 
-
+    @ArraySupportChecker(1,0.0,1.0)
     def ppf(self,u):
         '''
 
@@ -143,6 +144,7 @@ class TruncatedGaussian(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
+        
         a,b = (self.param['a']-self.param['mu'])/self.param['sigma'],(self.param['b']-self.param['mu'])/self.param['sigma']
         return Data(truncnorm.ppf(u,a,b,loc=self.param['mu'],scale=self.param['sigma']), 'Percentiles from a %s' % (self.name,))
 
