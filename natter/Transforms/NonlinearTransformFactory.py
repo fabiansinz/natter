@@ -7,6 +7,26 @@ from natter.Auxiliary import Errors
 
 ################################ NONLINEAR FILTERS ########################################
 
+def ElementWise(g):
+    """
+    Creates a non-linear filter that applies the function g to each
+    dimension of the data the filter is applied to. g must take a numpy.array and return a numpy array.q
+
+    
+    
+    :param g: Function handle that specifies the tranformation on each dimension. 
+    :type g: function handle
+    :returns: A non-linear filter that changes applies g dimensionwise
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    """
+    def tr(dat):
+        ret = dat.copy()
+        for k in xrange(ret.dim()):
+            ret.X[k,:] = g(ret.X[k,:])
+        return ret
+    return NonlinearTransform(tr,"Elementwise non-linear transformation.")
+
 def MarginalHistogramEqualization(psource,ptarget=None):
     """
     Creates a non-linear filter that changes the marginal distribution
