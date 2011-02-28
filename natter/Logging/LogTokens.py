@@ -41,6 +41,7 @@ class LogToken:
 
 
 
+
 ##############################################
 class PyInfo(LogToken):
     """

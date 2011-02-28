@@ -259,6 +259,6 @@ class Gaussian(Distribution):
            
         '''
         if self.param['n'] == 1:
-            return Data(norm.ppf(u,loc=self.param['mu'],scale=sqrt(self.param['sigma'])),"Percentiles from a Gaussian distribution")
+            return Data(norm.ppf(u,loc=self.param['mu'],scale=sqrt(self.param['sigma'][0,0])),"Percentiles from a Gaussian distribution")
         else:
             raise DimensionalityError('Gaussian ppf only works for n=1!')

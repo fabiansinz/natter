@@ -203,11 +203,11 @@ class Distribution(LogToken):
             s += '\t' + k + ': '
             if type(self[k]) == types.ListType:
                 if isinstance(self[k][0],Distribution):
-                    ss = "list of %d distributions from %s" % (len(self[k]), ", ".join(unique(array([p.name for p in self[k]],dtype=object))),)
+                    ss = "list of %d distributions of types %s" % (len(self[k]), ", ".join(unique(array([p.name for p in self[k]],dtype=object))),)
                 elif type(self[k][0]) == types.ListType:
                     ss = "list of %d lists" % (len(self[k]),)
                 elif type(self[k][0]) == types.TupleType:
-                    ss = "list of %d tuples" % (len(self[k]),)
+                    ss = "list of %d tuples of lengths %s" % (len(self[k]),", ".join(unique(array([str(len(elem)) for elem in self[k]]))))
                 else:
                     ss = "list of %d \"%s\" objects" % (len(self[k]),str(self[k][0]))
             else:
@@ -273,7 +273,7 @@ class Distribution(LogToken):
             fig = plt.figure()
             ax = fig.add_axes([.05,.05,.9,.9])
         x =squeeze(dat.X)
-        n, bins, patches = ax.hist(x, max(sh)/200, normed=1, facecolor='blue', alpha=0.8)
+        n, bins, patches = ax.hist(x, max(sh)/300, normed=1, facecolor='blue', alpha=0.8)
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
         y = squeeze(self.pdf( Data(bincenters)))
