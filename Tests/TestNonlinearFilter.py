@@ -15,8 +15,9 @@ class TestNonlinearFilter(unittest.TestCase):
         print "Testing Radial Factorization ..."
         sys.stdout.flush()
         p = np.random.rand()+1.0
-        psource = Distributions.LpSphericallySymmetric({'p':p,'rp':Distributions.Gamma({'u':2.0*np.random.rand()+1.0,'s':5.0*np.random.rand()+1.0})})
-        ptarget = Distributions.LpGeneralizedNormal({'p':p,'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0)})
+        n = 5
+        psource = Distributions.LpSphericallySymmetric({'n':n,'p':p,'rp':Distributions.Gamma({'u':2.0*np.random.rand()+1.0,'s':5.0*np.random.rand()+1.0})})
+        ptarget = Distributions.LpGeneralizedNormal({'n':n,'p':p,'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0)})
 
         F = NonlinearTransformFactory.RadialFactorization(psource)
 

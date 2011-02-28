@@ -1,3 +1,4 @@
+from __future__ import division
 from LpSphericallySymmetric import LpSphericallySymmetric
 from GammaP import GammaP
 from natter.DataModule import Data

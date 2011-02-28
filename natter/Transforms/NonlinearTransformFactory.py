@@ -90,7 +90,8 @@ def RadialFactorization(psource):
     """
     if not isinstance(psource,LpSphericallySymmetric):
         raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
-    ptarget = LpGeneralizedNormal({'s':(special.gamma(1.0/psource.param['p'])/special.gamma(3.0/psource.param['p']))**(psource.param['p']/2.0), 'p':psource.param['p']})
+    p = psource.param['p']
+    ptarget = LpGeneralizedNormal({'n':psource['n'],'s':(special.gamma(1.0/p)/special.gamma(3.0/p))**(p/2.0), 'p':p})
     return RadialTransformation(psource,ptarget)
 
 def RadialTransformation(psource,ptarget):
