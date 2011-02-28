@@ -1,3 +1,4 @@
+from __future__ import division
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text
@@ -138,7 +139,7 @@ class Data(LogToken):
         :returns: A new Data object containing the norms.
         :rtype: natter.DataModule.Data
         """
-        return Data(sum(abs(self.X)**p,0)**(1/p))
+        return Data(sum(abs(self.X)**p,axis=0)**(1.0/p))
 
     def normalize(self,p=2.0):
         """
