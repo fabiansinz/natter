@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where,int64
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text
 import pylab as pl
@@ -160,6 +160,10 @@ class Data(LogToken):
         h.append('Exponentiated with ' + str(a))
         return Data(self.X.copy()**float(a),self.name,h)
 
+    def __add__(self,o):
+        self.append(o)
+        return self
+
     def plot(self):
         """
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
@@ -275,9 +279,8 @@ class Data(LogToken):
         tmp2 = array(self.X[key])
         if type(key[0]) == types.IntType:
             tmp2 = reshape(tmp2,(1,len(tmp2)))
-        elif type(key[1]) == types.IntType:
-            tmp2 = reshape(tmp2,(len(tmp2),1))
-            
+        elif type(key[1]) == types.IntType or type(key[1] == int64):
+            tmp2 = reshape(tmp2,(tmp2.shape[0],1))
         return Data(tmp2,self.name,tmp)
         
     def plotPatches(self,m=-1, plotNumbers=False):

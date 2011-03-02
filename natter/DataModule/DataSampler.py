@@ -43,7 +43,7 @@ def gratings(p,T,omega,tau):
     :param omega: frequency vectors
     :type omega: numpy.array of shape 2 x m
     :param tau: temporal frequencies
-    :type tau: numpy.array of shape 2 x |tau|
+    :type tau: numpy.array of shape 1 x |tau|
     :returns: a data object containing the gratings 
     :rtype: natter.DataModule.Data
     """
