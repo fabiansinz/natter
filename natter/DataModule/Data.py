@@ -1,7 +1,7 @@
 from __future__ import division
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where,int64
 from  natter.Auxiliary import  Errors, Plotting, save
-from matplotlib.pyplot import scatter,text
+from matplotlib.pyplot import scatter,text, figure
 import pylab as pl
 from numpy.linalg import qr, svd
 import types
@@ -290,6 +290,7 @@ class Data(LogToken):
         :param m: Number of patches to be plotted.
         :type m: int 
         """
+        fig = figure()
         if m == -1:
             m = self.size(1)
         nx = ceil(sqrt(m))
@@ -308,6 +309,7 @@ class Data(LogToken):
                 else:
                     col += ptchSz
                 i += 1
+        return fig
                 
                     
             

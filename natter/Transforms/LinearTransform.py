@@ -400,10 +400,17 @@ def fitGauss2Grating(w):
     nx,ny = meshgrid(arange(w.shape[0]), arange(w.shape[1]))
     w = abs(w).flatten('F')
     w = w/sum(w)
-    pyplot.imshow(reshape(array(w),(17,17)),interpolation='nearest',cmap=pyplot.cm.winter)
+    # pyplot.imshow(reshape(array(w),(17,17),order='F'),interpolation='nearest',cmap=pyplot.cm.gray)
+    # pyplot.show()
+    # raw_input()
     N = vstack((nx.flatten('F'),ny.flatten('F')))
     mu = reshape(dot(N,w),(2,1),order='F')
     C = dot(N-mu,(N-mu).T*reshape(array(w),(w.shape[0],1),order='F'))
-    
     N = N[[1,0],:] # account for image coordinates
+    # tmp = reshape(((2*pi)*sqrt(det(C)))**-1*exp(-0.5*sum((dot(inv(C),N-mu)*(N-mu))**2,0) ),nx.shape,order='F')
+    # pyplot.figure()
+    # pyplot.imshow(tmp,interpolation='nearest',cmap=pyplot.cm.gray)
+    # pyplot.show()
+    # raw_input()
+    
     return reshape(((2*pi)*sqrt(det(C)))**-1*exp(-0.5*sum((dot(inv(C),N-mu)*(N-mu))**2,0) ),nx.shape,order='F')
