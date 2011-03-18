@@ -278,7 +278,6 @@ class Data(LogToken):
         tmp.append('subsampled')
         tmp2 = array(self.X[key])
         if type(key[0]) == types.IntType:
-            print 'Here1'
             tmp2 = reshape(tmp2,(1,len(tmp2)))
         elif type(key[1]) == types.IntType or type(key[1]) == int64:
             tmp2 = reshape(tmp2,(tmp2.shape[0],1))
