@@ -271,7 +271,7 @@ class Distribution(LogToken):
     
         if ax == None:
             fig = plt.figure()
-            ax = fig.add_axes([.05,.05,.9,.9])
+            ax = fig.add_axes([.1,.1,.8,.8])
         x =squeeze(dat.X)
         n, bins, patches = ax.hist(x, max(sh)/300, normed=1, facecolor='blue', alpha=0.8)
 
