@@ -19,7 +19,7 @@ class NakaRushton(Distribution):
     The Naka-Rushton distribution is the radial distribution of a
     spherically symmetric distribution that gets transformed into a
     radially truncated LpGeneralizedNormal with variance s by the
-    Naka-Rushton functio :math:`r \mapsto \frac{\kappa r}{\sqrt{\sigma^2 + r^2}}`
+    Naka-Rushton functio r --> (kappa r)/sqrt(sigma**2 + r**2)
 
     :param param:
         dictionary which might containt parameters for the NakaRushton distribution

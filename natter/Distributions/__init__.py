@@ -20,6 +20,7 @@ implements. At the moment it provides the following distributions.
    Distributions_LpSphericallySymmetric.rst
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
+   Distributions_NakaRushton.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
    Distributions_SkewedGaussian.rst
