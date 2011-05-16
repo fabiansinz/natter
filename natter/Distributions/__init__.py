@@ -44,6 +44,7 @@ from Gaussian import Gaussian
 from Gaussian import Gaussian as MultivariateNormal
 from ExponentialPower import ExponentialPower
 from LogNormal import LogNormal
+from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
 from EllipticallyContourGamma import EllipticallyContourGamma
 from SchwartzSimoncelliModel import SchwartzSimoncelliModel
