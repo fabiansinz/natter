@@ -18,7 +18,7 @@ class TestNakaRushton(unittest.TestCase):
         self.P = NakaRushton(n = self.n,kappa=self.kappa,s =self.s,p =self.p,sigma=self.sigma)
         self.Gamma = Gamma(s=2.0,u=2.0)
         self.data = self.Gamma.sample(10000)
-        self.f = lambda dat: (self.kappa*dat.X/sqrt(self.sigma**2.0 + abs(dat.X)**self.p)).reshape((1,dat.numex()))
+        self.f = lambda dat: (self.kappa*dat.X/sqrt(self.sigma**2.0 + abs(dat.X)**2.0)).reshape((1,dat.numex()))
 
     def test_loglik(self):
         nsamples=50000
