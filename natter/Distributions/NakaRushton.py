@@ -119,8 +119,8 @@ class NakaRushton(Distribution):
         '''
         datf = dat.copy()
         datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
-        tmp = GammaP(u=(self.param['n']/self.param['p']),s=self.param['s'],p=self.param['p'])
-        return tmp.cdf(datf)
+        tmp = GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p'])
+        return tmp.cdf(datf)/tmp.cdf(Data(array([[self.param['kappa']]])))
         
     def dldtheta(self,dat):
         """
