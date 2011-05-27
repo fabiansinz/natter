@@ -2,7 +2,7 @@ from __future__ import division
 from Distribution import Distribution
 from natter.Distributions import GammaP
 from natter.DataModule import Data
-from numpy import sqrt, array,where,hstack,log,squeeze,reshape,zeros,mean
+from numpy import sqrt, array,where,hstack,log,squeeze,reshape,zeros,mean,sum,abs
 from natter.Auxiliary.Utils import parseParameters
 from scipy.special import gammainc,gammaln
 from scipy.optimize import fmin_l_bfgs_b
@@ -106,8 +106,22 @@ class NakaRushton(Distribution):
              -gammaln(n/p) - n/p*log(2*s) - (n+2.0)/2.0 * log(sigma**2 + r**2) - r**p*kappa**p/2.0/s/(sigma**2+r**2)**(p/2.0)
         return ll
 
+    def cdf(self,dat):
+        '''
 
+        Evaluates the cumulative distribution function on the data points in dat. 
 
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''
+        datf = dat.copy()
+        datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
+        tmp = GammaP(u=(self.param['n']/self.param['p']),s=self.param['s'],p=self.param['p'])
+        return tmp.cdf(datf)
+        
     def dldtheta(self,dat):
         """
         Evaluates the gradient of the NakaRushton loglikelihood with respect to the primary parameters.
@@ -159,6 +173,8 @@ class NakaRushton(Distribution):
         for ind,key in enumerate(self.primary):
             ret[ind]=self.param[key]
         return ret
+    def primaryBounds(self):
+        return [(1e-6,None)]
 
     def array2primary(self,arr):
         """
@@ -169,6 +185,7 @@ class NakaRushton(Distribution):
             
         """
         ind = 0
+        
         if 'sigma' in self.primary:
             self.param['sigma'] = arr[ind]
             ind += 1

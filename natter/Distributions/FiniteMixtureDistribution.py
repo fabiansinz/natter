@@ -226,6 +226,19 @@ class FiniteMixtureDistribution(Distribution):
                 ret = hstack((ret,self.param['P'][k].primary2array()))
         return ret
 
+    def primaryBounds(self):
+        ret = []
+        if 'alpha' in self.primary:
+            ret += (len(self.param['alpha'])-1)*[(None,None)]
+        if 'P' in self.primary:
+            for k in range(len(self.param['P'])):
+                if hasattr(self.param['P'][k],'primaryBounds'):
+                    ret += self.param['P'][k].primaryBounds()
+                else:
+                    ret += len(self.param['P'][k].primary())*[(None,None)]
+        return ret
+            
+        
     def array2primary(self,arr):
         K = len(self.param['P'])
         if 'alpha' in self.primary:
@@ -246,6 +259,8 @@ class FiniteMixtureDistribution(Distribution):
                 lp = len(self.param['P'][k].primary2array())
                 self.param['P'][k].array2primary(arr[0:lp])
                 arr = arr[lp::]
+
+        
 
     def dldtheta(self,dat):
         K = len(self.param['P'])
@@ -296,6 +311,22 @@ class FiniteMixtureDistribution(Distribution):
             u += self.param['P'][k].cdf(dat)*self.param['alpha'][k]
         return u
             
+    def mixturePosterior(self,dat):
+        """
+        Returns the posterior p(k|x) over the inidicator variable for
+        the mixture components given the data points in dat.
+        """
+        n,m = dat.size()
+        K = len(self.param['P'])
+
+        T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
+        LP = zeros((K,m)) # log likelihoods of the single mixture components
+
+        for k in xrange(K):
+            LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
+        for k in xrange(K):
+            T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+        return T
 
     def estimate(self,dat,method=None,maxiter=100):
         """
@@ -303,7 +334,8 @@ class FiniteMixtureDistribution(Distribution):
 
         Estimates the parameters from the data in dat. It is possible
         to only selectively fit parameters of the distribution by
-        setting the primary array accordingly (see :doc:`Tutorial on  the Distributions module <tutorial_Distributions>`).
+        setting the primary array accordingly
+        (see :doc:`Tutorial on  the Distributions module <tutorial_Distributions>`).
 
         Additionally a method for fitting the distribution can be
         specified. 'EM' performs standard EM algorithm, the
@@ -339,6 +371,9 @@ class FiniteMixtureDistribution(Distribution):
 
             def mstep():
                 n,m = dat.size()
+                bounds = self.primaryBounds()
+                if 'alpha' in self.primary:
+                    bounds = bounds[len(self.param['alpha'])-1:]
                 def f(ar):
                     par = ar.copy()
                     L = T.copy()
@@ -372,7 +407,7 @@ class FiniteMixtureDistribution(Distribution):
                 if 'alpha' in self.primary:
                     arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
                 #check(arr)
-                optimize.fmin_bfgs(f,arr,df,gtol=1e-3,disp=0,full_output=0)
+                optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
                     
                 if 'alpha' in self.primary:
                     self.param['alpha'] = mean(T,axis=1)
@@ -413,10 +448,9 @@ class FiniteMixtureDistribution(Distribution):
                 grad = sum(self.dldtheta(dat),axis=1)
                 return -grad/(m*n)
 
+            # arr0 = self.primary2array()
+            # diff = 100000;
             arr0 = self.primary2array()
-            diff = 100000;
-            arr0 = self.primary2array()
-
-            optimize.fmin_bfgs(f,arr0,fprime=df,maxiter=maxiter,gtol=1e-10)
+            optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=self.primaryBounds())
             
 

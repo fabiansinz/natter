@@ -111,15 +111,19 @@ class Distribution(LogToken):
     def dldtheta(self,dat):
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
-    def primary2array(self):
+    def primary2array(self,bounds = None):
         raise Errors.AbstractError('Abstract method primary2array not implemented in ' + self.name)
 
-    def array2primary(self):
+    def array2primary(self,arr):
         raise Errors.AbstractError('Abstract method array2primary not implemented in ' + self.name)
         
 
     def estimate(self,dat):
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
+
+    def primaryBounds(self):
+        raise Errors.AbstractError('Abstract method primaryBounds not implemented in ' + self.name)
+
 
 
     def parameters(self,keyval=None):

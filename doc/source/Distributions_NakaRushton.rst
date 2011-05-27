@@ -11,4 +11,4 @@ The NakaRushton distribution is a univariate density on the interval
 where :math:`\mathfrak{G}` is the regularized incomplete gamma function.
 
 .. autoclass:: natter.Distributions.NakaRushton
-   :members: sample, loglik, pdf, dldtheta, estimate, all, copy, parameters
+   :members: sample, loglik, pdf, cdf, dldtheta, estimate, all, copy, parameters
