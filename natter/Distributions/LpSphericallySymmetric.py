@@ -138,10 +138,10 @@ class LpSphericallySymmetric(Distribution):
         setting the primary array accordingly (see :doc:`Tutorial on
         the Distributions module <tutorial_Distributions>`).
 
-        Fitting is carried out by alternating between a golden search
-        for *p*, keeping the parameters of the radial distribution
-        fixed, and optimizing the parameters of the radial
-        distribution keeping the value of *p* fixed.
+        Fitting is carried out by performing a golden search over p
+        while optimizing the radial distribution for each single p. In
+        other words p* = argmax_p max_theta log(X|p,theta) where theta are
+        the parameters of the radial distribution.
 
         :param dat: Data points on which the Gamma distribution will be estimated.
         :type dat: natter.DataModule.Data
