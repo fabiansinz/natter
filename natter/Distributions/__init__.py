@@ -14,6 +14,7 @@ implements. At the moment it provides the following distributions.
    Distributions_GammaP.rst
    Distributions_Gaussian.rst
    Distributions_ISA.rst
+   Distributions_Histogram.rst
    Distributions_Kumaraswamy.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
@@ -41,9 +42,10 @@ from LpSphericallySymmetric import LpSphericallySymmetric
 from LpGeneralizedNormal import LpGeneralizedNormal
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
+from ExponentialPower import ExponentialPower
 from Gaussian import Gaussian
 from Gaussian import Gaussian as MultivariateNormal
-from ExponentialPower import ExponentialPower
+from Histogram import Histogram
 from LogNormal import LogNormal
 from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
