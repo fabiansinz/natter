@@ -16,7 +16,7 @@ from warnings import warn
 from natter.Auxiliary.Decorators import Squeezer
 
 def logistic(eta):
-    return 1/(1+exp(-eta))
+    return exp(eta)/(1+exp(eta))
 
 class FiniteMixtureDistribution(Distribution):
     """
@@ -87,7 +87,7 @@ class FiniteMixtureDistribution(Distribution):
     def __setitem__(self,k,v):
         self.param[k] = deepcopy(v)
 
-    def sample(self,m):
+    def sample(self,m,components=None):
         """
 
         Samples m samples from the current finite mixture distribution.
@@ -109,6 +109,8 @@ class FiniteMixtureDistribution(Distribution):
         for k in xrange(K):
             dat = self.param['P'][k].sample(nc[k])
             X[:,mrange[ind:ind + nc[k]]] = dat.X
+            if components is not None:
+                components[mrange[ind:ind + nc[k]]] = k
             ind += nc[k]
         return Data(X,"%i samples from a %i-dimensional finite mixture distribution" % (m,dim))
 
@@ -120,7 +122,7 @@ class FiniteMixtureDistribution(Distribution):
             s +=alpha
             diff =abs(ab-alpha)
             if diff > 1e-03:
-                print "Warning : diff in alphas: ", diff
+                print "\tWarning : diff in alphas: ", diff
 
 
 
@@ -220,7 +222,7 @@ class FiniteMixtureDistribution(Distribution):
     def primary2array(self):
         ret = array([])
         if 'alpha' in self.primary:
-            ret = hstack((ret,log(self.param['alpha'][:-1]/(1.0- self.param['alpha'][:-1]))))
+            ret = hstack((ret,log(self.param['alpha'][:-1])-log(1.0- self.param['alpha'][:-1])))
         if 'P' in self.primary:
             for k in xrange(len(self.param['P'])):
                 ret = hstack((ret,self.param['P'][k].primary2array()))
@@ -229,7 +231,7 @@ class FiniteMixtureDistribution(Distribution):
     def primaryBounds(self):
         ret = []
         if 'alpha' in self.primary:
-            ret += (len(self.param['alpha'])-1)*[(None,None)]
+            ret += (len(self.param['alpha'])-1)*[(-30.0,30.0)]
         if 'P' in self.primary:
             for k in range(len(self.param['P'])):
                 if hasattr(self.param['P'][k],'primaryBounds'):
@@ -328,7 +330,7 @@ class FiniteMixtureDistribution(Distribution):
             T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
         return T
 
-    def estimate(self,dat,method=None,maxiter=100):
+    def estimate(self,dat,method=None,maxiter=100,tol=1e-7):
         """
 
 
@@ -355,102 +357,83 @@ class FiniteMixtureDistribution(Distribution):
         K = len(self.param['P'])
         if method==None:
             method = 'EM'
-            print "Using: %s-method " % (method,)
+            print "\tUsing: %s-method " % (method,)
+        if method != 'EM':
+            print "\tMethod %s deprecated or unkown: Using EM!"
 
-        if method=="EM" or method == 'hybrid':
+        #--------------- optimize --------------------------
+        n,m = dat.size()
+        T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
+        LP = zeros((K,m)) # log likelihoods of the single mixture components
+
+        def estep():
+            for k in xrange(K):
+                LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
+            for k in xrange(K):
+                T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+            return sum((T*LP).flatten())
+
+        def mstep():
             n,m = dat.size()
-            T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
-            LP = zeros((K,m)) # log likelihoods of the single mixture components
+            bounds = self.primaryBounds()
+            if 'alpha' in self.primary:
+                bounds = bounds[len(self.param['alpha'])-1:]
 
-            def estep():
+            def f(ar):
+                par = ar.copy()
+                L = T.copy()
                 for k in xrange(K):
-                    LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
-                for k in xrange(K):
-                    T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-                return sum((T*LP).flatten())
-
-            def mstep():
-                n,m = dat.size()
-                bounds = self.primaryBounds()
-                if 'alpha' in self.primary:
-                    bounds = bounds[len(self.param['alpha'])-1:]
-                def f(ar):
-                    par = ar.copy()
-                    L = T.copy()
-                    for k in xrange(K):
-                        mg = len(self.param['P'][k].primary2array())
-                        self.param['P'][k].array2primary(par[:mg])
-                        par = par[mg:]
-                        X = self.param['P'][k].loglik(dat)
-                        L[k,:] = T[k,:]*X
-                    sys.stdout.write(80*" " + "\r" + 5*"\t" + "current ALL : %.10g"% (-mean(L.flatten()),))
-                    sys.stdout.flush()
-                    return -sum(L.flatten())/K/m
-                def df(ar):
-                    par = ar.copy()
-                    grad = zeros(len(ar))
-                    ind =0
-                    for k in xrange(K):
-                        mg = len(self.param['P'][k].primary2array())
-                        self.param['P'][k].array2primary(par[0:mg])
-                        par = par[mg:]
-                        dX = self.param['P'][k].dldtheta(dat)
-                        grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
-                        ind += mg
-                    return -grad/K/m
-                def check(arr):
-                    err = optimize.check_grad(f,df,arr)
-                    print "Error in gradient: ",err
-                    sys.stdout.flush()
-                
-                arr = self.primary2array()
-                if 'alpha' in self.primary:
-                    arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
-                #check(arr)
-                optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
-                    
-                if 'alpha' in self.primary:
-                    self.param['alpha'] = mean(T,axis=1)
-
-
-            
-            diff = 10000000
-            oldS = estep()
-            tol = 1e-7
-            if method == 'hybrid': tol = tol**.25
-
-            iterC= 0
-            while abs(diff)>tol and iterC < maxiter:
-                mstep()
-                fv= estep()
-                diff = oldS-fv
-                oldS=fv
-                sys.stdout.write(80*" " +  "\r\tDiff: %.4g\t" % (diff,))
+                    mg = len(self.param['P'][k].primary2array())
+                    self.param['P'][k].array2primary(par[:mg])
+                    par = par[mg:]
+                    X = self.param['P'][k].loglik(dat)
+                    L[k,:] = T[k,:]*X
+                sys.stdout.write(80*" " + "\r" + 5*"\t" + "current ALL : %.10g"% (-mean(L.flatten()),))
                 sys.stdout.flush()
-                iterC += 1
+                return -sum(L.flatten())/K/m
+            def df(ar):
+                par = ar.copy()
+                grad = zeros(len(ar))
+                ind =0
+                for k in xrange(K):
+                    mg = len(self.param['P'][k].primary2array())
+                    self.param['P'][k].array2primary(par[0:mg])
+                    par = par[mg:]
+                    dX = self.param['P'][k].dldtheta(dat)
+                    grad[ind:ind+mg] = sum(T[k,:]*dX,axis=1)
+                    ind += mg
+                return -grad/K/m
+            # def check(arr):
+            #     err = optimize.check_grad(f,df,arr)
+            #     print "Error in gradient: ",err
+            #     sys.stdout.flush()
+
+            arr = self.primary2array()
+            if 'alpha' in self.primary:
+                arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
+            #check(arr)
+            optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
+
+
+        diff = Inf
+        oldS = estep() # fill L and TP for the first time
+
+        iterC= 0
+        while abs(diff)>tol and iterC < maxiter:
+            if 'P' in self.primary:
+                mstep()
+            # moved from mstep to here
+            if 'alpha' in self.primary:
+                self.param['alpha'] = mean(T,axis=1)
+            fv= estep()
+            diff = oldS-fv
+            oldS=fv
+            sys.stdout.write(80*" " +  "\r\t\tDiff: %.4g\t" % (diff,)), sys.stdout.flush()
+            iterC += 1
             if iterC == maxiter:
                 sys.stdout.write("\n\tEM maxiter reached! EM might not have converged!")
-            sys.stdout.write("\n")
-            sys.stdout.flush()
+        sys.stdout.write("\n")
+        sys.stdout.flush()
                 
-        if method=='gradient' or method=='hybrid':
-            n,m = dat.size()
-            
-            def f(arr):
-                self.array2primary(arr)
-                LL=-sum(self.loglik(dat))
-                sys.stdout.write(80*" "+ "\r\tnLL: %.10g \t\t\tcurrent ALL: %.10g" % (LL/(m*n),self.all(dat)))
-                sys.stdout.flush()
-                return LL/(m*n)
-            
-            def df(arr):
-                self.array2primary(arr)
-                grad = sum(self.dldtheta(dat),axis=1)
-                return -grad/(m*n)
-
-            # arr0 = self.primary2array()
-            # diff = 100000;
-            arr0 = self.primary2array()
-            optimize.fmin_l_bfgs_b(f,arr0,fprime=df,bounds=self.primaryBounds())
             
 
