@@ -328,6 +328,7 @@ class FiniteMixtureDistribution(Distribution):
             LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
         for k in xrange(K):
             T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
+
         return T
 
     def estimate(self,dat,method=None,maxiter=100,tol=1e-7):

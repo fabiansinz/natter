@@ -64,7 +64,7 @@ class Truncated(Distribution):
         """
         dat = self.ppf(rand(m))
         dat.name = "%i samples from a truncated %s" % (m,self.param['q'].name)
-        dat.history = ['sampled from a truncated %s' % (self.param['q'].name)]
+        dat.history = ['sampled from a truncated %s' % (self.param['q'].name,)]
         return dat
         
 
