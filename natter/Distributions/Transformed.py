@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array,where
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array,where,abs
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
@@ -89,7 +89,7 @@ class Transformed(Distribution):
            
         '''
         
-        return self.param['q'].loglik(self.param['finv'](dat)) + log(squeeze(self.param['dfinvdy'](dat)))
+        return self.param['q'].loglik(self.param['finv'](dat)) + log(abs(squeeze(self.param['dfinvdy'](dat))))
     
     
     def pdf(self,dat):

@@ -30,6 +30,7 @@ implements. At the moment it provides the following distributions.
    Distributions_TruncatedExponentialPower.rst
    Distributions_TruncatedGaussian.rst
    Distributions_TruncatedNormal.rst
+   Distributions_Transformed.rst
 """
 
 
