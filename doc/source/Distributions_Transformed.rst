@@ -1,5 +1,5 @@
-Truncated Distribution
-======================
+Transformed Distribution
+========================
 
 The Transformed distribution is a univariate density with the pdf
 

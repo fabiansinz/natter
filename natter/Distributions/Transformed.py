@@ -19,9 +19,9 @@ class Transformed(Distribution):
 
     Implements a wrapper for univariate distribution q such that the
     random variable by the transformed distribution is distributed
-    according to y ~ q(f^-1(y)) |dx/dy|. In other words, samples from
-    the transformed distribution are samples x from q tranformed with
-    f, i.e. y = f(x).
+    according to :math:`y \sim q(f^-1(y)) |dx/dy|`. In
+    other words, samples from the transformed distribution are samples
+    x from q tranformed with f, i.e. y = f(x).
 
     Of course, f must be a bijective mapping on the domain of x.
 
