@@ -22,5 +22,10 @@ import ImageUtils
 import Decorators
 from LpNestedFunction import LpNestedFunction
 
-
-
+def prettyPrintDict(d):
+    s = ""
+    for k ,v in d.items():
+        s += str(k) + ": " + str(v) + "\n"
+    return s
+        
+        
