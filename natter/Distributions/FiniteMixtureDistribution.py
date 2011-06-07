@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from Gaussian import Gaussian
-from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze, Inf, max, abs
+from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze, Inf, max, abs,std
 from numpy.random.mtrand import multinomial
 from natter.DataModule import Data
 from numpy.random import shuffle
@@ -325,7 +325,11 @@ class FiniteMixtureDistribution(Distribution):
         LP = zeros((K,m)) # log likelihoods of the single mixture components
 
         for k in xrange(K):
+            print 80*"-"
             LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
+            self.param['P'][k]['finv'](None)
+            self.param['P'][k]['finv'](None)
+            print 80*"="
         for k in xrange(K):
             T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
 
@@ -355,6 +359,7 @@ class FiniteMixtureDistribution(Distribution):
 
            
         """
+
         K = len(self.param['P'])
         if method==None:
             method = 'EM'
@@ -366,7 +371,6 @@ class FiniteMixtureDistribution(Distribution):
         n,m = dat.size()
         T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
         LP = zeros((K,m)) # log likelihoods of the single mixture components
-
         def estep():
             for k in xrange(K):
                 LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
@@ -420,7 +424,7 @@ class FiniteMixtureDistribution(Distribution):
         oldS = estep() # fill L and TP for the first time
 
         iterC= 0
-        while abs(diff)>tol and iterC < maxiter:
+        while iterC < 5 or (abs(diff)>tol and iterC < maxiter):
             if 'P' in self.primary:
                 mstep()
             # moved from mstep to here

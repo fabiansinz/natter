@@ -143,7 +143,8 @@ class Distribution(LogToken):
            
         """
         if keyval == None:
-            return deepcopy(self.param)
+            #return deepcopy(self.param)
+            return self.param
         elif keyval== 'keys':
             return self.param.keys()
         elif keyval == 'values':

@@ -50,7 +50,6 @@ class Transformed(Distribution):
         param = parseParameters(args,kwargs)
         for k,v in param.items():
             self.param[k] = v
-        
         # set default parameters
         self.name = 'Transformed %s Distribution' % (self.param['q'].name,)
         self.primary = []
