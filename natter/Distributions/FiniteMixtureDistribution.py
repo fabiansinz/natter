@@ -325,11 +325,7 @@ class FiniteMixtureDistribution(Distribution):
         LP = zeros((K,m)) # log likelihoods of the single mixture components
 
         for k in xrange(K):
-            print 80*"-"
             LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
-            self.param['P'][k]['finv'](None)
-            self.param['P'][k]['finv'](None)
-            print 80*"="
         for k in xrange(K):
             T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
 
