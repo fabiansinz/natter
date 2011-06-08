@@ -368,11 +368,15 @@ class FiniteMixtureDistribution(Distribution):
         T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
         LP = zeros((K,m)) # log likelihoods of the single mixture components
         def estep():
+            if any(self.param['alpha'] < 1e-20):
+                self.param['alpha'][where(self.param['alpha'] < 1e-20)] = 1e-20
+                self.param['alpha'] /= sum(self.param['alpha'])
             for k in xrange(K):
                 LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
             for k in xrange(K):
                 T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
-            return sum((T*LP).flatten())
+            # return sum((T*LP).flatten())
+            return sum(logsumexp(LP,axis=0))
 
         def mstep():
             n,m = dat.size()
@@ -422,6 +426,7 @@ class FiniteMixtureDistribution(Distribution):
         iterC= 0
         while iterC < 5 or (abs(diff)>tol and iterC < maxiter):
             if 'P' in self.primary:
+                print "Haeh?"
                 mstep()
             # moved from mstep to here
             if 'alpha' in self.primary:

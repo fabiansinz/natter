@@ -10,7 +10,7 @@ from natter.Auxiliary import Errors
 def ElementWise(g):
     """
     Creates a non-linear filter that applies the function g to each
-    dimension of the data the filter is applied to. g must take a numpy.array and return a numpy array.q
+    dimension of the data the filter is applied to. g must take a numpy.array and return a numpy array.
 
     
     
