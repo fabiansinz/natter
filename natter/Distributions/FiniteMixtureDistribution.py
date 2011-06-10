@@ -424,7 +424,7 @@ class FiniteMixtureDistribution(Distribution):
         oldS = estep() # fill L and TP for the first time
 
         iterC= 0
-        while iterC < 5 or (abs(diff)>tol and iterC < maxiter):
+        while abs(diff)>tol and iterC < maxiter:
             if 'P' in self.primary:
                 print "Haeh?"
                 mstep()
