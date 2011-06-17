@@ -90,7 +90,30 @@ class ArraySupportChecker:
             return f(*args)
         return wrapped_f
 
+def OutputRangeChecker(a,b):
+    """
+    Decorator that makes sure the output array is in [a,b].
 
+    :param a: lower bound
+    :type a: float
+    :param b: upper bound
+    :type b: float
+    
+    """
+    def wrap(f):
+        def wrapped_f(*args):
+            out = f(*args)
+            if any(out < a):
+                warn('There are some output lower than %.2f. Setting them to %.2f' % (a,a))
+                out[where(out < a)] = a
+            if any(out > b):
+                warn('There are some output greater than %.2f. Setting them to %.2f' % (b,b))
+                out[where(out > b)] = b
+            
+            return out
+        return wrapped_f
+    return wrap
+    
 
 def Squeezer(n):
     """
