@@ -2,7 +2,7 @@ from numpy import linalg
 import numpy as np
 from natter.Auxiliary import Errors
 import unittest
-from natter.Transforms import Transform, LinearTransform, NonlinearTransform, NonlinearTransformFactory
+from natter.Transforms import Transform, LinearTransform, LinearTransformFactory, NonlinearTransform, NonlinearTransformFactory
 from numpy import linalg, floor, array, pi, any
 from natter import Distributions
 from natter.DataModule import Data, DataSampler
@@ -84,8 +84,16 @@ class TestFilter(unittest.TestCase):
         self.assertFalse(np.max(np.abs(logDetJ - logDetJ2)) > self.detTol,\
                          'Log determinant of radial transformation deviates by more than ' + str(self.detTol) + '!')
 
+    def test_SubspaceEnergyWhitening(self):
+        print "Testing whitening with equal subspace energy constraint..."
+        n=21
+        m=100000
+        dat = DataSampler.gauss(n, m)
+        F = LinearTransformFactory.SubspaceEnergyWhitening( dat, True )
+        energy = np.diag(F.W)[1:].reshape((n-1)//2, 2)
+        self.assertTrue((energy[:,0] == energy[:,1]).all(), 'energy normalization factor not identical in both subspaces')
 
-            
+
 ##################################################################################################
 
 if __name__=="__main__":

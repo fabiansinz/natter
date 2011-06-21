@@ -2,6 +2,7 @@ import numpy as np
 import Errors
 from matplotlib import pyplot
 import types
+import unittest
 
 
 def htmltable(rowlab,collab, S):
@@ -104,4 +105,80 @@ def plotPatches( B , nx, ptchSz,ax=None,contrastenhancement=False):
         ax.axis('off')
         #ax.show()
     
+    
+def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameScale=True, plotNumbers=False, **kwargs):
+    """
+    plot columns of A as 1D line plots in an array of NX=(h,w) subsplots. Takes all arguments that pyplot.plot takes.
+    :param U: Filter matrix
+    :type U: 2D numpy.ndarray
+    :param h: number of subplot rows. Will be estimated if not given.
+    :type h: integer
+    :param w: number of subplot columns. Will be estimated if not given.
+    :type w: integer
+    :param clearFigure: Indicates if the figure should be cleared before plotting (set to False if you want to plot several filter matrices in one figure). Default: True
+    :type clearFigure: bool
+    :param orientation: Signals whether row-major ('C') or column-major ('F') plotting should be used. Default 'C'.
+    :type orientation: string
+    :param sameScale: Indicates if all subplots should have the same x- and y-axis limits. Default True.
+    :type sameScale: bool
+    :param plotNumbers: Plot the subplot number as title of the subplot. Default False.
+    :type plotNumbers: bool
+    :param **kwargs: All arguments which pyplot.plot() accepts
+    :type **kwargs: 
+    """
+
+    if h == None or w == None:
+        try:
+            [h, w] = findShape(U.shape[1])
+        except:
+            [h, w] = findShape(U.shape[1]+1)
+            
+    if clearFigure:
+        pyplot.clf()
+
+    ind = (np.arange(U.shape[1])+1).reshape(h,w).flatten(orientation)
+    if len(pyplot.gcf().axes) == 0 or clearFigure:
+        ymax = U.max()
+        ymin = U.min()
+    else:
+        ymax = max(U.max(), pyplot.ylim()[1])
+        ymin = min(U.min(), pyplot.ylim()[0])
+        
+    for ii in xrange(int(h)):
+        for jj in xrange(int(w)):
+            pyplot.subplot(h,w,ind[ii*w+jj])
+            if plotNumbers:
+                pyplot.title(str(ind[ii*w+jj]))
+            if ii*w+jj < U.shape[1]:
+                pyplot.plot(U[:,ii*w+jj], **kwargs)
+                if sameScale:
+                    pyplot.ylim((ymin, ymax))
+    
+
+def findShape( s ):
+    """
+    Tries to find two factors h,w which fulfill h*w=s and min|h-w| such that
+    a vector with length s can be reshaped into a hXw 2D matrix. If h != w then
+    w>h, so the matrix will be in landscape format. Throws a ValueError if s
+    is prime.
+
+
+    :param s: integer to be factorized
+    :type s: int
+    :returns: A tuple (h,w) which factorizes s
+    :rtype: tuple of int
+    """
+    w = float(np.ceil(np.sqrt(s)))
+    h = s / w
+    while h != round(h) and h > 2:
+        w += 1
+        h = s / w
+    if h != round(h):
+        raise ValueError, "Image vector is not reshapeable into a 2D image. (pixel number is prime)"
+    return int(h),int(w)
+
+
+            
+            
+            
     

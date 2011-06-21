@@ -144,6 +144,81 @@ def img2PatchRand(img, p, N):
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
 
+def img2PatchRandExtended(img, p, N, borderwidth=0):
+    """
+
+    Samples N pxp patches from img.
+
+    The images are vectorized in C/Python style.
+
+    :param img: Image to sample from
+    :type img: numpy.array
+    :param p: patch size
+    :type p: int
+    :param N: number of patches to sampleFromImagesInDir
+    :type N: int
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :returns: Data object with sampled patches
+    :rtype: natter.DataModule.Data
+    
+    """
+
+    ny,nx = shape(img)
+
+    p1 = p - 1
+  
+    X = zeros( ( p*p, N))
+
+    for ii in xrange(int(N)):
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = floor( rand() * ( nx - p - borderwidth) + borderwidth)
+            yi = floor( rand() * ( ny - p - borderwidth) + borderwidth)
+            ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
+            X[:,ii] = ptch.flatten('C')
+  
+    name = "%d %dX%d patches" % (N,p,p)
+    return Data(X, name)
+
+def img2Sequence(img, p, N, borderwidth=0):
+    """
+
+    Samples N sequences of 2 pxp patches from img. Resulting data set
+    contains the first patches at 0:N-1 and the second patches at N:end.
+
+    The images are vectorized in C/Python style.
+
+    :param img: Image to sample from
+    :type img: numpy.array
+    :param p: patch size
+    :type p: int
+    :param N: number of patches to sampleFromImagesInDir
+    :type N: int
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :returns: Data object with sampled patches
+    :rtype: natter.DataModule.Data
+    
+    """
+
+    ny,nx = shape(img)
+
+    p1 = p - 1
+  
+    X = zeros( ( p*p, N))
+
+    for ii in xrange(int(N)):
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = floor( rand() * ( nx - p - borderwidth) + borderwidth)
+            yi = floor( rand() * ( ny - p - borderwidth) + borderwidth)
+            ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
+            X[:,ii] = ptch.flatten('C')
+  
+    name = "%d %dX%d patches" % (N,p,p)
+    return Data(X, name)
+
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
 
@@ -169,12 +244,12 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     mpf = ceil(m/M)
 
     # load and sample first image
-    dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
+    dat = samplefunc(loadfunc(dir + files[0]), p, mpf)
     
     for i in xrange(1,M):
         print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
         stdout.flush()
-        dat.append(img2PatchRand(loadfunc(dir + files[i]), p, mpf))
+        dat.append(samplefunc(loadfunc(dir + files[i]), p, mpf))
     return dat
         
         
@@ -191,10 +266,3 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
 #     z = fft2(reshape(dat.X[:,1],(n,n),order='F'))
 #     for i in xrange(n):
 #         print "\t".join(["%.2f + i%.2f" % (real(elem), imag(elem)) for elem in z[i,:]])
-        
-
-    
-
-    
-
-    

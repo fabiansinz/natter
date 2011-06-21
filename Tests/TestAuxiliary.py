@@ -71,6 +71,19 @@ class TestStGradient(unittest.TestCase):
 
 
 
+class TestPlotting(unittest.TestCase):
+
+    def test_findshape(self):
+        print "Checking findShape..."
+        h, w = Auxiliary.Plotting.findShape(5*5)
+        self.assertTrue(h==5 and w==5, 'findShape did not factorize 25')
+        h, w = Auxiliary.Plotting.findShape(3*29)
+        self.assertTrue(h==3 and w==29, 'findShape did not factorize 87')
+        h, w = Auxiliary.Plotting.findShape(3*21)
+        self.assertTrue(h==7 and w==9, 'findShape did not factorize 63')
+
+        self.assertRaises( ValueError, Auxiliary.Plotting.findShape, 8951)
+
 
 ##################################################################################################
 

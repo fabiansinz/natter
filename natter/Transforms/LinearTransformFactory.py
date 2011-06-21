@@ -4,6 +4,7 @@ import mdp
 from LinearTransform import LinearTransform
 from numpy import linalg
 from natter import Auxiliary
+from natter import DataModule
 import types
 
 
@@ -130,7 +131,7 @@ def stRND(sh):
     Creates a random matrix from the Stiefel manifold. 
 
     :param sh: Tuple that determines the dimensions of the matrix.
-    :type dat: tuple of int
+    :type sh: tuple of int
     :returns: A linear filter containing the matrix.
     :rtype: natter.Transforms.LinearTransform
     
@@ -168,3 +169,135 @@ def DCT2(sh):
             F[i*N1 + j,:] = tmp.copy().flatten() / sqrt(sum(tmp.flatten()**2))
     return LinearTransform(F, str(N1) + 'X' + str(N2) + ' 2D-DCT orthonormal Basis')
 
+def DFT(sh):
+    """
+    Creates a 1D DFT basis for sh X 1 image stripes.
+
+    :param sh: Int that determines the image stripe length.
+    :type sh: int
+    :returns: A linear filter containing the DFT basis, DC filter as first component.
+    :rtype: natter.Transforms.LinearTransform
+    
+    """
+    if not type(sh) == types.IntType:
+        raise TypeError('DFT requires single integer as parameter, not %s'%(type(sh)))
+
+    A = np.eye(sh)
+    Ufft = np.fft.ifft(A,axis=0)
+    Ufft = Ufft.real + Ufft.imag
+    Ufft /= np.linalg.norm(Ufft[:,0])
+
+    return LinearTransform(Ufft.T, str(sh) + 'X1' + ' 1D-DFT orthonormal Basis')
+
+def DFT2(sh):
+    """
+    Creates a 2D DFT basis for sh X sh image patches.
+
+    :param sh: Int that determines the image patch size.
+    :type sh: tuple of int
+    :returns: A linear filter containing the DFT basis, DC filter as first component.
+    :rtype: natter.Transforms.LinearTransform
+    
+    """
+    if not type(sh) == types.IntType:
+        raise TypeError('DFT2 requires single integer as parameter, not %s'%(type(sh)))
+    
+    A = np.eye(sh**2,sh**2).reshape(sh,sh,sh**2)
+    Ufft = np.fft.ifft2(A,axes=(0,1)).reshape(sh**2,sh**2)
+    Ufft = Ufft.real + Ufft.imag
+    Ufft /= np.linalg.norm(Ufft[:,0])
+
+    return LinearTransform(Ufft.T, str(sh) + 'X' + str(sh) + ' 2D-DFT orthonormal Basis')
+
+def DCACQuadraturePairs1D(sh):
+    """
+    Creates a 1D DFT basis for sh X 1 image stripes where the filters with identical spatial
+    frequency and orientation are paired up, such that filters 1&2, 3&4, ... are quadrature
+    pairs. Filter 0 is the DC component.
+    Only implemented for uneven dimensional data.
+
+    :param sh: Int that determines the image stripe length.
+    :type sh: int
+    :returns: A linear filter containing the DFT basis, DC filter as first component.
+    :rtype: natter.Transforms.LinearTransform
+    
+    """
+    if not type(sh) == types.IntType:
+        raise TypeError('DCACQuadraturePairs1D requires single integer as parameter, not %s'%(type(sh)))
+    if np.mod(sh,2) == 0:
+        raise NotImplementedError('Quadrature pairs are only implemented for uneven dimensional data.')
+    num_quadrature_pairs = (sh-1)//2
+    ind = np.hstack(((0,), \
+                     np.vstack((np.arange(1,num_quadrature_pairs+1),\
+                                np.arange(sh-1,sh-num_quadrature_pairs-1,-1))).T.flatten()))
+    F = DFT(sh)
+    F = F[ind,:]
+    F.addToHistory('Rearranged filters into quadrature pairs.')
+    return F
+
+def DCACQuadraturePairs2D(sh):
+    """
+    Creates a 2D DFT basis for sh X sh image patches where the filters with identical spatial
+    frequency and orientation are paired up, such that filters 1&2, 3&4, ... are quadrature
+    pairs. Filter 0 is the DC component.
+    Only implemented for uneven dimensional data.
+
+    :param sh: Int that determines the image patch size.
+    :type sh: tuple of int
+    :returns: A linear filter containing the DFT basis, DC filter as first component.
+    :rtype: natter.Transforms.LinearTransform
+    
+    """
+    if not type(sh) == types.IntType:
+        raise TypeError('DCACQuadraturePairs2D requires single integer as parameter, not %s'%(type(sh)))
+    if np.mod(sh,2) == 0:
+        raise NotImplementedError('Quadrature pairs are only implemented for uneven dimensional data.')
+    
+    
+    num_quadrature_pairs = (sh-1)//2
+    compnum = (sh**2-1)//2
+    Aorder = np.zeros((sh,sh))
+    Aorder[0,1:num_quadrature_pairs+1] = np.arange(1,num_quadrature_pairs+1)
+    Aorder[0,num_quadrature_pairs+1:] = np.arange(num_quadrature_pairs, 0, -1)
+    Aorder[1:num_quadrature_pairs+1,0] = np.arange(num_quadrature_pairs+1, 2*num_quadrature_pairs+1)
+    Aorder[num_quadrature_pairs+1:,0] = np.arange(2*num_quadrature_pairs, num_quadrature_pairs, -1)
+    Aorder[1:num_quadrature_pairs+1,1:] = np.arange(2*num_quadrature_pairs+1, compnum+1).reshape(num_quadrature_pairs, sh-1)
+    Aorder[num_quadrature_pairs+1:,1:] = np.arange(compnum, 2*num_quadrature_pairs, -1).reshape(num_quadrature_pairs, sh-1)    
+    ind = np.argsort(Aorder.flatten())
+    
+    F = DFT2(sh)
+    F = F[ind,:]
+    F.addToHistory('Rearranged filters into quadrature pairs.')
+    return F
+
+def SubspaceEnergyWhitening(dat, hasDC=True):
+    """
+    Creates a linear filter that projects the data onto the principalequalizes the energy
+    in the subspaces of the quadrature pair filters. The filter assumes that the first
+    dimension contains the DC component and all following dimensions are paired up into
+    quadrature pairs.
+
+    :param dat: Data on which the whitening will be computed.
+    :type dat: natter.DataModule.Data
+    :param hasDC: Flag indicating whether dat still contains DC component
+    :type hasDC: bool
+    :returns: A linear filter containing the whitening matrix.
+    :rtype: natter.Transforms.LinearTransform  
+    
+    """
+    var = dat.X.var(1)
+    if hasDC:
+        if np.mod(dat.dim(),2) == 0:
+            raise NotImplementedError('Subspace energy whitening with DC component is only implemented for uneven dimensional data.')
+        invDCvar = 1/var[0]
+        ACvar = var[1:]
+    else:
+        if np.mod(dat.dim(),2) == 1:
+            raise NotImplementedError('Subspace energy whitening without DC component is only implemented for even dimensional data.')
+        invDCvar = ()
+        ACvar = var
+    
+    invACvar = 1/np.repeat(ACvar.reshape(ACvar.size//2,2).sum(1)/2,2)
+    W = np.diag(np.hstack((invDCvar, invACvar)))
+    F = LinearTransform(W, 'Quadrature pair subspace energy equalization filter computed on ' + dat.name )
+    return F
