@@ -147,12 +147,12 @@ def img2PatchRand(img, p, N):
     return Data(X, name)
 
 
-def eyeMovementGenerator(dir,loadfunc, p,tau,sigma):
+def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
     """
     Simulates eye movements by sampling patches with the following procedure:
 
     1) an image is loaded with loadfunc from the directory dir
-    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau
+    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau. If randStayTime==False then tau is used instead.
     3) a random starting location (uniformly distributed) is sampled
     4) a patch is sampled form that location
     5) a new location is sampled from Brownian motion with std sigma, if the border of the image is reached, the sample is rejected and resampled
@@ -167,6 +167,8 @@ def eyeMovementGenerator(dir,loadfunc, p,tau,sigma):
     :type tau: float
     :param sigma: std of the 2D Brownian motion
     :type sigma: float
+    :param N: if not None, then N patches will be sampled in each step
+    :type N: int
     :returns:  Data object with sampled patches
     :rtype: natter.DataModule.Data
     """
@@ -178,14 +180,15 @@ def eyeMovementGenerator(dir,loadfunc, p,tau,sigma):
     sampleImg = True
     t = 0
     I = None
-    
+    N = tau
     while True:
         if sampleImg:
             # if I is not None:
             #     show()
             #     raw_input()
             t = 0
-            N = poisson(tau)
+            if randStayTime:
+                N = poisson(tau)
             filename = dir + files[int(floor(rand()*M))]
             I = loadfunc(filename)
             
@@ -210,7 +213,7 @@ def eyeMovementGenerator(dir,loadfunc, p,tau,sigma):
         t += 1
         ptch = ptch.flatten()
         if any(isnan(ptch)) or any(isinf(ptch)):
-            N += 1
+            t -= 1
         else:
             yield ptch.flatten('F')
 
