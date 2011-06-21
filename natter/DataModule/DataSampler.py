@@ -1,11 +1,13 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum,   ones, kron, arange,max, real, imag
-from numpy.random import rand, randn
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum,   ones, kron, arange,max, real, imag,round
+from numpy.random import rand, randn,poisson
 from natter.DataModule import Data
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
 from numpy.fft import fft2
+
+#from matplotlib.pyplot import *
 
 def gratings(p,T,omega,tau):
     """
@@ -143,6 +145,102 @@ def img2PatchRand(img, p, N):
   
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
+
+
+def eyeMovementGenerator(dir,loadfunc, p,tau,sigma):
+    """
+    Simulates eye movements by sampling patches with the following procedure:
+
+    1) an image is loaded with loadfunc from the directory dir
+    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau
+    3) a random starting location (uniformly distributed) is sampled
+    4) a patch is sampled form that location
+    5) a new location is sampled from Brownian motion with std sigma, if the border of the image is reached, the sample is rejected and resampled
+    6) if N is reached, goto 1), otherwise goto 4)
+
+    :param dir: directory containing only images
+    :type dir: string
+    :param loadfun: function handle of the image load function which takes a string and returns a numpy array (the image)
+    :param p: patchsize
+    :type p: int
+    :param tau: mean of Poisson distribution
+    :type tau: float
+    :param sigma: std of the 2D Brownian motion
+    :type sigma: float
+    :returns:  Data object with sampled patches
+    :rtype: natter.DataModule.Data
+    """
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    M = len(files)
+    sampleImg = True
+    t = 0
+    I = None
+    
+    while True:
+        if sampleImg:
+            # if I is not None:
+            #     show()
+            #     raw_input()
+            t = 0
+            N = poisson(tau)
+            filename = dir + files[int(floor(rand()*M))]
+            I = loadfunc(filename)
+            
+            ny,nx = I.shape
+            # imshow(I,interpolation='nearest',cmap=cm.gray)
+            xi = floor( rand() * ( nx - p))
+            yi = floor( rand() * ( ny - p))
+            sampleImg = False
+            stdout.write('\tSampling %i %i X %i patches from %s\n' % (N,p,p,filename))
+            stdout.flush()
+
+        
+        ptch = I[ yi:yi+p, xi:xi+p]
+        #plot(xi+p/2.0,yi+p/2,'ro')
+        tmp = round(randn(2)*sigma)
+        while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
+            tmp = round(randn(2)*sigma)
+        yi += tmp[0]
+        xi += tmp[1]
+        # stdout.write("(%i,%i)" % (yi,xi))
+        # stdout.flush()
+        t += 1
+        ptch = ptch.flatten()
+        if any(isnan(ptch)) or any(isinf(ptch)):
+            N += 1
+        else:
+            yield ptch.flatten('F')
+
+        if t == N:
+            sampleImg = True
+    
+
+
+def sampleWithIterator(theIterator,m):
+    """
+    Uses the iterator to sample m patches from it. theIterator must
+    return a data point at a time.
+
+    :param theIterator: Iterator that returns data poitns
+    :type theIterator: iterator
+    :param m: number of patches to sample
+    :type m: int
+    """
+    count = 1
+    x0 = theIterator.next()
+    n = max(x0.shape)
+    X = zeros((n,m))
+    X[:,0] = x0
+    for x in theIterator:
+        X[:,count] = x
+        count += 1
+        if count == m:
+            break
+    return Data(X,'%i data points sampled with iterator.' % (m, ))
+    
 
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
