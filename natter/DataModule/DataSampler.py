@@ -272,7 +272,7 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     for i in xrange(1,M):
         print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
         stdout.flush()
-        dat.append(img2PatchRand(loadfunc(dir + files[i]), p, mpf))
+        dat.append(samplefunc(loadfunc(dir + files[i]), p, mpf))
     return dat
         
         
