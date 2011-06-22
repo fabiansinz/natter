@@ -10,8 +10,8 @@ The DataModule module stores all data objects and helper modules.
    DataModule_DataSampler.rst
 
 """
-
-from Data import Data
+import Data as DataAlias
+from DataAlias import Data
 import DataLoader
 import DataSampler
 #from ProcessData import ProcessData

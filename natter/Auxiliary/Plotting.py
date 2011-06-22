@@ -2,7 +2,6 @@ import numpy as np
 import Errors
 from matplotlib import pyplot
 import types
-import unittest
 
 
 def htmltable(rowlab,collab, S):
@@ -30,13 +29,14 @@ def htmltable(rowlab,collab, S):
     return s
 
 
-def patch2Img(X, nx , ny):
+def patch2Img_old(X, nx , ny):
     sz = np.shape( X)
     p = sz[0]
     n = sz[1]
-    ptchSz = np.sqrt( p)
+    ptchSz = np.sqrt(p)
     if int(ptchSz) != ptchSz:
-        raise Errors.DimensionalityError('Auxiliary.Plotting.patch2Img: Number of rows is not a square!') 
+        raise Errors.DimensionalityError('Auxiliary.Plotting.patch2Img: Number of rows is not a square!')
+    ptchSz = int(ptchSz)
 
     imgTmp = np.array(X.reshape( (ptchSz,n*ptchSz),order="F" ))
     newSz = (ny*ptchSz, nx*ptchSz)
@@ -47,15 +47,29 @@ def patch2Img(X, nx , ny):
         img[ ii*ptchSz:(ii+1)*ptchSz, :] = imgTmp[ :, ii*nx*ptchSz:(ii+1)*nx*ptchSz]
     return img
  
+def patch2Img(X, nx , ny, orientation='F'):
+    sz = np.shape(X)
+    p = sz[0]
+    n = sz[1]
+    ptchSz = np.sqrt(p)
+    if int(ptchSz) != ptchSz:
+        raise Errors.DimensionalityError('Auxiliary.Plotting.patch2Img: Number of rows is not a square!')
+    ptchSz = int(ptchSz)
 
+    imgTmp = np.array(X.reshape( (ptchSz,ptchSz, n),order=orientation ))
+    padding_size = tuple([ptchSz,ptchSz,(nx*ny - n)])
+    imgPadded = np.dstack((imgTmp, np.zeros( padding_size))).reshape(ptchSz,ptchSz,ny,nx)
+    img = np.vstack([np.hstack([imgPadded[:,:,iy,ix] for ix in xrange(nx)]) for iy in xrange(ny)])
+    return img
 
-def plotPatches( B , nx, ptchSz,ax=None,contrastenhancement=False):
+def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation='F', **kwargs):
     """
     PLOTPATCHES(A, NX, PTCHSZ)
 
     plot columns of A as patches in an array of NX=(dimx,dimy) patches. Each patch is assumed to have PTCHSZ patch size. 
     """
     A = B.copy()
+    
     if type(nx) == types.TupleType:
         if len(nx) == 2:
             ny = int(nx[1])
@@ -83,18 +97,16 @@ def plotPatches( B , nx, ptchSz,ax=None,contrastenhancement=False):
         A = A.transpose()
 
 
-
-
     doShow = False
     if ax == None:
         ax = pyplot
         doShow = True
         
-    I = patch2Img(A, nx,ny)
+    I = patch2Img(A, nx, ny, orientation)
     if doShow:
-        ax.imshow(I,cmap=pyplot.cm.gray,interpolation='nearest')
+        ax.imshow(I,cmap=pyplot.cm.gray,interpolation='nearest', **kwargs)
     else:
-        ax.imshow(I,cmap=pyplot.cm.gray,interpolation='nearest',aspect='auto')
+        ax.imshow(I,cmap=pyplot.cm.gray,interpolation='nearest',aspect='auto', **kwargs)
     for i in range(1,nx):
         ax.plot(np.array([i*ptchSz-.5,i*ptchSz-.5]),np.array([-.5,ny*ptchSz-.5]),color='black')
     for i in range(1,ny):
@@ -178,7 +190,12 @@ def findShape( s ):
     return int(h),int(w)
 
 
-            
-            
-            
+def savefig( filename, bb='tight' ):
+    print 'Saving figure %s'%(filename)
+    pyplot.savefig('%s.png'%(filename), bbox_inches=bb, dpi=300)
+    pyplot.savefig('%s.eps'%(filename), bbox_inches=bb, dpi=300)
     
+def imsave( filename, image ):
+    print 'Saving image %s'%(filename)
+    pyplot.imsave('%s.png'%(filename), image)
+    pyplot.imsave('%s.eps'%(filename), image)

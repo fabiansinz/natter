@@ -1,6 +1,7 @@
 from __future__ import division
 from scipy.maxentropy import maxentutils 
-from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros
+from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like
+from numpy.fft import fft, ifft
 from scipy import special
 from scipy.special import  gammaincc
 from scipy.special import gamma as gammafunc, digamma
@@ -154,3 +155,117 @@ def totalDerivativeOfIncGamma(x,a,b,da,db):
     """
     return digamma(a(x))*gammafunc(a(x))*da(x) + exp(-b(x))*b(x)**(a(x)-1)*db(x) \
      - (meijerg([[],[1,1],],[[0,0,a(x)],[]],b(x)) + log(b(x))*gammaincc(a(x),b(x))*gammafunc(a(x)))  * da(x)
+
+
+# from scipy.org
+def dct(x,n=None):
+    """
+    Discrete Cosine Transform
+
+                      N-1
+           y[k] = 2* sum x[n]*cos(pi*k*(2n+1)/(2*N)), 0 <= k < N.
+                      n=0
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> x = np.arange(5)
+    >>> np.abs(x-idct(dct(x)))<1e-14
+    array([ True,  True,  True,  True,  True], dtype=bool)
+    >>> np.abs(x-dct(idct(x)))<1e-14
+    array([ True,  True,  True,  True,  True], dtype=bool)
+
+    Reference
+    ---------
+    http://en.wikipedia.org/wiki/Discrete_cosine_transform
+    http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
+    """
+    x = atleast_1d(x)
+
+    if n is None:
+        n = x.shape[-1]
+
+    if x.shape[-1]<n:
+        n_shape = x.shape[:-1] + (n-x.shape[-1],)
+        xx = hstack((x,zeros(n_shape)))
+    else:
+        xx = x[...,:n]
+
+    real_x = all(isreal(xx))
+    if (real_x and (remainder(n,2) == 0)):
+        xp = 2 * fft(hstack( (xx[...,::2], xx[...,::-2]) ))
+    else:
+        xp = fft(hstack((xx, xx[...,::-1])))
+        xp = xp[...,:n]
+
+    w = exp(-1j * arange(n) * pi/(2*n))
+
+    y = xp*w
+
+    if real_x:
+        return y.real
+    else:
+        return y
+
+def idct(x,n=None):
+    """
+    Inverse Discrete Cosine Transform
+
+                       N-1
+           x[k] = 1/N sum w[n]*y[n]*cos(pi*k*(2n+1)/(2*N)), 0 <= k < N.
+                       n=0
+
+           w(0) = 1/2
+           w(n) = 1 for n>0
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> x = np.arange(5)
+    >>> np.abs(x-idct(dct(x)))<1e-14
+    array([ True,  True,  True,  True,  True], dtype=bool)
+    >>> np.abs(x-dct(idct(x)))<1e-14
+    array([ True,  True,  True,  True,  True], dtype=bool)
+
+    Reference
+    ---------
+    http://en.wikipedia.org/wiki/Discrete_cosine_transform
+    http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
+    """
+
+    x = atleast_1d(x)
+
+    if n is None:
+        n = x.shape[-1]
+
+    w = exp(1j * arange(n) * pi/(2*n))
+
+    if x.shape[-1]<n:
+        n_shape = x.shape[:-1] + (n-x.shape[-1],)
+        xx = hstack((x,zeros(n_shape)))*w
+    else:
+        xx = x[...,:n]*w
+
+    real_x = all(isreal(x))
+    if (real_x and (remainder(n,2) == 0)):
+        xx[...,0] = xx[...,0]*0.5
+        yp = ifft(xx)
+        y  = zeros(xx.shape,dtype=complex)
+        y[...,::2] = yp[...,:n/2]
+        y[...,::-2] = yp[...,n/2::]
+    else:
+        yp = ifft(hstack((xx, atleast_2d(zeros_like(xx[...,0])).transpose(), conj(xx[...,:0:-1]))))
+        y = yp[...,:n]
+
+    if real_x:
+        return y.real
+    else:
+        return y
+
+def idct2(x):
+    a = idct(idct(x).transpose()).transpose()
+    return a
+
+def dct2(x):
+    a = dct(dct(x).transpose()).transpose()
+    return a

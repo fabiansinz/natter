@@ -10,7 +10,6 @@ from scipy import optimize
 #from functions import minimize_carl
 from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
-from natter.Auxiliary.Errors import ValueError
 from natter.Auxiliary.Numerics import logsumexp
 from warnings import warn
 from natter.Auxiliary.Decorators import Squeezer

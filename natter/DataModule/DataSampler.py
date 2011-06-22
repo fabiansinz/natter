@@ -1,11 +1,13 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum,   ones, kron, arange,max, real, imag
-from numpy.random import rand, randn
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp
+from numpy.random import rand, randn, randint
 from natter.DataModule import Data
+#from natter.Distributions import Uniform
+from natter.Auxiliary.ImageUtils import shiftImage
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
-from numpy.fft import fft2
+#from numpy.fft import fft2
 
 def gratings(p,T,omega,tau):
     """
@@ -144,80 +146,214 @@ def img2PatchRand(img, p, N):
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
 
-def img2PatchRandExtended(img, p, N, borderwidth=0):
+def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F'):
     """
 
-    Samples N pxp patches from img.
+    Samples pxp patches from img.
 
-    The images are vectorized in C/Python style.
+    The images are vectorized in FORTRAN/MATLAB style by default.
 
-    :param img: Image to sample from
-    :type img: numpy.array
+    :param dir: Directory to sample images from
+    :type dir: string
     :param p: patch size
     :type p: int
-    :param N: number of patches to sampleFromImagesInDir
-    :type N: int
+    :param samples_per_file: number of patches to sample from one image
+    :type samples_per_file: int   
+    :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
-    :returns: Data object with sampled patches
-    :rtype: natter.DataModule.Data
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
+    
+    """
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    number_files = len(files)
+    sampleImg = True
+
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)
+            
+            ny,nx = img.shape
+            width_limit = nx - p - borderwidth
+            height_limit = ny - p - borderwidth
+            sampleImg = False
+            stdout.write('\tSampling %i X %i patches from %s\n' % (p,p,filename))
+            stdout.flush()
+           
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = randint(low=borderwidth, high=width_limit)
+            yi = randint(low=borderwidth, high=height_limit)
+            ptch = img[ yi:yi+p, xi:xi+p]
+            X = ptch.flatten(orientation)
+        
+        sample_index += 1
+        yield X
+        if sample_index == samples_per_file:
+            sampleImg = True
+  
+    return
+
+def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', shiftDistribution=None):
+    """
+
+    Samples pxp sequences from images in dir
+
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
+    :type dir: string
+    :param p: patch size
+    :type p: int
+    :param samples_per_file: number of patches to sample from one image. All samples have same shift.
+    :type samples_per_file: int    
+    :param loadfunc: function handle of the load function
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param shiftDistribution: 2D distribution to sample shift steps from
+    :type shiftDistribution: natter.Distributions.Distribution
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
+    
+    """
+    if shiftDistribution == None:
+        raise ValueError, 'shiftDistribution cannot be None. Use e.g. Uniform(n=2, low=-1.0, high=1.0)'
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    number_files = len(files)
+    sampleImg = True
+
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)
+            img2 = empty_like(img)
+            shift = shiftDistribution.sample(1).X.flatten()
+            img2[borderwidth:-borderwidth, borderwidth:-borderwidth] = shiftImage(img[borderwidth:-borderwidth, borderwidth:-borderwidth], shift)
+            
+            ny,nx = img.shape
+            offset = ceil((shift + abs(shift))/2)
+            width_limit = nx - p - borderwidth - abs(ceil(shift[-1]))
+            height_limit = ny - p - borderwidth - abs(ceil(shift[0]))
+            sampleImg = False
+            stdout.write('\tSampling %i X %i patches from %s with shift ('%(p,p,filename) \
+                         + shift.size*'%.3f, '%tuple(shift) + '\b\b)\n')
+            stdout.flush()
+           
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = randint(low=borderwidth+offset[-1], high=width_limit)
+            yi = randint(low=borderwidth+offset[0], high=height_limit)
+            X = img[ yi:yi+p, xi:xi+p].flatten(orientation)
+            Y = img2[ yi:yi+p, xi:xi+p].flatten(orientation)
+            ptch = hstack((X.flatten(), Y.flatten()))
+        
+        sample_index += 1
+        yield X, Y
+        if sample_index == samples_per_file:
+            sampleImg = True
+  
+    return
+
+def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orientation='F'):
+    """
+
+    Samples pxp patches from circulant pink noise with power spectrum from patchSampler.
+
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
+    :type dir: string
+    :param p: patch size
+    :type p: int
+    :param powerspectrum_sample_size: number of patches to sample from sampler for power spectrum
+    :type powerspectrum_sample_size: int   
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
     
     """
 
-    ny,nx = shape(img)
+    patches = zeros((p**2, powerspectrum_sample_size))
+    stdout.write('Initialize power spectrum of circulant pink noise generator. This may take a moment...\n')
+    stdout.flush()
+    for ii in xrange(powerspectrum_sample_size):
+        patches[:,ii] = patchSampler.next()
+    PATCHES = fft.fft2(patches.reshape(p,p,powerspectrum_sample_size), axes=(0,1))
+    powerspec = (PATCHES*PATCHES.conj()).mean(2).real
+    stdout.write('Powerspectrum completed.\n')
 
-    p1 = p - 1
+    while True:
+        phi = rand(p,p)*2*pi - pi
+        X = fft.ifft2(sqrt(powerspec)*exp(1J*phi), axes=(0,1)).real.flatten(orientation)
+        yield X
   
-    X = zeros( ( p*p, N))
+    return
 
-    for ii in xrange(int(N)):
-        ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
-            xi = floor( rand() * ( nx - p - borderwidth) + borderwidth)
-            yi = floor( rand() * ( ny - p - borderwidth) + borderwidth)
-            ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
-            X[:,ii] = ptch.flatten('C')
-  
-    name = "%d %dX%d patches" % (N,p,p)
-    return Data(X, name)
-
-def img2Sequence(img, p, N, borderwidth=0):
+def sampleWithIterator(theIterator, m):
     """
+    Uses the iterator to sample m patches from it. theIterator must
+    return a data point at a time.
 
-    Samples N sequences of 2 pxp patches from img. Resulting data set
-    contains the first patches at 0:N-1 and the second patches at N:end.
-
-    The images are vectorized in C/Python style.
-
-    :param img: Image to sample from
-    :type img: numpy.array
-    :param p: patch size
-    :type p: int
-    :param N: number of patches to sampleFromImagesInDir
-    :type N: int
-    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
-    :type borderwidth: int
-    :returns: Data object with sampled patches
+    :param theIterator: Iterator that returns data poitns
+    :type theIterator: iterator
+    :param m: number of patches to sample
+    :type m: int
+    :returns: Data object with m samples
     :rtype: natter.DataModule.Data
-    
     """
+    count = 1
+    x0 = theIterator.next()
+    n = max(x0.shape)
+    X = zeros((n,m))
+    X[:,0] = x0
+    for x in theIterator:
+        X[:,count] = x
+        count += 1
+        if count == m:
+            break
+    return Data(X,'%i data points sampled with iterator.' % (m, ))
 
-    ny,nx = shape(img)
+def sampleSequenceWithIterator(theIterator, m):
+    """
+    Uses the iterator to sample a sequence of m pairs of patches from it.
+    theIterator must return a pair of data points at a time. Pairs are
+    stored at column i and i+m.
 
-    p1 = p - 1
-  
-    X = zeros( ( p*p, N))
-
-    for ii in xrange(int(N)):
-        ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
-            xi = floor( rand() * ( nx - p - borderwidth) + borderwidth)
-            yi = floor( rand() * ( ny - p - borderwidth) + borderwidth)
-            ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
-            X[:,ii] = ptch.flatten('C')
-  
-    name = "%d %dX%d patches" % (N,p,p)
-    return Data(X, name)
+    :param theIterator: Iterator that returns data poitns
+    :type theIterator: iterator
+    :param m: number of patch pairs to sample
+    :type m: int
+    :returns: Data object with 2*m samples
+    :rtype: natter.DataModule.Data    
+    """
+    count = 1
+    x0,y0 = theIterator.next()
+    n = x0.size
+    X = zeros((n,2*m))
+    X[:,0] = x0
+    X[:,m] = y0
+    for sample in theIterator:
+        X[:,count] = sample[0]
+        X[:,count+m] = sample[1]
+        count += 1
+        if count == m:
+            break
+    return Data(X,'Sequence of %i data pairs sampled with iterator.' % (m, ))
 
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
@@ -232,7 +368,7 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     :type m: int
     :param p: patchsize
     :type p: int
-    :param loadfun: function handle of the load function
+    :param loadfunc: function handle of the load function
     :param samplefunc: function handle of the sampling function
     :returns: Data object with the sampled image patches
     :rtype: natter.DataModule.Data

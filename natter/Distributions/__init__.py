@@ -31,6 +31,7 @@ implements. At the moment it provides the following distributions.
    Distributions_TruncatedGaussian.rst
    Distributions_TruncatedNormal.rst
    Distributions_Transformed.rst
+   Distributions_Uniform.rst
 """
 
 
@@ -63,3 +64,4 @@ from TruncatedExponentialPower import TruncatedExponentialPower
 from FiniteMixtureDistribution import FiniteMixtureDistribution
 from Truncated import Truncated
 from Transformed import Transformed
+from Uniform import Uniform

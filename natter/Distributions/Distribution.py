@@ -87,7 +87,7 @@ class Distribution(LogToken):
         '''
         if hasattr(self,'loglik'):
             return exp(self.loglik(dat))
-        raise Errors.AbstractError('Abstract method p not implemented in ' + self.name)
+        raise Errors.AbstractError('Abstract method pdf not implemented in ' + self.name)
 
 
     def cdf(self,dat):
