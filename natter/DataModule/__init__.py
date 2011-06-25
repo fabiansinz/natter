@@ -11,7 +11,7 @@ The DataModule module stores all data objects and helper modules.
 
 """
 import Data as DataAlias
-from DataAlias import Data
+from Data import Data
 import DataLoader
 import DataSampler
 #from ProcessData import ProcessData

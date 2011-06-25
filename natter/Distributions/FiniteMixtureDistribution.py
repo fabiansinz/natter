@@ -12,7 +12,7 @@ from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Numerics import logsumexp
 from warnings import warn
-from natter.Auxiliary.Decorators import Squeezer
+from natter.Auxiliary.Decorators import Squeezer,OutputRangeChecker
 
 def logistic(eta):
     return exp(eta)/(1+exp(eta))
@@ -294,7 +294,8 @@ class FiniteMixtureDistribution(Distribution):
             else:
                 ret = vstack((ret,ret0))
         return ret
-
+    
+    
     def cdf(self,dat):
         """
 
