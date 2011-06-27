@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray
 from numpy.random import rand, randn, randint, poisson
 from natter.DataModule import Data
 #from natter.Distributions import Uniform
@@ -7,6 +7,7 @@ from natter.Auxiliary.ImageUtils import shiftImage
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
+import Image
 #from numpy.fft import fft2
 
 #from matplotlib.pyplot import *
@@ -147,6 +148,154 @@ def img2PatchRand(img, p, N):
   
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
+
+
+def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
+    """
+    Simulates eye movements by sampling patches with the following procedure:
+
+    1) an image is loaded with loadfunc from the directory dir
+    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau. If randStayTime==False then tau is used instead.
+    3) a random starting location (uniformly distributed) is sampled
+    4) a patch is sampled form that location
+    5) a new location is sampled from Brownian motion with std sigma, if the border of the image is reached, the sample is rejected and resampled
+    6) if N is reached, goto 1), otherwise goto 4)
+
+    :param dir: directory containing only images
+    :type dir: string
+    :param loadfun: function handle of the image load function which takes a string and returns a numpy array (the image)
+    :param p: patchsize
+    :type p: int
+    :param tau: mean of Poisson distribution
+    :type tau: float
+    :param sigma: std of the 2D Brownian motion
+    :type sigma: float
+    :param N: if not None, then N patches will be sampled in each step
+    :type N: int
+    :returns:  Data object with sampled patches
+    :rtype: natter.DataModule.Data
+    """
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    M = len(files)
+    sampleImg = True
+    t = 0
+    I = None
+    N = tau
+    while True:
+        if sampleImg:
+            # if I is not None:
+            #     show()
+            #     raw_input()
+            t = 0
+            if randStayTime:
+                N = poisson(tau)
+            filename = dir + files[int(floor(rand()*M))]
+            I = loadfunc(filename)
+            
+            ny,nx = I.shape
+            # imshow(I,interpolation='nearest',cmap=cm.gray)
+            xi = floor( rand() * ( nx - p))
+            yi = floor( rand() * ( ny - p))
+            sampleImg = False
+            stdout.write('\tSampling %i %i X %i patches from %s\n' % (N,p,p,filename))
+            stdout.flush()
+
+        
+        ptch = I[ yi:yi+p, xi:xi+p]
+        #plot(xi+p/2.0,yi+p/2,'ro')
+        tmp = round(randn(2)*sigma)
+        while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
+            tmp = round(randn(2)*sigma)
+        yi += tmp[0]
+        xi += tmp[1]
+        # stdout.write("(%i,%i)" % (yi,xi))
+        # stdout.flush()
+        t += 1
+        ptch = ptch.flatten()
+        if any(isnan(ptch)) or any(isinf(ptch)):
+            t -= 1
+        else:
+            yield ptch.flatten('F')
+
+        if t == N:
+            sampleImg = True
+    
+
+
+def sampleWithIterator(theIterator,m):
+    """
+    Uses the iterator to sample m patches from it. theIterator must
+    return a data point at a time.
+
+    :param theIterator: Iterator that returns data poitns
+    :type theIterator: iterator
+    :param m: number of patches to sample
+    :type m: int
+    """
+    count = 1
+    x0 = theIterator.next()
+    n = max(x0.shape)
+    X = zeros((n,m))
+    X[:,0] = x0
+    for x in theIterator:
+        X[:,count] = x
+        count += 1
+        if count == m:
+            break
+    return Data(X,'%i data points sampled with iterator.' % (m, ))
+    
+
+def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
+    """
+
+    Samples m patches from images in dir by loading them with
+    loadfunc(filename) and sampling patches via samplefunc(img, p,
+    ceil(m/#images)).
+
+    :param dir: Directory containing the images
+    :type dir: string
+    :param m: number of images to samplefunc
+    :type m: int
+    :param p: patchsize
+    :type p: int
+    :param loadfun: function handle of the load function
+    :param samplefunc: function handle of the sampling function
+    :returns: Data object with the sampled image patches
+    :rtype: natter.DataModule.Data
+
+    
+    """
+    files = listdir(dir)
+    M = len(files)
+    mpf = ceil(m/M)
+
+    # load and sample first image
+    dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
+    
+    for i in xrange(1,M):
+        print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
+        stdout.flush()
+        dat.append(samplefunc(loadfunc(dir + files[i]), p, mpf))
+    return dat
+        
+        
+# if __name__=="__main__":
+#     from numpy import *
+#     from natter.DataModule import DataSampler
+#     from matplotlib.pyplot import show
+
+#     n = 5
+#     t = arange(0,2*pi,2*pi/100)
+#     W = vstack((cos(t),sin(t)))
+#     dat = DataSampler.gratings(n,9,array([0,1]),array([1]))
+
+#     z = fft2(reshape(dat.X[:,1],(n,n),order='F'))
+#     for i in xrange(n):
+#         print "\t".join(["%.2f + i%.2f" % (real(elem), imag(elem)) for elem in z[i,:]])
+        
 
 def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F'):
     """
@@ -307,101 +456,6 @@ def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orien
   
     return
 
-def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
-    """
-    Simulates eye movements by sampling patches with the following procedure:
-
-    1) an image is loaded with loadfunc from the directory dir
-    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau. If randStayTime==False then tau is used instead.
-    3) a random starting location (uniformly distributed) is sampled
-    4) a patch is sampled form that location
-    5) a new location is sampled from Brownian motion with std sigma, if the border of the image is reached, the sample is rejected and resampled
-    6) if N is reached, goto 1), otherwise goto 4)
-
-    :param dir: directory containing only images
-    :type dir: string
-    :param loadfun: function handle of the image load function which takes a string and returns a numpy array (the image)
-    :param p: patchsize
-    :type p: int
-    :param tau: mean of Poisson distribution
-    :type tau: float
-    :param sigma: std of the 2D Brownian motion
-    :type sigma: float
-    :param N: if not None, then N patches will be sampled in each step
-    :type N: int
-    :returns:  Data object with sampled patches
-    :rtype: natter.DataModule.Data
-    """    
-    M = len(files)
-    sampleImg = True
-    t = 0
-    I = None
-    N = tau
-    while True:
-        if sampleImg:
-            # if I is not None:
-            #     show()
-            #     raw_input()
-            t = 0
-            if randStayTime:
-                N = poisson(tau)
-            filename = dir + files[int(floor(rand()*M))]
-            I = loadfunc(filename)
-            
-            ny,nx = I.shape
-            # imshow(I,interpolation='nearest',cmap=cm.gray)
-            xi = floor( rand() * ( nx - p))
-            yi = floor( rand() * ( ny - p))
-            sampleImg = False
-            stdout.write('\tSampling %i %i X %i patches from %s\n' % (N,p,p,filename))
-            stdout.flush()
-
-        
-        ptch = I[ yi:yi+p, xi:xi+p]
-        #plot(xi+p/2.0,yi+p/2,'ro')
-        tmp = round(randn(2)*sigma)
-        while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
-            tmp = round(randn(2)*sigma)
-        yi += tmp[0]
-        xi += tmp[1]
-        # stdout.write("(%i,%i)" % (yi,xi))
-        # stdout.flush()
-        t += 1
-        ptch = ptch.flatten()
-        if any(isnan(ptch)) or any(isinf(ptch)):
-            t -= 1
-        else:
-            yield ptch.flatten('F')
-
-        if t == N:
-            sampleImg = True
-    
-
-
-def sampleWithIterator(theIterator,m):
-    """
-    Uses the iterator to sample m patches from it. theIterator must
-    return a data point at a time.
-
-    :param theIterator: Iterator that returns data poitns
-    :type theIterator: iterator
-    :param m: number of patches to sample
-    :type m: int
-    :returns: Data object with m samples
-    :rtype: natter.DataModule.Data
-    """
-    count = 1
-    x0 = theIterator.next()
-    n = max(x0.shape)
-    X = zeros((n,m))
-    X[:,0] = x0
-    for x in theIterator:
-        X[:,count] = x
-        count += 1
-        if count == m:
-            break
-    return Data(X,'%i data points sampled with iterator.' % (m, ))
-
 def sampleSequenceWithIterator(theIterator, m):
     """
     Uses the iterator to sample a sequence of m pairs of patches from it.
@@ -429,50 +483,73 @@ def sampleSequenceWithIterator(theIterator, m):
             break
     return Data(X,'Sequence of %i data pairs sampled with iterator.' % (m, ))
 
-def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
+
+def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', rotationDistribution=None):
     """
 
-    Samples m patches from images in dir by loading them with
-    loadfunc(filename) and sampling patches via samplefunc(img, p,
-    ceil(m/#images)).
+    Samples pxp sequences from images in dir. 
 
-    :param dir: Directory containing the images
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
     :type dir: string
-    :param m: number of images to samplefunc
-    :type m: int
-    :param p: patchsize
+    :param p: patch size
     :type p: int
+    :param samples_per_file: number of patches to sample from one image. All samples have same shift.
+    :type samples_per_file: int    
     :param loadfunc: function handle of the load function
-    :param samplefunc: function handle of the sampling function
-    :returns: Data object with the sampled image patches
-    :rtype: natter.DataModule.Data
-
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param rotationDistribution: 1D distribution to sample shift steps from
+    :type rotationDistribution: natter.Distributions.Distribution
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
     
     """
+    if rotationDistribution == None:
+        raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
+
+    if dir[-1] != '/':
+        dir += '/'
+        
     files = listdir(dir)
-    M = len(files)
-    mpf = ceil(m/M)
+    number_files = len(files)
+    sampleImg = True
+    # to avoid artifacts from the undefined regions outside of the patch during rotation
+    # we extend the source patch such that there are no undefined pixels 
+    width_ext = ceil(p * (sqrt(2)-1)) 
+    w = p+2*width_ext
 
-    # load and sample first image
-    dat = samplefunc(loadfunc(dir + files[0]), p, mpf)
-    
-    for i in xrange(1,M):
-        print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
-        stdout.flush()
-        dat.append(samplefunc(loadfunc(dir + files[i]), p, mpf))
-    return dat
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
+            
+            ny,nx = img.shape
+            width_limit = nx - w
+            height_limit = ny - w
+            sampleImg = False
+            stdout.write('\tSampling %i X %i rotating patch sequences from %s\n'%(p,p,filename))
+            stdout.flush()
+           
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = randint(low=0, high=width_limit)
+            yi = randint(low=0, high=height_limit)
+            shift = rand()*360
+            Xsource = img[ yi:yi+w, xi:xi+w]
+            Ysource = asarray(Image.fromarray(Xsource).rotate(shift))
+            
+            X = Xsource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
+            Y = Ysource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
+            ptch = hstack((X.flatten(), Y.flatten()))
         
-        
-# if __name__=="__main__":
-#     from numpy import *
-#     from natter.DataModule import DataSampler
-#     from matplotlib.pyplot import show
-
-#     n = 5
-#     t = arange(0,2*pi,2*pi/100)
-#     W = vstack((cos(t),sin(t)))
-#     dat = DataSampler.gratings(n,9,array([0,1]),array([1]))
-
-#     z = fft2(reshape(dat.X[:,1],(n,n),order='F'))
-#     for i in xrange(n):
-#         print "\t".join(["%.2f + i%.2f" % (real(elem), imag(elem)) for elem in z[i,:]])
+        sample_index += 1
+        yield X, Y
+        if sample_index == samples_per_file:
+            sampleImg = True
+  
+    return

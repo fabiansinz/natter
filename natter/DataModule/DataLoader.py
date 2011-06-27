@@ -1,8 +1,10 @@
+from sys import stdin, stdout
 from natter.DataModule import Data
 from scipy import io
 import pickle
 from natter.Auxiliary import Errors
-from numpy import any, size, max, zeros, concatenate, shape, ndarray, array
+from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
+import numpy as np
 
 def load(path):
     """
@@ -147,6 +149,48 @@ def libsvm(path,n=1):
     dat.history.append('converted from libsvm format')
     return dat
 
-     
+def loadnpz(path, varname=None, transpose=None):
+    """
+    Loads a npz file from the specified path. If no variable name
+    is passed to the function it prints all variables and asks for
+    user input.
+
+    :param path: Path to the .mat file.
+    :type path: string
+    :param varname: Name of the variable to be loaded from the .mat file.
+    :type varname: string
+    :param transpose: Transpose of variable shall be loaded or the orientation shall be guessed
+    :type transpose: bool
+    :returns: Data object with the data from the specified file.
+    :rtype: natter.DataModule.Data
     
-    
+    """
+    fin = np.load(path)
+    if varname:
+        if fin.keys().count(varname) > 0:
+            dat = atleast_2d(fin[varname])
+        else:
+            raise ValueError, 'Given variable name "%s" does not exist in file "%s".'%(varname,path)
+            
+    else:
+        stdout.write('Variables in "%s":\n'%(path))
+        for var in fin.keys():
+            stdout.write(var+'\n')
+        stdout.write('Which variable should be loaded: ')
+        var = stdin.readline()[:-1]
+        if fin.keys().count(var) > 0:
+            dat = atleast_2d(fin[var])
+        else:
+            raise ValueError, 'Given variable name "%s" does not exist in file "%s".'%(var,path)
+        
+    if transpose == None:
+        if dat.shape[0] > dat.shape[1]:
+            transpose = True
+        else:
+            transpose = False
+        
+    if transpose:
+        return Data(dat.T,'npz data from ' + path)
+    else:
+        return Data(dat,'npz data from ' + path)
+

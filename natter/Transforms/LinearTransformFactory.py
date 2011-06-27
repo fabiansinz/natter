@@ -301,3 +301,21 @@ def SubspaceEnergyWhitening(dat, hasDC=True):
     W = np.diag(np.hstack((invDCvar, invACvar)))
     F = LinearTransform(W, 'Quadrature pair subspace energy equalization filter computed on ' + dat.name )
     return F
+
+
+def SSA( dat, *args, **kwargs ):
+    """
+    Creates a linear filter by applying 2D subspace slowness analysis.
+
+    :param dat: Data set with sequence
+    :type dat: natter.DataModule.Data
+    :returns: A linear filter containing the SSA filters
+    :rtype: natter.Transforms.LinearTransform
+    """
+    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), verbose=True, **kwargs)
+    SSA.train(dat.X.T)
+    SSA.stop_training()
+    # refine
+    # ICA.g = 'gaus'
+    # ICA.train(dat.X.transpose())
+    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
