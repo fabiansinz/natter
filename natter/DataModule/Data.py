@@ -7,6 +7,8 @@ from numpy.linalg import qr, svd
 import types
 import sys
 from natter.Logging.LogTokens import LogToken
+from scipy.stats import kurtosis
+from numpy.random import randint
 
 class Data(LogToken):
     """
@@ -323,6 +325,21 @@ class Data(LogToken):
         """
         return var(self.X,1)
 
+    def kurtosis(self,bias=False):
+        """
+        Computes the kurtosis for each marginal using the kurtosis
+        estimator of scipy.stats.
+
+        :param bias: If False, then the calculations are corrected for statistical bias.
+        :type bias: Bool
+        :returns: Marginal kurtoses
+        :rtype: numpy.array
+        
+        """
+        return kurtosis(self.X,axis=1,bias=bias)
+
+    
+
     def center(self,mu=None):
         """
         Centers the data points on the mean over samples and dimensions. The motivation for this is that patches of natural images are usually sampled randomly from images, which makes them have a stationary statistics. Therefore, the mean in each dimension should be the same and we get a better estimate if we sample over pixels and dimensions.
@@ -493,6 +510,25 @@ class Data(LogToken):
         self.X = hstack((self.X,O.X))
         self.history.append('Concatenated with data from \"' + O.name + '\"')
         self.history.append(h)
+
+
+    ############ Iterators ########################################
+    def bootstrap(self,n,m):
+        """
+        Iterator that returns n datasets with m examples, that have
+        been randomly drawn from that data.
+
+        :param n: number of datasets to be bootstrapped.
+        :type n: int
+        :param m: number of samples per dataset
+        :type m: int
+        
+        """
+        ne = self.X.shape[1]
+        for k in xrange(n):
+            ind= randint(ne,size=(m,))
+            yield self[:,ind]
+        return 
 
 def displayHistoryRec(h,recDepth=0):
     s = ""
