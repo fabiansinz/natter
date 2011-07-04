@@ -220,7 +220,37 @@ def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
         if t == N:
             sampleImg = True
     
+def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
+    """
 
+    Iterator to sample ceil(m/#images) patches from each image in dir
+    by loading them with loadfunc(filename) and sampling patches via
+    samplefunc(img, p, ceil(m/#images)). The iterator yields a image
+    patch per call.
+
+    :param dir: Directory containing the images
+    :type dir: string
+    :param m: number of images to samplefunc
+    :type m: int
+    :param p: patchsize
+    :type p: int
+    :param loadfun: function handle of the load function
+    :param samplefunc: function handle of the sampling function
+    
+    """
+    files = listdir(dir)
+    M = len(files)
+    mpf = ceil(m/M)
+
+    # load and sample first image
+    
+    for i in xrange(M):
+        print "\tLoading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
+        stdout.flush()
+        X = samplefunc(loadfunc(dir + files[i]), p, mpf).X
+        for j in xrange(X.shape[1]):
+            yield X[:,j]
+    return 
 
 def sampleWithIterator(theIterator,m):
     """
