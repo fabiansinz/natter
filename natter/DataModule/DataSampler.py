@@ -135,6 +135,7 @@ def img2PatchRand(img, p, N):
   
     X = zeros( ( p*p, N))
 
+    stdout.flush()
     for ii in xrange(int(N)):
         ptch = array([NaN])
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
@@ -142,6 +143,11 @@ def img2PatchRand(img, p, N):
             yi = floor( rand() * ( ny - p))
             ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
             X[:,ii] = ptch.flatten('F')
+            stdout.write('.')
+            stdout.flush()
+        
+    stdout.write('\n')
+    stdout.flush()
   
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
@@ -300,6 +306,8 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     mpf = ceil(m/M)
 
     # load and sample first image
+    print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[0] )
+    stdout.flush()
     dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
     
     for i in xrange(1,M):
