@@ -285,7 +285,7 @@ class Data(LogToken):
             tmp2 = reshape(tmp2,(tmp2.shape[0],1))
         return Data(tmp2,self.name,tmp)
         
-    def plotPatches(self,m=-1, plotNumbers=False):
+    def plotPatches(self,m=-1, plotNumbers=False,contrastEnhancement=False):
         """
         If the Data objects holds patches flattened into vectors (Fortran style), then plotPatches can plot those patches. If *m* is specified, only the first *m* patches are plotted.
 
@@ -297,7 +297,7 @@ class Data(LogToken):
             m = self.size(1)
         nx = ceil(sqrt(m))
         ptchSz = int(sqrt(size(self.X,0)))
-        Plotting.plotPatches(self.X[:,:m],nx,ptchSz)
+        Plotting.plotPatches(self.X[:,:m],nx,ptchSz,contrastenhancement=contrastEnhancement)
 
         if plotNumbers:
             row = 0
