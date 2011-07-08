@@ -143,11 +143,6 @@ def img2PatchRand(img, p, N):
             yi = floor( rand() * ( ny - p))
             ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
             X[:,ii] = ptch.flatten('F')
-            stdout.write('.')
-            stdout.flush()
-        
-    stdout.write('\n')
-    stdout.flush()
   
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
@@ -251,14 +246,15 @@ def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
     # load and sample first image
     
     for i in xrange(M):
-        print "\tLoading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
+        I = loadfunc(dir + files[i])
+        print "\tLoading %d %dx%d patches from %i X %i size %s" %(mpf,p,p,I.shape[0],I.shape[1],dir + files[i] )
         stdout.flush()
-        X = samplefunc(loadfunc(dir + files[i]), p, mpf).X
+        X = samplefunc(I, p, mpf).X
         for j in xrange(X.shape[1]):
             yield X[:,j]
     return 
 
-def sampleWithIterator(theIterator,m):
+def sampleWithIterator(theIterator,m,transformfunc = None):
     """
     Uses the iterator to sample m patches from it. theIterator must
     return a data point at a time.
@@ -267,19 +263,39 @@ def sampleWithIterator(theIterator,m):
     :type theIterator: iterator
     :param m: number of patches to sample
     :type m: int
+    :param transformfunc: function that get applied to a patch once it is sampled.
     """
     count = 1
     x0 = theIterator.next()
     n = max(x0.shape)
     X = zeros((n,m))
-    X[:,0] = x0
+    if transformfunc is not None:
+        X[:,0] = transformfunc(x0)
+    else:
+        X[:,0] = x0
+
     for x in theIterator:
-        X[:,count] = x
+
+        if transformfunc is not None:
+            X[:,count] = transformfunc(x)
+        else:
+            X[:,count] = x
+            
         count += 1
         if count == m:
             break
-    return Data(X,'%i data points sampled with iterator.' % (m, ))
+    if transformfunc is not None:
+        name = '%i transformed data points sampled with iterator.' % (m, )
+    else:
+        name = '%i data points sampled with iterator.' % (m, )
+        
+    return Data(X,name)
     
+def sample(theIterator,m,transformfunc = None):
+    """
+    See doc for sampleWithIterator.
+    """    
+    return sampleWithIterator(theIterator,m,transformfunc)
 
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
