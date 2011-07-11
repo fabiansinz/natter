@@ -6,6 +6,7 @@ implements. At the moment it provides the following distributions.
 .. toctree::
    :maxdepth: 2
    
+   Distributions_ChiP.rst
    Distributions_CompleteLinearModel.rst
    Distributions_Dirichlet.rst
    Distributions_Distribution.rst
@@ -35,6 +36,7 @@ implements. At the moment it provides the following distributions.
 
 
 from Distribution import Distribution
+from ChiP import ChiP
 from Gamma import Gamma
 from GammaP import GammaP
 from Dirichlet import Dirichlet
