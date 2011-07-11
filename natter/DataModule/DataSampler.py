@@ -138,6 +138,7 @@ def img2PatchRand(img, p, N):
   
     X = zeros( ( p*p, N))
 
+    stdout.flush()
     for ii in xrange(int(N)):
         ptch = array([NaN])
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
@@ -223,9 +224,40 @@ def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
         if t == N:
             sampleImg = True
     
+def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
+    """
 
+    Iterator to sample ceil(m/#images) patches from each image in dir
+    by loading them with loadfunc(filename) and sampling patches via
+    samplefunc(img, p, ceil(m/#images)). The iterator yields a image
+    patch per call.
 
-def sampleWithIterator(theIterator,m):
+    :param dir: Directory containing the images
+    :type dir: string
+    :param m: number of images to samplefunc
+    :type m: int
+    :param p: patchsize
+    :type p: int
+    :param loadfun: function handle of the load function
+    :param samplefunc: function handle of the sampling function
+    
+    """
+    files = listdir(dir)
+    M = len(files)
+    mpf = ceil(m/M)
+
+    # load and sample first image
+    
+    for i in xrange(M):
+        I = loadfunc(dir + files[i])
+        print "\tLoading %d %dx%d patches from %i X %i size %s" %(mpf,p,p,I.shape[0],I.shape[1],dir + files[i] )
+        stdout.flush()
+        X = samplefunc(I, p, mpf).X
+        for j in xrange(X.shape[1]):
+            yield X[:,j]
+    return 
+
+def sampleWithIterator(theIterator,m,transformfunc = None):
     """
     Uses the iterator to sample m patches from it. theIterator must
     return a data point at a time.
@@ -234,19 +266,39 @@ def sampleWithIterator(theIterator,m):
     :type theIterator: iterator
     :param m: number of patches to sample
     :type m: int
+    :param transformfunc: function that get applied to a patch once it is sampled.
     """
     count = 1
     x0 = theIterator.next()
     n = max(x0.shape)
     X = zeros((n,m))
-    X[:,0] = x0
+    if transformfunc is not None:
+        X[:,0] = transformfunc(x0)
+    else:
+        X[:,0] = x0
+
     for x in theIterator:
-        X[:,count] = x
+
+        if transformfunc is not None:
+            X[:,count] = transformfunc(x)
+        else:
+            X[:,count] = x
+            
         count += 1
         if count == m:
             break
-    return Data(X,'%i data points sampled with iterator.' % (m, ))
+    if transformfunc is not None:
+        name = '%i transformed data points sampled with iterator.' % (m, )
+    else:
+        name = '%i data points sampled with iterator.' % (m, )
+        
+    return Data(X,name)
     
+def sample(theIterator,m,transformfunc = None):
+    """
+    See doc for sampleWithIterator.
+    """    
+    return sampleWithIterator(theIterator,m,transformfunc)
 
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     """
@@ -273,6 +325,8 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     mpf = ceil(m/M)
 
     # load and sample first image
+    print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[0] )
+    stdout.flush()
     dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
     
     for i in xrange(1,M):

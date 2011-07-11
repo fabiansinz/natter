@@ -7,6 +7,8 @@ from numpy.linalg import qr, svd
 import types
 import sys
 from natter.Logging.LogTokens import LogToken
+from scipy.stats import kurtosis
+from numpy.random import randint
 
 class Data(LogToken):
     """
@@ -139,7 +141,9 @@ class Data(LogToken):
         :returns: A new Data object containing the norms.
         :rtype: natter.DataModule.Data
         """
-        return Data(sum(abs(self.X)**p,axis=0)**(1.0/p))
+        history  = list(self.history)
+        history.append('%.2f-norm taken' % (p,))
+        return Data(sum(abs(self.X)**p,axis=0)**(1.0/p),name=str(self.name),history=history)
 
     def normalize(self,p=2.0):
         """
@@ -283,7 +287,11 @@ class Data(LogToken):
             tmp2 = reshape(tmp2,(tmp2.shape[0],1))
         return Data(tmp2,self.name,tmp)
         
+<<<<<<< HEAD
     def plotPatches(self,m=-1, plotNumbers=False, orientation='C', **kwargs):
+=======
+    def plotPatches(self,m=-1, plotNumbers=False,contrastEnhancement=False):
+>>>>>>> master
         """
         If the Data objects holds patches flattened into vectors (Fortran style), then plotPatches can plot those patches. If *m* is specified, only the first *m* patches are plotted.
 
@@ -326,6 +334,21 @@ class Data(LogToken):
         :rtype: numpy.array
         """
         return var(self.X,1)
+
+    def kurtosis(self,bias=False):
+        """
+        Computes the kurtosis for each marginal using the kurtosis
+        estimator of scipy.stats.
+
+        :param bias: If False, then the calculations are corrected for statistical bias.
+        :type bias: Bool
+        :returns: Marginal kurtoses
+        :rtype: numpy.array
+        
+        """
+        return kurtosis(self.X,axis=1,bias=bias)
+
+    
 
     def center(self,mu=None):
         """
@@ -497,6 +520,25 @@ class Data(LogToken):
         self.X = hstack((self.X,O.X))
         self.history.append('Concatenated with data from \"' + O.name + '\"')
         self.history.append(h)
+
+
+    ############ Iterators ########################################
+    def bootstrap(self,n,m):
+        """
+        Iterator that returns n datasets with m examples, that have
+        been randomly drawn from that data.
+
+        :param n: number of datasets to be bootstrapped.
+        :type n: int
+        :param m: number of samples per dataset
+        :type m: int
+        
+        """
+        ne = self.X.shape[1]
+        for k in xrange(n):
+            ind= randint(ne,size=(m,))
+            yield self[:,ind]
+        return 
 
 def displayHistoryRec(h,recDepth=0):
     s = ""

@@ -8,5 +8,5 @@ and subindexing just like numpy arrays. Additionally, data objects
 can be exponentiated.  
 
 .. autoclass:: natter.DataModule.Data
-   :members: setHistory, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center, makeWhiteningVolumeConserving, cov, dnormdx, size, copy, save, append, numex, dim,fade,stack
+   :members: setHistory, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center, makeWhiteningVolumeConserving, cov, dnormdx, size, copy, save, append, numex, dim,fade,stack,kurtosis,bootstrap
 

@@ -426,7 +426,6 @@ class FiniteMixtureDistribution(Distribution):
         iterC= 0
         while abs(diff)>tol and iterC < maxiter:
             if 'P' in self.primary:
-                print "Haeh?"
                 mstep()
             # moved from mstep to here
             if 'alpha' in self.primary:

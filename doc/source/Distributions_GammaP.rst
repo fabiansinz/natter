@@ -5,7 +5,7 @@ Univariate distribution for which :math: x^p is Gamma distributed.
 
 .. math::
 
-   p(x) =  \frac{p\cdot x^{u+p-2}}{\Gamma(u)\,s^u} \exp{\left(-\frac{x^p}{s}\right)}
+   p(x) =  \frac{p\cdot x^{up-1}}{\Gamma(u)\,s^u} \exp{\left(-\frac{x^p}{s}\right)}
 
 
 

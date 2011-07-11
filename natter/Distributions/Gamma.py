@@ -29,7 +29,10 @@ class Gamma(Distribution):
     maxCount = 10000
     Tol = 10.0**-20.0
 
-    
+    def primaryBounds(self):
+        return len(self.primary)*[(1e-6,None)]
+
+
     def __init__(self, *args,**kwargs):
         # parse parameters correctly
         param = None
