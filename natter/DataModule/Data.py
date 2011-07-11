@@ -141,7 +141,9 @@ class Data(LogToken):
         :returns: A new Data object containing the norms.
         :rtype: natter.DataModule.Data
         """
-        return Data(sum(abs(self.X)**p,axis=0)**(1.0/p))
+        history  = list(self.history)
+        history.append('%.2f-norm taken' % (p,))
+        return Data(sum(abs(self.X)**p,axis=0)**(1.0/p),name=str(self.name),history=history)
 
     def normalize(self,p=2.0):
         """
