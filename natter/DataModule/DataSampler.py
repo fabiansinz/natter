@@ -593,7 +593,7 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
             xi = randint(low=0, high=width_limit)
             yi = randint(low=0, high=height_limit)
-            shift = rand()*360
+            shift = rotationDistribution.sample(1).X[0,0]
             Xsource = img[ yi:yi+w, xi:xi+w]
             Ysource = asarray(Image.fromarray(Xsource).rotate(shift))
             

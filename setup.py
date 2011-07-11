@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0'
+version = '0.0.1'
 
 setup(name='natter',
       version=version,
@@ -10,7 +10,7 @@ setup(name='natter',
 """,
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
-      author='Fabian Sinz, Sebastian Gerwinn, Lucas Theis',
+      author='Fabian Sinz, Sebastian Gerwinn, Lucas Theis, Philipp Lies',
       author_email='',
       url='',
       license='',
