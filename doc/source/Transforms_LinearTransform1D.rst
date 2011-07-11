@@ -1,5 +1,5 @@
 The LinearTransform1D Class
-=========================
+===========================
 
 The LinearTransform1D class respresents linear transformation of
 data. Internally, the linear transformation is represented as a matrix

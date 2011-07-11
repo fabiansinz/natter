@@ -8,6 +8,7 @@ factories.
    :maxdepth: 2
    
    Transforms_LinearTransform.rst
+   Transforms_LinearTransform1D.rst
    Transforms_LinearTransformFactory.rst
    Transforms_NonlinearTransform.rst
    Transforms_NonlinearTransformFactory.rst
@@ -23,3 +24,4 @@ from NonlinearTransform import NonlinearTransform
 import LinearTransformFactory
 import LinearTransformUtils
 import NonlinearTransformFactory
+from LinearTransform1D import LinearTransform1D
