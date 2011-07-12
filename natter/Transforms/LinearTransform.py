@@ -40,7 +40,7 @@ class LinearTransform(Transform.Transform):
 
         self.name = name
 
-    def plotBasis(self, plotNumbers=False):
+    def plotBasis(self, plotNumbers=False, orientation='F'):
         """
 
         Plots the columns of the inverse linear transform matrix
@@ -53,7 +53,7 @@ class LinearTransform(Transform.Transform):
         """
         nx = ceil(sqrt(size(self.W,1)))
         ptchSz = sqrt(size(self.W,0))
-        Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True)
+        Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True, orientation=orientation)
 
         if plotNumbers:
             row = 0
@@ -70,7 +70,7 @@ class LinearTransform(Transform.Transform):
                 i += 1
 
     
-    def plotFilters(self, plotNumbers=False):
+    def plotFilters(self, plotNumbers=False, orientation='F'):
         """
 
         Plots the rows of the linear transform matrix W. Works only if
@@ -82,7 +82,7 @@ class LinearTransform(Transform.Transform):
         """
         nx = ceil(sqrt(size(self.W,0)))
         ptchSz = sqrt(size(self.W,1))
-        Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True)
+        Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True, orientation=orientation)
 
         if plotNumbers:
             row = 0

@@ -1,9 +1,9 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray, linspace
 from numpy.random import rand, randn, randint, poisson
 from natter.DataModule import Data
 #from natter.Distributions import Uniform
-from natter.Auxiliary.ImageUtils import shiftImage
+from natter.Auxiliary.ImageUtils import shiftImage, bilinearInterpolation
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
@@ -612,7 +612,7 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
   
     return
 
-def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', scalingDistribution=None, interpolation=Image.BILINEAR):
+def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', scalingDistribution=None, interpolation=Image.BILINEAR, upper_limit=2.0, lower_limit=0.5):
     """
 
     Samples pxp sequences from images in dir. Transformation applied is scaling. If scalingDistribution is
@@ -636,9 +636,13 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     :type orientation: string
     :param scalingDistribution: 1D or 2D distribution to sample shift steps from
     :type scalingDistribution: natter.Distributions.Distribution
-    :param interpolation: Python Image Library interpolation type for scaling, default Image.BILINEAR
+    :param interpolation: Python Image Library interpolation type for scaling (default Image.BILINEAR)
     :type interpolation: Integer
+    :param upper_limit: Upper limit for scaling (default 2.0)
+    :type upper_limit: Float
+    :param lower_limit: Lower limit for scaling (default 0.5)
     :returns: Iterator that samples from all files
+    :type lower_limit: Float
     :rtype: Iterator
     
     """
@@ -667,29 +671,35 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             sampleImg = False
             stdout.write('\tSampling %i X %i scaling patch sequences from %s\n'%(patch_size,patch_size,filename))
             stdout.flush()
+            width_limit_up = floor(nx - upper_limit/2.0*patch_size)
+            height_limit_up = floor(ny - upper_limit/2.0*patch_size)
+            width_limit_low = ceil(upper_limit/2.0*patch_size)
+            height_limit_low = ceil(upper_limit/2.0*patch_size)
+            
            
         ptch = array([NaN])
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
             randSample = scalingDistribution.sample(1).X
             if randSample.size == 1:
-                scale = (randSample[0,0], randSample[0,0])
+                scale = array((randSample[0,0], randSample[0,0]))
             else:
-                scale = (randSample[0,0], randSample[1,0])
-            if scale[0]*nx < patch_size:
-                scale[0] = patch_size/nx                   
-            if scale[1]*ny < patch_size:
-                scale[1] = patch_size/ny
-
+                scale = array((randSample[0,0], randSample[1,0]))
+            
+            if scale[0] > upper_limit:
+                scale[0] = upper_limit
+            elif scale[0] < lower_limit:
+                scale[0] = lower_limit
+            if scale[1] > upper_limit:
+                scale[1] = upper_limit
+            elif scale[1] < lower_limit:
+                scale[1] = lower_limit
+                
             new_width = round(patch_size*scale[0])
             new_height = round(patch_size*scale[1])
 
-            width_limit = nx - max((patch_size, new_width))+1
-            height_limit = ny - max((patch_size, new_height))+1
-            xi = randint(low=0, high=width_limit)
-            yi = randint(low=0, high=height_limit)
+            xi = randint(low=width_limit_low, high=width_limit_up)
+            yi = randint(low=height_limit_low, high=height_limit_up)
 
-            new_width = ceil(patch_size*scale[0])
-            new_height = ceil(patch_size*scale[1])
             yinew = int((yi + patch_size/2) - new_height/2)
             xinew = int((xi + patch_size/2) - new_width/2)
             
@@ -706,3 +716,15 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             sampleImg = True
   
     return
+
+def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F'):
+    ny=1024
+    nx=1536
+    pw = patch_size
+    ph = patch_size
+    seed = rand(2) * array((ny,nx))
+    x_center = linspace(seed[1]-(pw-1)/2, seed[1]+(pw-1)/2, pw, True)
+    y_center = linspace(seed[0]-(ph-1)/2, seed[0]+(ph-1)/2, ph, True)
+    x_grid, y_grid = meshgrid(x_center, y_center)
+    grid_vectors = vstack((x_grid.flatten(), y_grid.flatten()))
+    
