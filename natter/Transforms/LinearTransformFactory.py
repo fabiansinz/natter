@@ -318,4 +318,4 @@ def SSA( dat, *args, **kwargs ):
     # refine
     # ICA.g = 'gaus'
     # ICA.train(dat.X.transpose())
-    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
+    return LinearTransform(SSA.U.T,'2D SSA filter computed on ' + dat.name)

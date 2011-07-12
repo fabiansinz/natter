@@ -538,10 +538,12 @@ def sampleSequenceWithIterator(theIterator, m):
     return Data(X,'Sequence of %i data pairs sampled with iterator.' % (m, ))
 
 
-def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', rotationDistribution=None):
+def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', rotationDistribution=None, interpolation=Image.BILINEAR):
     """
 
-    Samples pxp sequences from images in dir. 
+    Samples pxp sequences from images in dir. Transformation applied if a rotation
+    around the center of the image patch, rotation angle (in degrees) is sampled from
+    rotationDistribution. Rotates a larger patch than the one retuned to avoid artifacts.
 
     The images are vectorized in FORTRAN/MATLAB style by default.
 
@@ -558,6 +560,8 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
     :type orientation: string
     :param rotationDistribution: 1D distribution to sample shift steps from
     :type rotationDistribution: natter.Distributions.Distribution
+    :param interpolation: Python Image Library interpolation type for rotation, default Image.BILINEAR
+    :type interpolation: Integer    
     :returns: Iterator that samples from all files
     :rtype: Iterator
     
@@ -595,10 +599,105 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
             yi = randint(low=0, high=height_limit)
             shift = rotationDistribution.sample(1).X[0,0]
             Xsource = img[ yi:yi+w, xi:xi+w]
-            Ysource = asarray(Image.fromarray(Xsource).rotate(shift))
+            Ysource = asarray(Image.fromarray(Xsource).rotate(shift, interpolation))
             
             X = Xsource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
             Y = Ysource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
+            ptch = hstack((X.flatten(), Y.flatten()))
+        
+        sample_index += 1
+        yield X, Y
+        if sample_index == samples_per_file:
+            sampleImg = True
+  
+    return
+
+def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', scalingDistribution=None, interpolation=Image.BILINEAR):
+    """
+
+    Samples pxp sequences from images in dir. Transformation applied is scaling. If scalingDistribution is
+    1D then isometric scaling is applied, otherwise first dimension is scaling in x direction (width) and
+    second dimension along y direction (height).
+    CAUTION: If scalingDistribution returns only samples which are smaller than -patch_size the sampling
+    will end in an infinite loop.
+
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
+    :type dir: string
+    :param patch_size: patch size
+    :type patch_size: int
+    :param samples_per_file: number of patches to sample from one image. All samples have same shift.
+    :type samples_per_file: int    
+    :param loadfunc: function handle of the load function
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param scalingDistribution: 1D or 2D distribution to sample shift steps from
+    :type scalingDistribution: natter.Distributions.Distribution
+    :param interpolation: Python Image Library interpolation type for scaling, default Image.BILINEAR
+    :type interpolation: Integer
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
+    
+    """
+    if scalingDistribution == None:
+        raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
+    elif scalingDistribution.param['n'] > 2:
+        stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
+    
+
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    number_files = len(files)
+    sampleImg = True
+    # to avoid artifacts from the undefined regions outside of the patch during rotation
+    # we extend the source patch such that there are no undefined pixels 
+
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
+            
+            ny,nx = img.shape
+            sampleImg = False
+            stdout.write('\tSampling %i X %i scaling patch sequences from %s\n'%(patch_size,patch_size,filename))
+            stdout.flush()
+           
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            randSample = scalingDistribution.sample(1).X
+            if randSample.size == 1:
+                scale = (randSample[0,0], randSample[0,0])
+            else:
+                scale = (randSample[0,0], randSample[1,0])
+            if scale[0]*nx < patch_size:
+                scale[0] = patch_size/nx                   
+            if scale[1]*ny < patch_size:
+                scale[1] = patch_size/ny
+
+            new_width = round(patch_size*scale[0])
+            new_height = round(patch_size*scale[1])
+
+            width_limit = nx - max((patch_size, new_width))+1
+            height_limit = ny - max((patch_size, new_height))+1
+            xi = randint(low=0, high=width_limit)
+            yi = randint(low=0, high=height_limit)
+
+            new_width = ceil(patch_size*scale[0])
+            new_height = ceil(patch_size*scale[1])
+            yinew = int((yi + patch_size/2) - new_height/2)
+            xinew = int((xi + patch_size/2) - new_width/2)
+            
+            Xsource = img[ yinew:yinew+new_height, xinew:xinew+new_width]
+            Ysource = asarray(Image.fromarray(Xsource).resize((patch_size, patch_size), interpolation))
+            
+            X = img[ yi:yi+patch_size, xi:xi+patch_size].flatten(orientation)
+            Y = Ysource.flatten(orientation)
             ptch = hstack((X.flatten(), Y.flatten()))
         
         sample_index += 1
