@@ -1,13 +1,12 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, zeros, prod
-from numpy.random import rand
+from numpy import exp, zeros, ones, array
 from natter.Auxiliary.Decorators import DataSupportChecker
 
 
-class Uniform(Distribution):
+class Delta(Distribution):
     """
-    Uniform Distribution
+    Delta Distribution
 
     The constructor is either called with a dictionary, holding
     the parameters (see below) or directly with the parameter
@@ -18,12 +17,11 @@ class Uniform(Distribution):
     :param param:
         dictionary which might containt parameters for the uniform distribution
               'n'      :    dimensionality (default=1)
-              'low'    :    Lower limit parameter (default = 0.0)             
-              'high'   :    Upper limit parameter (default = 1.0)
+              'peak'   :    where the delta peak sitz (either 1D for same in all dimensions or nD)
               
     :type param: dict
 
-    Primary parameters are ['low','high'].
+    No primary parameters.
         
     """
     maxCount = 10000
@@ -50,19 +48,18 @@ class Uniform(Distribution):
                         param[k] = v
         
         # set default parameters
-        self.name = 'Uniform Distribution'
-        self.param = {'low':0.0,'high':1.0, 'n':1}
+        self.name = 'Delta Distribution'
+        self.param = {'peak':0.0, 'n':1}
         if param != None:
             for k in param.keys():
-                self.param[k] = float(param[k])
+                self.param[k] = param[k]
+        self.param['peak'] =  array(self.param['peak']).reshape(self.param['n'],1)
         self.primary = []
-        self.width = self.param['high'] - self.param['low']
-
         
     def sample(self,m):
         """
 
-        Samples m samples from the current uniform distribution.
+        Samples m samples from the delta.
 
         :param m: Number of samples to draw.
         :type name: int.
@@ -71,12 +68,11 @@ class Uniform(Distribution):
 
 
         """
-        return Data( rand(self.param['n'], m) * self.width + self.param['low'], \
+        return Data( ones((self.param['n'],m))*self.param['peak'], \
                      str(m) + ' samples from ' + self.name)
         
 
-    @DataSupportChecker(1,'low','high')
-    def loglik(self,dat):
+    def loglik(self, dat):
         '''
 
         Computes the loglikelihood of the data points in dat. 
@@ -88,11 +84,9 @@ class Uniform(Distribution):
          
            
         '''
-        res = log(zeros(dat.size()[1]) + 1/prod(self.width))
-        return res
+        raise NotImplementedError, 'loglik not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
     def pdf(self,dat):
         '''
 
@@ -122,7 +116,6 @@ class Uniform(Distribution):
         raise NotImplementedError, 'cdf not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
     def ppf(self,X):
         '''
 
@@ -137,7 +130,6 @@ class Uniform(Distribution):
         raise NotImplementedError, 'ppf not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
     def dldtheta(self,data):
         """
         Evaluates the gradient of the Gamma function with respect to the primary parameters.
@@ -152,7 +144,6 @@ class Uniform(Distribution):
         raise NotImplementedError, 'dldtheta not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
     def dldx(self,dat):
         """
 
@@ -166,7 +157,6 @@ class Uniform(Distribution):
         """
         raise NotImplementedError, 'dldx not implemented in ' + self.name
         
-    @DataSupportChecker(1,'low','high')
     def estimate(self,dat):
         '''
         Uniform distribution has no parameter hence estimate does nothing        
@@ -192,9 +182,12 @@ class Uniform(Distribution):
             self.param[key]=arr[ind]
             
     
-    
     def __setitem__(self,key,value):
         if key == 'n':
             raise NotImplementedError, 'Changing the dimensionality of ' + self.name + ' is not supported.'
+        elif key == 'param':
+            if array((value)).size != self.param['n']:
+                raise ValueError, 'Dimensionality of delta peaks does not match dimensionality of distribution'
+            self.param['peak'] =  self.param['peak'].reshape(self.param['n'],1)
         self.param[key] = value
-        self.width = self.param['high'] - self.param['low']
+

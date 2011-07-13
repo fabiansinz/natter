@@ -1,8 +1,7 @@
 from __future__ import division
-from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot,eye, ceil, meshgrid,floor, cos, vstack,sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray, linspace
+from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot, eye, ceil, meshgrid,floor, cos, vstack, sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray, linspace, sin
 from numpy.random import rand, randn, randint, poisson
 from natter.DataModule import Data
-#from natter.Distributions import Uniform
 from natter.Auxiliary.ImageUtils import shiftImage, bilinearInterpolation
 from numpy.linalg import cholesky
 from os import listdir
@@ -647,7 +646,7 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     
     """
     if scalingDistribution == None:
-        raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
+        raise ValueError, 'scalingDistribution cannot be None. Use e.g. Uniform(n=2, low=0.5, high=2.0)'
     elif scalingDistribution.param['n'] > 2:
         stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
     
@@ -671,8 +670,8 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             sampleImg = False
             stdout.write('\tSampling %i X %i scaling patch sequences from %s\n'%(patch_size,patch_size,filename))
             stdout.flush()
-            width_limit_up = floor(nx - upper_limit/2.0*patch_size)
-            height_limit_up = floor(ny - upper_limit/2.0*patch_size)
+            width_limit_up = floor(nx - upper_limit*patch_size)
+            height_limit_up = floor(ny - upper_limit*patch_size)
             width_limit_low = ceil(upper_limit/2.0*patch_size)
             height_limit_low = ceil(upper_limit/2.0*patch_size)
             
@@ -702,6 +701,8 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
 
             yinew = int((yi + patch_size/2) - new_height/2)
             xinew = int((xi + patch_size/2) - new_width/2)
+
+            #stdout.write('%i %i %i %i %i %i %i\n'%(sample_index, xi, yi, xinew, yinew, new_height, new_width))
             
             Xsource = img[ yinew:yinew+new_height, xinew:xinew+new_width]
             Ysource = asarray(Image.fromarray(Xsource).resize((patch_size, patch_size), interpolation))
@@ -717,14 +718,106 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
   
     return
 
-def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F'):
-    ny=1024
-    nx=1536
-    pw = patch_size
-    ph = patch_size
-    seed = rand(2) * array((ny,nx))
-    x_center = linspace(seed[1]-(pw-1)/2, seed[1]+(pw-1)/2, pw, True)
-    y_center = linspace(seed[0]-(ph-1)/2, seed[0]+(ph-1)/2, ph, True)
-    x_grid, y_grid = meshgrid(x_center, y_center)
-    grid_vectors = vstack((x_grid.flatten(), y_grid.flatten()))
+def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', translationDistribution=None, rotationDistribution=None, scalingDistribution=None, upper_limit=2.0, lower_limit=0.5, debug=False):
+
+    if translationDistribution == None:
+        raise ValueError, 'translationDistribution cannot be None. Use e.g. Uniform(n=2, low=-5.0, high=5.0)'
+    elif translationDistribution.param['n'] > 2:
+        stdout.write('WARNING: translationDistribution has more dimensions than needed. Using only first 2.\n')
+    if rotationDistribution == None:
+        raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=2*numpy.pi)'
+    elif rotationDistribution.param['n'] > 1:
+        stdout.write('WARNING: rotationDistribution has more dimensions than needed. Using only first.\n')
+    if scalingDistribution == None:
+        raise ValueError, 'scalingDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
+    elif scalingDistribution.param['n'] > 2:
+        stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
     
+
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    number_files = len(files)
+    sampleImg = True
+    seed = zeros(2)
+    pw = patch_size
+    ph = patch_size    
+
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
+            
+            ny,nx = img.shape
+            sampleImg = False
+            stdout.write('\tSampling %i X %i patch sequences from %s\n'%(patch_size,patch_size,filename))
+            stdout.flush()
+            width_limit_up = floor(nx - upper_limit*patch_size)
+            height_limit_up = floor(ny - upper_limit*patch_size)
+            width_limit_low = ceil(upper_limit/2.0*patch_size)
+            height_limit_low = ceil(upper_limit/2.0*patch_size)
+            seed[1] = randint(low=height_limit_low, high=height_limit_up)
+            seed[0] = randint(low=width_limit_low, high=width_limit_up)
+
+            x_center = linspace(seed[0]-(pw-1)/2, seed[0]+(pw-1)/2, pw, True)
+            y_center = linspace(seed[1]-(ph-1)/2, seed[1]+(ph-1)/2, ph, True)
+            x_grid, y_grid = meshgrid(x_center, y_center)
+            grid_vectors_abs = vstack((x_grid.flatten(), y_grid.flatten()))
+            grid_vectors_rel = grid_vectors_abs - seed.reshape(2,1)
+            patch = zeros((patch_size**2))
+            prev_patch = zeros((patch_size**2))
+            bilinearInterpolation(img, grid_vectors_abs, patch )
+            Rall = eye(2)
+
+        alpha = rotationDistribution.sample(1).X[0,0]
+        randSample = scalingDistribution.sample(1).X
+        if randSample.size == 1:
+            scale = array((randSample[0,0], randSample[0,0]))
+        else:
+            scale = array((randSample[0,0], randSample[1,0]))
+
+        if scale[0] > upper_limit:
+            scale[0] = upper_limit
+        elif scale[0] < lower_limit:
+            scale[0] = lower_limit
+        if scale[1] > upper_limit:
+            scale[1] = upper_limit
+        elif scale[1] < lower_limit:
+            scale[1] = lower_limit        
+
+        randSample = translationDistribution.sample(1).X
+        if randSample.size == 1:
+            shift = array((randSample[0,0], randSample[0,0]))
+        else:
+            shift = array((randSample[0,0], randSample[1,0]))
+        
+        R = array(((cos(alpha), sin(alpha)),(-sin(alpha),cos(alpha))))
+        S = array(((scale[0], 0),(0, scale[1])))
+
+        seed += shift
+        grid_vectors_rel = dot(R, dot(Rall, dot(S, dot( Rall.T, grid_vectors_rel))))
+        Rall = dot(R, Rall)
+        grid_vectors_abs = grid_vectors_rel + seed.reshape(2,1)
+        #print 'seed:', seed
+        #print 'alpha', alpha, 'scale', scale, 'shift', shift
+
+        if (grid_vectors_abs < 0).any() \
+           or (grid_vectors_abs[0,:] > nx-1).any() \
+           or (grid_vectors_abs[1,:] > ny-1).any():
+            sampleImg = True
+            print 'Ran out of image. Restart.'
+            continue
+        
+        prev_patch = patch
+        patch = bilinearInterpolation(img, grid_vectors_abs)
+        
+        sample_index += 1
+        if debug:
+            yield prev_patch, patch, grid_vectors_abs, img
+        else:
+            yield prev_patch, patch
+        
+        if sample_index == samples_per_file:
+            sampleImg = True    

@@ -34,6 +34,7 @@ implements. At the moment it provides the following distributions.
    Distributions_TruncatedNormal.rst
    Distributions_Transformed.rst
    Distributions_Uniform.rst
+   Distributions_Delta.rst
 """
 
 
@@ -68,3 +69,4 @@ from FiniteMixtureDistribution import FiniteMixtureDistribution
 from Truncated import Truncated
 from Transformed import Transformed
 from Uniform import Uniform
+from Delta import Delta
