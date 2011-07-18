@@ -79,6 +79,22 @@ class ChiP(Distribution):
         :rtype: numpy.array
         """
         return self.baseDist.loglik(dat)
+
+    def ppf(self,U):
+        '''
+
+        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
+
+        :param X: Percentiles for which the ppf will be computed.
+        :type X: numpy.array
+        :returns:  A Data object containing the values of the ppf.
+        :rtype:    natter.DataModule.Data
+           
+        '''
+        tmp = self.baseDist.ppf(U)
+        #print tmp
+        #tmp.name= tmp.name.replace('GammaP','ChiP')
+        return tmp
     
     def sample(self,m):
         '''

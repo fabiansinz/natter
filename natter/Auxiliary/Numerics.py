@@ -1,6 +1,6 @@
 from __future__ import division
 from scipy.maxentropy import maxentutils 
-from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like
+from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like, any, abs,mean
 from numpy.fft import fft, ifft
 from scipy import special
 from scipy.special import  gammaincc
@@ -9,8 +9,7 @@ import types
 from Errors import DimensionalityError
 from scipy.integrate import quad
 from mpmath import meijerg 
-
-
+from sys import stdout
 
 def owensT(h,a):
     """
@@ -269,3 +268,44 @@ def idct2(x):
 def dct2(x):
     a = dct(dct(x).transpose()).transpose()
     return a
+
+def invertMonotonicIncreasingFunction(f,y,xl,xu,tol=1e-6,maxiter = 10000):
+
+    yu = f(xu) - y
+    while any(yu < 0.0):
+        ind = where(yu < 0.0)
+        xu[ind] = abs(xu[ind])*2.0
+
+        yu[ind] = f(xu[ind]) - y[ind]
+
+    yl = f(xl) - y
+    while any(yl > 0.0):
+        ind = where(yl > 0.0)
+        xl[ind] = -abs(xl[ind])*2.0
+        yl[ind] = f(xl[ind]) - y[ind]
+
+    count = 0
+    while any(xu-xl > tol) and count < maxiter:
+        count += 1
+        xm = 0.5*(xl + xu)
+        ym = f(xm) - y
+
+        ind = where(ym <= 0)
+        xl[ind] = xm[ind]
+
+        ind = where(ym > 0)
+        xu[ind] = xm[ind]
+        ym = f(0.5*(xl+xu)) - y
+    #     stdout.flush()
+    # stdout.write('\n')
+    # stdout.flush()
+    if count == maxiter:
+        stdout.write('\tWarning in invertMonotonicIncreasingFunction: Inversion might not have been converged.\n')
+        stdout.write('\tmax |xu-xl|=%.3g\t\tmax |ym|=%.3g\n' % (max(abs(xu-xl)),max(abs(ym))))
+        stdout.flush()
+        
+    
+    return 0.5*(xu+xl)
+        
+    
+    

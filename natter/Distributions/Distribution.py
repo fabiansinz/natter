@@ -268,7 +268,7 @@ class Distribution(LogToken):
         return self.__str__()
 
 
-    def histogram(self,dat,cdf = False, ax=None,plotlegend=True):
+    def histogram(self,dat,cdf = False, ax=None,plotlegend=True,bins=None):
 
         sh = shape(dat.X)
         if len(sh) > 1 and sh[0] > 1:
@@ -278,7 +278,9 @@ class Distribution(LogToken):
             fig = plt.figure()
             ax = fig.add_axes([.1,.1,.8,.8])
         x =squeeze(dat.X)
-        n, bins, patches = ax.hist(x, max(sh)/200, normed=1, facecolor='blue', alpha=0.8,lw=0.0)
+        if bins is None:
+            bins = max(sh)/200
+        n, bins, patches = ax.hist(x, bins=bins, normed=1, facecolor='blue', alpha=0.8,lw=0.0)
 
         bincenters = 0.5*(bins[1:]+bins[:-1])
         y = squeeze(self.pdf( Data(bincenters)))
