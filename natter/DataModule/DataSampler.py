@@ -7,6 +7,7 @@ from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
 import Image
+from scipy.ndimage.interpolation import rotate, zoom
 #from numpy.fft import fft2
 
 #from matplotlib.pyplot import *
@@ -596,9 +597,10 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
             xi = randint(low=0, high=width_limit)
             yi = randint(low=0, high=height_limit)
-            shift = rotationDistribution.sample(1).X[0,0]
+            phi = rotationDistribution.sample(1).X[0,0]
             Xsource = img[ yi:yi+w, xi:xi+w]
-            Ysource = asarray(Image.fromarray(Xsource).rotate(shift, interpolation))
+            #Ysource = asarray(Image.fromarray(Xsource).rotate(shift, interpolation))
+            Ysource = rotate( Xsource, phi, reshape=False)
             
             X = Xsource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
             Y = Ysource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
@@ -705,7 +707,8 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             #stdout.write('%i %i %i %i %i %i %i\n'%(sample_index, xi, yi, xinew, yinew, new_height, new_width))
             
             Xsource = img[ yinew:yinew+new_height, xinew:xinew+new_width]
-            Ysource = asarray(Image.fromarray(Xsource).resize((patch_size, patch_size), interpolation))
+            #Ysource = asarray(Image.fromarray(Xsource).resize((patch_size, patch_size), interpolation))
+            Ysource = zoom(Xsource, (patch_size/new_height, patch_size/new_width))
             
             X = img[ yi:yi+patch_size, xi:xi+patch_size].flatten(orientation)
             Y = Ysource.flatten(orientation)
@@ -821,3 +824,25 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
         
         if sample_index == samples_per_file:
             sampleImg = True    
+
+
+def sequenceFromMovieData( mov, p, borderwidth=0, orientation='F', timelag=1 ):
+    """
+    Samples pxp patches from the 3D array mov with given timelag
+
+    :param mov: 3D array with dimensions h x w x t
+    
+    """
+    h, w, t = mov.shape
+
+    max_h = h - p
+    max_w = w - p
+    max_t = t - timelag
+
+    while True:
+        xi = randint(low=0, high=max_w)
+        yi = randint(low=0, high=max_h)
+        ti = randint(low=0, high=max_t)
+        X = mov[yi:yi+p,xi:xi+p,ti].flatten(orientation)
+        Y = mov[yi:yi+p,xi:xi+p,ti+timelag].flatten(orientation)
+        yield X, Y
