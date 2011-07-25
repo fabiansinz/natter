@@ -24,6 +24,7 @@ implements. At the moment it provides the following distributions.
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
    Distributions_NakaRushton.rst
+   Distributions_PCauchy.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
    Distributions_SkewedGaussian.rst
@@ -70,3 +71,4 @@ from Truncated import Truncated
 from Transformed import Transformed
 from Uniform import Uniform
 from Delta import Delta
+from PCauchy import PCauchy

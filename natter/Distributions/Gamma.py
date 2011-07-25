@@ -143,7 +143,7 @@ class Gamma(Distribution):
 
     def dldtheta(self,data):
         """
-        Evaluates the gradient of the Gamma function with respect to the primary parameters.
+        Evaluates the gradient of the distribution with respect to the primary parameters.
 
         :param data: Data on which the gradient should be evaluated.
         :type data: DataModule.Data

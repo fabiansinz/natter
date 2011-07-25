@@ -1,7 +1,7 @@
 from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
-from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign, unique,array
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign, unique,array,zeros
 import pickle
 import types
 import pylab as plt
@@ -111,12 +111,35 @@ class Distribution(LogToken):
     def dldtheta(self,dat):
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
-    def primary2array(self,bounds = None):
-        raise Errors.AbstractError('Abstract method primary2array not implemented in ' + self.name)
+    def primary2array(self):
+        """
+
+        Converts primary parameters into an array. This is the default
+        method which works for scalar parameters. For multivariate
+        parameters, this methods needs to be overwritten.
+
+        :returns: The primary parameters in an array.
+        :rtype: numpy.array
+        """
+        ret = zeros(len(self.primary))
+        for ind,key in enumerate(self.primary):
+            ret[ind]=self.param[key]
+        return ret
 
     def array2primary(self,arr):
-        raise Errors.AbstractError('Abstract method array2primary not implemented in ' + self.name)
-        
+        """
+        Converts the given array into primary parameters. This is the
+        default method which works for scalar parameters. For
+        multivariate parameters, this methods needs to be overwritten.
+
+        :param arr: Array with the primary parameters
+        :type arr: numpy.array
+        :returns: the distribution object 
+        """
+        for ind,key in enumerate(self.primary):
+            self.param[key]=arr[ind]
+
+        return self
 
     def estimate(self,dat):
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
