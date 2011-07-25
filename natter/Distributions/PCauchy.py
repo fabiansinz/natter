@@ -1,11 +1,11 @@
 from __future__ import division
 from natter.DataModule import Data
-from numpy import mean, sum, abs, log,zeros,atleast_2d
+from numpy import mean, sum, abs, log,zeros,atleast_2d,Inf,atleast_1d
 
 from natter.Auxiliary.Utils import parseParameters
 from scipy.special import gamma, digamma, gammaln
 from Distribution import Distribution
-from scipy.optimize import fmin_l_bfgs_b
+from warnings import warn
 
 
 class PCauchy(Distribution):
@@ -17,9 +17,6 @@ class PCauchy(Distribution):
       assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
       also possible.
 
-      The p-Cauchy distribution in n dimensions is the ratio
-      distribution of a Lp-spherically symmetric distribution in n+1
-      dimensions.
 
       :param param:
       dictionary which might containt parameters for the Gamma distribution
@@ -83,7 +80,7 @@ class PCauchy(Distribution):
 
     
 
-    def estimate(self,dat):
+    def estimate(self,dat,tol=1e-10,maxiter = 200):
         '''
 
         Estimates the parameters from the data in dat. It is possible
@@ -94,12 +91,22 @@ class PCauchy(Distribution):
         :type dat: natter.DataModule.Data
         '''
 
-        f = lambda p: self.array2primary(p).all(dat)
-        fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+        if 'p' in self.primary:
+            fprime = lambda p: mean(self.array2primary(atleast_1d(p)).dldtheta(dat))
+            pold = Inf
+            p = self.param['p']
+            count = 0
+            while count < maxiter and abs(p-pold) > tol:
+                count += 1
+                pold = p
+                p = p/(1.0 -p*fprime(p))
+
+            if count == maxiter:
+                warn('PCauchy.estimate: Maximal number of iterations reached. Algorithm might not have converged(|dp|=%.4g)'\
+                     %(abs(p-pold),))
+            self.param['p'] = p
         
    
-        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=.01)[0]
-        self.array2primary(tmp)
 
     def primaryBounds(self):
         return [(1e-6,None)]
