@@ -101,7 +101,7 @@ class PCauchy(Distribution):
 
     
 
-    def estimate(self,dat,tol=1e-10,maxiter = 200):
+    def estimate(self,dat,tol=1e-10,maxiter = 10):
         '''
 
         Estimates the parameters from the data in dat. It is possible
@@ -115,13 +115,17 @@ class PCauchy(Distribution):
         if 'p' in self.primary:
             
             fprime = lambda p: mean(self.array2primary(atleast_1d(p)).dldtheta(dat))
+            f2prime = lambda p: mean(self.array2primary(atleast_1d(p)).d2ldtheta2(dat))
+            
             pold = Inf
             p = self.param['p']
             count = 0
             while count < maxiter and abs(p-pold) > tol:
                 count += 1
                 pold = p
-                p = p/(1.0 -p*fprime(p)*.1)
+                tmp = f2prime(p)
+                p = p**2.0*tmp / (p*tmp + fprime(p))
+                #print p
             if count == maxiter:
                 warn('PCauchy.estimate: Maximal number of iterations reached. Algorithm might not have converged(|dp|=%.4g)'\
                      %(abs(p-pold),))
