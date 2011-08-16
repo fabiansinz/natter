@@ -2,16 +2,13 @@ from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
 from numpy import log, exp, mean, zeros,  sqrt, pi, sign, dot, array, squeeze
-from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
-from natter.Auxiliary.Numerics import owensT
 from natter.Auxiliary.Utils import parseParameters
-from numpy.linalg import cholesky
-from numpy.random import randn
+from numpy.random import rand
 
-class SkewedGaussian(Distribution):
+class LogLogistic(Distribution):
     """
-    SkewedGaussian Distribution
+    LogLogistic Distribution
 
     The constructor is either called with a dictionary, holding
     the parameters (see below) or directly with the parameter
@@ -19,17 +16,16 @@ class SkewedGaussian(Distribution):
     also possible.
 
     :param param:
-        dictionary which might containt parameters for the SkewedGaussian distribution
+        dictionary which might containt parameters for the LogLogistic distribution
 
-              'mu'    :   mean (default mu=0)
+              'alpha'    :  scale parameter
 
-              'sigma' :   standard deviation (default sigma=1.0)
+              'beta'     :  shape parameter
 
-              'alpha' :   skewness parameters (default alpha=1)
               
     :type param: dict
 
-    Primary parameters are ['mu','sigma','alpha'].
+    Primary parameters are ['alpha','beta'].
         
     """
 
@@ -39,17 +35,17 @@ class SkewedGaussian(Distribution):
         param = parseParameters(args,kwargs)
         
         # set default parameters
-        self.name = 'SkewedGaussian Distribution'
-        self.param = {'mu':1.0,'sigma':1.0,'alpha':1.0}
+        self.name = 'LogLogistic Distribution'
+        self.param = {'alpha':1.0,'beta':1.0}
         if param != None:
             for k in param.keys():
                 self.param[k] = float(param[k])
-        self.primary = ['mu','sigma','alpha']
-
+        self.primary = ['alpha','beta']
+    
     def sample(self,m):
         """
 
-        Samples m samples from the current SkewedGaussian distribution.
+        Samples m samples from the current LogLogistic distribution.
 
         :param m: Number of samples to draw.
         :type name: int.
@@ -58,10 +54,7 @@ class SkewedGaussian(Distribution):
 
 
         """
-        rho = self.param['alpha']/sqrt(self.param['alpha']**2 + 1)
-        u = dot(cholesky(array([[1,rho],[rho,1]])),randn(2,m))
-        
-        return Data(u[0,:]*sign(u[1,:])*self.param['sigma']+self.param['mu'],'%i samples from %s' % (m,self.name))
+        return Data(self.ppf(rand(m,)),'%i samples from %s' % (m,self.name))
         
     def loglik(self,dat):
         '''
@@ -75,14 +68,9 @@ class SkewedGaussian(Distribution):
          
            
         '''
-        mu = self.param['mu']
-        sigma = self.param['sigma']
+        beta = self.param['beta']
         alpha = self.param['alpha']
-        s = lambda y: (y-mu)/sigma
-        logphi = norm.logpdf
-        logPhi = norm.logcdf
-        
-        return ( log(2.0) - log(sigma) +logphi(s(dat.X)) + logPhi(alpha*s(dat.X)) ).ravel()
+        return squeeze(log(beta)-beta*log(alpha)+(beta-1.0)*log(dat.X)-2*log(1+ (dat.X/alpha)**beta))
     
     def pdf(self,dat):
         '''
@@ -95,14 +83,10 @@ class SkewedGaussian(Distribution):
         :rtype:    numpy.array
            
         '''
-        mu = self.param['mu']
-        sigma = self.param['sigma']
+        beta = self.param['beta']
         alpha = self.param['alpha']
-        s = lambda y: (y-mu)/sigma
-        phi = norm.pdf
-        Phi = norm.cdf
-        
-        return squeeze((2.0/sigma*phi(s(dat.X))*Phi(alpha*s(dat.X))) )
+
+        return squeeze(beta/alpha*(dat.X/alpha)**(beta-1.0)/(1.0 + (dat.X/alpha)**beta)**2.0)
 
     def cdf(self,dat):
         '''
@@ -115,21 +99,12 @@ class SkewedGaussian(Distribution):
         :rtype:    numpy.array
            
         '''
-        mu = self.param['mu']
-        sigma = self.param['sigma']
+        beta = self.param['beta']
         alpha = self.param['alpha']
-        s = lambda y: (y-mu)/sigma
-        Phi = norm.cdf
-        return squeeze(Phi(s(dat.X)) - 2*owensT(s(dat.X), alpha).T)
+        return dat.X**beta/(alpha**beta + dat.X**beta)
 
     def primaryBounds(self):
-        ret = []
-        for k in self.primary:
-            if k == 'mu':
-                ret.append((None,None))
-            else:
-                ret.append((1e-6,None))
-        return ret
+        return len(self.primary)*[(1e-6,None)]
     
     def estimate(self,dat):
         '''
@@ -157,20 +132,13 @@ class SkewedGaussian(Distribution):
         :type data: DataModule.Data
         
         """        
-        s = lambda y: (y-mu)/sigma
-        phi = norm.pdf
-        Phi = norm.cdf
-        mu = self.param['mu']
-        sigma = self.param['sigma']
+        beta = self.param['beta']
         alpha = self.param['alpha']
         
         grad = zeros((len(self.primary),dat.numex()))
         for i,k in enumerate(self.primary):
-            if k == 'mu':
-                grad[i,:] = (dat.X-mu)/sigma**2.0 + phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*-alpha/sigma
-            if k == 'sigma':
-                grad[i,:] = -1.0/sigma + (dat.X-mu)**2.0/sigma**3.0 + phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*-alpha*(dat.X-mu)/sigma**2.0
             if k == 'alpha':
-                grad[i,:] = phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*s(dat.X)
-        
+                grad[i,:] = beta*(dat.X**beta - alpha**beta)/alpha/(dat.X**beta + alpha**beta)
+            if k == 'beta':
+                grad[i,:] = 1.0/beta + (1-(dat.X/alpha)**beta)/(1+(dat.X/alpha)**beta)*(log(dat.X)-log(alpha))
         return grad

@@ -48,6 +48,7 @@ from MixtureOfGaussians import MixtureOfGaussians
 from MixtureOfLogNormals import MixtureOfLogNormals
 from LpSphericallySymmetric import LpSphericallySymmetric
 from LpGeneralizedNormal import LpGeneralizedNormal
+from LogLogistic import LogLogistic
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from ExponentialPower import ExponentialPower
