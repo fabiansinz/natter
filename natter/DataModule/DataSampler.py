@@ -1,6 +1,6 @@
 from __future__ import division
 from numpy import shape,  zeros, pi, NaN, isinf, isnan, any, array, reshape, dot, eye, ceil, meshgrid,floor, cos, vstack, sum, ones, kron, arange,max, empty_like, hstack, fft, sqrt, exp, round, asarray, linspace, sin
-from numpy.random import rand, randn, randint, poisson
+from numpy.random import rand, randn, randint, poisson, exponential
 from natter.DataModule import Data
 from natter.Auxiliary.ImageUtils import shiftImage, bilinearInterpolation
 from numpy.linalg import cholesky
@@ -10,7 +10,7 @@ import Image
 from scipy.ndimage.interpolation import rotate, zoom
 #from numpy.fft import fft2
 
-#from matplotlib.pyplot import *
+
 
 def gratings(p,T,omega,tau):
     """
@@ -151,78 +151,89 @@ def img2PatchRand(img, p, N):
     return Data(X, name)
 
 
-def eyeMovementGenerator(dir,loadfunc, p,tau,sigma,randStayTime = True):
+def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
     """
-    Simulates eye movements by sampling patches with the following procedure:
 
-    1) an image is loaded with loadfunc from the directory dir
-    2) the number N of pxp patches that will be sampled from that image is sampled from a Poisson distribution with mean tau. If randStayTime==False then tau is used instead.
-    3) a random starting location (uniformly distributed) is sampled
-    4) a patch is sampled form that location
-    5) a new location is sampled from Brownian motion with std sigma, if the border of the image is reached, the sample is rejected and resampled
-    6) if N is reached, goto 1), otherwise goto 4)
-
-    :param dir: directory containing only images
-    :type dir: string
-    :param loadfun: function handle of the image load function which takes a string and returns a numpy array (the image)
-    :param p: patchsize
-    :type p: int
-    :param tau: mean of Poisson distribution
-    :type tau: float
-    :param sigma: std of the 2D Brownian motion
-    :type sigma: float
-    :param N: if not None, then N patches will be sampled in each step
-    :type N: int
-    :returns:  Data object with sampled patches
-    :rtype: natter.DataModule.Data
+    - change image all N saccades
+    - sigma is std of Gaussian for Brownian motion
+    
     """
+    if plot:
+        # plotting for debugging
+        from matplotlib.pyplot import show, figure,cm
+    
     if dir[-1] != '/':
         dir += '/'
         
     files = listdir(dir)
     M = len(files)
-    sampleImg = True
     t = 0
     I = None
-    N = tau
+    
+    
+
     while True:
-        if sampleImg:
-            # if I is not None:
-            #     show()
-            #     raw_input()
-            t = 0
-            if randStayTime:
-                N = poisson(tau)
-            filename = dir + files[int(floor(rand()*M))]
-            I = loadfunc(filename)
+        xiold = NaN
+        yiold = NaN
+
+        # plot for debugging
+        if I is not None and plot:
+            show()
+            raw_input()
+
+        filename = dir + files[randint(M)]
+        I = loadfunc(filename)
+        samplecounter = 0
+        if plot:
+            # plot for debugging
+            fig = figure(figsize=(4.86,3.5),dpi=300)
+            ax = fig.add_axes([.0,.0,1.,1.])
+            ax.imshow(I,interpolation='nearest',cmap=cm.gray)
+            ax.axis('tight')
+
+
             
-            ny,nx = I.shape
-            # imshow(I,interpolation='nearest',cmap=cm.gray)
-            xi = floor( rand() * ( nx - p))
-            yi = floor( rand() * ( ny - p))
-            sampleImg = False
-            stdout.write('\tSampling %i %i X %i patches from %s\n' % (N,p,p,filename))
-            stdout.flush()
+        ny,nx = I.shape
+        stdout.write('\tLoaded image %s' % (filename,))
+        stdout.flush()
+
+
+        m = 0 # saccade counter
+        while m < N:
+            t = 0
+            stayTime = exponential(scale=mu)
+
+                
+            xi = randint(nx - p)
+            yi = randint( ny - p)
+
+            while t < sampFreq*stayTime:
+                if plot: 
+                    ax.plot([xiold+p/2.0,xi+p/2.0],[yiold+p/2.0,yi+p/2.0],'o-r')
+
+                ptch = I[ yi:yi+p, xi:xi+p]
+                yield ptch.flatten('F')
+
+                tmp = round(sqrt(1.0/sampFreq)*randn(2)*sigma)
+                while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
+                    tmp = round(sqrt(1.0/sampFreq)*randn(2)*sigma)
+                    
+                xiold = xi
+                yiold = yi
+                yi += tmp[0]
+                xi += tmp[1]
+
+                samplecounter += 1
+                t += 1
+
+            m+=1
+        stdout.write('\tFetched %i patches \n'% (samplecounter,))
+        stdout.flush()
 
         
-        ptch = I[ yi:yi+p, xi:xi+p]
-        #plot(xi+p/2.0,yi+p/2,'ro')
-        tmp = round(randn(2)*sigma)
-        while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
-            tmp = round(randn(2)*sigma)
-        yi += tmp[0]
-        xi += tmp[1]
-        # stdout.write("(%i,%i)" % (yi,xi))
-        # stdout.flush()
-        t += 1
-        ptch = ptch.flatten()
-        if any(isnan(ptch)) or any(isinf(ptch)):
-            t -= 1
-        else:
-            yield ptch.flatten('F')
 
-        if t == N:
-            sampleImg = True
+        
+
     
 def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
     """
