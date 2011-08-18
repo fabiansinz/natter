@@ -208,22 +208,6 @@ class Gamma(Distribution):
             self.param['s'] = exp(logmean)/self.param['u'];
    
     
-    def primary2array(self):
-        """
-        converts primary parameters into an array.
-        """
-        ret = zeros(len(self.primary))
-        for ind,key in enumerate(self.primary):
-            ret[ind]=self.param[key]
-        return ret
+            
 
-    def array2primary(self,arr):
-        """
-        Converts the given array into primary parameters.
-            
-        """
-        for ind,key in enumerate(self.primary):
-            self.param[key]=arr[ind]
-            
-    
     

@@ -18,6 +18,7 @@ implements. At the moment it provides the following distributions.
    Distributions_ISA.rst
    Distributions_Histogram.rst
    Distributions_Kumaraswamy.rst
+   Distributions_LogLogistic.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst
