@@ -36,6 +36,9 @@ class DataSupportChecker:
                 self.lb = args[0].param[self.lb]
             if type(self.ub) == types.StringType:
                 self.ub = args[0].param[self.ub]
+
+            print "DataSupportChecker: lb=%.2f and ub=%.2f" % (self.lb,self.ub)
+
             if any(args[self.nArg].X < self.lb):
                 # print args[self.nArg].X[where(args[self.nArg].X<self.lb)]
                 # raw_input()

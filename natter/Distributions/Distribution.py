@@ -205,7 +205,7 @@ class Distribution(LogToken):
         
         """        
         
-        return -mean(self.loglik(dat)) / dat.size(0) / log(2)
+        return -mean(self.loglik(dat)) / dat.size(0) / log(2.0)
 
     def __str__(self):
         return self.ascii()

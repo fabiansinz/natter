@@ -71,6 +71,7 @@ from TruncatedExponentialPower import TruncatedExponentialPower
 from FiniteMixtureDistribution import FiniteMixtureDistribution
 from Truncated import Truncated
 from Transformed import Transformed
+from TModelRadial import TModelRadial
 from Uniform import Uniform
 from Delta import Delta
 from PCauchy import PCauchy
