@@ -312,10 +312,13 @@ def SSA( dat, *args, **kwargs ):
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
-    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), verbose=True, **kwargs)
+    functionValues = kwargs.pop('functionValues', None)
+        
+    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), **kwargs)
     SSA.train(dat.X.T)
     SSA.stop_training()
-    # refine
-    # ICA.g = 'gaus'
-    # ICA.train(dat.X.transpose())
-    return LinearTransform(SSA.U.T,'2D SSA filter computed on ' + dat.name)
+
+    if functionValues:
+        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name), SSA.functionValues
+    else:
+        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
