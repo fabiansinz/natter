@@ -18,12 +18,14 @@ implements. At the moment it provides the following distributions.
    Distributions_ISA.rst
    Distributions_Histogram.rst
    Distributions_Kumaraswamy.rst
+   Distributions_LogLogistic.rst
    Distributions_LogNormal.rst
    Distributions_LpNestedSymmetric.rst
    Distributions_LpSphericallySymmetric.rst
    Distributions_MixtureOfGaussians.rst
    Distributions_MixtureOfLogNormals.rst
    Distributions_NakaRushton.rst
+   Distributions_PCauchy.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
    Distributions_SchwartzSimoncelliModel.rst
    Distributions_SkewedGaussian.rst
@@ -47,6 +49,7 @@ from MixtureOfGaussians import MixtureOfGaussians
 from MixtureOfLogNormals import MixtureOfLogNormals
 from LpSphericallySymmetric import LpSphericallySymmetric
 from LpGeneralizedNormal import LpGeneralizedNormal
+from LogLogistic import LogLogistic
 from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from ExponentialPower import ExponentialPower
@@ -68,5 +71,7 @@ from TruncatedExponentialPower import TruncatedExponentialPower
 from FiniteMixtureDistribution import FiniteMixtureDistribution
 from Truncated import Truncated
 from Transformed import Transformed
+from TModelRadial import TModelRadial
 from Uniform import Uniform
 from Delta import Delta
+from PCauchy import PCauchy

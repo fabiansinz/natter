@@ -131,21 +131,24 @@ class NakaRushton(Distribution):
  
         return ll
 
-    # def cdf(self,dat):
-    #     '''
+    def cdf(self,dat):
+        '''
 
-    #     Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat. 
 
-    #     :param dat: Data points for which the c.d.f. will be computed.
-    #     :type dat: natter.DataModule.Data
-    #     :returns:  A numpy array containing the probabilities.
-    #     :rtype:    numpy.array
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
            
-    #     '''
-    #     datf = dat.copy()
-    #     datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
-    #     tmp = GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p'])
-    #     return tmp.cdf(datf)/tmp.cdf(Data(array([[self.param['kappa']]])))
+        '''
+        if self.param['gamma'] == 2.0:
+            datf = dat.copy()
+            datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
+            tmp = GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p'])
+            return tmp.cdf(datf)/tmp.cdf(Data(array([[self.param['kappa']]])))
+        else:
+            raise NotImplementedError('NakaRushton.cdf is not implemented for gamma != 2.0!')
         
     def dldtheta(self,dat):
         """

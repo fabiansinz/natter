@@ -80,6 +80,20 @@ class ChiP(Distribution):
         """
         return self.baseDist.loglik(dat)
 
+    def cdf(self,dat):
+        '''
+
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''
+        return self.baseDist.cdf(dat)
+
+
     def ppf(self,U):
         '''
 
@@ -91,10 +105,8 @@ class ChiP(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
-        tmp = self.baseDist.ppf(U)
-        #print tmp
-        #tmp.name= tmp.name.replace('GammaP','ChiP')
-        return tmp
+ 
+        return self.baseDist.ppf(U)
     
     def sample(self,m):
         '''

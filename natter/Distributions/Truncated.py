@@ -68,7 +68,7 @@ class Truncated(Distribution):
         return dat
         
 
-    @DataSupportChecker(1,'a','b')
+#    @DataSupportChecker(1,'a','b')
     def loglik(self,dat):
         '''
 
@@ -81,6 +81,11 @@ class Truncated(Distribution):
          
            
         '''
+        print any(dat.X.ravel() > self.param['b'] )
+        # print dat.X
+        # print self.param['a']
+        # print self.param['b']
+        # raw_input()
         u  = self.param['q'].cdf(Data(array([self.param['a'],self.param['b']])))
         
         return self.param['q'].loglik(dat) - log(u[1] - u[0])
@@ -99,7 +104,7 @@ class Truncated(Distribution):
         '''
         return exp(self.loglik(dat))
 
-    @DataSupportChecker(1,'a','b')
+#    @DataSupportChecker(1,'a','b')
     def cdf(self,dat):
         '''
 
@@ -111,7 +116,6 @@ class Truncated(Distribution):
         :rtype:    numpy.array
            
         '''
-        #print dat.X
         u  = self.param['q'].cdf(Data(array([self.param['a'],self.param['b']])))
         return (self.param['q'].cdf(dat)-u[0])/(u[1] - u[0])
 
