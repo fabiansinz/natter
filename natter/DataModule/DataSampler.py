@@ -846,3 +846,117 @@ def sequenceFromMovieData( mov, p, borderwidth=0, orientation='F', timelag=1 ):
         X = mov[yi:yi+p,xi:xi+p,ti].flatten(orientation)
         Y = mov[yi:yi+p,xi:xi+p,ti+timelag].flatten(orientation)
         yield X, Y
+
+
+def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', shiftDistribution=None, rotationDistribution=None, scalingDistribution=None, upper_limit=2.0, lower_limit=0.5):
+    """
+
+    Samples pxp sequences from images in dir
+
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
+    :type dir: string
+    :param p: patch size
+    :type p: int
+    :param samples_per_file: number of patches to sample from one image. All samples have same shift.
+    :type samples_per_file: int    
+    :param loadfunc: function handle of the load function
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param shiftDistribution: 2D distribution to sample shift steps from
+    :type shiftDistribution: natter.Distributions.Distribution
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
+    
+    """
+    if shiftDistribution == None:
+        raise ValueError, 'shiftDistribution cannot be None. Use e.g. Uniform(n=2, low=-1.0, high=1.0)'
+    elif shiftDistribution.param['n'] > 2:
+        stdout.write('WARNING: shiftDistribution has more dimensions than needed. Using only first 2.\n')
+    if rotationDistribution == None:
+        raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=2*numpy.pi)'
+    elif rotationDistribution.param['n'] > 1:
+        stdout.write('WARNING: rotationDistribution has more dimensions than needed. Using only first.\n')
+    if scalingDistribution == None:
+        raise ValueError, 'scalingDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
+    elif scalingDistribution.param['n'] > 2:
+        stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
+
+    if dir[-1] != '/':
+        dir += '/'
+        
+    files = listdir(dir)
+    number_files = len(files)
+    sampleImg = True
+
+    while True:
+        if sampleImg:
+            sample_index = 0
+            filename = dir + files[int(rand()*number_files)]
+            img = loadfunc(filename)
+            img2 = empty_like(img)
+            shift = shiftDistribution.sample(1).X.flatten()
+            img2[borderwidth:-borderwidth, borderwidth:-borderwidth] = shiftImage(img[borderwidth:-borderwidth, borderwidth:-borderwidth], shift)
+            
+            ny,nx = img.shape
+            offset = ceil((shift + abs(shift))/2)
+            width_ext = ceil(p * (sqrt(2)-1)) 
+            w = p+2*width_ext
+            width_limit = nx - abs(ceil(shift[-1])) - w - upper_limit*p
+            height_limit = ny - abs(ceil(shift[0])) - w - upper_limit*p
+            width_min = ceil(upper_limit/2.0*p)
+            height_min = ceil(upper_limit/2.0*p)
+            sampleImg = False
+            stdout.write('\tSampling %i X %i patches from %s with shift ('%(p,p,filename) \
+                         + shift.size*'%.3f, '%tuple(shift) + '\b\b)\n')
+            stdout.flush()
+           
+        ptch = array([NaN])
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+            xi = randint(low=width_min+offset[-1], high=width_limit)
+            yi = randint(low=height_min+offset[0], high=height_limit)
+            phi = rotationDistribution.sample(1).X[0,0]
+            randSample = scalingDistribution.sample(1).X
+            if randSample.size == 1:
+                scale = array((randSample[0,0], randSample[0,0]))
+            else:
+                scale = array((randSample[0,0], randSample[1,0]))
+            
+            if scale[0] > upper_limit:
+                scale[0] = upper_limit
+            elif scale[0] < lower_limit:
+                scale[0] = lower_limit
+            if scale[1] > upper_limit:
+                scale[1] = upper_limit
+            elif scale[1] < lower_limit:
+                scale[1] = lower_limit
+                
+            new_width = round(p*scale[0])
+            new_height = round(p*scale[1])
+
+            yinew = int((yi + p/2) - new_height/2 - width_ext)
+            xinew = int((xi + p/2) - new_width/2 - width_ext)            
+            X = img[ yi:yi+p, xi:xi+p].flatten(orientation)
+
+            if phi == 0.0:
+                Ysource = img2[ yinew:yinew+new_height+2*width_ext, xinew:xinew+new_width+2*width_ext]
+            else:
+                Ysource = rotate( img2[ yinew:yinew+new_height+2*width_ext, xinew:xinew+new_width+2*width_ext], phi, reshape=False)
+            #print Ysource.shape
+            #print new_width, new_height, width_ext,
+            if new_width == p and new_height == p:
+                Y = Ysource[width_ext:new_height+width_ext,width_ext:new_width+width_ext].flatten(orientation)
+            else:
+                Y = zoom( Ysource[width_ext:new_height+width_ext,width_ext:new_width+width_ext], (p/new_height, p/new_width)).flatten(orientation)
+            
+            ptch = hstack((X.flatten(), Y.flatten()))
+        
+        sample_index += 1
+        yield X, Y
+        if sample_index == samples_per_file:
+            sampleImg = True
+  
+    return
