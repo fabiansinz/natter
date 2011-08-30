@@ -1,6 +1,33 @@
 from __future__ import division
-from numpy import zeros, std,ceil,max,min, histogram, where, dot, log, array, sum
+from numpy import zeros, std,ceil,max,min, histogram, where, dot, log, array, sum, atleast_2d, isfinite,mean
+from numpy.random import randint
+from scipy.special import gammaln
+from natter.DataModule import Data
 
+def logSurfacePSphere(n,p):
+    return n*log(2) + n*gammaln(1/p) - gammaln(n/p) - (n-1)*log(p)
+
+def LpEntropy(dat,p=None):
+
+    # estimate p with a pCauchy distribution
+    n = dat.dim()
+    if p is None:
+        from natter.Distributions import PCauchy
+        pCauchy = PCauchy(n=n-1)
+        Z = zeros((n-1,dat.numex()))
+        normalizingDims = randint(n,size=(dat.numex(),))
+        for k in xrange(n):
+            ind = (normalizingDims == k)
+            Z[:,ind] = dat.X[:,ind][range(k) + range(k+1,n),:]/atleast_2d(dat.X[k,ind])
+        dat2 = Data(Z)
+        dat2.X = dat2.X[:,isfinite(sum(dat2.X,axis=0))]
+        pCauchy.estimate(dat2)
+        p = pCauchy['p']
+        print "\tUsing p=%.2f" % (p,)
+
+    # estimate the entropy via
+    r = dat.norm(p=p)
+    return marginalEntropy(r)[0,0]  + (n-1)*mean(log(r.X)) + logSurfacePSphere(n,p)
 
 def marginalEntropy(dat,method='JK'):
     """
@@ -61,7 +88,6 @@ def marginalEntropy(dat,method='JK'):
         hn = 3.49* std(dat.X[i,:]) * m**(-1/3)
         bins = ceil((max(dat.X[i,:])-min(dat.X[i,:]))/hn)
         H[i] = hfunc(dat.X[i,:],bins)
-
     return H
 
 def marginalEntropyJK(x,bins):

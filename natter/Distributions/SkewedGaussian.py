@@ -46,8 +46,6 @@ class SkewedGaussian(Distribution):
                 self.param[k] = float(param[k])
         self.primary = ['mu','sigma','alpha']
 
-
-        
     def sample(self,m):
         """
 
@@ -65,7 +63,6 @@ class SkewedGaussian(Distribution):
         
         return Data(u[0,:]*sign(u[1,:])*self.param['sigma']+self.param['mu'],'%i samples from %s' % (m,self.name))
         
-
     def loglik(self,dat):
         '''
 
@@ -78,8 +75,14 @@ class SkewedGaussian(Distribution):
          
            
         '''
-        return log(self.pdf(dat))
-    
+        mu = self.param['mu']
+        sigma = self.param['sigma']
+        alpha = self.param['alpha']
+        s = lambda y: (y-mu)/sigma
+        logphi = norm.logpdf
+        logPhi = norm.logcdf
+        
+        return ( log(2.0) - log(sigma) +logphi(s(dat.X)) + logPhi(alpha*s(dat.X)) ).ravel()
     
     def pdf(self,dat):
         '''
@@ -101,7 +104,6 @@ class SkewedGaussian(Distribution):
         
         return squeeze((2.0/sigma*phi(s(dat.X))*Phi(alpha*s(dat.X))) )
 
-
     def cdf(self,dat):
         '''
 
@@ -119,39 +121,56 @@ class SkewedGaussian(Distribution):
         s = lambda y: (y-mu)/sigma
         Phi = norm.cdf
         return squeeze(Phi(s(dat.X)) - 2*owensT(s(dat.X), alpha).T)
-    
 
-
-    
-    def primary2array(self):
-        """
-        converts primary parameters into an array.
-        """
-        ret = zeros(len(self.primary))
-        for ind,key in enumerate(self.primary):
-            ret[ind]=self.param[key]
+    def primaryBounds(self):
+        ret = []
+        for k in self.primary:
+            if k == 'mu':
+                ret.append((None,None))
+            else:
+                ret.append((1e-6,None))
         return ret
-
-    def array2primary(self,arr):
-        """
-        Converts the given array into primary parameters.
-
-        :returns: The object itself.
-        :rtype: natter.Distributions.SkewedGaussian
-            
-        """
-        ind = 0
-        if 'mu' in self.primary:
-            self.param['mu'] = arr[ind]
-            ind += 1
-        if 'sigma' in self.primary:
-            self.param['sigma'] = arr[ind]
-            ind += 1
-        if 'alpha' in self.primary:
-            self.param['alpha'] = arr[ind]
-            ind += 1
-            
-        return self
-            
     
-    
+    def estimate(self,dat):
+        '''
+
+        Estimates the parameters from the data in dat. It is possible
+        to only selectively fit parameters of the distribution by
+        setting the primary array accordingly.
+
+        :param dat: Data points on which the NakaRushton distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
+
+        f = lambda p: self.array2primary(p).all(dat)
+        fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+        
+   
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
+        self.array2primary(tmp)
+
+    def dldtheta(self,dat):
+        """
+        Evaluates the gradient of the skewed Gaussian loglikelihood with respect to the primary parameters.
+
+        :param data: Data on which the gradient should be evaluated.
+        :type data: DataModule.Data
+        
+        """        
+        s = lambda y: (y-mu)/sigma
+        phi = norm.pdf
+        Phi = norm.cdf
+        mu = self.param['mu']
+        sigma = self.param['sigma']
+        alpha = self.param['alpha']
+        
+        grad = zeros((len(self.primary),dat.numex()))
+        for i,k in enumerate(self.primary):
+            if k == 'mu':
+                grad[i,:] = (dat.X-mu)/sigma**2.0 + phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*-alpha/sigma
+            if k == 'sigma':
+                grad[i,:] = -1.0/sigma + (dat.X-mu)**2.0/sigma**3.0 + phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*-alpha*(dat.X-mu)/sigma**2.0
+            if k == 'alpha':
+                grad[i,:] = phi(alpha*s(dat.X))/Phi(alpha*s(dat.X))*s(dat.X)
+        
+        return grad

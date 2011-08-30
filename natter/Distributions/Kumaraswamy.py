@@ -44,6 +44,7 @@ class Kumaraswamy(Distribution):
         self.primary = ['a','b']
 
 
+
         
     def sample(self,m):
         """
@@ -59,6 +60,8 @@ class Kumaraswamy(Distribution):
         """
         return Data(self.param['B']*beta.rvs(1,self.param['b'],size=m)**(1/self.param['a']),'%i samples from %s' % (m,self.name))
         
+    def primaryBounds(self):
+        return len(self.primary)*[(1e-6,None)]
 
     def loglik(self,dat):
         '''

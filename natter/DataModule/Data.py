@@ -155,7 +155,8 @@ class Data(LogToken):
         p = float(p)
         self.scale(1.0/self.norm(p).X)
         self.history[-1] = 'Normalized Data with p='+str(p)
-
+        return self
+        
     def __repr__(self):
         return self.__str__()
 
@@ -243,6 +244,7 @@ class Data(LogToken):
         self.history.append('Scaled ' + scaledwhat +' with ' + name)
 
         self.X = self.X*s
+        return self
 
 
     def scaleCopy(self,s,indices=None):

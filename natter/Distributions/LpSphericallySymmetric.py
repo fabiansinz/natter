@@ -93,7 +93,7 @@ class LpSphericallySymmetric(Distribution):
         :rtype: float
         """
         return self.param['n']*log(2) + self.param['n']*gammaln(1/self.param['p']) \
-               - gammaln(self.param['n']/self.param['p']) - (self.param['n']-1)*log(self.param['p']);
+               - gammaln(self.param['n']/self.param['p']) - (self.param['n']-1)*log(self.param['p'])
 
     def loglik(self,dat):
         '''

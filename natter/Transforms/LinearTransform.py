@@ -7,7 +7,7 @@ from natter.DataModule import Data
 from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones, complex_
 import types
 from matplotlib.pyplot import text
-from matplotlib import pyplot
+#from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
 from sys import stderr
@@ -145,6 +145,7 @@ class LinearTransform(Transform.Transform):
         tmp.append('transposed')
         return LinearTransform(array(self.W).transpose(),self.name,tmp)
 
+    @property
     def T(self):
         """
         See transpose().
@@ -155,6 +156,12 @@ class LinearTransform(Transform.Transform):
         """
         
         return self.transpose()
+
+    def __call__(self):
+        """
+        Returns the transformation. Needed for compatibility with old T syntax.
+        """
+        return self
 
     def apply(self,O):
         """

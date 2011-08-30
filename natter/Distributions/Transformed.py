@@ -54,7 +54,20 @@ class Transformed(Distribution):
         self.name = 'Transformed %s Distribution' % (self.param['q'].name,)
         self.primary = []
 
+    def estimate(self,dat):
+        '''
 
+        Estimates the parameters from the data in dat by calling the
+        estimate function on the base distribution on the inversely
+        transformed data points.
+
+        :param dat: Data points on which the Transformed distribution will be estimated.
+        :type dat: natter.DataModule.Data
+        '''
+        #print where(self.param['finv'](dat).X[0,:] ==0) 
+        self.param['q'].estimate(self.param['finv'](dat))
+        #self.param['q'].histogram(self.param['finv'](dat))
+        
         
     def sample(self,m):
         """
