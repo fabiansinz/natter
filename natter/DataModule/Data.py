@@ -519,6 +519,16 @@ class Data(LogToken):
         self.history.append('Concatenated with data from \"' + O.name + '\"')
         self.history.append(h)
 
+    @property
+    def shape(self):
+        """
+        Returns the shape of the data set.
+
+        :returns: shape of data set
+        :rtype: tuple
+        """
+        return self.X.shape
+
 
     ############ Iterators ########################################
     def bootstrap(self,n,m):

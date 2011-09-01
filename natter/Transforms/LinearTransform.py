@@ -163,6 +163,16 @@ class LinearTransform(Transform.Transform):
         """
         return self
 
+    @property
+    def shape(self):
+        """
+        Returns the shape of the transformation.
+
+        :returns: shape of transformation
+        :rtype: tuple
+        """
+        return self.W.shape
+
     def apply(self,O):
         """
         Applies the LinearTransform object to *O*. *O* can either be
