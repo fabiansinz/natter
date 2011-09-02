@@ -238,7 +238,7 @@ def SSA2D( linearfilter=None, data=None, *args, **kwargs ):
         
     g = ElementWise( lambda x: x**2 )
     g.name = 'Elementwise squaring'
-    M = LinearTransform( eye(U.W.shape[0]//2, 2, U.W.shape[0]).sum(1), name='Summing over 2D subspaces' )
+    M = LinearTransform( eye(U.W.shape[0]).reshape(U.W.shape[0]//2, 2, U.W.shape[0]).sum(1), name='Summing over 2D subspaces' )
     nonlinearfilter = M*g*U
     nonlinearfilter.name = '2D SSA filter'
     
