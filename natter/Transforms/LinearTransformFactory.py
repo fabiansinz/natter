@@ -272,10 +272,9 @@ def DCACQuadraturePairs2D(sh):
 
 def SubspaceEnergyWhitening(dat, hasDC=True):
     """
-    Creates a linear filter that projects the data onto the principalequalizes the energy
-    in the subspaces of the quadrature pair filters. The filter assumes that the first
-    dimension contains the DC component and all following dimensions are paired up into
-    quadrature pairs.
+    Equalizes the energy in the subspaces of the quadrature pair filters. The filter
+    assumes that the first dimension contains the DC component and all following
+    dimensions are paired up into quadrature pairs.
 
     :param dat: Data on which the whitening will be computed.
     :type dat: natter.DataModule.Data

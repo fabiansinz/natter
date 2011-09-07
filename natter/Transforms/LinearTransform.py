@@ -489,6 +489,20 @@ class LinearTransform(Transform.Transform):
         result.history.append('reshaped to {0!s} order {1}'.format(tuple(args), order))
         return result
 
+    def inv(self):
+        """
+        Returns the inverse of the transform if it is square. Throws error otherwise.
+
+        :returns: Inverse of the transform
+        :rtype: natter.Transforms.LinearTransform
+        """
+        if self.W.shape[0] != self.W.shape[1]:
+            raise ValueError('Linear transform must be square')
+        result = self.copy()
+        result.W = inv(result.W)
+        result.history.append('Inverted')
+        return result
+
 def gratingProjection(omega,p,nx,ny,f, fprime):
     if not fprime:
         tmp = sum( ( exp(1j*2*pi/p * (omega[0]*nx + omega[1]*ny))*f ).flatten())
