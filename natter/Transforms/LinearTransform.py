@@ -1,13 +1,14 @@
 import Transform
 import NonlinearTransform
 import string
+import numpy
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting
 from natter.DataModule import Data
-from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones, complex_
+from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones, complex_, isscalar
 import types
 from matplotlib.pyplot import text
-from matplotlib import pyplot
+#from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
 from sys import stderr
@@ -145,6 +146,7 @@ class LinearTransform(Transform.Transform):
         tmp.append('transposed')
         return LinearTransform(array(self.W).transpose(),self.name,tmp)
 
+    @property
     def T(self):
         """
         See transpose().
@@ -155,6 +157,22 @@ class LinearTransform(Transform.Transform):
         """
         
         return self.transpose()
+
+    def __call__(self):
+        """
+        Returns the transformation. Needed for compatibility with old T syntax.
+        """
+        return self
+
+    @property
+    def shape(self):
+        """
+        Returns the shape of the transformation.
+
+        :returns: shape of transformation
+        :rtype: tuple
+        """
+        return self.W.shape
 
     def apply(self,O):
         """
@@ -206,9 +224,11 @@ class LinearTransform(Transform.Transform):
             if Ocpy.logdetJ != None:
                 gdet = lambda y: Ocpy.logdetJ(y) + Scpy.logDetJacobian()
             return NonlinearTransform.NonlinearTransform(g,Ocpy.name,tmp, logdetJ=gdet )
-            
+        elif isscalar(O):
+            self.W *= O
+            self.history.append('multiplied by %f'%(O))
         else:
-            raise TypeError('Transform.__mult__(): Transforms can only be multiplied with Data or Transform.LinearTransform objects')
+            raise TypeError('Transform.__mult__(): Transforms can only be multiplied with scalars, Data or Transform objects')
             
         return self
 
@@ -377,6 +397,112 @@ class LinearTransform(Transform.Transform):
         """
         return LinearTransform(self.W.copy(),self.name,list(self.history))
 
+    def min(self):
+        """
+        Returns the minimum value of the transformation matrix.
+
+        :returns: minimum value
+        :rtype: numpy.float
+        """
+        return self.W.min()
+
+    def max(self):
+        """
+        Returns the maximum value of the transformation matrix.
+
+        :returns: maximum value
+        :rtype: numpy.float
+        """
+        return self.W.max()
+
+    def __iadd__(self, value):
+        if isinstance(value, LinearTransform):
+            self.W += value.W
+            self.history.append('added transform')
+            self.history.append(value.getHistory())
+        elif isscalar(value):
+            self.W += value
+            self.history.append('added %f'%(value))
+        else:
+            raise NotImplementedError('Only adding scalars or LinearTransforms implemented yet.')
+        
+        return self
+
+    def __add__(self, value):
+        result = self.copy()
+        result += value
+        return result
+
+    def __isub__(self, value):
+        if isinstance(value, LinearTransform):
+            self.W += value.W
+            self.history.append('subtracted transform')
+            self.history.append(value.getHistory())
+        elif isscalar(value):
+            self.W += value
+            self.history.append('subtracted %f'%(value))
+        else:
+            raise NotImplementedError('Only subtracting scalars or LinearTransforms implemented yet.')
+        
+        return self
+
+    def __sub__(self, value):
+        result = self.copy()
+        result -= value
+        return result
+
+    def __idiv__(self, value):
+        if isscalar(value):
+            self.W += value
+            self.history.append('divided by %f'%(value))
+        else:
+            raise NotImplementedError('Only dividing scalars implemented yet.')
+        
+        return self
+
+    def __div__(self, value):
+        result = self.copy()
+        result /= value
+        return result
+    
+    def __imult__(self, value):
+        if isscalar(value):
+            self.W *= value
+            self.history.append('multiplied by %f'%(value))
+            result = self
+        else:
+            result = self.apply(value)
+        return result
+
+    def __mult__(self, value):
+        result = self.copy()
+        result *= value
+        return result
+
+    def reshape(self, *args, **kwargs):
+        if kwargs.has_key('order'):
+            order = kwargs['order']
+        else:
+            order = 'C'
+        result = self.copy()
+        result.W.reshape(*args, order=order)
+        result.history.append('reshaped to {0!s} order {1}'.format(tuple(args), order))
+        return result
+
+    def inv(self):
+        """
+        Returns the inverse of the transform if it is square. Throws error otherwise.
+
+        :returns: Inverse of the transform
+        :rtype: natter.Transforms.LinearTransform
+        """
+        if self.W.shape[0] != self.W.shape[1]:
+            raise ValueError('Linear transform must be square')
+        result = self.copy()
+        result.W = inv(result.W)
+        result.history.append('Inverted')
+        return result
+
 def gratingProjection(omega,p,nx,ny,f, fprime):
     if not fprime:
         tmp = sum( ( exp(1j*2*pi/p * (omega[0]*nx + omega[1]*ny))*f ).flatten())
@@ -414,3 +540,4 @@ def fitGauss2Grating(w):
     # raw_input()
     
     return reshape(((2*pi)*sqrt(det(C)))**-1*exp(-0.5*sum((dot(inv(C),N-mu)*(N-mu))**2,0) ),nx.shape,order='F')
+

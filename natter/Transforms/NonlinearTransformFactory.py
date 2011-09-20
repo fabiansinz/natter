@@ -1,6 +1,8 @@
-from numpy import log,squeeze
+from numpy import log, squeeze, mod, eye
 from natter.Distributions import GammaP,LpSphericallySymmetric, LpGeneralizedNormal
 from NonlinearTransform import NonlinearTransform
+from LinearTransform import LinearTransform
+from LinearTransformFactory import SSA
 from scipy import special
 from natter.Auxiliary import Errors
 
@@ -110,7 +112,7 @@ def RadialTransformation(psource,ptarget):
     
     """
     if ptarget.param['p'] != psource.param['p']:
-        raise Errors.ValueError('Values of p must agree')
+        raise ValueError('Values of p must agree')
     p = ptarget.param['p']
     name = 'Radial Factorization Transform ' + psource.name + ' (' + psource.param['rp'].name + ') --> ' + ptarget.name + ' (' + ptarget.param['rp'].name + ')'
     psource = psource.param['rp'].copy()
@@ -206,3 +208,39 @@ def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     n = L.n[()]
     return squeeze((n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2))
 
+
+def SSA2D( linearfilter=None, data=None, *args, **kwargs ):
+    """
+    Creates a nonlinear filter either from the given linear SSA filter
+    or learns the linear filter on given data set using the
+    LinearTransformFactory.SSA() method. The SSA2D filter computes the
+    sum of the squared responses of 1st and 2nd, 3rd and 4th, ...
+    component thus returns n/2 dimensions.
+    
+    :param linearfilter: the linear filter stage of the nonlinear filter
+    :type linearfilter: natter.Transforms.LinearTransform
+    :param data: Alternatively data on which the linear filter is learned
+    :type data: natter.DataModule.Data
+
+    :returns: bib-linear transform
+    :rtype: natter.Transforms.NonlinearTransform
+    
+    """
+    if linearfilter is None and not data is None:
+        U = SSA(data, *args, **kwargs)
+    elif not linearfilter is None:
+        U = linearfilter
+    else:
+        raise ValueError('in NonlinearTransformFactory.SSA2D both linearfilter and data cannot be None')
+
+    if mod(U.W.shape[0], 2) == 1:
+        raise Errors.DimensionalityError('Transform must have even dimension number')
+        
+    g = ElementWise( lambda x: x**2 )
+    g.name = 'Elementwise squaring'
+    M = LinearTransform( eye(U.W.shape[0]).reshape(U.W.shape[0]//2, 2, U.W.shape[0]).sum(1), name='Summing over 2D subspaces' )
+    nonlinearfilter = M*g*U
+    nonlinearfilter.name = '2D SSA filter'
+    
+    return nonlinearfilter
+    

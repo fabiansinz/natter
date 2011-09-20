@@ -272,10 +272,9 @@ def DCACQuadraturePairs2D(sh):
 
 def SubspaceEnergyWhitening(dat, hasDC=True):
     """
-    Creates a linear filter that projects the data onto the principalequalizes the energy
-    in the subspaces of the quadrature pair filters. The filter assumes that the first
-    dimension contains the DC component and all following dimensions are paired up into
-    quadrature pairs.
+    Equalizes the energy in the subspaces of the quadrature pair filters. The filter
+    assumes that the first dimension contains the DC component and all following
+    dimensions are paired up into quadrature pairs.
 
     :param dat: Data on which the whitening will be computed.
     :type dat: natter.DataModule.Data
@@ -312,10 +311,13 @@ def SSA( dat, *args, **kwargs ):
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
-    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), verbose=True, **kwargs)
+    functionValues = kwargs.pop('functionValues', None)
+        
+    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), **kwargs)
     SSA.train(dat.X.T)
     SSA.stop_training()
-    # refine
-    # ICA.g = 'gaus'
-    # ICA.train(dat.X.transpose())
-    return LinearTransform(SSA.U.T,'2D SSA filter computed on ' + dat.name)
+
+    if functionValues:
+        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name), SSA.functionValues
+    else:
+        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
