@@ -1,6 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
-from natter.Distributions import GammaP
+from natter.Distributions import GammaP, ChiP
+from Truncated import Truncated
 from natter.DataModule import Data
 from numpy import sqrt, array,where,hstack,log,squeeze,reshape,zeros,mean,sum,atleast_2d
 from natter.Auxiliary.Utils import parseParameters
@@ -73,24 +74,13 @@ class NakaRushton(Distribution):
 
 
         """
-        s = self.param['s']*2.0
-        sampleDistribution = GammaP({'u':(self.param['n']/self.param['p']),'s':s,'p':self.param['p']})
         if self.param['gamma'] == 2.0:
-            prop = sampleDistribution.cdf(Data(array([self.param['kappa']])))
-            m0 = 0
-            ret = sampleDistribution.sample(2*m*int(1.0/prop))
-            ret.X = ret.X[where(ret.X <= self.param['kappa'])]
-            ret.X = reshape(ret.X,(1,len(ret.X)))
-            m0 = ret.numex()
-            while m0 < m:
-                tmp = sampleDistribution.sample(2*m*int(1.0/prop))
-                tmp.X = ret.X[where(tmp.X <= self.param['kappa'])]
-                tmp.X.reshape((1,len(tmp.X)))
-                m0 += tmp.numex()
-                ret.X = hstack((ret.X,tmp.X))
-            ret = ret[0,:m]
+            q =  ChiP(p=self.param['p'],n=self.param['n'],s=self.param['s']*2.0)
+            sampleDistribution = Truncated(q =q,a=0.0,b=self.param['kappa'])
+            ret = sampleDistribution.sample(m)
             ret.X = ret.X*self.param['sigma'] / sqrt(self.param['kappa']**2.0 - ret.X**2.0)
         else:
+            sampleDistribution = ChiP(p=self.param['p'],n=self.param['n'],s=self.param['s']*2.0)
             ret = sampleDistribution.sample(m)
             X = ret.X.flatten()
             f = lambda x: x*self.param['kappa']/sqrt(self.param['sigma']**2.0 + x**self.param['gamma'])

@@ -324,8 +324,8 @@ class FiniteMixtureDistribution(Distribution):
         T = zeros((K,m)) # alpha(i)*p_i(x|theta)/(sum_j alpha(j) p_j(x|theta))
         LP = zeros((K,m)) # log likelihoods of the single mixture components
 
-        for k in xrange(K):
-            LP[k,:] = self.param['P'][k].loglik(dat)  + log(self.param['alpha'][k])
+        for k,p in enumerate(self.param['P']):
+            LP[k,:] = p.loglik(dat)  + log(self.param['alpha'][k])
         for k in xrange(K):
             T[k,:] = exp(LP[k,:]-logsumexp(LP,axis=0))
 
