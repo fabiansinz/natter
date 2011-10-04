@@ -132,13 +132,16 @@ class NakaRushton(Distribution):
         :rtype:    numpy.array
            
         '''
+        datf = dat.copy()
+        datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
         if self.param['gamma'] == 2.0:
-            datf = dat.copy()
-            datf.X = self.param['kappa'] * datf.X / sqrt(self.param['sigma']**2.0 + sum(datf.X**2,axis=0))
-            tmp = GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p'])
-            return tmp.cdf(datf)/tmp.cdf(Data(array([[self.param['kappa']]])))
+            tmp = Truncated(a=0,b=self.param['kappa'],\
+                            q=GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p']))
         else:
-            raise NotImplementedError('NakaRushton.cdf is not implemented for gamma != 2.0!')
+            tmp = GammaP(u=(self.param['n']/self.param['p']),s=2*self.param['s'],p=self.param['p'])
+            
+        return tmp.cdf(datf)
+            
         
     def dldtheta(self,dat):
         """
