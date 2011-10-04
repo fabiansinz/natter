@@ -4,6 +4,7 @@ import array
 import numpy as np
 from numpy.random import randn, permutation
 from numpy.fft import fft2,ifft2
+from matplotlib.pyplot import imread
 
 def loadHaterenImage(filename):
     fin = open( filename, 'rb' )
@@ -20,6 +21,12 @@ def loadPhaseScrambledHaterenImage(filename):
     fI = fft2(I)
 
     return real(ifft2(fI2/abs(fI2) * abs(fI)))
+
+def loadBWImage(filename):
+    """
+    Loads a black and white image.
+    """
+    return imread(filename)
 
 def loadAsciiImage(filename):
     f = open(filename,'r')
