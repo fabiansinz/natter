@@ -185,7 +185,8 @@ class NakaRushton(Distribution):
                 grad[ind,:] = n*log(r) + 2.*(r**gamma + sigma**2.0)/(2.*delta*(r**gamma + sigma**2.0) + gamma*sigma**2.) \
                               - kappa**p * p * r**(p*gamma/2. + p*delta) * log(r) / (2. * s * (sigma**2.0 + r**gamma)**(p/2.))
                 
-            
+            if param == 's':
+                grad[ind,:] = -n/p/s + kappa**p * r**(p*gamma/2.0 + p*delta)/2.0/s**2.0/(sigma**2.0 + r**gamma)**(p/2.0)
    
         return grad
      
