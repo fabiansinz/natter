@@ -58,7 +58,7 @@ class NakaRushton(Distribution):
         if param is None or 's' not in param.keys():
             self.param['s'] = .5*(gammafunc(1.0/self.param['p'])/gammafunc(3.0/self.param['p']))**(self.param['p']/2.0)
         if self.param['delta'] == 0.0:
-            self.primary = ['sigma','gamma']
+            self.primary = ['sigma'] # gamma would also be possible here, but stays out for backwards compatibility reasons
         else:
             self.primary = ['sigma','kappa','gamma','delta']
             
