@@ -7,6 +7,11 @@ previous processing steps are protocoled. Data objects support slicing
 and subindexing just like numpy arrays. Additionally, data objects
 can be exponentiated.  
 
+Data overloads the plus operator: If two Data objects are added, they
+are joined. 
+
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
+
 .. autoclass:: natter.DataModule.Data
-   :members: setHistory, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center, makeWhiteningVolumeConserving, cov, dnormdx, size, copy, save, append, numex, dim,fade,stack,kurtosis,bootstrap
+   :members: setHistory, rectify, abs, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center, makeWhiteningVolumeConserving, cov, dnormdx, size, copy,  append, numex, dim,fade,stack,kurtosis,bootstrap
 
