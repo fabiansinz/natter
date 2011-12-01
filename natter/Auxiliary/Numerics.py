@@ -178,6 +178,7 @@ def dct(x,n=None):
     ---------
     http://en.wikipedia.org/wiki/Discrete_cosine_transform
     http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
+
     """
     x = atleast_1d(x)
 
@@ -270,7 +271,18 @@ def dct2(x):
     return a
 
 def invertMonotonicIncreasingFunction(f,y,xl,xu,tol=1e-6,maxiter = 10000):
+    """
+    Inverts a monotonically increasing function.
 
+    :param f: function to be inverted
+    :param y: desired output values
+    :param xl: lower bounds for input x
+    :type xl: numpy.ndarray
+    :param xu: upper bounds for input x
+    :type xu: numpy.ndarray
+    :param tol: convergence tolerance
+    :param maxiter: maximal number of iterations
+    """
     yu = f(xu) - y
     while any(yu < 0.0):
         ind = where(yu < 0.0)

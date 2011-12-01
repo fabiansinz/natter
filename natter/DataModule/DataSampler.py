@@ -23,9 +23,9 @@ def gratings(p,T,omega,tau):
     where :math:`t\in \{0,...,T-1\}` and :math:`\mathbf\omega\in\{0,...p\}^2`.
     T is the length of the vector tau.
 
-    The total number of patches which is created is m*T*|tau|, where m
+    The total number of patches which is created is m*T*len(tau), where m
     is the number of columns of omega and T is the number of time
-    points and |tau| the length of tau. The ordering in the data
+    points and len(tau) the length of tau. The ordering in the data
     object will be the following
 
     
@@ -48,7 +48,7 @@ def gratings(p,T,omega,tau):
     :param omega: frequency vectors
     :type omega: numpy.array of shape 2 x m
     :param tau: temporal frequencies
-    :type tau: numpy.array of shape 1 x |tau|
+    :type tau: numpy.array of shape 1 x len(tau)
     :returns: a data object containing the gratings 
     :rtype: natter.DataModule.Data
     """

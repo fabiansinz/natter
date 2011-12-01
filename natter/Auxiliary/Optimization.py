@@ -9,8 +9,25 @@ from natter.Auxiliary import Errors
 
 def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     """
-    I ported this function from Matlab. Someone else wrote it. TODO:
-    Who was it and reference him.
+
+    Multidimensional gradient free optimization with box constraints on the variables. 
+
+    
+    I ported this function from a Matlab function someone else posted
+    in the internet. Unfortunately, I cannot find the source anymore.
+    Who was it and reference him. If you were the author, please
+    contact me and you get acknowledged (fabee@bethgelab.org).
+
+    :param f: function to be minimized (takes a vector x and args)
+    :param x0: starting value
+    :type x0: numpy.ndarray
+    :param LB: lower bounds
+    :type LB: numpy.ndarray
+    :param UB: upper bounds
+    :type UB: numpy.ndarray
+    :param tol: convergence tolerance
+    :param args:  additional parameters for the function f
+    
     """
     xsize = shape(x0);
     x0 = x0.flatten()
@@ -129,13 +146,23 @@ def xtransform(x,LB,UB,BoundClass,n):
 
 def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
     """
-    (XI,XF,NOITER) = GOLDENMINSEARCH(FUNC, XI, XF, TOL)
     
-    performs a golden search to find the minimum of FUNC. which takes
+    Performs a golden search to find the minimum of FUNC. which takes
     a single real number, in the interval [XI,XF]. It returns the
     interval borders XI and XF after they have been narrowed down, as
     well as the number iterations it took the find them. TOL specifies
-    the stopping criterion. 
+    the stopping criterion.
+
+    This example has also been taken from a Matlab example on the
+    internet and I cannot find the source anymore. Please contact me
+    if you are the author and you get acknowledged.
+
+    :param f: function to be minimized
+    :param xi: left interval border
+    :param xf: right interval border
+    :param t: convergence tolerance
+    :verbose: create output during optimization
+    
     """
     # constants
     A = 0.6180339887
@@ -176,43 +203,25 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
 
 def goldenMaxSearch(f, xi, xf, t=1.0e-9,verbose=False):
     """
-    (XI,XF,NOITER) = GOLDENMAXSEARCH(FUNC, XI, XF, TOL)
-    
-    performs a golden search to find the maximum of FUNC. which takes
-    a single real number, in the interval [XI,XF]. It returns the
-    interval borders XI and XF after they have been narrowed down, as
-    well as the number iterations it took the find them. TOL specifies
-    the stopping criterion. 
+    See goldenMinSearch. 
     """
     g = lambda x: -1.0*f(x)
     return goldenMinSearch(g, xi,xf,t,verbose)
 
 def StGradient(func, X, param0=None, *args):
     """
-    (X,FVAL,PARAM) = StGRADIENT(FUNC, X, PARAM, *ARGS)
-    
-    performs gradient ascent on the special orthogonal group as described in 
+    Performs gradient ascent on the special orthogonal group as described in 
    
     J. Manton, \"Optimization algorithms exploiting unitary
     constraints,\" Signal Processing, IEEE Transactions on, vol. 50,
     2002, pp. 635-650.
 
-    FUNC is a function that it called in the following way:
-    (VAL, DF) = FUNC(X, 2, *ARGS)
-    (DF,)     = FUNC(X, 1, *ARGS)
-      
-    i.e. the second argument is either 2 in which case it returns the
-    function value at X in SO(n), or the second argument equals one in
-    which case it only returns the function value at X. 
+    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ARGS), (DF,) = FUNC(X, 1, ARGS) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X. 
 
-    The dictionary PARAM lets you set optimization parameters like the
-    termination threshold on the supremums norm of the gradient
-    (tolF), the maximum number of iterations (SOmaxiter) or the
-    searchrange for the linesearch (searchrange). The default values for PARAM are
+    :param X: starting value
+    :param param0: Dictionary that lets you set optimization parameters like the termination threshold on the supremums norm of the gradient (tolF), the maximum number of iterations (SOmaxiter) or the searchrange for the linesearch (searchrange). The default values for it are param0 = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10}
 
-    PARAM = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10}
-
-    *ARGS are arguments that are passed down to FUNC (see above).
+    :param args: are arguments that are passed down to FUNC (see above).
     """
     
     bestdelta = Inf
@@ -274,23 +283,15 @@ def projectOntoSt(C):
     
 def checkGrad(f,x,tol,*args):
     """
-    BOOL = CHECKGRAD(FUNC, X, TOL, *ARGS)
-
-    checks if the gradient returned by FUNC if correct. FUNC is called
+    Checks if the gradient returned by FUNC if correct. FUNC is called
     in the following way
 
-    FUNC is a function that it called in the following way:
-        (VAL, DF) = FUNC(X, 2, *ARGS)
-        (VAL,)     = FUNC(X, 1, *ARGS)
 
-    i.e. the second argument is either 2 in which case it returns the
-    function value at X in SO(n), or the second argument equals one in
-    which case it only returns the function value at X. 
+    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ... )     (VAL,)     = FUNC(X, 1,  ...) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X. 
+    :param x: value where the derivative is to be checked.
+    :param tol: specifies the tolerance threshold on the supremum norm of the difference between the gradients.
+    :param args: args are passed down to func.
 
-    TOL specifies the tolerance threshold on the supremum norm of the
-    difference between the gradients.
-
-    *ARGS are passed down to FUNC.
     """
     h = 1e-6
     df2 = Inf*x

@@ -1,7 +1,7 @@
 from sys import stdin, stdout
 from natter.DataModule import Data
 from scipy import io
-import pickle
+import cPickle as pickle
 from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
@@ -20,7 +20,7 @@ def load(path):
     *dat* are interpreted as ascii files.
 
     *pydat* are interpreted as natter.DataModule.Data objects stored
-     with pickle.
+     with cPickle (binary file, latest protocol).
 
     :param path: Path to the data file.
     :type path: string
@@ -64,22 +64,6 @@ def matlab(path, varname=None):
                     thekey = k
         return Data(dat[thekey],'Matlab variable ' + thekey + ' from ' + path)
 
-def nisdetDataObject(path,varname='dat'):
-    """
-    Loads data from a nisdet data object stored in a .mat file. If
-    *varname* is not specified, it assumes that the data object is called 'dat'.
-
-    :param path: Path to the .mat file.
-    :type path: string
-    :param varname: Name of the variable to be loaded from the .mat file.
-    :type varname: string
-    :returns: Data object with the data from the specified file.
-    :rtype: natter.DataModule.Data
-    
-    """
-    dat = io.loadmat(path,struct_as_record=True)[varname][0][0][1]
-    return Data(dat,'Data from NISDET data object ' + varname + ' from ' + path)
-
 def ascii(path):
     """
     Loads data from an ascii file. 
@@ -107,7 +91,7 @@ def pydat(path):
     :rtype: natter.DataModule.Data
     
     """
-    f = open(path,'r')
+    f = open(path,'rb')
     dat = pickle.load(f)
     f.close()
     return dat
@@ -155,9 +139,9 @@ def loadnpz(path, varname=None, transpose=None):
     is passed to the function it prints all variables and asks for
     user input.
 
-    :param path: Path to the .mat file.
+    :param path: Path to the .npz file.
     :type path: string
-    :param varname: Name of the variable to be loaded from the .mat file.
+    :param varname: Name of the variable to be loaded from the .npz file.
     :type varname: string
     :param transpose: Transpose of variable shall be loaded or the orientation shall be guessed
     :type transpose: bool

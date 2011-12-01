@@ -7,6 +7,16 @@ from numpy.fft import fft2,ifft2
 from matplotlib.pyplot import imread
 
 def loadHaterenImage(filename):
+    """
+    Load a van Hateren .iml image. The log of the linearized light intensities is taken.
+
+    :param filename: filename of the image
+    :type filename: string
+    :returns: image
+    :rtype: numpy.ndarray
+
+    """
+    
     fin = open( filename, 'rb' )
     s = fin.read()
     fin.close()
@@ -15,6 +25,15 @@ def loadHaterenImage(filename):
     return log(nArray(arr, dtype='uint16').reshape(1024,1536))
 
 def loadPhaseScrambledHaterenImage(filename):
+    """
+    Same as loadHaterenImage only that the image is phase scrambled before.
+
+    :param filename: filename of the image
+    :type filename: string
+    :returns: image
+    :rtype: numpy.ndarray
+
+    """
     I = loadHaterenImage(filename)
     I2 = randn(I.shape[0],I.shape[1])
     fI2 = fft2(I2)
@@ -25,10 +44,25 @@ def loadPhaseScrambledHaterenImage(filename):
 def loadBWImage(filename):
     """
     Loads a black and white image.
+
+    :param filename: filename of the image
+    :type filename: string
+    :returns: image
+    :rtype: numpy.ndarray
+
     """
     return imread(filename)
 
 def loadAsciiImage(filename):
+    """
+    Loads an images stored as ascii numbers in a file. 
+
+    :param filename: filename of the image
+    :type filename: string
+    :returns: image
+    :rtype: numpy.ndarray
+
+    """
     f = open(filename,'r')
     X = []
     for l in f:
@@ -37,24 +71,18 @@ def loadAsciiImage(filename):
     return nArray(X)
 
 def loadPixelScambledAsciiImage(filename):
+    """
+    Same as loadAsciiImage only that the pixels are randomly shuffled over rows and columns. 
+
+    :param filename: filename of the image
+    :type filename: string
+    :returns: image
+    :rtype: numpy.ndarray
+
+    """
     I = loadAsciiImage(filename)
     return I[permutation(I.shape[0]),permutation(I.shape[1])]
 
-def loadReshadHaterenImage(filename):
-    fin = open( filename, 'rb' )
-    s = fin.read()
-    fin.close()
-    arr = array.array('d', s)
-    arr.byteswap()
-    return nArray(arr, dtype='double').reshape(1024,1531)
-
-def loadReshad2HaterenImage(filename):
-    fin = open( filename, 'rb' )
-    s = fin.read()
-    fin.close()
-    arr = array.array('d', s)
-    arr.byteswap()
-    return nArray(arr, dtype='double').reshape(1021,1526)
 
 def shiftImage( img, shift ):
     """shiftImage( img, shift )

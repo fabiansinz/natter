@@ -1,9 +1,8 @@
 from __future__ import division
 from numpy.fft import fft2, fftshift,fft
-from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, zeros, sin,where,zeros
+from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, zeros, sin,where,zeros,percentile
 from scipy.optimize import fmin_bfgs, fmin_cg
 # from numpy.random import randn
-from natter.Auxiliary.Statistics import quantile
 
 
 def getTuningCurve(R,fundamental_freq=1):
@@ -38,7 +37,7 @@ def bestMatchingGratings(F):
 
         # extract center
         pw = abs(w)
-        qu = quantile(pw.flatten(),0.8)
+        qu = percentile(pw.flatten(),80)
         pw[where(pw <= qu)] = 0.0
         pw = pw/sum(pw.flatten())
         mu = array([sum(sum(pw*Nx)), sum(sum(pw*Ny))])
