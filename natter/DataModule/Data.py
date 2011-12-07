@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text, figure
 import pylab as pl
@@ -16,7 +16,7 @@ class Data(LogToken):
 
     Class for storage of scalar and multi-variate Data. 
     
-    :param X: Array that holds the Data points. Each column is a single Data sample. 
+    :param X: Array that holds the Data points. Each column is a single Data sample. 1d arrays will be converted to 2d.
     :type X: numpy.array
     :param name: User specified name of the Data object. 
     :type name: string
@@ -28,41 +28,20 @@ class Data(LogToken):
         if X == None:
             X=array([])
         else:
-            X = array(X) # copy X
-            if len(X.shape) == 1:
-                X = reshape(X,(1,X.shape[0]))
-            self.X = X
+            self.X = atleast_2d(array(X)) # copy X
         self.name = name
         if history == None:
             self.history = []
         else:
-            self.history = history
+            self.history = list(history)
 
-    def ascii(self):
-        return self.__str__()
-
-    def html(self):
-        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
-        s += "<thead><tr><td colspan=\"2\"><tt><b>Data: %s</b></tt></td></tr></thead>\n" % (self.name,)
-        s += "<tbody>"
-        s += "<tr><td><tt>Examples: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[1],)
-        s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
-        s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
-        if len(self.history) > 0:
-            s += displayHistoryRec(self.history,1)
-        s += "</pre></td></tr></table>"
-        return s
 
     def __str__(self):
-        sh = shape(self.X)
         s = 30*'-'
         s += '\nData object: ' + self.name + '\n'
 
-        if len(sh) > 1:
-            s += '\t' + str(size(self.X,1)) + '  Examples\n'
-            s += '\t' + str(size(self.X,0)) + '  Dimensions\n'
-        else:
-            s += '\t' + str(size(self.X,0)) + '  Examples\n'
+        s += '\t' + str(size(self.X,1)) + '  Examples\n'
+        s += '\t' + str(size(self.X,0)) + '  Dimension(s)\n'
 
         if len(self.history) > 0:
             s += '\nHistory:\n'
@@ -73,10 +52,20 @@ class Data(LogToken):
 
 
     def rectify(self):
+        """
+        Rectifies the elements of the Data object, i.e. sets X = max(X,0).
+        """
+        self.history.append('rectified')
         self.X[where(self.X <0)] = 0.0
 
     def abs(self):
-        return Data(abs(self.X),self.name,list(self.history + ['Absolute value taken']))
+        """
+        Returns a copy of the Data with X set to abs(X).
+
+        :returns: new Data object with dat.X = abs(dat.X)
+        :rtype: natter.DataModule.Data
+        """
+        return Data(abs(self.X),self.name,list(self.history + ['absolute value taken']))
 
     def fade(self,dat,h):
         """
@@ -125,7 +114,7 @@ class Data(LogToken):
      
     def setHistory(self,h):
         """
-        Sets a new history of the Data object.
+        Replace the history of the Data object.
 
         :param h: New history
         :type h: (recursive) list of strings
@@ -154,15 +143,23 @@ class Data(LogToken):
         """
         p = float(p)
         self.scale(1.0/self.norm(p).X)
-        self.history[-1] = 'Normalized Data with p='+str(p)
+        self.history[-1] = 'normalized Data with p='+str(p)
         return self
         
     def __repr__(self):
         return self.__str__()
 
     def __pow__(self,a):
+        """
+        Returns a copy of the Data where the single entries are exponentiated with a.
+
+        :param a: exponent
+        :type a: float
+        :returns: copy of Data object
+        :rtype: natter.DataModule.Data
+        """
         h = list(self.history)
-        h.append('Exponentiated with ' + str(a))
+        h.append('exponentiated with ' + str(a))
         return Data(self.X.copy()**float(a),self.name,h)
 
     def __add__(self,o):
@@ -217,7 +214,11 @@ class Data(LogToken):
 
     def scale(self,s):
         """
-        Scales *X* with the array *s*. If *s* has the same dimensionality as the number of examples, each dimension gets scaled with *s*. If *s* has the same dimension as the number of dimensions, each example is scaled with *s*. If *s* has the same shape as *X*, *X* and *s* are simply multiplied.
+        Scales *X* with the array *s*. If *s* has the same
+        dimensionality as the number of examples, each dimension gets
+        scaled with *s*. If *s* has the same dimension as the number
+        of dimensions, each example is scaled with *s*. If *s* has the
+        same shape as *X*, *X* and *s* are simply multiplied.
 
         *s* can also be stored in a Data object.
 
@@ -255,7 +256,9 @@ class Data(LogToken):
 
     def scaleCopy(self,s,indices=None):
         """
-        Scales single dimensions with *s*. *s* must either be a numpy.array or a Data object. The Data object is copied for scaling. The copy is returned.
+        Scales single dimensions with *s*. *s* must either be a
+        numpy.array or a Data object. The Data object is copied for
+        scaling. The copy is returned.
 
         :param s: Scale factors
         :type s: numpy.array or natter.DataModule.Data
@@ -297,7 +300,9 @@ class Data(LogToken):
         
     def plotPatches(self,m=-1, plotNumbers=False, orientation='F', **kwargs):
         """
-        If the Data objects holds patches flattened into vectors (Fortran style), then plotPatches can plot those patches. If *m* is specified, only the first *m* patches are plotted.
+        If the Data objects holds patches flattened into vectors
+        (Fortran style), then plotPatches can plot those patches. If
+        *m* is specified, only the first *m* patches are plotted.
 
         :param m: Number of patches to be plotted.
         :type m: int 
@@ -353,7 +358,12 @@ class Data(LogToken):
 
     def center(self,mu=None):
         """
-        Centers the data points on the mean over samples and dimensions. The motivation for this is that patches of natural images are usually sampled randomly from images, which makes them have a stationary statistics. Therefore, the mean in each dimension should be the same and we get a better estimate if we sample over pixels and dimensions.
+        Centers the data points on the mean over samples and
+        dimensions. The motivation for this is that patches of natural
+        images are usually sampled randomly from images, which makes
+        them have a stationary statistics. Therefore, the mean in each
+        dimension should be the same and we get a better estimate if
+        we sample over pixels and dimensions.
 
         :param mu: Mean over samples and dimensions.
         :type mu: float
@@ -508,7 +518,7 @@ class Data(LogToken):
 
     def append(self,O):
         """
-        Concatenates the Data object with another Data object *O*.
+        Concatenates the Data object with another Data object *O*. You can get the same functionality with the '+' operator.
 
         :param O: The Data object this Data object is concatenated with.
         :type O: natter.DataModule.Data
@@ -549,6 +559,23 @@ class Data(LogToken):
             splitset.history.append('Splitted into %i pieces, this is piece %d'%(len(datasets), ii+1))
             result.append(splitset)
         return result
+
+
+    ############ LogToken functions ########################################
+    def ascii(self):
+        return self.__str__()
+
+    def html(self):
+        s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
+        s += "<thead><tr><td colspan=\"2\"><tt><b>Data: %s</b></tt></td></tr></thead>\n" % (self.name,)
+        s += "<tbody>"
+        s += "<tr><td><tt>Examples: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[1],)
+        s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
+        s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
+        if len(self.history) > 0:
+            s += displayHistoryRec(self.history,1)
+        s += "</pre></td></tr></table>"
+        return s
 
 
     ############ Iterators ########################################

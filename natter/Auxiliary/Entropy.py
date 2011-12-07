@@ -29,7 +29,7 @@ def LpEntropy(dat,p=None):
     r = dat.norm(p=p)
     return marginalEntropy(r)[0,0]  + (n-1)*mean(log(r.X)) + logSurfacePSphere(n,p)
 
-def marginalEntropy(dat,method='JK'):
+def marginalEntropy(dat,method='JK',bins=None):
     """
 
     Estimates the marginal differential entropies of the data in
@@ -85,8 +85,11 @@ def marginalEntropy(dat,method='JK'):
         hfunc = marginalEntropyMM
 
     for i in xrange(n):
-        hn = 3.49* std(dat.X[i,:]) * m**(-1/3)
-        bins = ceil((max(dat.X[i,:])-min(dat.X[i,:]))/hn)
+        if bins is None:
+            hn = 3.49* std(dat.X[i,:]) * m**(-1/3)
+            bins = ceil((max(dat.X[i,:])-min(dat.X[i,:]))/hn)
+        #print "\tUsing %i bins" % (bins,)
+
         H[i] = hfunc(dat.X[i,:],bins)
     return H
 

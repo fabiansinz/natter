@@ -81,7 +81,7 @@ class Truncated(Distribution):
          
            
         '''
-        print any(dat.X.ravel() > self.param['b'] )
+        #print any(dat.X.ravel() > self.param['b'] )
         # print dat.X
         # print self.param['a']
         # print self.param['b']

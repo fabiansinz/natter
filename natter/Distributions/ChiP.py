@@ -80,6 +80,17 @@ class ChiP(Distribution):
         """
         return self.baseDist.loglik(dat)
 
+    def __setitem__(self,key,value):
+        if key in self.parameters('keys'):
+            if key == 's':
+                self.baseDist['s'] = value
+            if key == 'p':
+                self.baseDist['u'] = self.param['n']/value
+            self.param[key] = value
+        else:
+            raise KeyError("Parameter %s not defined for %s" % (key,self.name))
+    
+
     def cdf(self,dat):
         '''
 
