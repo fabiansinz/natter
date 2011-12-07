@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where,int64
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split
 from  natter.Auxiliary import  Errors, Plotting, save
 from matplotlib.pyplot import scatter,text, figure
 import pylab as pl
@@ -166,8 +166,14 @@ class Data(LogToken):
         return Data(self.X.copy()**float(a),self.name,h)
 
     def __add__(self,o):
+        result = self.copy()
+        result.append(o)
+        return result
+
+    def __iadd__(self,o):
         self.append(o)
         return self
+    
 
     def plot(self):
         """
@@ -320,9 +326,6 @@ class Data(LogToken):
                     col += ptchSz
                 i += 1
         return fig
-                
-                    
-            
 
     def var(self):
         """
@@ -502,9 +505,6 @@ class Data(LogToken):
             save(self,filename)
         elif format=='ascii':
             savetxt(filename,self.X,'%.16e')
-            
-            
-
 
     def append(self,O):
         """
@@ -528,6 +528,27 @@ class Data(LogToken):
         :rtype: tuple
         """
         return self.X.shape
+
+    def split( self, pieces, axis=1 ):
+        """
+        Splits the data set into #pieces pieces along axis #axis.
+        By default along axis 1 (i.e. along the examples).
+        Returns tuple of data sets. See numpy.split for details.
+        
+        :param pieces: Number of pieces to split data into
+        :type pieces: int
+        :param axis: Axis along which to split, default 1
+        :type axis: int
+        :returns: Splited data sets
+        :rtype: Tuple of natter.DataModule.Data
+        """
+        result = list()
+        datasets = split(self.X, pieces, axis)
+        for ii in xrange(len(datasets)):
+            splitset = Data(X=datasets[ii], name=self.name, history=list(self.history))
+            splitset.history.append('Splitted into %i pieces, this is piece %d'%(len(datasets), ii+1))
+            result.append(splitset)
+        return result
 
 
     ############ Iterators ########################################

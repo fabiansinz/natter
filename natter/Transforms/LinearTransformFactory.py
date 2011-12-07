@@ -321,3 +321,46 @@ def SSA( dat, *args, **kwargs ):
         return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name), SSA.functionValues
     else:
         return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
+
+def mdpWrapper( dat, nodename, *args, **kwargs ):
+    """
+    *EXPERIMENTAL WRAPPER - DO NOT USE IF YOU DON'T KNOW WHAT YOU DO*
+    Creates a linear filter by training a mdp node
+
+    :param dat: Data set with sequence
+    :type dat: natter.DataModule.Data
+    :param nodename: name of the mdp node (without "Node"), case sensitive!
+    :type nodename: String
+    :returns: A linear filter containing the SSA filters
+    :rtype: natter.Transforms.LinearTransform
+    """
+    functionValues = kwargs.pop('functionValues', None)
+
+    if hasattr(mdp.nodes, nodename+'Node'):
+        node = getattr(mdp.nodes, nodename+'Node')(input_dim=dat.size(0), **kwargs)
+    elif hasattr(mdp.nodes, nodename):
+        node = getattr(mdp.nodes, nodename)(input_dim=dat.size(0), **kwargs)
+    else:
+        print "Couldn't find the node '%s' you specified. Start guessing."%(nodename)
+        nodelist = dir(mdp.nodes)
+        nodelist_lower = [str.lower(attr) for attr in nodelist]
+        if nodelist_lower.count(str.lower(nodename)) > 0:
+            print "Matching entries found case insensitive: %d"%(nodelist_lower.count(str.lower(nodename)))
+            attr = nodelist[nodelist_lower.index(str.lower(nodename))]
+            print "Taking "+attr
+            node = getattr(mdp.nodes, attr)(input_dim=dat.size(0), **kwargs)
+        elif nodelist_lower.count(str.lower(nodename)+'node') > 0:
+            print "Matching entries found case insensitive: %d"%(nodelist_lower.count(str.lower(nodename)+'node'))
+            attr = nodelist[nodelist_lower.index(str.lower(nodename)+'node')]
+            print "Taking "+attr
+            node = getattr(mdp.nodes, attr)(input_dim=dat.size(0), **kwargs)
+        else:
+            raise ValueError("Couldn't find any matching node. Try updating mdp or check your input '%s'"%(nodename))
+                
+    node.train(dat.X.T)
+    node.stop_training()
+
+    if functionValues:
+        return LinearTransform(node.U,'2D %s filter computed on '%(nodename) + dat.name), SSA.functionValues
+    else:
+        return LinearTransform(node.U,'2D %s filter computed on '%(nodename) + dat.name)

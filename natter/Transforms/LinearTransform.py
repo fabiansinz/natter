@@ -435,11 +435,11 @@ class LinearTransform(Transform.Transform):
 
     def __isub__(self, value):
         if isinstance(value, LinearTransform):
-            self.W += value.W
+            self.W -= value.W
             self.history.append('subtracted transform')
             self.history.append(value.getHistory())
         elif isscalar(value):
-            self.W += value
+            self.W -= value
             self.history.append('subtracted %f'%(value))
         else:
             raise NotImplementedError('Only subtracting scalars or LinearTransforms implemented yet.')
@@ -453,7 +453,7 @@ class LinearTransform(Transform.Transform):
 
     def __idiv__(self, value):
         if isscalar(value):
-            self.W += value
+            self.W /= value
             self.history.append('divided by %f'%(value))
         else:
             raise NotImplementedError('Only dividing scalars implemented yet.')
@@ -500,7 +500,7 @@ class LinearTransform(Transform.Transform):
             raise ValueError('Linear transform must be square')
         result = self.copy()
         result.W = inv(result.W)
-        result.history.append('Inverted')
+        result.history.append('inverted')
         return result
 
 def gratingProjection(omega,p,nx,ny,f, fprime):
