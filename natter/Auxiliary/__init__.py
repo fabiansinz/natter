@@ -18,7 +18,6 @@ import Errors
 import Optimization
 import Plotting
 import Numerics
-import Statistics
 import Entropy
 import ImageUtils
 import Decorators
