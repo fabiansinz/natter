@@ -1,7 +1,8 @@
 from sys import stdin, stdout
 from natter.DataModule import Data
 from scipy import io
-import cPickle as pickle
+#import cPickle as pickle #temporarily removed due to bugs in cPickle
+import pickle
 from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
@@ -20,7 +21,8 @@ def load(path):
     *dat* are interpreted as ascii files.
 
     *pydat* are interpreted as natter.DataModule.Data objects stored
-     with cPickle (binary file, latest protocol).
+     with pickle (because cPickle (binary file, latest protocol) caused
+     MemoryErrors for files > 1GB on loading)
 
     :param path: Path to the data file.
     :type path: string
@@ -91,7 +93,7 @@ def pydat(path):
     :rtype: natter.DataModule.Data
     
     """
-    f = open(path,'rb')
+    f = open(path,'r')
     dat = pickle.load(f)
     f.close()
     return dat
