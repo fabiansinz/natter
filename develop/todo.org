@@ -1,19 +1,105 @@
-* Sebastian
-** TODO Make [[./natter/Distributions/FiniteMixtureDistribution.py][FiniteMixtureDistribution]], [[./natter/Distributions/FiniteMixtureOfGaussians.py][FiniteMixtureOfGaussians]] param and *args,**kwargs compatible
-** TODO Make documentations sphinx compatible
+* things to be documented
+   + [ ] natter.Auxiliary.Decorators
+   + [ ] natter.Auxiliary.Entropy
+   + [ ] natter.DataModule.Data.ascii
+   + [ ] natter.DataModule.Data.html
+   + [ ] natter.Logging.LogTokens.latex
+   + [ ] natter.Logging.LogTokens.wiki
+   + [ ] natter.Auxiliary.Entropy.LpEntropy
+   + [ ] natter.Auxiliary.Entropy.logSurfacePSphere
+   + [ ] natter.Auxiliary.Entropy.marginalEntropyCAE
+   + [ ] natter.Auxiliary.Entropy.marginalEntropyJK
+   + [ ] natter.Auxiliary.Entropy.marginalEntropyMLE
+   + [ ] natter.Auxiliary.Entropy.marginalEntropyMM
+   + [ ] natter.Auxiliary.Errors
+   + [ ] natter.Auxiliary.Errors.AbstractError
+   + [ ] natter.Auxiliary.Errors.DataLoadingError
+   + [ ] natter.Auxiliary.Errors.DimensionalityError
+   + [ ] natter.Auxiliary.Errors.InitializationError
+   + [ ] natter.Auxiliary.Errors.NumericalExceptionError
+   + [ ] natter.Auxiliary.Errors.SpecificationError
+   + [ ] natter.Auxiliary.Errors.TestError
+   + [ ] natter.Auxiliary.Errors.UpdateError
+   + [ ] natter.Auxiliary.ImageUtils
+   + [ ] natter.Auxiliary.LpNestedFunction.LpNestedFunction
+   + [ ] natter.Auxiliary.Numerics
+   + [ ] natter.Auxiliary.Numerics.dct2
+   + [ ] natter.Auxiliary.Numerics.idct2
+   + [ ] natter.Auxiliary.Optimization
+   + [ ] natter.Auxiliary.Optimization.projectOntoSt
+   + [ ] natter.Auxiliary.Optimization.xtransform
+   + [ ] natter.Auxiliary.Plotting
+   + [ ] natter.Auxiliary.Plotting.htmltable
+   + [ ] natter.Auxiliary.Plotting.imsave
+   + [ ] natter.Auxiliary.Plotting.patch2Img
+   + [ ] natter.Auxiliary.Plotting.patch2Img_old
+   + [ ] natter.Auxiliary.Plotting.savefig
+   + [ ] natter.Auxiliary.Utils
+   + [ ] natter.Auxiliary.Utils.fillDict
+   + [ ] natter.Auxiliary.lsprofcalltree
+   + [ ] natter.Auxiliary.lsprofcalltree.KCacheGrind
+   + [ ] natter.Auxiliary.lsprofcalltree.output
+   + [ ] natter.Auxiliary.lsprofcalltree.label
+   + [ ] natter.Auxiliary.lsprofcalltree.main
+   + [ ] natter.Auxiliary.Utils.parseParameters
+   + [ ] natter.Auxiliary.Utils.prettyPrintDict
+   + [ ] natter.Auxiliary.Utils.save
+   + [ ] natter.Auxiliary.prettyPrintDict
+   + [ ] natter.DataModule.Data
+   + [ ] natter.Logging.LogTokens.ascii
+   + [ ] natter.Logging.LogTokens.html
+   + [ ] natter.DataModule.Data.displayHistoryRec
+   + [ ] natter.DataModule.DataLoader
+   + [ ] natter.DataModule.DataSampler
+   + [ ] natter.DataModule.DataSampler.slidingWindowWithBorderIterator
+   + [ ] natter.Distributions.Distribution.ascii
+   + [ ] natter.Distributions.Distribution.dldtheta
+   + [ ] natter.Distributions.Distribution.dldx
+   + [ ] natter.Distributions.Distribution.dldx2
+   + [ ] natter.Distributions.Distribution.dldx2dtheta
+   + [ ] natter.Distributions.Distribution.dldxdtheta
+   + [ ] natter.Distributions.Distribution.histogram
+   + [ ] natter.Distributions.Distribution.html
+   + [ ] natter.Distributions.Distribution.primaryBounds
+   + [ ] natter.Distributions.Distribution.cdf
+   + [ ] natter.Distributions.Distribution.ppf
+   + [ ] natter.Auxiliary.Decorators.wrapped_f
+   + [ ] natter.Distributions.Distribution.Distribution
+   + [ ] natter.Distributions.Distribution.estimate
+   + [ ] natter.Distributions.Distribution.loglik
+   + [ ] natter.Distributions.EllipticallyContourGamma.primary2array
+   + [ ] natter.Distributions.FiniteMixtureDistribution.array2primary
+   + [ ] natter.Distributions.FiniteMixtureDistribution.checkAlpha
+   + [ ] natter.Distributions.FiniteMixtureDistribution.dldtheta
+   + [ ] natter.Distributions.FiniteMixtureDistribution.primary2array
+   + [ ] natter.Distributions.FiniteMixtureDistribution.primaryBounds
+   + [ ] natter.Distributions.Gamma.primaryBounds
+   + [ ] natter.Distributions.GammaP.primaryBounds
+   + [ ] natter.Distributions.Gaussian.array2primary
+   + [ ] natter.Distributions.Histogram.histogram
+   + [ ] natter.Distributions.Kumaraswamy.primaryBounds
+   + [ ] natter.Distributions.LogLogistic.primaryBounds
+   + [ ] natter.Distributions.NakaRushton.primaryBounds
+   + [ ] natter.Distributions.PCauchy.primaryBounds
+   + [ ] natter.Distributions.SkewedGaussian.primaryBounds
+   + [ ] natter.Distributions.TModelRadial.primaryBounds
+   + [ ] natter.Logging.LogTokens
+   + [ ] natter.Logging.Utils.hLine
+   + [ ] natter.Logging.Utils.lrfill
+   + [ ] natter.Transforms.Transform.ascii
+   + [ ] natter.Transforms.LinearTransform.html
+   + [ ] natter.Transforms.LinearTransform.reshape
+   + [ ] natter.Transforms.LinearTransformFactory
+   + [ ] natter.Transforms.LinearTransformUtils
+   + [ ] natter.Transforms.LinearTransformUtils.bestMatchingGratings
+   + [ ] natter.Transforms.NonlinearTransform.html
+   + [ ] natter.Transforms.NonlinearTransformFactory
+   + [ ] natter.Transforms.NonlinearTransformFactory.getLpNestedNonLinearICARec
 
-** TODO Comment [[./natter/Distributions/EllipticallyContourGamma.py][EllipticallyContourGamma.py]]
-** TODO Write a short help file for how to use the profiler
+* odd things to be checked
+** Phil: loadPixelScambledAsciiImage (does not real shuffeling), comment functions in imageUtils properly
+** what is the job of linearTransform1d
+* things to be fixed
+** Make [[./natter/Distributions/FiniteMixtureDistribution.py][FiniteMixtureDistribution]], [[./natter/Distributions/FiniteMixtureOfGaussians.py][FiniteMixtureOfGaussians]] param and *args,**kwargs compatible
+** get rid of the errors when comiling the help
 
-* Fabian
-* Both
-
-* Configuration
-#+STARTUP: overview
-#+STARTUP: hidestars
-#+STARTUP: logdone
-#+PROPERTY: Effort_ALL  0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00 24:00
-#+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %5Effort(Time){:} %6CLOCKSUM{Total}
-#+PROPERTY: Effort_ALL 0 0:10 0:20 0:30 1:00 2:00 3:00 4:00 8:00 24:00
-#+TAGS: MPI(m) COMPUTER(c) ERRANDS(r) HOME(h) PROJECT(p) READING(d) ONLINE(l) EMAIL(e) THINKING(t) CODING(i) CALL(a) MEETING(g)
-#+SEQ_TODO: TODO(t) WAITING(w) | CANCELLED(c) DONE(d)
