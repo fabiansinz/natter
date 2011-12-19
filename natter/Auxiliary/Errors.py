@@ -2,6 +2,9 @@ import types
 
 
 class InitializationError(Exception):
+    """
+    Error that is raised if parameters are not properly initialized.
+    """
     def __init__(self, value):
         self.value = value
 
@@ -10,36 +13,19 @@ class InitializationError(Exception):
     
 
 class AbstractError(Exception):
+    """
+    Error that is raised if inherited method is not implemented.
+    """
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
 
-
-class TestError(Exception):
-    def __init__(self,value=None):
-        if value == None:
-            self.value = {'analytics':'- no analytics specified - '}
-        elif type(value) == types.StringType:
-            self.value = {'message':value}
-        else:
-            self.value = value
-
-    def __str__(self):
-        s = "\n"
-        s+= "++++++++++++++++++++++++ Test Error Protocol ++++++++++++++++++++++++\n"
-        for (k,v) in self.value.items():
-            s += str(k).upper()  + ": \n"
-            s += str(v) + '\n'
-            s += 10*'- - ' + '\n'
-        s += "\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-        return s
-
-    def __repr__(self):
-        return self.__str__()
-
 class DimensionalityError(Exception):
+    """
+    Error that is raised if dimensions do not fit.
+    """
     def __init__(self,value):
         self.value = value
 
@@ -47,6 +33,9 @@ class DimensionalityError(Exception):
         return repr(self.value)
 
 class UpdateError(Exception):
+    """
+    Error that is raised if updates in a learning process fail. 
+    """
     def __init__(self,value):
         self.value = value
 
@@ -54,6 +43,9 @@ class UpdateError(Exception):
         return repr(self.value)
 
 class DataLoadingError(Exception):
+    """
+    Error that is raised if data cannot be loaded.
+    """
     def __init__(self,value):
         self.value = value
 
@@ -61,10 +53,10 @@ class DataLoadingError(Exception):
         return repr(self.value)
        
 class SpecificationError(Exception):
+    """
+    Error that is raised if parameters are not specified properly.
+    """
     def __init__(self,value):
         Exception.__init__(self)
 
         
-class NumericalExceptionError(Exception):
-    def __init__(self,value):
-        Exception.__init__(self)

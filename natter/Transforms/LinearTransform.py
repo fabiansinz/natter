@@ -306,6 +306,13 @@ class LinearTransform(Transform.Transform):
         return s
 
     def html(self):
+        """
+        Returns an html representation of itself. This is required by
+        LogToken which LinearTransform inherits from.
+
+        :returns: html preprentation the LinearTransform object
+        :rtype: string
+        """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><tt><b>Linear Transform (%s): %s</b></tt></td></tr></thead>\n" \
              % (string.join([str(elem) for elem in list(shape(self.W))],' X '),self.name,)

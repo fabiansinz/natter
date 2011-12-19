@@ -13,5 +13,6 @@ are joined.
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 
 .. autoclass:: natter.DataModule.Data
-   :members: setHistory, rectify, abs, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center, makeWhiteningVolumeConserving, cov, dnormdx, size, copy,  append, numex, dim,fade,stack,kurtosis,bootstrap
+   :members: setHistory, rectify, abs, norm, normalize, plot, addToHistory, scale, scaleCopy, mean, plotPatches, var, center,
+   makeWhiteningVolumeConserving, cov, dnormdx, size, copy,  append, numex, dim,fade,stack,kurtosis,bootstrap, ascii, html
 

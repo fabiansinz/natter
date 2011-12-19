@@ -11,5 +11,6 @@ being an exponential power distribution
    
    p(x_i) = \frac{p_i}{2s_i^\frac{1}{p_i} \Gamma\left[\frac{1}{p_i}\right]} \exp\left(\frac{|x_i|^p_i}{s_i}\right)
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ProductOfExponentialPowerDistributions
    :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters

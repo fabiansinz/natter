@@ -11,5 +11,6 @@ where :math:`\boldsymbol{W}` is a orthogonal matrix,
 i.e. :math:`\boldsymbol{W}\in SO(n)`, and :math:`q` is a base
 distribution represented by another Distribution object. 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.CompleteLinearModel
    :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters

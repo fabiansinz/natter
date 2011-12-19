@@ -14,5 +14,6 @@ form (see [GuptaSong1997]_)
 *natter* it is specified via the parameter 'rp' which is another
 Distribution object.
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LpSphericallySymmetric
    :members: sample, loglik, pdf, dldx, estimate, all, logSurfacePSphere, copy, parameters

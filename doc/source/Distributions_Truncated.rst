@@ -11,5 +11,6 @@ The Truncated distribution is a univariate density on the interval
 where F denotes the c.d.f. of the base distribution q (the one
 that is truncated).
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Truncated
    :members: sample, loglik, pdf, cdf, ppf,  all, copy, parameters

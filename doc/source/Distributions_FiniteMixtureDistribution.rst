@@ -9,5 +9,7 @@ Base class for a finite mixture of base distributions.
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
+.. moduleauthor:: Sebastian Gerwinn <sebastian@bethgelab.org>
 .. autoclass:: natter.Distributions.FiniteMixtureDistribution
    :members: estimate, parameters

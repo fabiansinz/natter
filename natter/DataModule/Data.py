@@ -45,7 +45,7 @@ class Data(LogToken):
 
         if len(self.history) > 0:
             s += '\nHistory:\n'
-            s += displayHistoryRec(self.history,1)
+            s += _displayHistoryRec(self.history,1)
             
         s += 30*'-' + '\n'
         return s
@@ -563,9 +563,23 @@ class Data(LogToken):
 
     ############ LogToken functions ########################################
     def ascii(self):
+        """
+        Returns an ascii representation of the Data object. The
+        function is required by LogToken from which Data inherits.
+
+        :returns: html representation of Data object
+        :rtype: string
+        """
         return self.__str__()
 
     def html(self):
+        """
+        Returns an html representation of the Data object. The
+        function is required by LogToken from which Data inherits.
+
+        :returns: html representation of Data object
+        :rtype: string
+        """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><tt><b>Data: %s</b></tt></td></tr></thead>\n" % (self.name,)
         s += "<tbody>"
@@ -573,7 +587,7 @@ class Data(LogToken):
         s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
         s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
         if len(self.history) > 0:
-            s += displayHistoryRec(self.history,1)
+            s += _displayHistoryRec(self.history,1)
         s += "</pre></td></tr></table>"
         return s
 
@@ -596,11 +610,11 @@ class Data(LogToken):
             yield self[:,ind]
         return 
 
-def displayHistoryRec(h,recDepth=0):
+def _displayHistoryRec(h,recDepth=0):
     s = ""
     for elem in h:
         if type(elem) == types.ListType:
-            s += (recDepth-1)*'   ' +  displayHistoryRec(elem,recDepth+1)
+            s += (recDepth-1)*'   ' +  _displayHistoryRec(elem,recDepth+1)
         else:
             s += recDepth*'   ' + ' |-' + elem + '\n'
     return s

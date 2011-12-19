@@ -30,6 +30,13 @@ class Gamma(Distribution):
     Tol = 10.0**-20.0
 
     def primaryBounds(self):
+        """
+        Returns bound on the primary parameters.
+
+        :returns: bound on the primary parameters
+        :rtype: list of tuples containing the specific lower and upper bound
+        """
+
         return len(self.primary)*[(1e-6,None)]
 
 

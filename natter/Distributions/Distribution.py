@@ -42,6 +42,15 @@ class Distribution(LogToken):
     
 
     def loglik(self,dat):
+        """
+        Abstract method which is to be implemented by the
+        children. Must return the log-likelihood of the data points in
+        dat.
+
+        :param dat: data
+        :type dat: natter.DataModule.Data
+        :raises: natter.Errors.AbstractError
+        """
         raise Errors.AbstractError('Abstract method loglik not implemented in ' + self.name)
 
     def __getitem__(self,key):
@@ -91,24 +100,108 @@ class Distribution(LogToken):
 
 
     def cdf(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the cumulative distribution function of the Distribution at the data points in dat.
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the values of the c.d.f.
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method cdf not implemented in ' + self.name)
 
     def ppf(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the inverse cumulative
+        distribution function of the Distribution at the data points
+        in dat.
+
+        :param dat: Data points for which the p.p.f. will be computed.
+        :type dat: numpy.ndarray
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the values of the c.d.f.
+        :rtype:    natter.DataModule.Data
+           
+        '''
         raise Errors.AbstractError('Abstract method ppf not implemented in ' + self.name)
 
     def dldx(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the derivative of the log-likelihood w.r.t. the data points in dat. 
+
+        :param dat: Data points at which the derivative will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the derivatives
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method dldx not implemented in ' + self.name)
 
     def dldxdtheta(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the derivative of the
+        log-likelihood w.r.t. the primary parameters of the distribution and the data points. 
+
+        :param dat: Data points at which the derivative will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the derivatives
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method dldxdtheta not implemented in ' + self.name)
 
     def dldx2(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the second derivative of the
+        log-likelihood w.r.t. the data points in dat.
+
+        :param dat: Data points at which the derivative will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the derivatives
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method dldx2 not implemented in ' + self.name)
 
     def dldx2dtheta(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the second derivative of the
+        log-likelihood w.r.t. the primary parameters of the
+        distribution.
+
+        :param dat: Data points at which the derivative will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the derivatives
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method dldx2dtheta not implemented in ' + self.name)
 
     def dldtheta(self,dat):
+        '''
+        Abstract method that must be implemented by the children of
+        Distribution. Should provide the derivative of the
+        log-likelihood w.r.t. the primary parameters of the distribution.
+
+        :param dat: Data points at which the derivative will be computed.
+        :type dat: natter.DataModule.Data
+        :raises: natter.Auxiliary.Errors.AbstractError 
+        :returns:  An array containing the derivatives
+        :rtype:    numpy.array
+           
+        '''
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
     def primary2array(self):
@@ -142,9 +235,28 @@ class Distribution(LogToken):
         return self
 
     def estimate(self,dat):
+        """
+        Abstract method that which should be implemented by the
+        children of Distribution. It should provide the functionality
+        to estimate the primary parameters of the distribution from
+        data.
+
+        :param dat: data from which the parameters will be estimated
+        :type dat: natter.DataModule.Data
+        """
+        
         raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
 
     def primaryBounds(self):
+        """
+        Abstract method that should be implemented by the children of
+        the Distribution object. Should provide bounds on the primary
+        parameters of the distribution object. It should return None,
+        if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
         raise Errors.AbstractError('Abstract method primaryBounds not implemented in ' + self.name)
 
 
@@ -211,6 +323,13 @@ class Distribution(LogToken):
         return self.ascii()
     
     def ascii(self):
+        """
+        Returns an ascii representation of itself. This is required by
+        LogToken which Distribution inherits from.
+
+        :returns: ascii preprentation the Distribution object
+        :rtype: string
+        """
         s = 30*'-'
         s += '\n' + self.name + '\n'
         later = []
@@ -248,6 +367,13 @@ class Distribution(LogToken):
         return s
 
     def html(self):
+        """
+        Returns an html representation of itself. This is required by
+        LogToken which Distribution inherits from.
+
+        :returns: html preprentation the Distribution object
+        :rtype: string
+        """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><b><tt>%s</tt></b></td></tr></thead>\n" % (self.name,)
 
@@ -292,7 +418,18 @@ class Distribution(LogToken):
 
 
     def histogram(self,dat,cdf = False, ax=None,plotlegend=True,bins=None):
+        """
+        Plots a histogram of the data points in dat. This works only
+        for 1-dimensional distributions. It also plots the pdf of the distribution.
 
+        :param dat: data points that enter the histogram
+        :type dat: natter.DataModule.Data
+        :param cdf: boolean that indicates whether the cdf should be plotted or not (default: False)
+        :param ax: axes object the histogram is plotted into if it is not None.
+        :param plotlegend: boolean indicating whether a legend should be plotted (default: True)
+        :param bin: number of bins to be used. If None (default), the bins are automatically determined. 
+        """
+        
         sh = shape(dat.X)
         if len(sh) > 1 and sh[0] > 1:
             raise Errors.DimensionalityError('Cannont plot data with more than one dimension!')

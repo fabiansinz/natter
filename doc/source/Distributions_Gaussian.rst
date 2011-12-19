@@ -9,5 +9,6 @@ The multivariate Gaussian distribution is given by
 
 
 
+.. moduleauthor:: Sebastian Gerwinn <sebastian@bethgelab.org>
 .. autoclass:: natter.Distributions.Gaussian
    :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters

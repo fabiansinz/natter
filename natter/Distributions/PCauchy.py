@@ -134,4 +134,11 @@ class PCauchy(Distribution):
    
 
     def primaryBounds(self):
+        """
+        Provide bounds on the primary parameters. Returns
+        None, if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
         return [(1e-6,None)]

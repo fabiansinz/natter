@@ -11,5 +11,6 @@ The mixture of Gaussians has the form
 where :math:`p(x,\boldsymbol \mu_k,\boldsymbol \sigma_k)` is a univariate Gaussian distribution with mean and variance :math:`\boldsymbol \mu_k` and :math:`\boldsymbol \sigma_k`.
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.MixtureOfGaussians
    :members: sample, loglik, pdf, estimate, all, copy, cdf, dldx, parameters

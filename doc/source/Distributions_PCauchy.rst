@@ -11,5 +11,6 @@ a Lp-spherically symmetric distribution in n+1 dimensions.
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.PCauchy
    :members: loglik, pdf, estimate, all, copy, parameters, dldtheta 

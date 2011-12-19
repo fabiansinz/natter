@@ -25,6 +25,13 @@ def getTuningCurve(R,fundamental_freq=1):
 
 
 def bestMatchingGratings(F):
+    """
+    Determines the parameters of the best matching gratings of the filers in F.
+
+    :param F: filters
+    :type F: natter.Transform.LinearTransform
+    :returns: list of dictionaries containing the parameters
+    """
     W = F.W
     N = sqrt(W.shape[1])
     f = arange(-ceil(N/2),ceil(N/2))

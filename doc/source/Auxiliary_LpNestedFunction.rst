@@ -1,6 +1,9 @@
 The LpNestedFunction class
 ==========================
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
+
+
 The LpNestedFunction submodule represents functions like 
 
 .. math::

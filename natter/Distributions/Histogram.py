@@ -106,6 +106,17 @@ class Histogram(Distribution):
         return dat
 
     def histogram(self,dat,cdf = False, ax=None,plotlegend=True):
+        """
+        Plots a histogram of the data points in dat. This works only
+        for 1-dimensional distributions. It also plots the pdf of the distribution.
+
+        :param dat: data points that enter the histogram
+        :type dat: natter.DataModule.Data
+        :param cdf: boolean that indicates whether the cdf should be plotted or not (default: False)
+        :param ax: axes object the histogram is plotted into if it is not None.
+        :param plotlegend: boolean indicating whether a legend should be plotted (default: True)
+        :param bin: number of bins to be used. If None (default), the bins are automatically determined. 
+        """
 
 
         b = array(self.param['b'])

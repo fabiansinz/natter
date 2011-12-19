@@ -5,10 +5,31 @@ from scipy.special import gammaln
 from natter.DataModule import Data
 
 def logSurfacePSphere(n,p):
-    return n*log(2) + n*gammaln(1/p) - gammaln(n/p) - (n-1)*log(p)
+    """
+    Computes the log of the surface area of a Lp unit-sphere in n dimensions.
+
+    :param n: dimensionality
+    :type n: float
+    :param p: p of the Lp-norm
+    :type p: float
+    :returns: log surface area
+    
+    """
+    return n*log(2.) + n*gammaln(1./p) - gammaln(n/p) - (n-1)*log(p)
 
 def LpEntropy(dat,p=None):
+    """
+    Estimates the joint entropy (in nats) of a Lp-spherically
+    symmetric distributed source without explicit knowledge of the
+    radial distribution. If p is not specified, it is estimated by
+    fitting a pCauchy distribution to the ratios.
 
+    :param dat: Lp-spherically symmetric distributed sources
+    :type dat:  natter.DataModule.Data
+    :param p: p of the Lp-spherically symmetric source (default: None)
+    :type p: float
+    :returns: entropy in nats
+    """
     # estimate p with a pCauchy distribution
     n = dat.dim()
     if p is None:
@@ -94,6 +115,16 @@ def marginalEntropy(dat,method='JK',bins=None):
     return H
 
 def marginalEntropyJK(x,bins):
+    """
+    Nonparametrically estimates the entropy of the samples x via a
+    jackknifed histogram estimator.
+
+    :param x: univariate data
+    :type x: numpy.ndarray
+    :param bins: number of bins to be used
+    :type bins: int
+    :returns: entropy in nats
+    """
     n = len(x)
     N,c = histogram(x,bins=bins)
     
@@ -110,6 +141,16 @@ def marginalEntropyJK(x,bins):
     return -  dot(N , log(1/n*N)) - (n-1)/n * H + log(hn);
 
 def marginalEntropyMLE(x,bins):
+    """
+    Nonparametrically estimates the entropy of the samples x via a
+    maximum likelihood histogram estimator.
+
+    :param x: univariate data
+    :type x: numpy.ndarray
+    :param bins: number of bins to be used
+    :type bins: int
+    :returns: entropy in nats
+    """
     n = len(x)
     h,c = histogram(x,bins=bins)
     h = h/n
@@ -118,6 +159,16 @@ def marginalEntropyMLE(x,bins):
     return -dot(h,log(h)) + log(hn)
 
 def marginalEntropyCAE(x,bins):
+    """
+    Nonparametrically estimates the entropy of the samples x via a
+    histogram estimator with CAE bias correction.
+
+    :param x: univariate data
+    :type x: numpy.ndarray
+    :param bins: number of bins to be used
+    :type bins: int
+    :returns: entropy in nats
+    """
     n = len(x)
     N,c = histogram(x,bins=bins)
     hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
@@ -128,6 +179,16 @@ def marginalEntropyCAE(x,bins):
     return -sum( N *log(N) / (1-(1-N)**n)) + log(hn)
 
 def marginalEntropyMM(x,bins):
+    """
+    Nonparametrically estimates the entropy of the samples x via a
+    histogram estimator with Miller-Madow bias correction.
+
+    :param x: univariate data
+    :type x: numpy.ndarray
+    :param bins: number of bins to be used
+    :type bins: int
+    :returns: entropy in nats
+    """
     n = len(x)
     N,c = histogram(x,bins=bins)
     hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width

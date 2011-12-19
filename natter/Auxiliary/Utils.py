@@ -10,6 +10,16 @@ from numpy.random import randn
 
 
 def parseParameters(args,kwargs):
+    """
+    Parses parameters and writes them into an dictionary. This
+    function is heavily used by the __init__ function of the
+    Distribution objects.
+
+    :param args: args to a Distribution object
+    :param kwargs: kwargs to a Distribution object
+    :returns: parameter dict of the Distribution object
+    :rtype: dictionary
+    """
     param = None
     if len(args) == 1:
         param = args[0]
@@ -31,6 +41,12 @@ def parseParameters(args,kwargs):
     return param
 
 def save(o,filename):
+    """
+    Saves object o to file filename via pickle. If filename does not have an extension, .pydat is added.
+
+    :param o: pickleable object
+    :param filename: name of the file
+    """
     tmp = filename.split('.')
     if tmp[-1] == 'pydat':
         f = open(filename,'w')
@@ -41,6 +57,12 @@ def save(o,filename):
     f.close()
 
 def prettyPrintDict(value):
+    """
+    Returns a nice representation of a dictionary.
+
+    :param value: dictionary
+    :rtype: string 
+    """
     s = "\n"
     s+= 40*"=" + "\n"
     for (k,v) in value.items():
@@ -107,12 +129,3 @@ def profileFunction(f):
     cmd = "kcachegrind %s" % filename
     os.system(cmd)
 
-def fillDict(default,dic):
-    ret = deepcopy(default)
-    if dic==None:
-        return ret
-    else:
-        for key in default.keys():
-            if key in dic.keys():
-                ret[key]=dic[key]
-    return ret
