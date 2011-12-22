@@ -12,5 +12,6 @@ where :math:`\alpha` and :math:`\beta` the scale and shape parameters.
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LogLogistic
    :members: sample, loglik, pdf, cdf, estimate

@@ -113,7 +113,7 @@ class FiniteMixtureDistribution(Distribution):
             ind += nc[k]
         return Data(X,"%i samples from a %i-dimensional finite mixture distribution" % (m,dim))
 
-    def checkAlpha(self):
+    def _checkAlpha(self):
         s=0.0
         for alpha in self.param['alpha']:
             ab = alpha
@@ -137,7 +137,7 @@ class FiniteMixtureDistribution(Distribution):
          
            
         '''
-        self.checkAlpha()
+        self._checkAlpha()
         n,m = dat.size()
         X = zeros((m,len(self.param['P'])))
         for k,p in enumerate(self.param['P']):
@@ -228,6 +228,12 @@ class FiniteMixtureDistribution(Distribution):
         return ret
 
     def primaryBounds(self):
+        """
+        Returns bound on the primary parameters.
+
+        :returns: bound on the primary parameters
+        :rtype: list of tuples containing the specific lower and upper bound
+        """
         ret = []
         if 'alpha' in self.primary:
             ret += (len(self.param['alpha'])-1)*[(-30.0,30.0)]
@@ -241,6 +247,14 @@ class FiniteMixtureDistribution(Distribution):
             
         
     def array2primary(self,arr):
+        """
+        Converts an array into the primary parameters of the
+        FiniteMixtureDistribution and stores them in the param
+        dictionary.
+
+        :param arr: array containing the new values of the primary parameters
+        :type arr: numpy.ndarray
+        """
         K = len(self.param['P'])
         if 'alpha' in self.primary:
             if any(arr[:K] > 40) or any(arr[:K] < -40):
@@ -264,8 +278,18 @@ class FiniteMixtureDistribution(Distribution):
         
 
     def dldtheta(self,dat):
+        """
+        Computes the derivative of the log-likelihood of the
+        distribution w.r.t. the primary parameters at the data points
+        in dat.
+
+        :param dat: data points
+        :type dat: natter.DataModule.Data
+        :returns: derivative of the log-likelihood w.r.t. the primary parameters
+        :rtype: numpy.ndarray
+        """
         K = len(self.param['P'])
-        self.checkAlpha()
+        self._checkAlpha()
         lp = self.loglik(dat)
         n,m = dat.size()
         ret = array([])
@@ -333,8 +357,6 @@ class FiniteMixtureDistribution(Distribution):
 
     def estimate(self,dat,method=None,maxiter=100,tol=1e-7):
         """
-
-
         Estimates the parameters from the data in dat. It is possible
         to only selectively fit parameters of the distribution by
         setting the primary array accordingly

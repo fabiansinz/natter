@@ -17,5 +17,6 @@ form (see [SinzBethge2010]_)
 the radial density is specified via the parameter 'rp' which is
 another Distribution object.
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LpNestedSymmetric
    :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters

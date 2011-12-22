@@ -9,5 +9,6 @@ Univariate distribution for which :math: x^p is Gamma distributed.
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.GammaP
    :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters

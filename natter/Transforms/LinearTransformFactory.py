@@ -37,7 +37,7 @@ def fastICA(dat,whitened=True):
     # refine
     # ICA.g = 'gaus'
     # ICA.train(dat.X.transpose())
-    return LinearTransform(Auxiliary.Optimization.projectOntoSt(ICA.get_projmatrix(False)),'fast ICA filter computed on ' + dat.name)
+    return LinearTransform(Auxiliary.Optimization._projectOntoSt(ICA.get_projmatrix(False)),'fast ICA filter computed on ' + dat.name)
     
     
 
@@ -136,7 +136,7 @@ def stRND(sh):
     :rtype: natter.Transforms.LinearTransform
     
     """
-    return LinearTransform( Auxiliary.Optimization.projectOntoSt(np.random.randn(sh[0],sh[1])),'Random Stiefel Matrix')
+    return LinearTransform( Auxiliary.Optimization._projectOntoSt(np.random.randn(sh[0],sh[1])),'Random Stiefel Matrix')
     
             
 def DCT2(sh):

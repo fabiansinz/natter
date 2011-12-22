@@ -98,7 +98,7 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
         # appropriate parameters, then return.
   
         # undo the variable transformations into the original space
-        x = xtransform(x0u,LB,UB,BoundClass,n)
+        x = _xtransform(x0u,LB,UB,BoundClass,n)
   
         # final reshape
         x = reshape(x,xsize);
@@ -106,16 +106,16 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
 
 
     # now we can call fmin
-    f2 = lambda t: f(xtransform(t,LB,UB,BoundClass,n),*args)
+    f2 = lambda t: f(_xtransform(t,LB,UB,BoundClass,n),*args)
 
     xu = fmin(f2,x0u,xtol=tol,*args)
     # undo the variable transformations into the original space
-    x = xtransform(xu,LB,UB,BoundClass,n)
+    x = _xtransform(xu,LB,UB,BoundClass,n)
     
     # final reshape
     return reshape(x,xsize);
 
-def xtransform(x,LB,UB,BoundClass,n):
+def _xtransform(x,LB,UB,BoundClass,n):
     # converts unconstrained variables into their original domains
 
     xtrans = zeros((n,))
@@ -246,11 +246,11 @@ def StGradient(func, X, param0=None, *args):
         
         print "\tLinesearch %i" % (k,),
         if param['linesearch'] == 'golden':
-            F = lambda t: func(projectOntoSt(X+t*Z),1,*args)[0]
+            F = lambda t: func(_projectOntoSt(X+t*Z),1,*args)[0]
             bestdelta = goldenMaxSearch(F,0,b,param['lsTol'])
             bestdelta = .5*(bestdelta[0]+bestdelta[1])
         elif param['linesearch'] == 'brent':
-            F = lambda t: -func(projectOntoSt(X+t*Z),1,*args)[0]
+            F = lambda t: -func(_projectOntoSt(X+t*Z),1,*args)[0]
             bestdelta = fminbound(F,0,b,(),param['lsTol'])
             if not type(bestdelta) == float64:
                 bestdelta = bestdelta[0]
@@ -265,7 +265,7 @@ def StGradient(func, X, param0=None, *args):
         else:
             print ".(%.8f) " % b,
   
-        X = projectOntoSt(X+bestdelta*Z)
+        X = _projectOntoSt(X+bestdelta*Z)
         ftmax = func(X,1,*args)
         k += 1;
         if k > maxiter:
@@ -276,7 +276,7 @@ def StGradient(func, X, param0=None, *args):
         print "\tMaximal gradient entry is smaller than %.4g! Exiting ...\n" % (tolF,)
     return (X,ftmax,param)
 
-def projectOntoSt(C):
+def __projectOntoSt(C):
     # (u,d,v) = svd(C,full_matrices=False)
     # return dot(u,v)
     return real( dot(  inv(sqrtm(dot(C,C.T)))  ,C) )

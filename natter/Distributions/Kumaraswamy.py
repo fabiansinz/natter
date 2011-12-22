@@ -61,6 +61,14 @@ class Kumaraswamy(Distribution):
         return Data(self.param['B']*beta.rvs(1,self.param['b'],size=m)**(1/self.param['a']),'%i samples from %s' % (m,self.name))
         
     def primaryBounds(self):
+        """
+        Provide bounds on the primary parameters. Returns
+        None, if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
+        
         return len(self.primary)*[(1e-6,None)]
 
     def loglik(self,dat):

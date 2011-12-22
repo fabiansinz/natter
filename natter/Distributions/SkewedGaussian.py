@@ -123,6 +123,13 @@ class SkewedGaussian(Distribution):
         return squeeze(Phi(s(dat.X)) - 2*owensT(s(dat.X), alpha).T)
 
     def primaryBounds(self):
+        """
+        Provide bounds on the primary parameters. Returns
+        None, if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
         ret = []
         for k in self.primary:
             if k == 'mu':

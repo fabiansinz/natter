@@ -10,5 +10,6 @@ p-generalized Normal.
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ChiP
    :members: sample, loglik, pdf, estimate, all, copy, parameters

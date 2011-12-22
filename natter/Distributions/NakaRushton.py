@@ -221,6 +221,13 @@ class NakaRushton(Distribution):
         return ret
     
     def primaryBounds(self):
+        """
+        Provide bounds on the primary parameters. Returns
+        None, if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
         ret = []
         for ind,key in enumerate(self.primary):
             ret.append((1e-6,None))

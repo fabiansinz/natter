@@ -136,6 +136,13 @@ class NonlinearTransform(Transform.Transform):
         return s
 
     def html(self):
+        """
+        Returns an html representation of itself. This is required by
+        LogToken which LinearTransform inherits from.
+
+        :returns: html preprentation the LinearTransform object
+        :rtype: string
+        """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><tt><b>Nonlinear Transform: %s</b></tt></td></tr></thead>\n" % (self.name,)
         s += "<tbody>"

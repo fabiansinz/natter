@@ -25,15 +25,31 @@ class LogToken:
     implement the methods *latex*, *ascii*, *html* and *wiki*.
     """
     def latex(self):
+        """
+        Abstract method that requires a object which inherits from
+        LogToken to return a LaTeX representation of itself.
+        """
         raise AbstractError("Method latex not implemented in this ProtocolToken!")
 
     def html(self):
+        """
+        Abstract method that requires a object which inherits from
+        LogToken to return a html representation of itself.
+        """
         raise AbstractError("Method html not implemented in this ProtocolToken!")
 
     def wiki(self):
+        """
+        Abstract method that requires a object which inherits from
+        LogToken to return a mediawiki representation of itself.
+        """
         raise AbstractError("Method wiki not implemented in this ProtocolToken!")
 
     def ascii(self):
+        """
+        Abstract method that requires a object which inherits from
+        LogToken to return a ascii representation of itself.
+        """
         raise AbstractError("Method ascii not implemented in this ProtocolToken!")
 
     def __log__(self,type='ascii'):
@@ -159,7 +175,7 @@ class Table(LogToken):
     """
     Table LogToken to store results. Each table is initialized with
     two tuples: the row labels and the column labels. Table cells can
-    be accesses via these labels. For examples
+    be accesses via these labels. For example
 
     >>> t = Table((1,2),('a','b'))
     >>> t[1,'b'] = 1.2

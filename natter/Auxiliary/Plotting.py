@@ -5,6 +5,15 @@ import types
 
 
 def htmltable(rowlab,collab, S):
+    """
+    Generates a table in html format from the data in S.
+
+    :param rowlab: row labels
+    :param collab: column labels
+    :param S: list of list of entries for the table. Elements must be convertable to strings via str(.)
+    :returns: html table
+    :rtype: string
+    """
     b = False
     s = "<table style=\"background-color: rgb(200, 200, 200);\" border=\"1\" cellpadding=\"8\" cellspacing=\"3\" rules=\"cols\" border=\"0\" rules=\"rows\">"
     s += "<tr><td></td>"
@@ -30,6 +39,9 @@ def htmltable(rowlab,collab, S):
 
 
 def patch2Img_old(X, nx , ny):
+    """
+    Deprecated.
+    """
     sz = np.shape( X)
     p = sz[0]
     n = sz[1]
@@ -48,6 +60,19 @@ def patch2Img_old(X, nx , ny):
     return img
  
 def patch2Img(X, nx , ny, orientation='F'):
+    """
+    Reshapes the patches contained as columns in X and arranges them
+    on a nx x ny grid.
+
+    :param X: data matrix
+    :type X: numpy.ndarray
+    :param nx: row dimension of the grid
+    :type nx: int
+    :param ny: column dimension of the grid
+    :type ny: int
+    :param orientation: how the patches are reshaped (default: 'F' which means matlab or fortran column style)
+    
+    """
     sz = np.shape(X)
     p = sz[0]
     n = sz[1]
@@ -64,9 +89,19 @@ def patch2Img(X, nx , ny, orientation='F'):
 
 def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation='F', **kwargs):
     """
-    PLOTPATCHES(A, NX, PTCHSZ)
+    Plot columns of A as patches in an array of NX=(dimx,dimy)
+    patches. Each patch is assumed to have ptchSz patch size. Further
+    kwargs are passed down to imshow.
 
-    plot columns of A as patches in an array of NX=(dimx,dimy) patches. Each patch is assumed to have PTCHSZ patch size. 
+    :param B: data matrix containing the patches as columns
+    :type A: numpy.ndarray
+    :param nx: grid dimensions.
+    :type nx: tuple of int
+    :param ptchSz: patch size
+    :type ptchSz: int
+    :param ax: axis object in which the patches are plotted if ax is not None.
+    :param contrastenhancement: boolean that indicates whether the patches should be rescaled for better visibility (default: False)
+    :param orientation: how the patches are reshaped (default: 'F' which means matlab or fortran column style)
     """
     A = B.copy()
     
@@ -191,11 +226,20 @@ def findShape( s ):
 
 
 def savefig( filename, bb='tight' ):
+    """
+    Saves thes current figure to filename in png and eps format with 300 dpi.
+
+    :param filename: filename of the file the figure is saved to.
+    :param bb: bbox_inches parameter of pyplot.savefig.
+    """
     print 'Saving figure %s'%(filename)
     pyplot.savefig('%s.png'%(filename), bbox_inches=bb, dpi=300)
     pyplot.savefig('%s.eps'%(filename), bbox_inches=bb, dpi=300)
     
 def imsave( filename, image ):
+    """
+    See savefig.
+    """
     print 'Saving image %s'%(filename)
     pyplot.imsave('%s.png'%(filename), image)
     pyplot.imsave('%s.eps'%(filename), image)

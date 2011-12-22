@@ -11,9 +11,11 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    Auxiliary_LpNestedFunction.rst
    Auxiliary_Numerics.rst
    Auxiliary_Optimization.rst
+   Auxiliary_Plotting.rst
+   Auxiliary_Utils.rst
 """
 
-from Utils import save, debug , profileFunction, fillDict, mnorm
+from Utils import save, debug , profileFunction,  mnorm
 import Errors 
 import Optimization
 import Plotting

@@ -2,7 +2,7 @@ The Entropy submodule
 =====================
 
 .. automodule:: natter.Auxiliary.Entropy
-   :members:	marginalEntropy
+   :members:	marginalEntropy, marginalEntropyMM,c marginalEntropyCAE, marginalEntropyMLE, marginalEntropyJK, LpEntropy, logSurfacePSphere
 
 
 

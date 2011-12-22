@@ -163,9 +163,9 @@ def LpNestedNonLinearICA(p):
     L = p.param['f'].copy()
     rp = p.param['rp'].copy()
 
-    return getLpNestedNonLinearICARec(rp,L,())
+    return _getLpNestedNonLinearICARec(rp,L,())
     
-def getLpNestedNonLinearICARec(rp,L,mind):
+def _getLpNestedNonLinearICARec(rp,L,mind):
     p = L.p[L.pdict[()]]
     s = (special.gamma(1.0/p) / special.gamma(3.0/p))**(p/2.0)
     rptarget = GammaP({'u':float(L.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
@@ -177,7 +177,7 @@ def getLpNestedNonLinearICARec(rp,L,mind):
         if L.n[(k,)] > 1:
             L2 = L[(k,)]
             pnew = GammaP({'u':float(L2.n[()])/L.p[L.pdict[()]],'s':s, 'p':L.p[L.pdict[()]]})
-            F2 = getLpNestedNonLinearICARec(pnew,L2,mind + (k,))
+            F2 = _getLpNestedNonLinearICARec(pnew,L2,mind + (k,))
             F = F2*F
 
 

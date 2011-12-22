@@ -9,5 +9,6 @@ The mixture of log-normal distributions is given by
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.MixtureOfLogNormals
    :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters

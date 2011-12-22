@@ -18,5 +18,6 @@ with
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.SchwartzSimoncelliModel
    :members: loglik, primary2array, array2primary, dldtheta,estimate

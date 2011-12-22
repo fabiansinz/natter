@@ -10,5 +10,6 @@ The TruncatedGaussian distribution is a univariate density on the interval
 
 
 
+.. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.TruncatedGaussian
    :members: sample, loglik, pdf, cdf, ppf, dldtheta, estimate, all, copy, parameters

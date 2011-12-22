@@ -60,6 +60,14 @@ class Transform(LogToken):
         Auxiliary.save(self,filename)
 
     def ascii(self):
+        """
+        Returns an ascii representation of itself. This is required by
+        LogToken which Transform inherits from.
+
+        :returns: ascii preprentation the Transform object
+        :rtype: string
+        """
+        
         return self.__str__()
 
         
