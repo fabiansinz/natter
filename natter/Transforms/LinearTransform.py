@@ -41,63 +41,73 @@ class LinearTransform(Transform.Transform):
 
         self.name = name
 
-    def plotBasis(self, plotNumbers=False, orientation='F'):
+    def plotBasis(self, plotNumbers=False, orientation='F', **kwargs):
         """
-
         Plots the columns of the inverse linear transform matrix
         W. Works only if the square-root of the number of columns of W
         is an integer.
 
         :param plotNumbers: Determines whether the index of the basis function should be plotted as well.
         :type plotNumbers: bool
+        :param orientation: matlab style column major ('F', default) or C/Python style row major ('C') reshaping, or no reshaping/1D plotting ('1D')
+        :type orientation: string
+        :param kwargs: See natter.Auxiliary.Plotting.plotStripes
 
         """
-        nx = ceil(sqrt(size(self.W,1)))
-        ptchSz = sqrt(size(self.W,0))
-        Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True, orientation=orientation)
+        if orientation == '1D':
+            Plotting.plotStripes(inv(self.W),plotNumbers=plotNumbers, **kwargs)
+        else:        
+            nx = ceil(sqrt(size(self.W,1)))
+            ptchSz = sqrt(size(self.W,0))
+            Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True, orientation=orientation)
 
-        if plotNumbers:
-            row = 0
-            col = 0
-            i = 0
-            
-            while i < self.W.shape[0]:
-                text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
-                if col > (nx-2)*ptchSz:
-                    col = 0
-                    row += ptchSz
-                else:
-                    col += ptchSz
-                i += 1
+            if plotNumbers:
+                row = 0
+                col = 0
+                i = 0
+
+                while i < self.W.shape[0]:
+                    text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
+                    if col > (nx-2)*ptchSz:
+                        col = 0
+                        row += ptchSz
+                    else:
+                        col += ptchSz
+                    i += 1
 
     
-    def plotFilters(self, plotNumbers=False, orientation='F'):
+    def plotFilters(self, plotNumbers=False, orientation='F', **kwargs):
         """
-
         Plots the rows of the linear transform matrix W. Works only if
         the square-root of the number of rows of W is an integer.
 
         :param plotNumbers: Determines whether the index of the basis function should be plotted as well.
         :type plotNumbers: bool
+        :param orientation: matlab style column major ('F', default) or C/Python style row major ('C') reshaping, or no reshaping/1D plotting ('1D')
+        :type orientation: string
+        :param kwargs: See natter.Auxiliary.Plotting.plotStripes
 
         """
-        nx = ceil(sqrt(size(self.W,0)))
-        ptchSz = sqrt(size(self.W,1))
-        Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True, orientation=orientation)
+        if orientation == '1D':
+            Plotting.plotStripes(self.W.transpose(), plotNumbers=plotNumbers, **kwargs)       
+        else:
+            nx = ceil(sqrt(size(self.W,0)))
+            ptchSz = sqrt(size(self.W,1))
+            Plotting.plotPatches(self.W.transpose(),nx,ptchSz,contrastenhancement=True, orientation=orientation)
 
-        if plotNumbers:
-            row = 0
-            col = 0
-            i = 0
-            
-            while i < self.W.shape[0]:
-                text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
-                if col > (nx-2)*ptchSz:
-                    col = 0
-                    row += ptchSz
-                else:
-                    col += ptchSz
-                i += 1
+            if plotNumbers:
+                row = 0
+                col = 0
+                i = 0
+
+                while i < self.W.shape[0]:
+                    text(col+ptchSz/4,row+ptchSz/4,str(i),color='r',fontweight='bold')
+                    if col > (nx-2)*ptchSz:
+                        col = 0
+                        row += ptchSz
+                    else:
+                        col += ptchSz
+                    i += 1
 
         
     def __invert__(self):
@@ -251,11 +261,11 @@ class LinearTransform(Transform.Transform):
         returns as many copies of the log determinant as there are
         data points in *dat*.
 
-
         :param dat: Data for which the log-det-Jacobian is to be computed.
         :type dat: natter.DataModule.Data
         :returns: The log-det-Jacobian 
         :rtype: float (if dat=None) or numpy.array (if dat!=None)
+        
         """
         
         sh = shape(self.W)
@@ -274,6 +284,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: New LinearTransform object where the W is the results of the __getitem__ operation.
         :rtype: natter.Transform.LinearTransform
+        
         """
         
         tmp = list(self.history)
@@ -294,6 +305,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: A string representation of the LinearTransform object.
         :rtype: string
+        
         """
         sh = string.join([str(elem) for elem in list(shape(self.W))],' X ')
         
@@ -312,6 +324,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: html preprentation the LinearTransform object
         :rtype: string
+        
         """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><tt><b>Linear Transform (%s): %s</b></tt></td></tr></thead>\n" \
@@ -328,18 +341,19 @@ class LinearTransform(Transform.Transform):
         Computes the optimal orientation and spatial frequency for all
         filters (rows). This is done by oversampling the Fourier space
         and computing the maximal absolute response to
-
-        :math:`\sum_{\boldsymbol n} \exp(2*\pi*i * \langle\boldsymbol \omega, \boldsymbol x_{\boldsymbol n} \rangle  ) f(\boldsymbol x_{\boldsymbol n})`
-
+        
+        :math:`\sum_{\boldsymbol n} \exp(2*\pi*i*\langle\boldsymbol \omega, \boldsymbol x_{\boldsymbol n} \rangle  ) f(\boldsymbol x_{\boldsymbol n})`
+        
         :param delta: bin size for oversampling in the Fourier domain
         :type delta: float
         :param weight: Whether the filter is to be weighted with a Gaussian envelope function
         :type weight: bool
         :param weightings: Array that stores the envelope weighting functions if specified
         :type weighting: numpy.array
-
-        :returns:   The frequency vectors that gives the maximal responses.
+        
+        :returns: The frequency vectors that gives the maximal responses.
         :rtype: numpy.array
+        
         """
         stderr.write("\tComputing optimal frequency and orientation ")
         p = sqrt(self.W.shape[1])
@@ -424,7 +438,7 @@ class LinearTransform(Transform.Transform):
 
     def __iadd__(self, value):
         """
-        Adds given linear transformation or scalar to current transformation (self += value)
+        Adds given linear transformation or scalar to current transformation (``self += value``)
 
         :param value: linear transform with identical shape
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
@@ -446,7 +460,7 @@ class LinearTransform(Transform.Transform):
 
     def __add__(self, value):
         """
-        Adds given linear transformation or scalar to copy of current transformation (return = self + value)
+        Adds given linear transformation or scalar to copy of current transformation (``return = self + value``)
 
         :param value: linear transform with identical shape
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
@@ -460,7 +474,7 @@ class LinearTransform(Transform.Transform):
 
     def __isub__(self, value):
         """
-        Subtracts given linear transformation or scalar from current transformation (self -= value)
+        Subtracts given linear transformation or scalar from current transformation (``self -= value``)
 
         :param value: linear transform with identical shape
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
@@ -482,7 +496,7 @@ class LinearTransform(Transform.Transform):
 
     def __sub__(self, value):
         """
-        Subtracts given linear transformation or scalar from copy of current transformation (return = self - value)
+        Subtracts given linear transformation or scalar from copy of current transformation (``return = self - value``)
 
         :param value: linear transform with identical shape
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
@@ -496,7 +510,7 @@ class LinearTransform(Transform.Transform):
 
     def __idiv__(self, value):
         """
-        Divides current transformation by scalar (self /= value)
+        Divides current transformation by scalar (``self /= value``)
 
         :param value: Scalar number
         :type value: scalar (int/float)
@@ -514,7 +528,7 @@ class LinearTransform(Transform.Transform):
 
     def __div__(self, value):
         """
-        Divides current transformation by scalar (self /= value)
+        Divides current transformation by scalar (``self /= value``)
 
         :param value: Scalar number
         :type value: scalar (int/float)
@@ -528,7 +542,7 @@ class LinearTransform(Transform.Transform):
     
     def __imult__(self, value):
         """
-        Multiplies given linear transformation or scalar to current transformation (self *= value)
+        Multiplies given linear transformation or scalar to current transformation (``self *= value``)
         Uses correct matrix multiplication, not point-wise multiplication.
 
         :param value: linear transform with identical shape
@@ -547,7 +561,7 @@ class LinearTransform(Transform.Transform):
 
     def __mult__(self, value):
         """
-        Multiplies given linear transformation or scalar to copy of current transformation (return = self * value)
+        Multiplies given linear transformation or scalar to copy of current transformation (``return = self * value``)
         Uses correct matrix multiplication, not point-wise multiplication.
 
         :param value: linear transform with identical shape

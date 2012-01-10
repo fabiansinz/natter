@@ -26,7 +26,7 @@ def laplaceApproximation(listOfDist,initPoint=None):
     for dist in listOfDist:
         OK = hasattr(dist,'dldx')
         OK = OK and hasattr(dist,'dldx2')
-        iqf not OK:
+        if not OK:
             raise ValueError('Distribution has not implemented dldx or dldx2')
     if initPoint is None:
         initPoint = listOfDist[0].sample(1).X.flatten()

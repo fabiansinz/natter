@@ -3,6 +3,7 @@ The Distributions submodule
 
 .. automodule:: natter.Distributions
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
+.. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. [Minka2002]  Minka,T.P., *Estimating a Gamma distribution,* 2002.
 .. [GuptaSong1997] Gupta, A.K.  and D. Song, *Lp-norm spherical distribution,* Journal of Statistical Planning and Inference,  vol. 60, May. 1997, pp. 241-260.

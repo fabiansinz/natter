@@ -43,6 +43,7 @@
    * [X] natter.Auxiliary.Utils.prettyPrintDict
    * [X] natter.Auxiliary.Utils.save
    * [X] natter.Auxiliary.prettyPrintDict
+   * [ ] natter.Auxiliary.LaplaceApproximation (function incomplete, does not return anything)
    * [X] natter.DataModule.Data
    * [X] natter.Logging.LogTokens.ascii
    * [X] natter.Logging.LogTokens.html

@@ -8,6 +8,7 @@ implements. At the moment it provides the following distributions.
    
    Distributions_ChiP.rst
    Distributions_CompleteLinearModel.rst
+   Distributions_Delta.rst
    Distributions_Dirichlet.rst
    Distributions_Distribution.rst
    Distributions_ExponentialPower.rst
@@ -36,7 +37,6 @@ implements. At the moment it provides the following distributions.
    Distributions_TruncatedNormal.rst
    Distributions_Transformed.rst
    Distributions_Uniform.rst
-   Distributions_Delta.rst
 """
 
 
