@@ -30,11 +30,13 @@
    * [X] natter.Auxiliary.Plotting.patch2Img
    * [X] natter.Auxiliary.Plotting.patch2Img_old
    * [X] natter.Auxiliary.Plotting.savefig
-   * [ ] natter.Auxiliary.Utils (Sebastian, please check whether all
+   * [X] natter.Auxiliary.Utils (Sebastian, please check whether all
      comments are sphinx convention)
-   * [ ] natter.Auxiliary.Utils.mnorm (not sphinx)
-   * [ ] natter.Auxiliary.Utils.profileFunction (use param instead of arguments)
-   * [ ] natter.Auxiliary.lsprofcalltree
+   * [X] natter.Auxiliary.Utils.mnorm (not sphinx)
+   * [X] natter.Auxiliary.Utils.profileFunction (use param instead of arguments)
+   * [ ] natter.Auxiliary.lsprofcalltree (SG: we probably want to exclude this from
+     the natter as it is external code, although it is open
+     source. nevertheless, we dont want to comment it, I guess)
    * [ ] natter.Auxiliary.lsprofcalltree.KCacheGrind
    * [ ] natter.Auxiliary.lsprofcalltree.output
    * [ ] natter.Auxiliary.lsprofcalltree.label
@@ -43,7 +45,10 @@
    * [X] natter.Auxiliary.Utils.prettyPrintDict
    * [X] natter.Auxiliary.Utils.save
    * [X] natter.Auxiliary.prettyPrintDict
-   * [ ] natter.Auxiliary.LaplaceApproximation (function incomplete, does not return anything)
+   * [ ] natter.Auxiliary.LaplaceApproximation (function incomplete, does not
+     return anything) SG: half way fixed, it now returns something (the approximate Gaussian
+       distribution, of the product distribution), although it is untested, and
+       maybe not that relevant for the natter...
    * [X] natter.DataModule.Data
    * [X] natter.Logging.LogTokens.ascii
    * [X] natter.Logging.LogTokens.html
@@ -61,7 +66,8 @@
    * [X] natter.Distributions.Distribution.primaryBounds
    * [X] natter.Distributions.Distribution.cdf
    * [X] natter.Distributions.Distribution.ppf
-   * [ ] natter.Auxiliary.Decorators.wrapped_f
+   * [ ] natter.Auxiliary.Decorators.wrapped_f (SG: probably not needed, as it
+     is an 'anonymous' function)
    * [X] natter.Distributions.Distribution.Distribution
    * [X] natter.Distributions.Distribution.estimate
    * [X] natter.Distributions.Distribution.loglik
