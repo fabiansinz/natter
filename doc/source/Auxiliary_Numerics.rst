@@ -7,7 +7,7 @@ The Numerics submodule
 This module provides numerical helper functions.
 
 .. automodule:: natter.Auxiliary.Numerics
-   :members:	owensT, logsumexp, inv_digamma, digamma, trigamma, invertMonotonicIncreasingFunction
+   :members:	owensT, logsumexp, inv_digamma, digamma, trigamma, invertMonotonicIncreasingFunction, dct, idct, idct2, dct2
 
 
 

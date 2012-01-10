@@ -85,9 +85,16 @@ def loadPixelScambledAsciiImage(filename):
 
 
 def shiftImage( img, shift ):
-    """shiftImage( img, shift )
+    """
     Calls shift1DImage( img, shift ) or shift2DImage( img, shift )
-    depending on the dimension of the input image.
+    depending on the dimension of the input image and shifts the image
+    using the Fourier shift theorem.
+
+    :param img: image (either 1D or 2D)
+    :type img: numpy.ndarray
+    :returns: image
+    :rtype: numpy.ndarray
+    
     """
     if img.ndim == 1:
         return shift1DImage(img, shift)
@@ -97,8 +104,14 @@ def shiftImage( img, shift ):
         raise ValueError('Neither 1D nor 2D image.')
     
 def shift1DImage( img, shift ):
-    """shift1DImage( img, shift )
+    """
     shifts 1D image by #shift pixels to the right by using Fourier shift theorem
+
+    :param img: 1D image
+    :type img: numpy.ndarray
+    :returns: 1D image
+    :rtype: numpy.ndarray
+    
     """
     if np.array(shift).size == 1:
         dx = -shift
@@ -114,10 +127,15 @@ def shift1DImage( img, shift ):
     return result.real
 
 def shift2DImage( img, shift ):
-    """shift2DImage( img, shift )
-    shifts 2D image by #shift[0] pixels vertically down and
-    #shift[1] pixels horizontally to the right
-    by using Fourier shift theorem
+    """
+    shifts 2D image by #shift[0] pixels vertically down and  #shift[1] pixels horizontally
+    to the right by using Fourier shift theorem
+
+    :param img: 2D image
+    :type img: numpy.ndarray
+    :returns: 2D image
+    :rtype: numpy.ndarray
+    
     """
     if np.array(shift).size == 1:
         dy = shift
@@ -137,7 +155,7 @@ def shift2DImage( img, shift ):
     return result
 
 def bilinearInterpolation( img, vec, patch=None ):
-    """bilinearInterpolation( img, vec, patch=None )
+    """
     computes the pixel values at all positions in vec (2xn matrix) by bilinear interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
@@ -150,6 +168,7 @@ def bilinearInterpolation( img, vec, patch=None ):
     :type patch: numpy.ndarray
     :returns: Array of pixel values
     :rtype: numpy.ndarray
+    
     """
     if patch is None:
         res = np.empty((vec.shape[1]))
@@ -166,7 +185,7 @@ def bilinearInterpolation( img, vec, patch=None ):
     return res
 
 def nearestNeighbor( img, vec, patch=None ):
-    """nearestNeighbor( img, vec, patch=None )
+    """
     computes the pixel values at all positions in vec (2xn matrix) by nearest neighbor interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
@@ -191,7 +210,7 @@ def nearestNeighbor( img, vec, patch=None ):
     return res
 
 def bicubicInterpolation( img, vec, patch=None ):
-    """bicubicInterpolation( img, vec, patch=None )
+    """
     computes the pixel values at all positions in vec (2xn matrix) by bicubic interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
@@ -204,6 +223,7 @@ def bicubicInterpolation( img, vec, patch=None ):
     :type patch: numpy.ndarray
     :returns: Array of pixel values
     :rtype: numpy.ndarray
+    
     """
     if patch is None:
         res = np.empty((vec.shape[1]))

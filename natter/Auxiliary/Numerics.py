@@ -159,26 +159,19 @@ def totalDerivativeOfIncGamma(x,a,b,da,db):
 # from scipy.org
 def dct(x,n=None):
     """
-    Discrete Cosine Transform
-
-                      N-1
-           y[k] = 2* sum x[n]*cos(pi*k*(2n+1)/(2*N)), 0 <= k < N.
-                      n=0
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> x = np.arange(5)
-    >>> np.abs(x-idct(dct(x)))<1e-14
-    array([ True,  True,  True,  True,  True], dtype=bool)
-    >>> np.abs(x-dct(idct(x)))<1e-14
-    array([ True,  True,  True,  True,  True], dtype=bool)
-
-    Reference
-    ---------
+    Computes the Discrete Cosine Transform
+    :math:`y[k] = 2*\sum^{N-1}_{n=0}x[n]*\cos(\pi*k*(2n+1)/(2*N))`, 0 <= k < N.
+    taken from scipy.org, for details see
     http://en.wikipedia.org/wiki/Discrete_cosine_transform
     http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
 
+    :param x: 1D array 
+    :type x: numpy.ndarray
+    :param n: length of array, default None
+    :type n: int
+    :returns: 1D array
+    :rtype: numpy.array
+    
     """
     x = atleast_1d(x)
 
@@ -209,28 +202,21 @@ def dct(x,n=None):
 
 def idct(x,n=None):
     """
-    Inverse Discrete Cosine Transform
-
-                       N-1
-           x[k] = 1/N sum w[n]*y[n]*cos(pi*k*(2n+1)/(2*N)), 0 <= k < N.
-                       n=0
-
-           w(0) = 1/2
-           w(n) = 1 for n>0
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> x = np.arange(5)
-    >>> np.abs(x-idct(dct(x)))<1e-14
-    array([ True,  True,  True,  True,  True], dtype=bool)
-    >>> np.abs(x-dct(idct(x)))<1e-14
-    array([ True,  True,  True,  True,  True], dtype=bool)
-
-    Reference
-    ---------
+    Computes the Inverse Discrete Cosine Transform
+    :math:`x[k] = 1/N \sum^{N-1}_{n=0} w[n]*y[n]*\cos(\pi*k*(2n+1)/(2*N))`, 0 <= k < N.
+    :math:`w(0) = 1/2`
+    :math:`w(n) = 1` for n>0
+    Taken from scipy.org. For details see
     http://en.wikipedia.org/wiki/Discrete_cosine_transform
     http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
+
+    :param x: 1D array 
+    :type x: numpy.ndarray
+    :param n: length of array, default None
+    :type n: int
+    :returns: 1D array
+    :rtype: numpy.array
+    
     """
 
     x = atleast_1d(x)
@@ -263,10 +249,28 @@ def idct(x,n=None):
         return y
 
 def idct2(x):
+    """
+    Computes 2D inverse DCT using idct() method on both directions
+
+    :param x: 2D image
+    :type x: numpy.ndarray
+    :returns: 2D image
+    :rtype: numpy.ndarray
+
+    """
     a = idct(idct(x).transpose()).transpose()
     return a
 
 def dct2(x):
+    """
+    Computes 2D DCT using dct() method on both directions
+
+    :param x: 2D image
+    :type x: numpy.ndarray
+    :returns: 2D image
+    :rtype: numpy.ndarray
+
+    """   
     a = dct(dct(x).transpose()).transpose()
     return a
 
@@ -282,6 +286,7 @@ def invertMonotonicIncreasingFunction(f,y,xl,xu,tol=1e-6,maxiter = 10000):
     :type xu: numpy.ndarray
     :param tol: convergence tolerance
     :param maxiter: maximal number of iterations
+    
     """
     yu = f(xu) - y
     while any(yu < 0.0):

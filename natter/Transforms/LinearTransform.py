@@ -423,6 +423,15 @@ class LinearTransform(Transform.Transform):
         return self.W.max()
 
     def __iadd__(self, value):
+        """
+        Adds given linear transformation or scalar to current transformation (self += value)
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """
         if isinstance(value, LinearTransform):
             self.W += value.W
             self.history.append('added transform')
@@ -436,11 +445,29 @@ class LinearTransform(Transform.Transform):
         return self
 
     def __add__(self, value):
+        """
+        Adds given linear transformation or scalar to copy of current transformation (return = self + value)
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: sum of linear transforms
+        :rtype: natter.Transforms.LinearTransform
+        
+        """       
         result = self.copy()
         result += value
         return result
 
     def __isub__(self, value):
+        """
+        Subtracts given linear transformation or scalar from current transformation (self -= value)
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """        
         if isinstance(value, LinearTransform):
             self.W -= value.W
             self.history.append('subtracted transform')
@@ -454,11 +481,29 @@ class LinearTransform(Transform.Transform):
         return self
 
     def __sub__(self, value):
+        """
+        Subtracts given linear transformation or scalar from copy of current transformation (return = self - value)
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: sum of linear transforms
+        :rtype: natter.Transforms.LinearTransform
+        
+        """        
         result = self.copy()
         result -= value
         return result
 
     def __idiv__(self, value):
+        """
+        Divides current transformation by scalar (self /= value)
+
+        :param value: Scalar number
+        :type value: scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """         
         if isscalar(value):
             self.W /= value
             self.history.append('divided by %f'%(value))
@@ -468,11 +513,30 @@ class LinearTransform(Transform.Transform):
         return self
 
     def __div__(self, value):
+        """
+        Divides current transformation by scalar (self /= value)
+
+        :param value: Scalar number
+        :type value: scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """         
         result = self.copy()
         result /= value
         return result
     
     def __imult__(self, value):
+        """
+        Multiplies given linear transformation or scalar to current transformation (self *= value)
+        Uses correct matrix multiplication, not point-wise multiplication.
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """       
         if isscalar(value):
             self.W *= value
             self.history.append('multiplied by %f'%(value))
@@ -482,11 +546,28 @@ class LinearTransform(Transform.Transform):
         return result
 
     def __mult__(self, value):
+        """
+        Multiplies given linear transformation or scalar to copy of current transformation (return = self * value)
+        Uses correct matrix multiplication, not point-wise multiplication.
+
+        :param value: linear transform with identical shape
+        :type value: natter.Transforms.LinearTransform or scalar (int/float)
+        :returns: linear transform on which function was called
+        :rtype: natter.Transforms.LinearTransform
+        
+        """          
         result = self.copy()
         result *= value
         return result
 
     def reshape(self, *args, **kwargs):
+        """
+        Reshapes the LinearTransform, takes the same parameter as numpy.reshape
+
+        :returns: Reshaped copy of given LinearTransform
+        :rtype: natter.Transforms.LinearTransform
+        
+        """
         if kwargs.has_key('order'):
             order = kwargs['order']
         else:
@@ -511,6 +592,8 @@ class LinearTransform(Transform.Transform):
         return result
 
 def gratingProjection(omega,p,nx,ny,f, fprime):
+    """
+    """
     if not fprime:
         tmp = sum( ( exp(1j*2*pi/p * (omega[0]*nx + omega[1]*ny))*f ).flatten())
         return -real(tmp*tmp.conjugate()) / p**2
@@ -530,6 +613,8 @@ def gratingProjection(omega,p,nx,ny,f, fprime):
 
 
 def fitGauss2Grating(w):
+    """
+    """
     nx,ny = meshgrid(arange(w.shape[0]), arange(w.shape[1]))
     w = abs(w).flatten('F')
     w = w/sum(w)

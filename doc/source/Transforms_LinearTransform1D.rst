@@ -13,6 +13,8 @@ transform is applies is assumed to be 1D in contrast to the flattened
 IMPORTANT: Internally, all matrices are represented as numpy.array. So
 the initializing matrices W should also be arrays and not numpy.matrix.
 
+.. moduleauthor:: Philipp Lies <phil@bethgelab.org>
+
 .. autoclass:: natter.Transforms.LinearTransform1D
    :members:   plotBasis, plotFilters
 

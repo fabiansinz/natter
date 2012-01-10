@@ -18,11 +18,11 @@
    * [X] natter.Auxiliary.Errors.InitializationError
    * [X] natter.Auxiliary.Errors.SpecificationError
    * [X] natter.Auxiliary.Errors.UpdateError
-   * [ ] natter.Auxiliary.ImageUtils (Philipp: your comments do not match the sphinx convention)
+   * [X] natter.Auxiliary.ImageUtils
    * [X] natter.Auxiliary.LpNestedFunction.LpNestedFunction
    * [X] natter.Auxiliary.Numerics
-   * [ ] natter.Auxiliary.Numerics.dct2 (Philipp?)
-   * [ ] natter.Auxiliary.Numerics.idct2 (Philipp?)
+   * [X] natter.Auxiliary.Numerics.dct2
+   * [X] natter.Auxiliary.Numerics.idct2
    * [X] natter.Auxiliary.Optimization
    * [X] natter.Auxiliary.Plotting
    * [X] natter.Auxiliary.Plotting.htmltable
@@ -48,7 +48,7 @@
    * [X] natter.Logging.LogTokens.html
    * [X] natter.DataModule.DataLoader
    * [X] natter.DataModule.DataSampler
-   * [ ] natter.DataModule.DataSampler.slidingWindowWithBorderIterator
+   * [X] natter.DataModule.DataSampler.slidingWindowWithBorderIterator
    * [X] natter.Distributions.Distribution.ascii
    * [X] natter.Distributions.Distribution.dldtheta
    * [X] natter.Distributions.Distribution.dldx
@@ -85,16 +85,18 @@
    * [X] natter.Logging.Utils.lrfill
    * [X] natter.Transforms.Transform.ascii
    * [X] natter.Transforms.LinearTransform.html
-   * [ ] natter.Transforms.LinearTransform.reshape
+   * [ ] natter.Transforms.LinearTransform.gratingProjection (Fabi?)
+   * [ ] natter.Transforms.LinearTransform.fitGauss2Grating (Fabi?)
    * [X] natter.Transforms.LinearTransformFactory
-   * [ ] natter.Transforms.LinearTransformUtils (Philipp hast Du hier
-     was geschrieben?)
+   * [X] natter.Transforms.LinearTransformUtils
    * [X] natter.Transforms.LinearTransformUtils.bestMatchingGratings
    * [X] natter.Transforms.NonlinearTransform.html
    * [X] natter.Transforms.NonlinearTransformFactory
 * odd things to be checked
-** Phil: loadPixelScambledAsciiImage (does not real shuffeling), comment functions in imageUtils properly
+** @Phil: loadPixelScambledAsciiImage (does not real shuffeling), comment functions in imageUtils properly
+*** @Fabi: loadPixelScambledAsciiImage is not my function, but looks as if it does a permutation
 ** what is the job of linearTransform1d
+*** Technically just overloading the plotting routines to plot 1D filters instead of 2D filters. We could add this as a parameter to the standard linear transform for those using image stripes.
 * things to be fixed
 ** Make [[./natter/Distributions/FiniteMixtureDistribution.py][FiniteMixtureDistribution]], [[./natter/Distributions/FiniteMixtureOfGaussians.py][FiniteMixtureOfGaussians]] param and *args,**kwargs compatible
 ** get rid of the errors when comiling the help

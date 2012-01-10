@@ -733,6 +733,45 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     return
 
 def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', translationDistribution=None, rotationDistribution=None, scalingDistribution=None, upper_limit=2.0, lower_limit=0.5, debug=False):
+    """
+
+    Samples pxp sequences from images in dir. Transformations applied are translation, rotation, and scaling
+    according to the given distributions. If one distribution is None the corresponding transformation is
+    not applied.
+    If scalingDistribution is 1D then isometric scaling is applied, otherwise first dimension is scaling in
+    x direction (width) and second dimension along y direction (height).
+    CAUTION: If scalingDistribution returns only samples which are smaller than -patch_size the sampling
+    will end in an infinite loop.
+
+    The images are vectorized in FORTRAN/MATLAB style by default.
+
+    :param dir: Directory to sample images from
+    :type dir: string
+    :param patch_size: patch size
+    :type patch_size: int
+    :param samples_per_file: number of patches to sample from one image. All samples have same shift.
+    :type samples_per_file: int    
+    :param loadfunc: function handle of the load function
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param translationDistribution: 2D distribution to sample shift steps from
+    :type translationDistribution: natter.Distributions.Distribution    
+    :param rotationDistribution: 1D distribution to sample shift steps from
+    :type rotationDistribution: natter.Distributions.Distribution    
+    :param scalingDistribution: 1D or 2D distribution to sample shift steps from
+    :type scalingDistribution: natter.Distributions.Distribution
+    :param interpolation: Python Image Library interpolation type for scaling (default Image.BILINEAR)
+    :type interpolation: Integer
+    :param upper_limit: Upper limit for scaling (default 2.0)
+    :type upper_limit: Float
+    :param lower_limit: Lower limit for scaling (default 0.5)
+    :returns: Iterator that samples from all files
+    :type lower_limit: Float
+    :rtype: Iterator
+    
+    """    
 
     if translationDistribution == None:
         raise ValueError, 'translationDistribution cannot be None. Use e.g. Uniform(n=2, low=-5.0, high=5.0)'
