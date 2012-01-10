@@ -2,7 +2,7 @@ from natter.Distributions import Gaussian
 from scipy.optimize import fmin_bfgs, fmin_ncg
 from numpy import zeros
 from natter.DataModule import Data
-from numpy.linalg import cholesky
+from numpy.linalg import cholesky, inv
 
 def laplaceApproximation(listOfDist,initPoint=None):
     """
@@ -41,6 +41,7 @@ def laplaceApproximation(listOfDist,initPoint=None):
         for dist in listOfDist:
             grad = grad - dist.dldx(Data(x))
         return grad
+
     def ddf(x):
         H = zeros((len(initPoint.flatten()),len(initPoint.flatten())))
         for dist in listOfDist:
@@ -50,8 +51,8 @@ def laplaceApproximation(listOfDist,initPoint=None):
     xmin, fopt, gopt, Hopt, func_calls, grad_calls, warnflag = \
           fmin_bfgs(f,initPoint,fprime=df)
     Hopt = ddf(xmin)
-    Lh = cholesky(Hopt)
     laplaceApprox = Gaussian({'n':len(xmin.flatten())})
     laplaceApprox['mu'] = xmin
-            
+    laplaceApprox['sigma'] = inv(Hopt)
+    return laplaceApprox
     

@@ -7,6 +7,6 @@ This module provides further utility functions.
 .. moduleauthor:: Sebastian Gerwinn <sebastian@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.Utils
-   :members:	fillDict, parseParameters, save, prettyPrintDict, profileFunction, mnorm
+   :members:	parseParameters, save, prettyPrintDict, profileFunction, debug
 
 

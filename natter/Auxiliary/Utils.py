@@ -42,10 +42,14 @@ def parseParameters(args,kwargs):
 
 def save(o,filename):
     """
-    Saves object o to file filename via pickle. If filename does not have an extension, .pydat is added.
+    Saves object o to file filename via pickle. If filename does not
+    have an extension, .pydat is added.
 
-    :param o: pickleable object
+    :param o: pickleable object to save
+    :type o: pickleable object
     :param filename: name of the file
+    :type filename: string
+    
     """
     tmp = filename.split('.')
     if tmp[-1] == 'pydat':
@@ -60,7 +64,9 @@ def prettyPrintDict(value):
     """
     Returns a nice representation of a dictionary.
 
-    :param value: dictionary
+    :param value: dictionary to transform into a string
+    :type value: dictionary
+    :returns: string representation of the dictionary 'key : value' separated by lines
     :rtype: string 
     """
     s = "\n"
@@ -73,51 +79,41 @@ def prettyPrintDict(value):
     return s
 
 
+
+
 HaveIpython=True
 try:
-    from IPython.Debugger import Tracer;  debug = Tracer()
+    from IPython.Debugger import Tracer
 except:
     HaveIpython=False
-    def debug():
-        pass
     pass
 
 
-
-
-def mnorm(nsamples=None,mu=None,sig=None):
+def debug():
     """
-    generate nsamples of a gaussian random variable with mean mu and covariance
-    sig, if none is given 1 sample of a gaussian random variable with mean=0 and
-    covariance=1 is generated. This should be faster than the previous one.
+    Invokes a debugger at the point where it is called, but only if
+    the Ipython-shell is available.
     """
-    if mu==None:
-        mean = array([0.0])
+    
+    if HaveIpython:
+        Tracer()
     else:
-        mean = mu.flatten()
-    if sig ==None:
-        cov = eye(len(mean))
-    else:
-        cov = sig
-    if cov.shape[0]!=cov.shape[1] or cov.shape[0]!=len(mean):
-        raise IndexError,"Given Covariance has inappropiate dimensions!"
-    if nsamples==None:
-        N=1
-    else:
-        N=nsamples
-    L = cholesky(cov)
-    r= randn(len(mu.flatten()),N)
-    n=dot(L,r) + tile(mu.reshape(len(mu),1),N)
-    return n
+        return
+    
+    
+
 
 
 def profileFunction(f):
     """
-    profiles the execution of a function via lsprofcalltree for later inspection with kcachegrind.
+    profiles the execution of a function via lsprofcalltree for later
+    inspection with kcachegrind. kcachegrind is directly called with
+    the corresponding profile.
+    NOTE: this only works for linux systems where kcachegrind is installed.
 
-    :arguments:
-        f   : function handle of the function to profile.
-        filename: string of the filename to write profie information to.
+    :param f: function handle of the function to profile.
+    :type f: python-function
+       
     """
     filename = '/tmp/profile.prof'
     p = cProfile.Profile()
