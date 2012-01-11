@@ -53,11 +53,13 @@
   + [ ] Transforms  : Fabian, Philipp  
   + [ ] Transforms.Transform 
 ** Sebastian
+  + [ ] config dictionary
   + [ ] array2primary and primary2array for all distributions (also that they return the correct array once the self.primary list is changed)
   + [ ] check consistency of loglik and pdf
   + [ ] check consistency of loglik and sample ( partition function)
   + [ ] check gradients of dldtheta w.r.t. primary parameters
   + [ ] check gradients of dldx w.r.t. data if function is available
-  + [ ] check all
+  + [ ] check default distribution
+  + [ ] check whether distribution implements basic functions: sample, loglik
   + [ ] if distributions fail these test, include them in todo.org as to be fixed with the respective author 
 * Buglist
