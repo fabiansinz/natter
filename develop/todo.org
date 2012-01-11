@@ -1,8 +1,17 @@
 * test
+** Fabian
+  + [ ] Transforms
+  + [ ] Auxiliary
+** Sebastian
   + [ ] Laplace approximation
+  + [ ] array2primary and primary2array for all distributions (also
+    that they return the correct array once the self.primary list is changed)
+  + [ ] check consistency of loglik and pdf
+  + [ ] check consistency of loglik ( partition function)
+  + [ ] 
 * odd things to be checked
 * buglist
-** oget rid of the errors when comiling the help
+** TODO [#F] get rid of the errors when comiling the help
 
 * CONFIG OF todo.org
 #+PRIORITIES: F S P
