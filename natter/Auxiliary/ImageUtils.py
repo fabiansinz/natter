@@ -81,7 +81,7 @@ def loadPixelScambledAsciiImage(filename):
 
     """
     I = loadAsciiImage(filename)
-    return I[permutation(I.shape[0]),permutation(I.shape[1])]
+    return I.ravel()[permutation(I.shape[0]*I.shape[1])].reshape(I.shape)
 
 
 def shiftImage( img, shift ):

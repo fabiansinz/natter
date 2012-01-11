@@ -44,6 +44,143 @@ Archived entries from file /kyb/agmb/fabee/code/lib/python/natter/todo.org
   :ARCHIVE_CATEGORY: todo
   :ARCHIVE_TODO: CANCELLED
   :END:
+* DONE things to be documented
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2012-01-11 Mi 09:42
+  :ARCHIVE_FILE: ~/code/natter/develop/todo.org
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+   * [X] natter.Auxiliary.Decorators
+   * [X] natter.Auxiliary.Entropy
+   * [X] natter.DataModule.Data.ascii
+   * [X] natter.DataModule.Data.html
+   * [X] natter.Logging.LogTokens.latex
+   * [X] natter.Logging.LogTokens.wiki
+   * [X] natter.Auxiliary.Entropy.LpEntropy
+   * [X] natter.Auxiliary.Entropy.logSurfacePSphere
+   * [X] natter.Auxiliary.Entropy.marginalEntropyCAE
+   * [X] natter.Auxiliary.Entropy.marginalEntropyJK
+   * [X] natter.Auxiliary.Entropy.marginalEntropyMLE
+   * [X] natter.Auxiliary.Entropy.marginalEntropyMM
+   * [X] natter.Auxiliary.Errors
+   * [X] natter.Auxiliary.Errors.AbstractError
+   * [X] natter.Auxiliary.Errors.DataLoadingError
+   * [X] natter.Auxiliary.Errors.DimensionalityError
+   * [X] natter.Auxiliary.Errors.InitializationError
+   * [X] natter.Auxiliary.Errors.SpecificationError
+   * [X] natter.Auxiliary.Errors.UpdateError
+   * [X] natter.Auxiliary.ImageUtils
+   * [X] natter.Auxiliary.LpNestedFunction.LpNestedFunction
+   * [X] natter.Auxiliary.Numerics
+   * [X] natter.Auxiliary.Numerics.dct2
+   * [X] natter.Auxiliary.Numerics.idct2
+   * [X] natter.Auxiliary.Optimization
+   * [X] natter.Auxiliary.Plotting
+   * [X] natter.Auxiliary.Plotting.htmltable
+   * [X] natter.Auxiliary.Plotting.imsave
+   * [X] natter.Auxiliary.Plotting.patch2Img
+   * [X] natter.Auxiliary.Plotting.patch2Img_old
+   * [X] natter.Auxiliary.Plotting.savefig
+   * [X] natter.Auxiliary.Utils (Sebastian, please check whether all
+     comments are sphinx convention)
+   * [X] natter.Auxiliary.Utils.mnorm (not sphinx)
+   * [X] natter.Auxiliary.Utils.profileFunction (use param instead of arguments)
+   * [X] natter.Auxiliary.lsprofcalltree (SG: we probably want to exclude this from
+     the natter as it is external code, although it is open
+     source. nevertheless, we dont want to comment it, I guess)
+   * [X] natter.Auxiliary.lsprofcalltree.KCacheGrind
+   * [X] natter.Auxiliary.lsprofcalltree.output
+   * [X] natter.Auxiliary.lsprofcalltree.label
+   * [X] natter.Auxiliary.lsprofcalltree.main
+   * [X] natter.Auxiliary.Utils.parseParameters
+   * [X] natter.Auxiliary.Utils.prettyPrintDict
+   * [X] natter.Auxiliary.Utils.save
+   * [X] natter.Auxiliary.prettyPrintDict
+   * [X] natter.Auxiliary.LaplaceApproximation (function incomplete, does not
+     return anything) SG: half way fixed, it now returns something (the approximate Gaussian
+       distribution, of the product distribution), although it is untested, and
+       maybe not that relevant for the natter...
+   * [X] natter.DataModule.Data
+   * [X] natter.Logging.LogTokens.ascii
+   * [X] natter.Logging.LogTokens.html
+   * [X] natter.DataModule.DataLoader
+   * [X] natter.DataModule.DataSampler
+   * [X] natter.DataModule.DataSampler.slidingWindowWithBorderIterator
+   * [X] natter.Distributions.Distribution.ascii
+   * [X] natter.Distributions.Distribution.dldtheta
+   * [X] natter.Distributions.Distribution.dldx
+   * [X] natter.Distributions.Distribution.dldx2
+   * [X] natter.Distributions.Distribution.dldx2dtheta
+   * [X] natter.Distributions.Distribution.dldxdtheta
+   * [X] natter.Distributions.Distribution.histogram
+   * [X] natter.Distributions.Distribution.html
+   * [X] natter.Distributions.Distribution.primaryBounds
+   * [X] natter.Distributions.Distribution.cdf
+   * [X] natter.Distributions.Distribution.ppf
+   * [X] natter.Auxiliary.Decorators.wrapped_f (SG: probably not needed, as it
+     is an 'anonymous' function)
+   * [X] natter.Distributions.Distribution.Distribution
+   * [X] natter.Distributions.Distribution.estimate
+   * [X] natter.Distributions.Distribution.loglik
+   * [X] natter.Distributions.EllipticallyContourGamma.primary2array
+   * [X] natter.Distributions.FiniteMixtureDistribution.array2primary
+   * [X] natter.Distributions.FiniteMixtureDistribution.checkAlpha
+   * [X] natter.Distributions.FiniteMixtureDistribution.dldtheta
+   * [X] natter.Distributions.FiniteMixtureDistribution.primary2array
+   * [X] natter.Distributions.FiniteMixtureDistribution.primaryBounds
+   * [X] natter.Distributions.Gamma.primaryBounds
+   * [X] natter.Distributions.GammaP.primaryBounds
+   * [X] natter.Distributions.Gaussian.array2primary
+   * [X] natter.Distributions.Histogram.histogram
+   * [X] natter.Distributions.Kumaraswamy.primaryBounds
+   * [X] natter.Distributions.LogLogistic.primaryBounds
+   * [X] natter.Distributions.NakaRushton.primaryBounds
+   * [X] natter.Distributions.PCauchy.primaryBounds
+   * [X] natter.Distributions.SkewedGaussian.primaryBounds
+   * [X] natter.Distributions.TModelRadial.primaryBounds
+   * [X] natter.Logging.LogTokens
+   * [X] natter.Logging.Utils.hLine
+   * [X] natter.Logging.Utils.lrfill
+   * [X] natter.Transforms.Transform.ascii
+   * [X] natter.Transforms.LinearTransform.html
+   * [X] natter.Transforms.LinearTransform.gratingProjection (Fabi?)
+   * [X] natter.Transforms.LinearTransform.fitGauss2Grating (Fabi?)
+   * [X] natter.Transforms.LinearTransformFactory
+   * [X] natter.Transforms.LinearTransformUtils
+   * [X] natter.Transforms.LinearTransformUtils.bestMatchingGratings
+   * [X] natter.Transforms.NonlinearTransform.html
+   * [X] natter.Transforms.NonlinearTransformFactory
+* DONE what is the job of linearTransform1d
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2012-01-11 Mi 09:42
+  :ARCHIVE_FILE: ~/code/natter/develop/todo.org
+  :ARCHIVE_OLPATH: odd things to be checked
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+** Technically just overloading the plotting routines to plot 1D filters instead of 2D filters. We could add this as a parameter to the standard linear transform for those using image stripes.
+* DONE loadPixelScambledAsciiImage (does not real shuffeling), comment functions in imageUtils properly
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2012-01-11 Mi 09:45
+  :ARCHIVE_FILE: ~/code/natter/develop/todo.org
+  :ARCHIVE_OLPATH: odd things to be checked
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+** @Fabi: loadPixelScambledAsciiImage is not my function, but looks as if it does a permutation
+* TODO Make [[./natter/Distributions/FiniteMixtureDistribution.py][FiniteMixtureDistribution]], [[./natter/Distributions/FiniteMixtureOfGaussians.py][FiniteMixtureOfGaussians]] param and *args,**kwargs compatible
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2012-01-11 Mi 09:46
+  :ARCHIVE_FILE: ~/code/natter/develop/todo.org
+  :ARCHIVE_OLPATH: things to be fixed
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: TODO
+  :END:
+
+
+
+
 
 
 

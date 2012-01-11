@@ -138,9 +138,7 @@ class Gaussian(Distribution):
     
     def primary2array(self):
         """
-        :return: array containing primary parameters. If 'sigma' is in
-        the primary parameters, then the cholesky factor of the
-        precision matrix is filled in the array.
+        :returns: array containing primary parameters. If 'sigma' is in the primary parameters, then the cholesky factor of the precision matrix is filled in the array.
         """
         ret = array([])
         if 'mu' in self.primary:
@@ -151,6 +149,14 @@ class Gaussian(Distribution):
 
 
     def array2primary(self,arr):
+        """
+        Provide bounds on the primary parameters. Returns
+        None, if the parameter is unbounded in that direction.
+
+        :returns: bounds on the primary parameters
+        :rtype: list of tuples containing the single lower and upper bounds
+        """
+        
         n = self.param['n']
         if 'mu' in self.primary:
             self.param['mu'] = arr[:n]

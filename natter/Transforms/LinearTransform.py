@@ -371,7 +371,7 @@ class LinearTransform(Transform.Transform):
             stderr.write(".")
             # fit gaussian envelope to linear filter
             if weight:
-                h = fitGauss2Grating(reshape(array(self.W[i,:]),(p,p))).flatten('F')
+                h = _fitGauss2Grating(reshape(array(self.W[i,:]),(p,p))).flatten('F')
             else:
                 h = ones((p**2,))
             # store envelopefunction if necessary
@@ -387,8 +387,8 @@ class LinearTransform(Transform.Transform):
             patch = array(reshape(self.W[i,:],(p ,p), order='F')) # reshape into patch
 
             # refine estimate
-            g = lambda x: gratingProjection(x,p,nx,ny,patch,False)
-            gprime = lambda x: gratingProjection(x,p,nx,ny,patch,True)
+            g = lambda x: _gratingProjection(x,p,nx,ny,patch,False)
+            gprime = lambda x: _gratingProjection(x,p,nx,ny,patch,True)
 
             w[:,i] =  fmin_l_bfgs_b(g, array(w[:,i]) , fprime=gprime, bounds=( [(-floor(p/2.0),floor(p/2.0)),(0,floor(p/2.0))]))[0]
             
@@ -605,9 +605,7 @@ class LinearTransform(Transform.Transform):
         result.history.append('inverted')
         return result
 
-def gratingProjection(omega,p,nx,ny,f, fprime):
-    """
-    """
+def _gratingProjection(omega,p,nx,ny,f, fprime):
     if not fprime:
         tmp = sum( ( exp(1j*2*pi/p * (omega[0]*nx + omega[1]*ny))*f ).flatten())
         return -real(tmp*tmp.conjugate()) / p**2
@@ -617,7 +615,7 @@ def gratingProjection(omega,p,nx,ny,f, fprime):
         # for k in xrange(2):
         #     tmp = array(omega)
         #     tmp[k] += h
-        #     ret[k] = (gratingProjection(tmp,p,nx,ny,f,False) - gratingProjection(omega,p,nx,ny,f,False))/h
+        #     ret[k] = (_gratingProjection(tmp,p,nx,ny,f,False) - _gratingProjection(omega,p,nx,ny,f,False))/h
         # return ret
         dnx = reshape(nx,(prod(nx.shape),1))-reshape(nx,(1,prod(nx.shape)))
         dny = reshape(ny,(prod(ny.shape),1))-reshape(ny,(1,prod(ny.shape)))
@@ -626,9 +624,7 @@ def gratingProjection(omega,p,nx,ny,f, fprime):
         return -real(array([sum( (tmp*dnx).flatten() ), sum( (tmp*dny).flatten() ) ]) / p**2.0)
 
 
-def fitGauss2Grating(w):
-    """
-    """
+def _fitGauss2Grating(w):
     nx,ny = meshgrid(arange(w.shape[0]), arange(w.shape[1]))
     w = abs(w).flatten('F')
     w = w/sum(w)
