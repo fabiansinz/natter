@@ -14,5 +14,5 @@ the initializing matrices W should also be arrays and not numpy.matrix.
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 .. autoclass:: natter.Transforms.LinearTransform
-   :members:   plotBasis, plotFilters, __invert__, stack, transpose, T, apply,det,logDetJacobian,__getitem__,__str__,getHistory,copy,addToHistory,getOptimalOrientationAndFrequency, shape, html, min, max, __iadd__, __add__, __isub__, __sub__, __idiv__, __div__, __imult__, __mult__, reshape, inv, gratingProjection, fitGauss2Grating
+   :members:   plotBasis, plotFilters, __invert__, stack, transpose, T, apply,det,logDetJacobian,__getitem__,__str__,getHistory,copy,addToHistory,getOptimalOrientationAndFrequency, shape, html, min, max, __iadd__, __add__, __isub__, __sub__, __idiv__, __div__, __imult__, __mult__, reshape, inv
 

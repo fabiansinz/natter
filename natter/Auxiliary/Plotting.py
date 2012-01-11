@@ -156,6 +156,7 @@ def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation
 def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameScale=True, plotNumbers=False, **kwargs):
     """
     plot columns of A as 1D line plots in an array of NX=(h,w) subsplots. Takes all arguments that pyplot.plot takes.
+    
     :param U: Filter matrix
     :type U: 2D numpy.ndarray
     :param h: number of subplot rows. Will be estimated if not given.
@@ -170,8 +171,7 @@ def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameS
     :type sameScale: bool
     :param plotNumbers: Plot the subplot number as title of the subplot. Default False.
     :type plotNumbers: bool
-    :param **kwargs: All arguments which pyplot.plot() accepts
-    :type **kwargs: 
+    :param kwargs: All arguments which pyplot.plot() accepts
     """
 
     if h == None or w == None:

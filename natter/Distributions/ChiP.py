@@ -13,28 +13,27 @@ from Distribution import Distribution
 
 class ChiP(Distribution):
     """
-      ChiP Distribution
+    ChiP Distribution
 
-      The constructor is either called with a dictionary, holding
-      the parameters (see below) or directly with the parameter
-      assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
-      also possible.
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
 
-      The ChiP distribution is the generalization of a Chi
-      distribution (the radial distribution of a Gaussian). The ChiP
-      distribution is the radial distribution of a p-Generalized
-      Normal distribution. IMPORTANT: ChiP with p=2.0 is a Chi
-      distribution and not a Chi^2.
+    The ChiP distribution is the generalization of a Chi
+    distribution (the radial distribution of a Gaussian). The ChiP
+    distribution is the radial distribution of a p-Generalized
+    Normal distribution. IMPORTANT: ChiP with p=2.0 is a Chi
+    distribution and not a Chi^2.
 
-      :param param:
-      dictionary which might containt parameters for the Gamma distribution
-              'n'    :    Degrees of freedom (the dimensionality of the p-generalized Normal)
+    :param param: dictionary which might containt parameters for the Gamma distribution
+        'n'    :    Degrees of freedom (the dimensionality of the p-generalized Normal)
       
-              'p'    :    Exponent (default p=2.0 yields a Chi distribution)
+        'p'    :    Exponent (default p=2.0 yields a Chi distribution)
               
-              's'    :    Scale parameter (default = (gamma(1.0/p)/gamma(3.0/p))**(p/2.0) )
+        's'    :    Scale parameter (default = (gamma(1.0/p)/gamma(3.0/p))**(p/2.0) )
               
-              :type param: dict
+    :type param: dict
 
     Primary parameters are ['s'].
     """

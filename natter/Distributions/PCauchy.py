@@ -11,21 +11,20 @@ from warnings import warn
 
 class PCauchy(Distribution):
     """
-      PCauchy Distribution
+    PCauchy Distribution
 
-      The constructor is either called with a dictionary, holding
-      the parameters (see below) or directly with the parameter
-      assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
-      also possible.
+    The constructor is either called with a dictionary, holding
+    the parameters (see below) or directly with the parameter
+    assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
+    also possible.
+    
 
-
-      :param param:
-      dictionary which might containt parameters for the Gamma distribution
-              'n'    :    Dimensions of the p-Cauchy distributed random variables. 
+    :param param:  dictionary which might containt parameters for the Gamma distribution
+       'n'    :    Dimensions of the p-Cauchy distributed random variables. 
       
-              'p'    :    Exponent (default p=2.0)
+       'p'    :    Exponent (default p=2.0)
               
-              :type param: dict
+    :type param: dict
 
     Primary parameters are ['p'].
     """
