@@ -3,7 +3,7 @@ import unittest
 from natter.Auxiliary import Entropy
 from sys import stdout
 from numpy import log, pi, e, max, abs
-from numpy.random import rand, randn
+from numpy.random import rand, randn, randint
 from natter.DataModule import Data
 
 class TestEntropy(unittest.TestCase):
@@ -20,6 +20,18 @@ class TestEntropy(unittest.TestCase):
             h2 = Entropy.marginalEntropy(dat,method)
             self.assertTrue(max(abs(h-h2)) < self.tol, 'Entropy estimates for ' + method + 'differ by more than ' + str(self.tol))
         
+
+    def test_LpEntropy(self):
+        print "Testing Lp-Entropy estimator"
+        n = randint(5)+1
+        s = 10.0*rand()
+        x = randn(n,20000)*s
+        h = n*.5*log(2.0*pi*e*s**2)
+        dat = Data(x)
+        h2 = Entropy.LpEntropy(dat)
+        self.assertTrue(abs(h-h2) < self.tol, 'Entropy estimates for LpEntropy differ by more than ' + str(self.tol))
+        
+
 
 if __name__=="__main__":
     

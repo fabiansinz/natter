@@ -276,7 +276,7 @@ def StGradient(func, X, param0=None, *args):
         print "\tMaximal gradient entry is smaller than %.4g! Exiting ...\n" % (tolF,)
     return (X,ftmax,param)
 
-def __projectOntoSt(C):
+def _projectOntoSt(C):
     # (u,d,v) = svd(C,full_matrices=False)
     # return dot(u,v)
     return real( dot(  inv(sqrtm(dot(C,C.T)))  ,C) )

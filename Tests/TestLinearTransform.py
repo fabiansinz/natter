@@ -53,7 +53,7 @@ class TestFilter(unittest.TestCase):
     def test_LogDetRadialTransform(self):
         print "Testing logdet of radial transformation ... "
         sys.stdout.flush()
-        p = np.random.rand()*1.5+.5
+        p = np.random.rand()*3.5+.5
         # source distribution
         psource = Distributions.LpSphericallySymmetric({'p':p})
         # target distribution

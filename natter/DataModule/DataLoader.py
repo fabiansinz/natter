@@ -37,6 +37,8 @@ def load(path):
         return pydat(path)
     elif pathjunks[-1] == 'dat':
         return ascii(path)
+    elif pathjunks[-1] == 'npz':
+        return loadnpz(path)
 
 def matlab(path, varname=None):
     """

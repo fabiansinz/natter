@@ -1,57 +1,24 @@
 * test 
-** module authors [0/34]
-  + [ ] Auxiliary.Decorators:  Fabian  
-  + [ ] Auxiliary.Entropy: Fabian  
-  + [ ] Auxiliary.ImageUtils  : Fabian, Philipp 
-  + [ ] Auxiliary.LpNestedFunction  : Fabian  
-  + [ ] Auxiliary.Numerics  : Fabian , Philipp
-  + [ ] Auxiliary.Optimization  : Fabian, Philipp  
-  + [ ] Auxiliary.Plotting  : Fabian, Philipp  
-  + [ ] Auxiliary.Utils  : Fabian, Sebastian
-  + [ ] DataModule.DataLoader  : Fabian, Philipp  
-  + [ ] DataModule.Data  : Fabian  
-  + [ ] DataModule.DataSampler :  Philipp, Fabian  
-  + [ ] Distributions.ChiP  : Fabian  
-  + [ ] Distributions.CompleteLinearModel  : Fabian  
-  + [ ] Distributions.Delta  : Philipp, Fabian  
-  + [ ] Distributions.Dirichlet  : Fabian  
-  + [ ] Distributions.Distribution  : Fabian  
-  + [ ] Distributions.ExponentialPower  : Fabian  
-  + [ ] Distributions.FiniteMixtureDistribution  : Fabian, Sebastian 
-  + [ ] Distributions.GammaP  : Fabian  
-  + [ ] Distributions.Gamma  : Fabian  
-  + [ ] Distributions.Gaussian :  Sebastian 
-  + [ ] Distributions.Histogram  : Fabian  
-  + [ ] Distributions.ISA  : Fabian  
-  + [ ] Distributions.Kumaraswamy  : Fabian  
-  + [ ] Distributions.LogLogistic  : Fabian  
-  + [ ] Distributions.LogNormal  : Fabian  
-  + [ ] Distributions.LpNestedSymmetric  : Fabian  
-  + [ ] Distributions.LpSphericallySymmetric  : Fabian  
-  + [ ] Distributions.MixtureOfGaussians  : Fabian  
-  + [ ] Distributions.MixtureOfLogNormals  : Fabian  
-  + [ ] Distributions.NakaRushton  : Fabian  
-  + [ ] Distributions.PCauchy  : Fabian  
-  + [ ] Distributions.ProductOfExponentialPowerDistributions  : Fabian  
-  + [ ] Distributions  : Fabian  
- Philipp  
-  + [ ] Distributions.SchwartzSimoncelliModel  : Fabian  
-  + [ ] Distributions.SkewedGaussian  : Fabian  
-  + [ ] Distributions.SkewedNormal 
-  + [ ] Distributions.Transformed  : Fabian  
-  + [ ] Distributions.TruncatedExponentialPower  : Fabian  
-  + [ ] Distributions.TruncatedGaussian  : Fabian  
-  + [ ] Distributions.TruncatedNormal 
-  + [ ] Distributions.Truncated  : Fabian  
-  + [ ] Distributions.Uniform : Philipp, Fabian  
-  + [ ] Logging.ExperimentLog : Fabian
-  + [ ] Logging.LogTokens : Fabian
-  + [ ] Transforms.LinearTransformFactory  : Fabian,  Philipp  
-  + [ ] Transforms.LinearTransform  : Fabian, Philipp  
-  + [ ] Transforms.NonlinearTransformFactory  : Fabian  
-  + [ ] Transforms.NonlinearTransform  : Fabian  
-  + [ ] Transforms  : Fabian, Philipp  
-  + [ ] Transforms.Transform 
+** module authors [16/51]
+  + [X] Auxiliary.Decorators:  Fabian  
+  + [X] Auxiliary.Entropy: Fabian  
+  + [ ] Auxiliary.ImageUtils  : Philipp 
+  + [X] Auxiliary.LpNestedFunction  : Fabian  
+  + [ ] Auxiliary.Numerics  : Philipp
+  + [ ] Auxiliary.Optimization  : Philipp  
+  + [X] Auxiliary.Plotting  : Fabian, Philipp  
+  + [X] Auxiliary.Utils  : Fabian, Sebastian
+  + [X] DataModule.DataLoader  : Fabian, Philipp  
+  + [X] DataModule.Data  : Fabian  
+  + [X] DataModule.DataSampler :  Philipp, Fabian  
+  + [X] Logging.ExperimentLog : Fabian
+  + [X] Logging.LogTokens : Fabian
+  + [X] Transforms.LinearTransformFactory  : Fabian,  Philipp  
+  + [X] Transforms.LinearTransform  : Fabian, Philipp  
+  + [X] Transforms.NonlinearTransformFactory  : Fabian  
+  + [X] Transforms.NonlinearTransform  : Fabian  
+  + [X] Transforms  : Fabian, Philipp  
+  + [X] Transforms.Transform 
 ** Sebastian
   + [ ] config dictionary
   + [ ] array2primary and primary2array for all distributions (also that they return the correct array once the self.primary list is changed)

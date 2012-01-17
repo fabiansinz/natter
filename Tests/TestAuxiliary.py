@@ -2,6 +2,20 @@ import numpy as np
 import unittest
 from natter import Auxiliary
 import mdp
+from numpy.random import randn,rand
+
+class TestGoldenSearch(unittest.TestCase):
+    tol = 5.0*1e-2
+
+    def test_goldeMinSearch(self):
+        xl,xu = randn(2)*3.0
+        h = rand()
+        x0 = h*xl + (1-h)*xu
+        f = lambda x: (x-x0)**2.0
+
+        xstar = Auxiliary.Optimization.goldenMinSearch(f,xl,xu)
+        xstar = .5*(xstar[0]+xstar[1])
+        self.assertTrue(np.abs(xstar-x0) < self.tol ,'Solution of golden min Search deviates more than ' + str(self.tol) + ' form the optimal value')
 
 class TestfminboundnD(unittest.TestCase):
     tol = 5.0*1e-2
