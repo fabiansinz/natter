@@ -1,8 +1,7 @@
 from __future__ import division
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
 from  natter.Auxiliary import  Errors, Plotting, save
-from matplotlib.pyplot import scatter,text, figure
-import pylab as pl
+from matplotlib.pyplot import scatter,text, figure, show
 from numpy.linalg import qr, svd
 import types
 import sys
@@ -172,18 +171,23 @@ class Data(LogToken):
         return self
     
 
-    def plot(self):
+    def plot(self,ax=None,**kwargs):
         """
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
 
+        :param ax: If specified the data is plotted to this axes object.
         :raises: natter.Auxiliary.Errors.DimensionalityError
+        :returns: The axes object.
         """
         if not len(self.X) == 2:
             raise Errors.DimensionalityError('Data object must have dimension 2 for plotting!')
         else:
-            h = scatter(self.X[0],self.X[1],color='black',s=.5)
-            pl.show()
-            return h
+            if ax is None:
+                fig = figure()
+                ax = fig.add_axes([.1,.1,.8,.8])
+                
+            ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
+            return ax
 
     def numex(self):
         """

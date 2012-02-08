@@ -1,7 +1,7 @@
 import pickle
 import os
 import cProfile
-import lsprofcalltree
+# import lsprofcalltree
 from copy import deepcopy
 from natter.Auxiliary.Errors import SpecificationError
 from numpy.linalg import cholesky

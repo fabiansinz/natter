@@ -8,7 +8,7 @@ import pylab as plt
 import string
 from copy import deepcopy
 from natter.Logging.LogTokens import LogToken
-
+from scipy.optimize import fmin_l_bfgs_b
 
 class Distribution(LogToken):
 
@@ -241,11 +241,19 @@ class Distribution(LogToken):
         to estimate the primary parameters of the distribution from
         data.
 
+        If not implemented it tries to use primary2array,
+        array2primary, primaryBounds, and dldtheta to perform a
+        gradient ascent on the log-likelihood. 
+
         :param dat: data from which the parameters will be estimated
         :type dat: natter.DataModule.Data
         """
-        
-        raise Errors.AbstractError('Abstract method estimate not implemented in ' + self.name)
+        f = lambda p: self.array2primary(p).all(dat)
+        fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
+   
+        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
+        self.array2primary(tmp)
+
 
     def primaryBounds(self):
         """

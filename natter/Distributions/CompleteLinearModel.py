@@ -193,7 +193,19 @@ class CompleteLinearModel(Distribution):
             self.param['q'] = q
                 
                 
+    def sample(self,m):
+        """
+        Samples m samples from the model.
+
+        :param m: number of samples
+        :type m: int
+        :returns: samples
+        :rtype: natter.DataModule.Data
+        """
+        dat = self.param['q'].sample(m)
+        return self.param['W'].inv()*dat
         
+    
     def objective(self, W, nargout,dat,q):
         """
         The objective function to be optimized with
