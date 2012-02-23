@@ -311,18 +311,20 @@ def SSA( dat, *args, **kwargs ):
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
-    functionValues = kwargs.pop('functionValues', None)
-        
-    SSA = mdp.nodes.SSANode(input_dim=dat.size(0), **kwargs)
-    SSA.train(dat.X.T)
-    SSA.stop_training()
+    # mdp code for upcoming SSA integration
+    #functionValues = kwargs.pop('functionValues', None)
+    #    
+    #SSA = mdp.nodes.SSANode(input_dim=dat.size(0), **kwargs)
+    #SSA.train(dat.X.T)
+    #SSA.stop_training()
+    #
+    #if functionValues:
+    #    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name), SSA.functionValues
+    #else:
+    #    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
+    
 
-    if functionValues:
-        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name), SSA.functionValues
-    else:
-        return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
-
-def mdpWrapper( dat, nodename, *args, **kwargs ):
+def mdpWrapper( dat, nodename, output, *args, **kwargs ):
     """
     *EXPERIMENTAL WRAPPER - DO NOT USE IF YOU DON'T KNOW WHAT YOU DO*
     Creates a linear filter by training a mdp node
@@ -331,6 +333,8 @@ def mdpWrapper( dat, nodename, *args, **kwargs ):
     :type dat: natter.DataModule.Data
     :param nodename: name of the mdp node (without "Node"), case sensitive!
     :type nodename: String
+    :param output:
+    :type output:
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
@@ -356,11 +360,17 @@ def mdpWrapper( dat, nodename, *args, **kwargs ):
             node = getattr(mdp.nodes, attr)(input_dim=dat.size(0), **kwargs)
         else:
             raise ValueError("Couldn't find any matching node. Try updating mdp or check your input '%s'"%(nodename))
-                
+
     node.train(dat.X.T)
     node.stop_training()
 
-    if functionValues:
-        return LinearTransform(node.U,'2D %s filter computed on '%(nodename) + dat.name), SSA.functionValues
+    if output[-1] == ')':
+        U = getattr(node, output[:output.find('(')])()
     else:
-        return LinearTransform(node.U,'2D %s filter computed on '%(nodename) + dat.name)
+        U = getattr(node, output)
+        
+
+    if functionValues:
+        return LinearTransform(U,'2D %s filter computed on '%(nodename) + dat.name), SSA.functionValues
+    else:
+        return LinearTransform(U,'2D %s filter computed on '%(nodename) + dat.name)
