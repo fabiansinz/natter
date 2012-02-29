@@ -301,8 +301,99 @@ def SubspaceEnergyWhitening(dat, hasDC=True):
     F = LinearTransform(W, 'Quadrature pair subspace energy equalization filter computed on ' + dat.name )
     return F
 
+def _symmetricOrth(  A ):
+    """
+    Loewdin/symmetric orthogonalization
+    """
+    if A is None:
+        return A
+    U,d,V = np.linalg.svd(np.dot(A.T, A))
+    B = np.dot(A, np.dot(U, np.dot(np.diag(np.sqrt(1/d)),U.T)))
+    return B
 
-def SSA( dat, *args, **kwargs ):
+def _invsqrtm( A ):
+    """
+    Inverse symmetric matrix square root
+    Computed using svd decomposition of A
+    """
+    U,d,V = np.linalg.svd(A)
+    return np.dot(U, np.dot(np.diag(np.sqrt(1/d)),U.T))
+
+def _sqrtm( A ):
+    """
+    Symmetric matrix square root
+    Computed using svd decomposition of A
+    """        
+    U,d,V = np.linalg.svd(A)
+    return np.dot(U, np.dot(np.diag(np.sqrt(d)),U.T))
+    
+def _SSA_gradient( U, x0, x1 ):
+    """
+    gradient of the SSA objective
+    will be removed in future releases as soon as SSA is part of the
+    MDP toolbox
+    """
+    subspace_dim = 2
+    kx, n = x0.shape
+    k, kx = U.shape
+    num_subspaces = k//subspace_dim
+    UX0 = np.dot(U,x0)
+    UX1 = np.dot(U,x1)
+
+    # now forming \sum{UX0[ii,:]**2} for all subspaces
+    SX0 = (UX0.reshape(num_subspaces, subspace_dim, n)**2).sum(1)
+    SX1 = (UX1.reshape(num_subspaces, subspace_dim, n)**2).sum(1)
+
+    #creates an index of which component belongs to which subspace
+    ind_subspaces = np.repeat(np.arange(num_subspaces),subspace_dim)
+
+    g = np.repeat((.5*((SX0**2).mean(1)+(SX1**2).mean(1)))-subspace_dim**2,2).reshape(k,1)
+    f = np.repeat(((SX1-SX0)**2).mean(1),2).reshape(k,1)
+
+    #df = self.gradient_temporalDifferenceSquared(U, x0, x1)
+    #dg = self.gradient_meanVariance(U, x0, x1)
+    #ind_subspaces = np.repeat(np.arange(num_subspaces),subspace_dim)
+    #factor = 4*(SX1[ind_subspaces,:] - SX0[ind_subspaces,:]).reshape(k,1,n)
+
+    #UX0X0 = UX0.reshape(k,1,n)*x0.reshape(1,k,n)
+    #UX1X1 = UX1.reshape(k,1,n)*x1.reshape(1,k,n)
+
+    #df = (factor*(UX1X1 - UX0X0)).mean(2)       
+    #dg = (UX0X0+UX1X1).mean(2)
+    dg = np.empty_like(U)
+    df = np.empty_like(U)
+    factor = 4*(SX1[ind_subspaces,:] - SX0[ind_subspaces,:])
+    SUX1 = SX1[ind_subspaces,:]*UX1
+    SUX0 = SX0[ind_subspaces,:]*UX0
+
+    for ii in xrange(k):
+        dg[ii,:] = (SUX1[ii,:]*x1 + SUX0[ii,:]*x0).mean(1)
+        df[ii,:] = (factor[ii,:]*(UX1[ii,:]*x1 - UX0[ii,:]*x0)).mean(1)
+
+    dU = (df*g - f*dg)/g**2
+
+    return dU
+
+def _SSA_objective( U, x0, x1 ):
+    """
+    objective of the SSA objective
+    will be removed in future releases as soon as SSA is part of the
+    MDP toolbox
+    """
+    subspace_dim = 2
+    kx, n = x0.shape
+    k, kx = U.shape
+    num_subspaces = k//subspace_dim
+    UX0 = np.dot(U,x0)
+    UX1 = np.dot(U,x1)
+    SX0 = (UX0.reshape(num_subspaces, subspace_dim, n)**2).sum(1)
+    SX1 = (UX1.reshape(num_subspaces, subspace_dim, n)**2).sum(1)
+
+    #res = 2*((SX1-SX0)**2).mean(1)/((SX0**2).mean(1)+(SX1**2).mean(1))
+    res = 2*((SX1-SX0)).var(1)/((SX0).var(1)+(SX1).var(1))
+    return res.mean()
+    
+def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8, *args, **kwargs ):
     """
     Creates a linear filter by applying 2D subspace slowness analysis.
 
@@ -323,6 +414,61 @@ def SSA( dat, *args, **kwargs ):
     #else:
     #    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
     
+    x0, x1 = dat.split(2)
+
+    if kwargs.has_key('U'):
+        U = kwargs['U']
+    else:
+        U = _symmetricOrth(np.random.randn(dat.dim(), dat.dim()))
+
+    fOld = np.inf
+    fNew = _SSA_objective(U, x0.T, x1.T)
+    counter = 0
+    m_init = 0.0
+    m_max = 40.0
+    m_history = 5
+    m_offset = 1
+    mset = np.zeros(m_history)
+    fVals = np.empty(maxIterations+1)
+    fVals[0] = fNew
+
+    while ((fOld-fNew) > eps and counter < maxIterations) \
+          or counter < minIterations:
+        fOld = fNew
+        dU = _SSA_gradient(U, x0.T, x1.T)
+
+        m = m_init
+
+        UTemp = _symmetricOrth(U - alpha/(2.**m)*dU)
+        fTemp = _SSA_objective(UTemp, x0.T, x1.T)
+
+        while fTemp > fOld and m < m_max:
+            m += 1
+            UTemp = _symmetricOrth(U - alpha/(2.**m)*dU)
+            fTemp = _SSA_objective(UTemp, x0.T, x1.T)
+
+        mset[np.mod(counter,m_history)] = m
+        U = UTemp
+        counter += 1
+        fNew = fTemp
+        fVals[counter] = fNew
+
+        if np.mod(counter,m_history) == 0:
+            if mset.mean() == m_init:
+                m_init = -5
+            else:
+                m_init = np.floor(mset.mean())-m_offset
+
+        if not verbose is None and counter%verbose == 0:
+            print "Total improvement after iteration " + str(counter) +\
+                  ": " + str(fOld-fNew)+" to " + str(fNew) +\
+                  ' m: ' + str(m) + '\n'
+            print 'Mean m over last %i iterations'%(mset.size) +\
+                  ' was %f. Setting new m_init'%(mset.mean()) +\
+                  ' to %i\n'%(m_init)
+            
+    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
+
 
 def mdpWrapper( dat, nodename, output, *args, **kwargs ):
     """
