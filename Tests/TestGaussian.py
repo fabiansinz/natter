@@ -23,7 +23,7 @@ class TestGaussian(unittest.TestCase):
         pass
 
     def test_loglik(self):
-        nsamples=10000
+        nsamples=1e06
         dat=self.Gauss.sample(nsamples)
         lv = self.Gauss.loglik(dat)
         hs = sum(-lv)/nsamples          # sampled entropy
@@ -69,16 +69,16 @@ class TestGaussian(unittest.TestCase):
         self.Gauss2D.array2primary(theta0)
         self.Gauss2D.estimate(data,method="gradient")
         thetaOpt = self.Gauss2D.primary2array()
-        err = thetaOpt-thetaOrig
-        print "Error in thetas with gradient: " , norm(err)
-
+        err1 = thetaOpt-thetaOrig
+        print "Error in thetas with gradient: " , norm(err1)
+        data = self.Gauss2D.sample(1000000)
         theta0 = abs(randn(len(thetaOrig)))
         self.Gauss2D.array2primary(theta0)
         self.Gauss2D.estimate(data,method="analytic")
         thetaOpt = self.Gauss2D.primary2array()
-        err = thetaOpt-thetaOrig
-        print "Error in thetas maxL: " , norm(err)
-        self.assertTrue((norm(err)<1e-01))
+        err2 = thetaOpt-thetaOrig
+        print "Error in thetas maxim likelihood: " , norm(err2)
+        self.assertTrue((norm(err2)<1e-01))
 
 ##################################################################################################
 

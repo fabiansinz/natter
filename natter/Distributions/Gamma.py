@@ -41,6 +41,7 @@ class Gamma(Distribution):
 
 
     def __init__(self, *args,**kwargs):
+        Distribution.__init__(self)
         # parse parameters correctly
         param = None
         if len(args) > 0:

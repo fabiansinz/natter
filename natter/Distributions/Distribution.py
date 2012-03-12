@@ -204,21 +204,6 @@ class Distribution(LogToken):
         '''
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
-    def primary2array(self):
-        """
-
-        Converts primary parameters into an array. This is the default
-        method which works for scalar parameters. For multivariate
-        parameters, this methods needs to be overwritten.
-
-        :returns: The primary parameters in an array.
-        :rtype: numpy.array
-        """
-        ret = zeros(len(self.primary))
-        for ind,key in enumerate(self.primary):
-            ret[ind]=self.param[key]
-        return ret
-
     def array2primary(self,arr):
         """
         Converts the given array into primary parameters. This is the
@@ -229,10 +214,42 @@ class Distribution(LogToken):
         :type arr: numpy.array
         :returns: the distribution object 
         """
+        n=0
+        Ls=[]
         for ind,key in enumerate(self.primary):
-            self.param[key]=arr[ind]
+            if type(self.param[key])==float or type(self.param[key])==int:
+                Ls.append([n,n+1])
+                n+=1
+            else:
+                Ls.append([n,n+len(self.param[key])])
+                n+=len(self.param[key])
+        for ind,key in enumerate(self.primary):
+            self.param[key]=arr[Ls[ind][0]:Ls[ind][1]]
 
         return self
+
+    def primary2array(self):
+        """
+        Converts primary parameters into an array. This is the default
+        method which works for scalar parameters. For multivariate
+        parameters, this methods needs to be overwritten.
+
+        :returns: The primary parameters in an array.
+        :rtype: numpy.array
+        """
+        n=0
+        Ls=[]
+        for ind,key in enumerate(self.primary):
+            if type(self.param[key])==float or type(self.param[key])==int:
+                Ls.append([n,n+1])
+                n+=1
+            else:
+                Ls.append([n,n+len(self.param[key])])
+                n+=len(self.param[key])
+        ret = zeros(n)
+        for ind,key in enumerate(self.primary):
+            ret[Ls[ind][0]:Ls[ind][1]]=self.param[key]
+        return ret
 
     def estimate(self,dat):
         """

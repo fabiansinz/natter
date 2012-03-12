@@ -3,7 +3,7 @@ from natter.DataModule import Data
 from numpy import log, exp, zeros, prod
 from numpy.random import rand
 from natter.Auxiliary.Decorators import DataSupportChecker
-
+from natter.Auxiliary import Errors
 
 class Uniform(Distribution):
     """
@@ -119,7 +119,7 @@ class Uniform(Distribution):
         :rtype:    numpy.array
            
         '''
-        raise NotImplementedError, 'cdf not implemented in ' + self.name
+        raise Errors.AbstractError, 'cdf not implemented in ' + self.name
 
 
     @DataSupportChecker(1,'low','high')
@@ -134,7 +134,7 @@ class Uniform(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
-        raise NotImplementedError, 'ppf not implemented in ' + self.name
+        raise Errors.AbstractError, 'ppf not implemented in ' + self.name
 
 
     @DataSupportChecker(1,'low','high')
@@ -149,7 +149,7 @@ class Uniform(Distribution):
         
         """
 
-        raise NotImplementedError, 'dldtheta not implemented in ' + self.name
+        raise Errors.AbstractError, 'dldtheta not implemented in ' + self.name
 
 
     @DataSupportChecker(1,'low','high')
@@ -164,7 +164,7 @@ class Uniform(Distribution):
         :rtype:    numpy.array
         
         """
-        raise NotImplementedError, 'dldx not implemented in ' + self.name
+        raise Errors.AbstractError, 'dldx not implemented in ' + self.name
         
     @DataSupportChecker(1,'low','high')
     def estimate(self,dat):
@@ -195,6 +195,6 @@ class Uniform(Distribution):
     
     def __setitem__(self,key,value):
         if key == 'n':
-            raise NotImplementedError, 'Changing the dimensionality of ' + self.name + ' is not supported.'
+            raise Errors.AbstractError, 'Changing the dimensionality of ' + self.name + ' is not supported.'
         self.param[key] = value
         self.width = self.param['high'] - self.param['low']

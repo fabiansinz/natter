@@ -1,5 +1,6 @@
 from __future__ import division
-from scipy.maxentropy import maxentutils 
+#from scipy.maxentropy import maxentutils
+from scipy import misc
 from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like, any, abs,mean
 from numpy.fft import fft, ifft
 from scipy import special
@@ -70,7 +71,7 @@ def logsumexp(a, axis=None):
     """
     if axis is None:
         # Use the scipy.maxentropy version.
-        return maxentutils.logsumexp(a)
+        return misc.logsumexp(a)
     a = asarray(a)
     shp = list(a.shape)
     shp[axis] = 1

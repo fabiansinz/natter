@@ -70,6 +70,45 @@ class MixtureOfGaussians(Distribution):
         self.param['pi'] /= sum(self.param['pi'])
         self.primary = ['pi','mu','s']
                 
+    def primary2array(self):
+        """
+        Converts primary parameters into an array. This is the default
+        method which works for scalar parameters. For multivariate
+        parameters, this methods needs to be overwritten.
+
+        :returns: The primary parameters in an array.
+        :rtype: numpy.array
+        """
+        n=0
+        Ls=[]
+        for ind,key in enumerate(self.primary):
+            Ls.append([n,n+len(self.param[key])])
+            n+=len(self.param[key])
+        ret = zeros(n)
+        for ind,key in enumerate(self.primary):
+            ret[Ls[ind][0]:Ls[ind][1]]=self.param[key]
+        return ret
+
+    def array2primary(self,arr):
+        """
+        Converts the given array into primary parameters. This is the
+        default method which works for scalar parameters. For
+        multivariate parameters, this methods needs to be overwritten.
+
+        :param arr: Array with the primary parameters
+        :type arr: numpy.array
+        :returns: the distribution object 
+        """
+        n=0
+        Ls=[]
+        for ind,key in enumerate(self.primary):
+            Ls.append([n,n+len(self.param[key])])
+            n+=len(self.param[key])
+        for ind,key in enumerate(self.primary):
+            self.param[key]=arr[Ls[ind][0]:Ls[ind][1]]
+
+        return self
+
                                             
     def parameters(self,keyval=None):
         """

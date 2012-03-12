@@ -2,10 +2,11 @@ from __future__ import division
 from Gamma import Gamma
 from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
+from natter.Transforms import LinearTransform
 from scipy.special import gammaln
-from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros
+from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros, eye
 from numpy.random import randn
-
+from mdp.utils import random_rot
 from scipy import weave
 from scipy.weave import converters
 from copy import deepcopy
@@ -33,7 +34,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
         """
         
         """
-                # parse parameters correctly
+
+        # parse parameters correctly
         param = None
         if len(args) > 0:
             param = args[0]
@@ -50,18 +52,27 @@ class EllipticallyContourGamma(CompleteLinearModel):
                 for k,v in kwargs.items():
                     if k != 'param':
                         param[k] = v
-        
+            
         # set default parameters
-
-        gamma   = Gamma()
-        param['q'] = gamma
-        CompleteLinearModel.__init__(self,param)
-        if 'q' in self.primary:
-            self.param['q'].primary = ['u','s']
+        if param is None:
+            self.param = {}
+        else:
+            self.param =param
+        if not  self.param.has_key('q'):
+            self.param['q']=Gamma()
+        if not self.param.has_key('n'):
+            self.param['n']=2
+        if not self.param.has_key('W'):
+            self.param['W']=LinearTransform(random_rot(self.param['n']),\
+                                                      'Random rotation matrix',['sampled from Haar distribution'])
         self.name = 'Elliptically contour Gamma distribution'
         self.Wind = where(tril(ones(self.param['W'].W.shape))>0)
         self.param['W'].W = tril(self.param['W'].W)
-
+        if not self.param.has_key('primary'):
+            self.primary=['q','W']
+        else:
+            self.primary=param['primary']
+        
     def parameters(self,keyval=None):
         """
 
