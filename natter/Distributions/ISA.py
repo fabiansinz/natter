@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from LpSphericallySymmetric import LpSphericallySymmetric
-from numpy import zeros
+from numpy import zeros, atleast_2d
 from natter.Auxiliary.Errors import InitializationError
 from natter.DataModule import Data
 import sys
@@ -52,7 +52,9 @@ class ISA(Distribution):
         
         # set default parameters
         self.name = 'Independent Subspace Analysis (ISA)'
-        self.param = {'n':3,'P':None,'S':None}
+        self.param = {'n':3, \
+                      'P':[LpSphericallySymmetric(n=2),LpSphericallySymmetric(n=2)],\
+                      'S':[(0,1),(2,3)]}
         
         if param != None:
             for k in param.keys():
@@ -147,7 +149,7 @@ class ISA(Distribution):
         P = self.param['P']
         S = self.param['S']
         for k in xrange(len(S)):
-            dlogdx[S[k],:] = P[k].dldx(dat[S[k],:])
+            dlogdx[S[k],:] = atleast_2d(P[k].dldx(dat[S[k],:])).T
 
         return dlogdx
 

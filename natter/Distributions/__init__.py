@@ -28,7 +28,6 @@ implements. At the moment it provides the following distributions.
    Distributions_NakaRushton.rst
    Distributions_PCauchy.rst
    Distributions_ProductOfExponentialPowerDistributions.rst
-   Distributions_SchwartzSimoncelliModel.rst
    Distributions_SkewedGaussian.rst
    Distributions_SkewedNormal.rst
    Distributions_Truncated.rst
@@ -60,7 +59,6 @@ from LogNormal import LogNormal
 from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
 from EllipticallyContourGamma import EllipticallyContourGamma
-from SchwartzSimoncelliModel import SchwartzSimoncelliModel
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian

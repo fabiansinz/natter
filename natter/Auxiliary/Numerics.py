@@ -71,7 +71,10 @@ def logsumexp(a, axis=None):
     """
     if axis is None:
         # Use the scipy.maxentropy version.
-        return misc.logsumexp(a)
+        if hasattr(misc,'logsumexp'):
+            return misc.logsumexp(a)
+        else:
+            axis = 0
     a = asarray(a)
     shp = list(a.shape)
     shp[axis] = 1

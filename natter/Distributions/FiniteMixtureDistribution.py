@@ -4,7 +4,7 @@ from Gaussian import Gaussian
 from numpy import zeros,ones,log,exp,array,vstack,hstack,sum,mean,kron,isnan,dot,unique, reshape, where,cumsum, squeeze, Inf, max, abs,std
 from numpy.random.mtrand import multinomial
 from natter.DataModule import Data
-from numpy.random import shuffle
+from numpy.random import shuffle, randn
 import sys
 from scipy import optimize
 #from functions import minimize_carl
@@ -45,11 +45,13 @@ class FiniteMixtureDistribution(Distribution):
         # set initial parameters
         param = parseParameters(args,kwargs)
         self.param = {}
-        for k,v in param.items():
-            self[k] = v
+
+        if param is not None:
+            for k,v in param.items():
+                self[k] = v
         
         if not self.param.has_key('P'):
-            raise ValueError('You must specify the parameter P!')
+            self.param['P'] = [Gaussian(n=1,mu=randn(1)*3.0) for dummy in xrange(3)]
 
         
         K = len(self.param['P'])

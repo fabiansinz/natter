@@ -177,6 +177,24 @@ Archived entries from file /kyb/agmb/fabee/code/lib/python/natter/todo.org
   :ARCHIVE_CATEGORY: todo
   :ARCHIVE_TODO: TODO
   :END:
+* DONE Sebastian
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2012-03-13 Di 16:07
+  :ARCHIVE_FILE: ~/code/natter/develop/todo.org
+  :ARCHIVE_OLPATH: test
+  :ARCHIVE_CATEGORY: todo
+  :ARCHIVE_TODO: DONE
+  :END:
+ + [X] config dictionary
+ + [X] array2primary and primary2array for all distributions (also that they return the correct array once the self.primary list is changed)
+ + [X] check consistency of loglik and pdf
+ + [X] check consistency of loglik and sample ( partition function)
+ + [X] check gradients of dldtheta w.r.t. primary parameters
+ + [X] check gradients of dldx w.r.t. data if function is available
+ + [X] check default distribution
+ + [X] check whether distribution implements basic functions: sample, loglik
+ + [X] if distributions fail these test, include them in todo.org as to be fixed with the respective author 
+
 
 
 

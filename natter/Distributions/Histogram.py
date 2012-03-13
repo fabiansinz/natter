@@ -72,6 +72,9 @@ class Histogram(Distribution):
         ptmp = hstack((zeros(1),self.param['p']/(b[1:]-b[:-1]),zeros(1)))
         return ptmp[ind]
 
+    def loglik(self,dat):
+        return self.pdf(dat)
+
     @Squeezer(1)
     def ppf(self,u):
         '''

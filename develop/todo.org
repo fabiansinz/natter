@@ -19,16 +19,6 @@
   + [X] Transforms.NonlinearTransform  : Fabian  
   + [X] Transforms  : Fabian, Philipp  
   + [X] Transforms.Transform 
-** Sebastian
-  + [X] config dictionary
-  + [X] array2primary and primary2array for all distributions (also that they return the correct array once the self.primary list is changed)
-  + [X] check consistency of loglik and pdf
-  + [X] check consistency of loglik and sample ( partition function)
-  + [X] check gradients of dldtheta w.r.t. primary parameters
-  + [X] check gradients of dldx w.r.t. data if function is available
-  + [X] check default distribution
-  + [X] check whether distribution implements basic functions: sample, loglik
-  + [X] if distributions fail these test, include them in todo.org as to be fixed with the respective author 
 * Buglist
   Dependencies to other libraries, need to be mentioned somewhere, this includes
   + [ ] scipy version >0.9 is needed, logsumexp is moved to misc
@@ -43,28 +33,40 @@
    support given).
    so far: 231 Test , 34 errors, 40 fail, 157 pass
    
+*** Sebastian   
+    + [ ] ISA :no default distribution, this should have one, I think
+	  {'dist'      :ISA,
+          'tolerance':1e-01}
+      --> has a default distribution now. however, throws testing errors.
+
 *** Fabian
-    + [ ] Dirichlet: with config-dictionary (not aligned, probably because of
+    + [X] Dirichlet: with config-dictionary (not aligned, probably because of
           data dimensionality)
 	  {'dist':Dirichlet,
 	  'support'  :(0,1),
-	  'tolerance':1e-01} 
-    + [ ] CompleteLinearModel: no default distribution, more specifically, there
+      'tolerance':1e-01} 
+
+      --> removed from tests. Sampling distribution is more difficult
+      in the generic test since it is multivariate and produces
+      normalized samples. Dirichlet has an extratest. 
+    + [X] CompleteLinearModel: no default distribution, more specifically, there
           is a default distribution, but W and q are None, which results in a None-distribution.
 	  {'dist'      :CompleteLinearModel,
           'tolerance':1e-01}
-    + [ ] FiniteMixtureDistribution, has no default distribution, maybe set it
+
+          --> removed from test since I don't think there should be a
+      default parameter. 
+    + [X] FiniteMixtureDistribution, has no default distribution, maybe set it
           to Gaussian? Specialized Test function for this distribution passes though.
 	  {'dist'      :FiniteMixtureDistribution,
           'tolerance':1e-01}
-    + [ ] Histrogram, some functions are not defined, such as loglik,
+    + [X] Histrogram, some functions are not defined, such as loglik,
           primary2array also does not work. Although I'm not sure, if we want to
           keep it tested...
 	  {'dist'      :Histogram,
           'tolerance':1e-01}
-    + [ ] ISA :no default distribution, this should have one, I think
-	  {'dist'      :ISA,
-          'tolerance':1e-01}
+
+      --> removed from test as suggested
     + [ ] LpNestedSymmetric, too many indices error in the gradient calc, also primary2array
 	  {'dist'      :LpNestedSymmetric,
           'tolerance':1e-01}
@@ -89,16 +91,19 @@
     + [ ] SchwwartzSimoncelliModel (no sampling)
 	  {'dist'      :SchwartzSimoncelliModel,
           'tolerance':1e-01}	 
+      --> removed from distribution
     + [ ] TmodelRaidal: no sampling method
 	  {'dist'      :TModelRadial,
           'support': (0,np.inf),
           'tolerance':1e-01}	 
-    + [ ] Transformed (no default distribution)- maybe to explude
+    + [X] Transformed (no default distribution)- maybe to explude
 	  {'dist'      :Transformed,
           'tolerance':1e-01}
-    + [ ] Truncated (no default) - maybe to excluded
+      --> removed
+    + [X] Truncated (no default) - maybe to excluded
 	  {'dist'      :Truncated,
           'tolerance':1e-01}
+      --> removed
     + [ ] TruncatedExponentialPower (This is actually a bug in TestDistributions,
 	  as right now the support for test-generators canot be set to (a,inf) only
 	  (0,inf) is supported.
@@ -106,7 +111,7 @@
           'support':(0,np.inf),
           'tolerance':1e-01}
     + [X] Uniform (NotImplementedError instead of AbstractError)
-
+      
 ** Other Tests which failed (Most of them are assigned to Fabian by default...):
    + [X] Sebastian TestGaussian.py
 	 FAIL: test_estimate (TestGaussian.TestGaussian)
