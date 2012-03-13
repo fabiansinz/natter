@@ -19,6 +19,8 @@ Contents:
    Logging.rst
    Transforms.rst
    License.rst
+
+If you encounter problems or bugs, please let us know at natter@bethgelab.org.
    
 Indices and tables
 ==================

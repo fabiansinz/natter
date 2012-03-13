@@ -8,11 +8,11 @@ class ExperimentLog(LogToken):
 
     ExperimentLog overloads the +, the / and the * operator. + and /
     can be used to add new content to the log. They accept strings and
-    LogTokens. The only difference between them is that / adds a line
-    break. * adds links to the experiment logs. Links can be specified
-    by the path (string) only or by a tuple of two strings of which
-    the first denotes the path and the second denotes the link
-    name. For example
+    LogTokens (e.g. all Distributions are LogTokens). The only
+    difference between them is that / adds a line break. * adds links
+    to the experiment logs. Links can be specified by the path
+    (string) only or by a tuple of two strings of which the first
+    denotes the path and the second denotes the link name. For example
 
     >>> p = ExperimentLog('My fancy experiment')
     >>> p += 'We sampled of data we found on the website:'
@@ -25,7 +25,13 @@ class ExperimentLog(LogToken):
     >>> p.addSection('Results')
     >>> p['Results'] += 'The following section summarizes our results!'
     
-    A new experiment log is initialized with an empty parameter list or the name of the log.
+    A new experiment log is initialized with an empty parameter list
+    or the name of the log.
+
+    IMPORTANT: All LogTokens that are added to an ExperimentLog are
+    only converted to strings at saving time. This means that if you
+    add a LogToken to an ExperimentLog and change it afterwards, the
+    ExperimentLog will save out the changed version.
 
     :param name: Name of the experiment log
     :type name: string
