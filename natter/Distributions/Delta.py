@@ -1,7 +1,7 @@
 from Distribution import Distribution
 from natter.DataModule import Data
 from numpy import exp, zeros, ones, array
-from natter.Auxiliary.Decorators import DataSupportChecker
+
 
 
 class Delta(Distribution):
@@ -101,7 +101,7 @@ class Delta(Distribution):
         return exp(self.loglik(dat))
 
         
-    @DataSupportChecker(1,'low','high')
+#    @DataSupportChecker(1,'low','high')
     def cdf(self,dat):
         '''
 

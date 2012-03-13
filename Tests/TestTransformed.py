@@ -16,7 +16,7 @@ class TestTransformed(unittest.TestCase):
     
     def setUp(self):
         self.q = Gamma(u=5.0*rand(),s=5.0*rand())
-        self.p = 3*rand()+.5
+        self.p = 1.5+rand()*0.1
         def f(dat):
             dat = dat.copy()
             dat.X = dat.X**self.p
@@ -40,13 +40,16 @@ class TestTransformed(unittest.TestCase):
         self.assertTrue(err < self.TolParam,\
                          'Difference X - ppf(cdf(u)) with %.4g greater than %.4g' %(err, self.TolParam))
 
-
-
     def test_loglik(self):
         nsamples=100000
         q = self.q.copy()
         q['s'] = 2.0*self.q['s']
         dataImportance = q.sample(nsamples)
+        # from matplotlib.pyplot import show
+        # self.P.histogram(dataImportance,bins=200)
+        # show()
+        # raw_input()
+        
         logweights = self.P.loglik(dataImportance)-q.loglik(dataImportance)
         Z = logsumexp(logweights)-log(nsamples)
         err = abs(exp(Z)-1)

@@ -98,14 +98,8 @@ distributions_to_test.append({'dist'      :ISA,
 # distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :SchwartzSimoncelliModel,
-#                               'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :SkewedGaussian,
-#                               'tolerance':1e-01})
-
-# distributions_to_test.append({'dist'      :TModelRadial,
-#                               'support': (0,np.inf),
 #                               'tolerance':1e-01})
 
 

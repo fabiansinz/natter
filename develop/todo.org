@@ -38,6 +38,52 @@
 	  {'dist'      :ISA,
           'tolerance':1e-01}
       --> has a default distribution now. however, throws testing errors.
+    + [ ] can't we exlucde certain tests for a distribution?
+    + [ ] PCauchy (sampling not implemented)
+	  {'dist'      :PCauchy,
+          'tolerance':1e-01}
+      --> has now a sampling method, but throws a lot of testing bugs.
+    + [ ] LpNestedSymmetric, too many indices error in the gradient calc, also primary2array
+	  {'dist'      :LpNestedSymmetric,
+          'tolerance':1e-01}
+      --> has primary to array now; don't understand the index thing
+    + [ ] LpSphericallySymmetric, array2primary and primary2array has to be
+          implemented; maybe change it in the distribution itself, have already
+          updated it to be able to handle array parameters.
+	  {'dist'      :LpSphericallySymmetric,
+          'tolerance':1e-01}
+      --> has primary to array now; throws testing errors
+    + [ ] ProductOfExponentialPowerDistributions
+	  {'dist'      :ProductOfExponentialPowerDistributions,
+          'tolerance':1e-01}
+      --> throws testing errors that don't seem to be my problem
+    + [ ] TruncatedExponentialPower (This is actually a bug in TestDistributions,
+	  as right now the support for test-generators canot be set to (a,inf) only
+	  (0,inf) is supported.
+	  {'dist'      :TruncatedExponentialPower,
+          'support':(0,np.inf),
+          'tolerance':1e-01}
+   + [ ] Fabian TestLpGeneralizedNormal.py
+	 /usr/local/lib/python2.6/dist-packages/scipy/io/matlab/mio.py:74: DeprecationWarning: Searching for mat files on python system path will be removed in next version of scipy
+	 full_name = find_mat_file(file_like, appendmat)
+	 EE
+	 ERROR: test_estimate (TestLpGeneralizedNormal.TestLpGeneralizedNormal)
+	 Traceback (most recent call last):
+	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPGeneralizedNormal0.mat'
+     
+     --> test runs smoothly for me. I added all the mat files.
+   + [ ] Fabian TestLpSphericallySymmetric.py
+	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPSphericallySymmetric0.mat'
+     --> added the mat files to git. However, we still have problems
+     with the LpSphericallySymmetric test; see above.
+   + [ ] Fabian TestMixtureOfLogNormals.py
+	 test_derivatives (TestMixtureOfLogNormals.TestMixtureOfLogNormals)
+	 self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
+	 AssertionError: mean diff: 0.0213352727889
+	 message: Difference in derivative of log-likelihood for MixtureOfLogNormals greater than 0.0001
+	 max diff: 1.20377653639
+
+     --> runs smoothly for me. Can you test again?
 
 *** Fabian
     + [X] Dirichlet: with config-dictionary (not aligned, probably because of
@@ -67,14 +113,6 @@
           'tolerance':1e-01}
 
       --> removed from test as suggested
-    + [ ] LpNestedSymmetric, too many indices error in the gradient calc, also primary2array
-	  {'dist'      :LpNestedSymmetric,
-          'tolerance':1e-01}
-    + [ ] LpSphericallySymmetric, array2primary and primary2array has to be
-          implemented; maybe change it in the distribution itself, have already
-          updated it to be able to handle array parameters.
-	  {'dist'      :LpSphericallySymmetric,
-          'tolerance':1e-01}
     + [X] MixtureOfGaussians,
 	  {'dist'      :MixtureOfGaussians,
           'tolerance':1e-01}
@@ -82,20 +120,15 @@
 	  {'dist'      :MixtureOfLogNormals,
           'support': (0,np.inf),
           'tolerance':1e-01}
-    + [ ] PCauchy (sampling not implemented)
-	  {'dist'      :PCauchy,
-          'tolerance':1e-01}
-    + [ ] ProductOfExponentialPowerDistributions
-	  {'dist'      :ProductOfExponentialPowerDistributions,
-          'tolerance':1e-01}
-    + [ ] SchwwartzSimoncelliModel (no sampling)
+    + [X] SchwwartzSimoncelliModel (no sampling)
 	  {'dist'      :SchwartzSimoncelliModel,
           'tolerance':1e-01}	 
-      --> removed from distribution
-    + [ ] TmodelRaidal: no sampling method
+      --> removed from natter 'coz it's not a probabilistic model anyway
+    + [X] TmodelRaidal: no sampling method
 	  {'dist'      :TModelRadial,
           'support': (0,np.inf),
           'tolerance':1e-01}	 
+      --> removed from testing
     + [X] Transformed (no default distribution)- maybe to explude
 	  {'dist'      :Transformed,
           'tolerance':1e-01}
@@ -104,65 +137,4 @@
 	  {'dist'      :Truncated,
           'tolerance':1e-01}
       --> removed
-    + [ ] TruncatedExponentialPower (This is actually a bug in TestDistributions,
-	  as right now the support for test-generators canot be set to (a,inf) only
-	  (0,inf) is supported.
-	  {'dist'      :TruncatedExponentialPower,
-          'support':(0,np.inf),
-          'tolerance':1e-01}
     + [X] Uniform (NotImplementedError instead of AbstractError)
-      
-** Other Tests which failed (Most of them are assigned to Fabian by default...):
-   + [X] Sebastian TestGaussian.py
-	 FAIL: test_estimate (TestGaussian.TestGaussian)
-	 AssertionError: 
-	 Error in thetas with gradient:  0.127310491546
-	 Error in thetas maxL:  0.127678702419
-	 Traceback (most recent call last):
-	 File "/home/sgerwinn/projects/natter/Tests/TestGaussian.py", line 30, in test_loglik
-	 self.assertTrue( abs(hs-self.entropy)<= 1e-02 )
-   + [ ] Fabian TestKumaraswamy.py
-	FAIL: test_estimate (TestKumaraswamy.TestKumaraswamy)
-	File "/home/sgerwinn/projects/natter/Tests/TestKumaraswamy.py", line 42, in test_estimate
-	self.assertFalse(np.abs(p.param['b'] - mys) > self.TolParam,'Difference in Scale parameter for Kumaraswamy distribution greater than ' + str(self.TolParam))
-	AssertionError: Difference in Scale parameter for Kumaraswamy distribution greater than 0.1
-   + [ ] Fabian TestLpGeneralizedNormal.py
-	 /usr/local/lib/python2.6/dist-packages/scipy/io/matlab/mio.py:74: DeprecationWarning: Searching for mat files on python system path will be removed in next version of scipy
-	 full_name = find_mat_file(file_like, appendmat)
-	 EE
-	 ERROR: test_estimate (TestLpGeneralizedNormal.TestLpGeneralizedNormal)
-	 Traceback (most recent call last):
-	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPGeneralizedNormal0.mat'
-   + [ ] Fabian TestLpSphericallySymmetric.py
-	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPSphericallySymmetric0.mat'
-   + [ ] Fabian TestMixtureOfLogNormals.py
-	 test_derivatives (TestMixtureOfLogNormals.TestMixtureOfLogNormals)
-	 self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
-	 AssertionError: mean diff: 0.0213352727889
-	 message: Difference in derivative of log-likelihood for MixtureOfLogNormals greater than 0.0001
-	 max diff: 1.20377653639
-   + [ ] Fabian TestTransformed.py
-	 AssertionError: Estimated partition function deviates from 1.0 by 0.7197
-   + [ ] Fabain TestTruncatedGaussian.py
-	 /home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:246: UserWarning: TruncatedGaussian.__setitem__: new value of mu too large compared to b! Setting it to b+6*sigma!
-	 warn("TruncatedGaussian.__setitem__: new value of mu too large compared to b! Setting it to b+%i*sigma!" % (self.numericalSigmaBoundary,))
-	 ./home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:204: RuntimeWarning: divide by zero encountered in true_divide
-	 grad[ind,:] = -1.0/phi(s(dat.X))*phiprime(s(dat.X))/sigma + (phi(s(b))/sigma - phi(s(a))/sigma)/(Phi(s(b)) - Phi(s(a)))
-	 /home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:204: RuntimeWarning: invalid value encountered in multiply
-	 grad[ind,:] = -1.0/phi(s(dat.X))*phiprime(s(dat.X))/sigma + (phi(s(b))/sigma - phi(s(a))/sigma)/(Phi(s(b)) - Phi(s(a)))
-	 /home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:207: RuntimeWarning: divide by zero encountered in true_divide
-	 grad[ind,:] = -1.0/sigma - 1.0/phi(s(dat.X))*phiprime(s(dat.X)) * s(dat.X)/sigma + (phi(s(b))*s(b)/sigma - phi(s(a))*s(a)/sigma)/(Phi(s(b)) - Phi(s(a)))
-	 /home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:207: RuntimeWarning: invalid value encountered in multiply
-	 grad[ind,:] = -1.0/sigma - 1.0/phi(s(dat.X))*phiprime(s(dat.X)) * s(dat.X)/sigma + (phi(s(b))*s(b)/sigma - phi(s(a))*s(a)/sigma)/(Phi(s(b)) - Phi(s(a)))
-	 /home/sgerwinn/projects/natter/natter/Distributions/TruncatedGaussian.py:88: RuntimeWarning: divide by zero encountered in log
-	 ll = squeeze(-log(sigma) + log(phi(s(dat.X))) - log(Phi(s(b))-Phi(s(a))))
-	 /usr/local/lib/python2.6/dist-packages/scipy/optimize/optimize.py:398: RuntimeWarning: invalid value encountered in double_scalars
-	 grad[k] = (f(*((xk+ei,)+args)) - f0)/epsilon
-	 ======================================================================
-	 FAIL: test_dldtheta (TestTruncatedGaussian.TestTruncatedGaussian)
-	 ----------------------------------------------------------------------
-	 Traceback (most recent call last):
-	 File "/home/sgerwinn/projects/natter/Tests/TestTruncatedGaussian.py", line 70, in test_dldtheta
-	 self.assertTrue(err<1e-02,'Gradient error %.4g is greater than %.4g' % (err,1e-02))
-	 AssertionError: Gradient error -nan is greater than 0.01
-	 Error in gradient:  nan

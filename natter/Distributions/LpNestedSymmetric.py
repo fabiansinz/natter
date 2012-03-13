@@ -237,6 +237,29 @@ class LpNestedSymmetric(Distribution):
             self.param['rp'].estimate(self.param['f'].f(dat))
         print "\t[Done]"
 
+
+    def primary2array(self):
+        ret = array([])
+        for k in self.primary:
+            if k == 'f':
+                ret = hstack((ret,array([self.param['f'].p])))
+            elif k == 'rp':
+                ret = hstack((ret,self.param['rp'].primary2array()))
+        return ret
+
+    def array2primary(self,ar):
+        for k in self.primary:
+            if k == 'f':
+                l = len(self.param['f'].p)
+                self.param['f'].p = ar[0:l]
+                ar = ar[l:]
+            elif k == 'rp':
+                l = len(self.param['rp'].primary2array())
+                self.param['rp'].array2primary(ar[:l])
+                ar = ar[l:]
+                
+                        
+
     def __all(self,p,dat):
         if len(p) <= 5:
             print "\r\t" + str(p),

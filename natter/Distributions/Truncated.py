@@ -7,7 +7,7 @@ from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
 from warnings import warn
 from numpy.random import rand
-from natter.Auxiliary.Decorators import DataSupportChecker, ArraySupportChecker
+from natter.Auxiliary.Decorators import  ArraySupportChecker #, DataSupportChecker,
 
 class Truncated(Distribution):
     """

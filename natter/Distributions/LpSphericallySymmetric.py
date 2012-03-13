@@ -1,7 +1,7 @@
 from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
-from numpy import log, abs, sign, squeeze
+from numpy import log, abs, sign, squeeze, array, hstack
 from numpy.random import gamma, randn
 from scipy.special import gammaln
 from natter.Auxiliary.Optimization import goldenMinSearch
@@ -187,3 +187,25 @@ class LpSphericallySymmetric(Distribution):
         dat.scale(r)
         return dat
 
+
+    def primary2array(self):
+        ret = array([])
+        for k in self.primary:
+            if k == 'p':
+                ret = hstack((ret,array([self.param['p']])))
+            elif k == 'rp':
+                ret = hstack((ret,self.param['rp'].primary2array()))
+        return ret
+
+    def array2primary(self,ar):
+        for k in self.primary:
+            if k == 'p':
+                self.param['p'] = ar[0]
+                ar = ar[1:]
+            elif k == 'rp':
+                l = len(self.param['rp'].primary2array())
+                self.param['rp'].array2primary(ar[:l])
+                ar = ar[l:]
+                
+                
+        

@@ -1,7 +1,7 @@
 from __future__ import division
 from natter.DataModule import Data
-from numpy import mean, sum, abs, log,zeros,atleast_2d,Inf,atleast_1d, isnan, isinf,any
-
+from numpy import mean, sum, abs, log,zeros,atleast_2d,Inf,atleast_1d, isnan, isinf,any,array
+from LpSphericallySymmetric import LpSphericallySymmetric
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Numerics import trigamma
 from scipy.special import gamma, digamma, gammaln
@@ -43,6 +43,28 @@ class PCauchy(Distribution):
         self.primary = ['p']
 
 
+    def sample(self,m):
+        """
+        Samples m samples from the PCauchy distribution.
+
+        :param m: number of samples to be generated
+        :returns: Data object with samples.
+        :rtype: natter.DataModule.Data
+        """
+        dummy = LpSphericallySymmetric(n=self.param['n']+1,p=self.param['p'])
+        dat = dummy.sample(m)
+        dat.X = dat.X[:-1,:]/atleast_2d(dat.X[-1,:])
+        return dat
+
+    def primary2array(self):
+        if self.param.has_key('p'):
+            return array([self.param['p']])
+        else:
+            return array([])
+        
+    def array2primary(self,ar):
+        self.param['p'] = ar[0]
+        
 
     def loglik(self,dat):
         """

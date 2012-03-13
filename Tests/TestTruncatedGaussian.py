@@ -15,13 +15,24 @@ class TestTruncatedGaussian(unittest.TestCase):
 
     Tol = 1e-7
     TolParam = 1e-1
+
+    def setUp(self):
+        self.a = 1.0*rand()
+        self.b = self.a+ 10.0*rand()
+        self.mu = (self.a+10*rand())/2.
+        self.s = 2.0*rand()+1.0
+        self.p = Distributions.TruncatedGaussian({'a':self.a,'b':self.b,'mu':self.mu,'sigma':self.s})
+
     
     def test_loglik(self):
-        p1 = Distributions.TruncatedGaussian({'a':1.0,'b':3.0,'mu':1.0,'sigma':2.0})
-        p2 = Distributions.TruncatedGaussian({'a':1.0,'b':3.0,'mu':.5,'sigma':1.5})
+        p1 = self.p
+        p2 = self.p.copy()
+        p2['mu'] *= 1.1
+        
         nsamples = 1000000
         data = p2.sample(nsamples)
         logZ = logsumexp(p1.loglik(data) -p2.loglik(data) - np.log(nsamples))
+        print np.exp(logZ)
         print "Estimated partition function: ", np.exp(logZ)
         self.assertTrue(np.abs(np.exp(logZ)-1.0) < 0.1*self.TolParam,'Difference in estimated partition function (1.0) greater than' + str(0.1*self.TolParam))
 
@@ -29,30 +40,16 @@ class TestTruncatedGaussian(unittest.TestCase):
     def test_cdf(self):
         print "Testing consistency of cdf and ppf"
         sys.stdout.flush()
-        a = 1.0*rand()
-        b = a
-        while b <= a:
-            b = 10.0*rand()
-        mu = 10*rand()
-        s = 2.0*rand()+1.0
             
-        p = Distributions.TruncatedGaussian({'a':a,'b':b,'mu':mu,'sigma':s})   
+        p = self.p
         u = rand(10)
         u2 = p.cdf(p.ppf(u))
-
         self.assertFalse(np.sum(np.abs(u-u2)) > self.TolParam,'Difference u - cdf(ppf(u)) greater than %.4g' %( self.Tol,))
 
 
 
     def test_dldtheta(self):
-        a = 1.0*rand()
-        b = a
-        while b <= a:
-            b = 10.0*rand()
-        mu = 10*rand()
-        s = 2.0*rand()+1.0
-            
-        p = Distributions.TruncatedGaussian({'a':a,'b':b,'mu':mu,'sigma':s})
+        p = self.p.copy()   
         p.primary=['mu','sigma']
         dat = p.sample(100)
 

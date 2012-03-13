@@ -2,7 +2,7 @@ from Distribution import Distribution
 from natter.DataModule import Data
 from numpy import log, exp, zeros, prod
 from numpy.random import rand
-from natter.Auxiliary.Decorators import DataSupportChecker
+#rom natter.Auxiliary.Decorators import DataSupportChecker
 from natter.Auxiliary import Errors
 
 class Uniform(Distribution):
@@ -75,7 +75,7 @@ class Uniform(Distribution):
                      str(m) + ' samples from ' + self.name)
         
 
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def loglik(self,dat):
         '''
 
@@ -92,7 +92,7 @@ class Uniform(Distribution):
         return res
 
 
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def pdf(self,dat):
         '''
 
@@ -107,7 +107,7 @@ class Uniform(Distribution):
         return exp(self.loglik(dat))
 
         
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def cdf(self,dat):
         '''
 
@@ -122,7 +122,7 @@ class Uniform(Distribution):
         raise Errors.AbstractError, 'cdf not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def ppf(self,X):
         '''
 
@@ -137,7 +137,7 @@ class Uniform(Distribution):
         raise Errors.AbstractError, 'ppf not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def dldtheta(self,data):
         """
         Evaluates the gradient of the Gamma function with respect to the primary parameters.
@@ -152,7 +152,7 @@ class Uniform(Distribution):
         raise Errors.AbstractError, 'dldtheta not implemented in ' + self.name
 
 
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def dldx(self,dat):
         """
 
@@ -166,7 +166,7 @@ class Uniform(Distribution):
         """
         raise Errors.AbstractError, 'dldx not implemented in ' + self.name
         
-    @DataSupportChecker(1,'low','high')
+#   @DataSupportChecker(1,'low','high')
     def estimate(self,dat):
         '''
         Uniform distribution has no parameter hence estimate does nothing        
