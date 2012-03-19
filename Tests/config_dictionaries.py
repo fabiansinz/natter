@@ -74,8 +74,8 @@ distributions_to_test = []
 # distributions_to_test.append({'dist'      :LpGeneralizedNormal,
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :LpNestedSymmetric,
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :LpNestedSymmetric,
+                              'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :LpSphericallySymmetric,
 #                               'tolerance':1e-01})
@@ -94,8 +94,8 @@ distributions_to_test = []
 # distributions_to_test.append({'dist'      :PCauchy,
 #                               'tolerance':1e-01})
 
-distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
-                              'tolerance':1e-01})
+# distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
+#                               'tolerance':1e-01})
 
 
 # distributions_to_test.append({'dist'      :SkewedGaussian,

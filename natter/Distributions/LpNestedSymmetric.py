@@ -242,7 +242,8 @@ class LpNestedSymmetric(Distribution):
         ret = array([])
         for k in self.primary:
             if k == 'f':
-                ret = hstack((ret,array([self.param['f'].p])))
+                print self.param['f'].p
+                ret = hstack((ret,array(self.param['f'].p)))
             elif k == 'rp':
                 ret = hstack((ret,self.param['rp'].primary2array()))
         return ret

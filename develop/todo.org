@@ -34,28 +34,28 @@
    so far: 231 Test , 34 errors, 40 fail, 157 pass
    
 *** Sebastian   
-    + [ ] Test output of Lpspherically symmetric
+    + [X] Test output of Lpspherically symmetric
 
-    + [ ] ISA :no default distribution, this should have one, I think
+    + [X] ISA :no default distribution, this should have one, I think
 	  {'dist'      :ISA,
           'tolerance':1e-01}
       --> has a default distribution now. however, throws testing errors.
     + [ ] can't we exlucde certain tests for a distribution?
-    + [ ] PCauchy (sampling not implemented)
+    + [X] PCauchy (sampling not implemented)
 	  {'dist'      :PCauchy,
           'tolerance':1e-01}
       --> has now a sampling method, but throws a lot of testing bugs.
-    + [ ] LpNestedSymmetric, too many indices error in the gradient calc, also primary2array
+    + [ ] LpNestedSymmetric, too many indices error in the gradient calc
 	  {'dist'      :LpNestedSymmetric,
           'tolerance':1e-01}
       --> has primary to array now; don't understand the index thing
-    + [ ] LpSphericallySymmetric, array2primary and primary2array has to be
+    + [X] LpSphericallySymmetric, array2primary and primary2array has to be
           implemented; maybe change it in the distribution itself, have already
           updated it to be able to handle array parameters.
 	  {'dist'      :LpSphericallySymmetric,
           'tolerance':1e-01}
       --> has primary to array now; throws testing errors
-    + [ ] ProductOfExponentialPowerDistributions
+    + [X] ProductOfExponentialPowerDistributions
 	  {'dist'      :ProductOfExponentialPowerDistributions,
           'tolerance':1e-01}
       --> throws testing errors that don't seem to be my problem
@@ -65,7 +65,7 @@
 	  {'dist'      :TruncatedExponentialPower,
           'support':(0,np.inf),
           'tolerance':1e-01}
-    + [ ] Fabian TestLpGeneralizedNormal.py
+    + [X] Fabian TestLpGeneralizedNormal.py
 	  /usr/local/lib/python2.6/dist-packages/scipy/io/matlab/mio.py:74: DeprecationWarning: Searching for mat files on python system path will be removed in next version of scipy
 	  full_name = find_mat_file(file_like, appendmat)
 	  EE
@@ -74,11 +74,11 @@
 	  No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPGeneralizedNormal0.mat'
      
       --> test runs smoothly for me. I added all the mat files.
-    + [ ] Fabian TestLpSphericallySymmetric.py
+    + [X] Fabian TestLpSphericallySymmetric.py
 	  No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPSphericallySymmetric0.mat'
       --> added the mat files to git. However, we still have problems
       with the LpSphericallySymmetric test; see above.
-    + [ ] Fabian TestMixtureOfLogNormals.py
+    + [X] Fabian TestMixtureOfLogNormals.py
 	  test_derivatives (TestMixtureOfLogNormals.TestMixtureOfLogNormals)
 	  self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
 	  AssertionError: mean diff: 0.0213352727889
