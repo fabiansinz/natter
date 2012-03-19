@@ -20,40 +20,40 @@ distributions_to_test = []
 #                               }) 
 
 
-distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
+# distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
 
-# # minimal example
-distributions_to_test.append({'dist'      :Gaussian })
-
-
-distributions_to_test.append({'dist'      :ChiP,
-                              'support'   : (0,np.inf),
-                              'nsamples'  : OODLES,
-                              'tolerance':1e-01})
+# # # minimal example
+# distributions_to_test.append({'dist'      :Gaussian })
 
 
-distributions_to_test.append({'dist'      :ExponentialPower,
-                              'tolerance':1e-01})
-
-distributions_to_test.append({'dist'      :FiniteMixtureDistribution,
-                              'tolerance':1e-01})
-
-distributions_to_test.append({'dist'      :Gamma,
-                              'support': (0,np.inf),
-                              'tolerance':1e-01})
-
-distributions_to_test.append({'dist'      :GammaP,
-                              'nsamples':1e07,    #we need oodles and oodles of samples
-                              'support': (0,np.inf),
-                              'tolerance':1e-01,
-                              'proposal_high'  : Gamma(s=10.), # proposal distribution for importance sampling with low variance (optional)
-                              'proposal_low'  : Gamma(s=1.) # proposal with high variance, also for importance sampling
-                             })
+# distributions_to_test.append({'dist'      :ChiP,
+#                               'support'   : (0,np.inf),
+#                               'nsamples'  : OODLES,
+#                               'tolerance':1e-01})
 
 
-distributions_to_test.append({'dist'      :ISA,
-                              'tolerance':1e-01                            
-                              })
+# distributions_to_test.append({'dist'      :ExponentialPower,
+#                               'tolerance':1e-01})
+
+# distributions_to_test.append({'dist'      :FiniteMixtureDistribution,
+#                               'tolerance':1e-01})
+
+# distributions_to_test.append({'dist'      :Gamma,
+#                               'support': (0,np.inf),
+#                               'tolerance':1e-01})
+
+# distributions_to_test.append({'dist'      :GammaP,
+#                               'nsamples':1e07,    #we need oodles and oodles of samples
+#                               'support': (0,np.inf),
+#                               'tolerance':1e-01,
+#                               'proposal_high'  : Gamma(s=10.), # proposal distribution for importance sampling with low variance (optional)
+#                               'proposal_low'  : Gamma(s=1.) # proposal with high variance, also for importance sampling
+#                              })
+
+
+# distributions_to_test.append({'dist'      :ISA,
+#                               'tolerance':1e-01                            
+#                               })
 
 # distributions_to_test.append({'dist'      :Kumaraswamy,
 #                               'support': (0,1),
@@ -67,8 +67,8 @@ distributions_to_test.append({'dist'      :ISA,
 #                               'support': (0,np.inf),
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :LpGeneralizedNormal,
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :LpGeneralizedNormal,
+                              'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :LpNestedSymmetric,
 #                               'tolerance':1e-01})
