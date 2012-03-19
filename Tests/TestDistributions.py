@@ -18,10 +18,15 @@ def approx_fprime(xk,f,epsilon,*args):
     ei = zeros(xk.shape, float)
     for i in range(xk.shape[0]):
         if len(xk.shape)>1:
-            for k in range(xk.shape[1]):
-                ei[i,k] = epsilon
-                grad[i,k] = (f(*((xk+ei,)+args)) - f0)/epsilon
-                ei[i,k] = 0.0
+            if  xk.shape[1]>1:
+                for k in range(xk.shape[1]):
+                    ei[i,k] = epsilon
+                    grad[i,k] = (f(*((xk+ei,)+args)) - f0)/epsilon
+                    ei[i,k] = 0.0
+            else:
+                ei[i] = epsilon
+                grad[i] = (f(*((xk+ei,)+args)) - f0)/epsilon
+                ei[i] = 0.0
         else:
             ei[i] = epsilon
             grad[i] = (f(*((xk+ei,)+args)) - f0)/epsilon
@@ -235,7 +240,7 @@ def check_dldtheta(dic):
     d = dic['dist']
     havedldtheta = True
     try:
-        data = d.sample(2)
+        data = d.sample(1)
         theta0 = d.primary2array()
         d.dldtheta(data)
     except AbstractError:
@@ -277,7 +282,7 @@ def check_dldx(dic):
     d = dic['dist']
     havedldx=True
     try:
-        data = d.sample(3)
+        data = d.sample(1)
         d.dldx(data)
     except AbstractError:
         havedldx=False
