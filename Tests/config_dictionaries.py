@@ -94,8 +94,8 @@ distributions_to_test.append({'dist'      :ISA,
 # distributions_to_test.append({'dist'      :PCauchy,
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
+                              'tolerance':1e-01})
 
 
 # distributions_to_test.append({'dist'      :SkewedGaussian,

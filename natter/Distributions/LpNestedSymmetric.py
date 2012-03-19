@@ -53,7 +53,7 @@ class LpNestedSymmetric(Distribution):
         
         # set default parameters
         self.name = 'Lp-Nested Symmetric Distribution'
-        self.param = {'n':2, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:2))',[.5,1.0])}
+        self.param = {'n':3, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:3))',[.5,1.0])}
 
         if param != None:
             for k in param.keys():

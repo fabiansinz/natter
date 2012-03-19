@@ -149,7 +149,8 @@ class ISA(Distribution):
         P = self.param['P']
         S = self.param['S']
         for k in xrange(len(S)):
-            dlogdx[S[k],:] = atleast_2d(P[k].dldx(dat[S[k],:])).T
+            print P[k].dldx(dat[S[k],:])
+            dlogdx[S[k],:] = atleast_2d(P[k].dldx(dat[S[k],:]))
 
         return dlogdx
 

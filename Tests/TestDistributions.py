@@ -18,15 +18,20 @@ def approx_fprime(xk,f,epsilon,*args):
     grad = zeros(xk.shape, float)
     ei = zeros(xk.shape, float)
     for i in range(xk.shape[0]):
-        if len(xk.shape)>1:
-            for k in range(xk.shape[1]):
-                ei[i,k] = epsilon
-                grad[i,k] = (f(*((xk+ei,)+args)) - f0)/epsilon
-                ei[i,k] = 0.0
-        else:
-            ei[i] = epsilon
-            grad[i] = (f(*((xk+ei,)+args)) - f0)/epsilon
-            ei[i] = 0.0
+        ei[i,:] = epsilon
+        grad[i,:] = (f(*((xk+ei,)+args)) - f0)/epsilon
+        ei[i,:] = 0.0
+        
+        # if len(xk.shape)>1:
+        #     for k in range(xk.shape[1]):
+        #         ei[i,k] = epsilon
+        #         print ei
+        #         grad[i,k] = (f(*((xk+ei,)+args)) - f0)/epsilon
+        #         ei[i,k] = 0.0
+        # else:
+        #     ei[i] = epsilon
+        #     grad[i] = (f(*((xk+ei,)+args)) - f0)/epsilon
+        #     ei[i] = 0.0
     return grad
 
 
@@ -278,7 +283,7 @@ def check_dldx(dic):
     d = dic['dist']
     havedldx=True
     try:
-        data = d.sample(2)
+        data = d.sample(3)
         d.dldx(data)
     except AbstractError:
         havedldx=False
@@ -286,13 +291,14 @@ def check_dldx(dic):
         data_copy = cp(data)
         def f(X):
             data_copy.X = X.reshape(data_copy.X.shape)
-            return np.sum(d.loglik(data_copy))
+            return d.loglik(data_copy)
         # def df(X):
         #     data_copy.X = X.reshape(data_copy.X.shape)
         #     return d.dldx(data_copy)
         X0 = data.X
         df_num = approx_fprime(X0,f,epsilon=1e-08)
         df_ana = d.dldx(data)
+
         err = df_num - df_ana
 
         # err = check_grad(f,df,X0)
