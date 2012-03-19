@@ -1,7 +1,7 @@
 from natter.Auxiliary import Errors,save
 from natter.DataModule import Data
 import copy
-from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign, unique,array,zeros
+from numpy import exp, mean, log, float32, float64, float, shape, squeeze, max, min, abs, sign, unique,array,zeros, isscalar
 import pickle
 import types
 import pylab as plt
@@ -217,7 +217,7 @@ class Distribution(LogToken):
         n=0
         Ls=[]
         for ind,key in enumerate(self.primary):
-            if type(self.param[key])==float or type(self.param[key])==int:
+            if isscalar(self.param[key]):
                 Ls.append([n,n+1])
                 n+=1
             else:
@@ -240,7 +240,7 @@ class Distribution(LogToken):
         n=0
         Ls=[]
         for ind,key in enumerate(self.primary):
-            if type(self.param[key])==float or type(self.param[key])==int:
+            if isscalar(self.param[key]):
                 Ls.append([n,n+1])
                 n+=1
             else:

@@ -27,7 +27,7 @@ distributions_to_test = []
 
 # PROBLEMATIC WEAVE SCIPY BUG
 # distributions_to_test.append({'dist'      :EllipticallyContourGamma,
-#                               'nsamples':1e6, # we need an awful lot of samples
+#                               'nsamples':1e7, we need an awful lot of samples
 #                               'tolerance':1e-01})
 
 distributions_to_test.append({'dist'      :ChiP,
