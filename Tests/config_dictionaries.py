@@ -110,6 +110,7 @@ distributions_to_test.append({'dist'      :LpGeneralizedNormal,
 #                               'tolerance':1e-01})
 
 
+
 # PROBLEMATIC WEAVE SCIPY BUG
 # distributions_to_test.append({'dist'      :EllipticallyContourGamma,
 #                               'nsamples':1e7, we need an awful lot of samples
