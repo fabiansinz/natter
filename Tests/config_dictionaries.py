@@ -30,13 +30,13 @@ distributions_to_test = []
 #                               'nsamples':1e7, we need an awful lot of samples
 #                               'tolerance':1e-01})
 
-distributions_to_test.append({'dist'      :ChiP,
-                              'support'   : (0,np.inf), 
-                              'tolerance':1e-01})
-
-
-# distributions_to_test.append({'dist'      :ExponentialPower,
+# distributions_to_test.append({'dist'      :ChiP,
+#                               'support'   : (0,np.inf), 
 #                               'tolerance':1e-01})
+
+
+distributions_to_test.append({'dist'      :ExponentialPower,
+                              'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :FiniteMixtureDistribution,
 #                               'tolerance':1e-01})
