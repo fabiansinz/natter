@@ -433,6 +433,8 @@ def parseNoChildren(tree,mind,ret):
         else:
             ret = parseNoChildren(tree[k],mind + (k-1,),ret)
             n += 1
+    if n == 1:
+        raise SpecificationError("Inner nodes must have at least two children!")
     ret[mind] = n
     return ret
 
