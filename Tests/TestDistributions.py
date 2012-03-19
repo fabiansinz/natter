@@ -234,7 +234,7 @@ def check_dldtheta(dic):
             return np.sum(gv,axis=1)
         theta0 = d.primary2array()
         err    = check_grad(f,df,theta0)
-        assert err<dic['tolerance']
+        assert (err<dic['tolerance']).all()
     else:
         assert True
 
@@ -271,7 +271,7 @@ def check_dldx(dic):
             return d.dldx(data_copy)
         X0 = data.X.flatten()
         err = check_grad(f,df,X0)
-        assert err<dic['tolerance']
+        assert (err<dic['tolerance']).all()
     else:
         assert True
 
