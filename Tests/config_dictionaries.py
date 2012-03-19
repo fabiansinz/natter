@@ -5,7 +5,7 @@ should be tested with the generic test suite.
 from natter.Distributions import *
 import numpy as np
 
-
+OODLES = 1e6
 
 distributions_to_test = []
 
@@ -20,40 +20,40 @@ distributions_to_test = []
 #                               }) 
 
 
-# distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
+distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
 
-# # # minimal example
-# distributions_to_test.append({'dist'      :Gaussian })
+# # minimal example
+distributions_to_test.append({'dist'      :Gaussian })
 
-# PROBLEMATIC WEAVE SCIPY BUG
-# distributions_to_test.append({'dist'      :EllipticallyContourGamma,
-#                               'nsamples':1e7, we need an awful lot of samples
-#                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :ChiP,
-#                               'support'   : (0,np.inf), 
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :ChiP,
+                              'support'   : (0,np.inf),
+                              'nsamples'  : OODLES,
+                              'tolerance':1e-01})
 
 
 distributions_to_test.append({'dist'      :ExponentialPower,
                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :FiniteMixtureDistribution,
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :FiniteMixtureDistribution,
+                              'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :Gamma,
-#                               'support': (0,np.inf),
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :Gamma,
+                              'support': (0,np.inf),
+                              'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :GammaP,
-#                               'nsamples':1e07,    #we need oodles and oodles of samples
-#                               'support': (0,np.inf),
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :GammaP,
+                              'nsamples':1e07,    #we need oodles and oodles of samples
+                              'support': (0,np.inf),
+                              'tolerance':1e-01,
+                              'proposal_high'  : Gamma(s=10.), # proposal distribution for importance sampling with low variance (optional)
+                              'proposal_low'  : Gamma(s=1.) # proposal with high variance, also for importance sampling
+                             })
 
 
-# distributions_to_test.append({'dist'      :ISA,
-#                               'tolerance':1e-01                            
-#                               })
+distributions_to_test.append({'dist'      :ISA,
+                              'tolerance':1e-01                            
+                              })
 
 # distributions_to_test.append({'dist'      :Kumaraswamy,
 #                               'support': (0,1),
@@ -107,4 +107,10 @@ distributions_to_test.append({'dist'      :ExponentialPower,
 
 # distributions_to_test.append({'dist'      :Uniform,
 #                               'support':(0,1),
+#                               'tolerance':1e-01})
+
+
+# PROBLEMATIC WEAVE SCIPY BUG
+# distributions_to_test.append({'dist'      :EllipticallyContourGamma,
+#                               'nsamples':1e7, we need an awful lot of samples
 #                               'tolerance':1e-01})

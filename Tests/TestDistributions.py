@@ -33,6 +33,17 @@ def approx_fprime(xk,f,epsilon,*args):
             ei[i] = 0.0
     return grad
 
+def approx_data_fprime(xk,f,epsilon,*args):
+    f0 = f(*((xk,)+args))
+    grad = zeros(xk.shape, float)
+    ei = zeros(xk.shape, float)
+    if len(xk.shape)>1:
+        for i in range(xk.shape[0]):
+            ei[i,:] = epsilon
+            grad[i,:] = (f(*((xk+ei,)+args)) - f0)/epsilon
+            ei[i,:] = 0.0
+    return grad
+
 
 def test_loglik():
     """
@@ -282,7 +293,7 @@ def check_dldx(dic):
     d = dic['dist']
     havedldx=True
     try:
-        data = d.sample(1)
+        data = d.sample(3)
         d.dldx(data)
     except AbstractError:
         havedldx=False
@@ -295,7 +306,7 @@ def check_dldx(dic):
         #     data_copy.X = X.reshape(data_copy.X.shape)
         #     return d.dldx(data_copy)
         X0 = data.X
-        df_num = approx_fprime(X0,f,epsilon=1e-08)
+        df_num = approx_data_fprime(X0,f,epsilon=1e-08)
         df_ana = d.dldx(data)
 
         err = df_num - df_ana
