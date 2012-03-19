@@ -56,9 +56,9 @@ distributions_to_test = []
 #                               'tolerance':1e-01})
 
 
-distributions_to_test.append({'dist'      :ISA,
-                              'tolerance':1e-01                            
-                              })
+# distributions_to_test.append({'dist'      :ISA,
+#                               'tolerance':1e-01                            
+#                               })
 
 # distributions_to_test.append({'dist'      :Kumaraswamy,
 #                               'support': (0,1),
@@ -95,8 +95,8 @@ distributions_to_test.append({'dist'      :ISA,
 # distributions_to_test.append({'dist'      :PCauchy,
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
+                              'tolerance':1e-01})
 
 
 # distributions_to_test.append({'dist'      :SkewedGaussian,

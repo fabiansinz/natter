@@ -1,7 +1,7 @@
 from Distribution import Distribution
 from Gamma import Gamma
 from natter.DataModule import Data
-from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign, mean, reshape
+from numpy import log, zeros, array, Inf, any, isinf, max, abs, squeeze, sign, mean, reshape, hstack
 from numpy.random import beta, dirichlet, rand
 from natter.Auxiliary import LpNestedFunction
 from natter.Auxiliary.Optimization import fminboundnD, goldenMinSearch

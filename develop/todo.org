@@ -34,6 +34,8 @@
    so far: 231 Test , 34 errors, 40 fail, 157 pass
    
 *** Sebastian   
+    + [ ] Test output of Lpspherically symmetric
+
     + [ ] ISA :no default distribution, this should have one, I think
 	  {'dist'      :ISA,
           'tolerance':1e-01}
@@ -63,27 +65,27 @@
 	  {'dist'      :TruncatedExponentialPower,
           'support':(0,np.inf),
           'tolerance':1e-01}
-   + [ ] Fabian TestLpGeneralizedNormal.py
-	 /usr/local/lib/python2.6/dist-packages/scipy/io/matlab/mio.py:74: DeprecationWarning: Searching for mat files on python system path will be removed in next version of scipy
-	 full_name = find_mat_file(file_like, appendmat)
-	 EE
-	 ERROR: test_estimate (TestLpGeneralizedNormal.TestLpGeneralizedNormal)
-	 Traceback (most recent call last):
-	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPGeneralizedNormal0.mat'
+    + [ ] Fabian TestLpGeneralizedNormal.py
+	  /usr/local/lib/python2.6/dist-packages/scipy/io/matlab/mio.py:74: DeprecationWarning: Searching for mat files on python system path will be removed in next version of scipy
+	  full_name = find_mat_file(file_like, appendmat)
+	  EE
+	  ERROR: test_estimate (TestLpGeneralizedNormal.TestLpGeneralizedNormal)
+	  Traceback (most recent call last):
+	  No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPGeneralizedNormal0.mat'
      
-     --> test runs smoothly for me. I added all the mat files.
-   + [ ] Fabian TestLpSphericallySymmetric.py
-	 No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPSphericallySymmetric0.mat'
-     --> added the mat files to git. However, we still have problems
-     with the LpSphericallySymmetric test; see above.
-   + [ ] Fabian TestMixtureOfLogNormals.py
-	 test_derivatives (TestMixtureOfLogNormals.TestMixtureOfLogNormals)
-	 self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
-	 AssertionError: mean diff: 0.0213352727889
-	 message: Difference in derivative of log-likelihood for MixtureOfLogNormals greater than 0.0001
-	 max diff: 1.20377653639
+      --> test runs smoothly for me. I added all the mat files.
+    + [ ] Fabian TestLpSphericallySymmetric.py
+	  No such file or directory: '/home/sgerwinn/projects/natter/Tests/Tests/TestPSphericallySymmetric0.mat'
+      --> added the mat files to git. However, we still have problems
+      with the LpSphericallySymmetric test; see above.
+    + [ ] Fabian TestMixtureOfLogNormals.py
+	  test_derivatives (TestMixtureOfLogNormals.TestMixtureOfLogNormals)
+	  self.assertFalse(np.mean(np.abs(df-df2)) > tol, Auxiliary.prettyPrintDict(prot))
+	  AssertionError: mean diff: 0.0213352727889
+	  message: Difference in derivative of log-likelihood for MixtureOfLogNormals greater than 0.0001
+	  max diff: 1.20377653639
 
-     --> runs smoothly for me. Can you test again?
+      --> runs smoothly for me. Can you test again?
 
 *** Fabian
     + [X] Dirichlet: with config-dictionary (not aligned, probably because of

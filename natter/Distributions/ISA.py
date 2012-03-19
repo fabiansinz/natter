@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from LpSphericallySymmetric import LpSphericallySymmetric
-from numpy import zeros, atleast_2d
+from numpy import zeros, atleast_2d, array, hstack
 from natter.Auxiliary.Errors import InitializationError
 from natter.DataModule import Data
 import sys
@@ -173,3 +173,18 @@ class ISA(Distribution):
 
 
        
+    def primary2array(self):
+        ret = array([])
+        if 'P' in self.primary:
+            for p in self.param['P']:
+                ret = hstack((ret,p.primary2array()))
+        return ret
+
+    def array2primary(self,ar):
+        if len(ar) > 0:
+            for i,p in enumerate(self.param['P']):
+                l = len(p.primary2array())
+                self.param['P'][i].array2primary(ar[:l])
+                ar = ar[l:]
+                
+            

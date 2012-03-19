@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import zeros
+from numpy import zeros, array, hstack
 from ExponentialPower import ExponentialPower
 import sys
 from copy import deepcopy
@@ -152,3 +152,17 @@ class ProductOfExponentialPowerDistributions(Distribution):
             ret[i,:] = self.param['P'][i].dldx(dat[i,:])
         return ret
         
+    def primary2array(self):
+        ret = array([])
+        if 'P' in self.primary:
+            for p in self.param['P']:
+                ret = hstack((ret,p.primary2array()))
+        return ret
+
+    def array2primary(self,ar):
+        if len(ar) > 0:
+            for i,p in enumerate(self.param['P']):
+                l = len(p.primary2array())
+                self.param['P'][i].array2primary(ar[:l])
+                ar = ar[l:]
+                
