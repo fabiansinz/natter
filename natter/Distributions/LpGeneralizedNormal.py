@@ -87,7 +87,7 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
 
         self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']
         self.param['rp'].param['s'] = self.param['s']
-        self.param['rp'].param['u'] = self.param['n']/self.param['p']
+        self.param['rp'].param['u'] = float(self.param['n'])/self.param['p']
         
     def sample(self,m):
         '''SAMPLE(M)
@@ -98,6 +98,20 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
         z = abs(z)**(1/self.param['p'])
         return Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
                       ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
+
+    def __setitem__(self,key,value):
+        if key in self.parameters('keys'):
+            if key == 's':
+                self.param['s'] = value
+                self.param['rp'].param['s'] = value
+            elif key == 'p':
+                self.param['p'] = value
+                self.param['rp'].param['p'] = value
+                self.param['rp'].param['u'] = float(self.param['n'])/self.param['p']
+            else:
+                self.param[key] = value
+        else:
+            raise KeyError("Parameter %s not defined for %s" % (key,self.name))
 
     def __pALL(self,p,dat):
         self.param['p'] = p
