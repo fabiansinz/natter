@@ -17,11 +17,13 @@ def approx_fprime(xk,f,epsilon,*args):
     f0 = f(*((xk,)+args))
     grad = zeros(xk.shape, float)
     ei = zeros(xk.shape, float)
-    for i in range(xk.shape[0]):
-        ei[i,:] = epsilon
-        grad[i,:] = (f(*((xk+ei,)+args)) - f0)/epsilon
-        ei[i,:] = 0.0
-        
+    if len(xk.shape)>1:
+        for i in range(xk.shape[0]):
+            ei[i,:] = epsilon
+            grad[i,:] = (f(*((xk+ei,)+args)) - f0)/epsilon
+            ei[i,:] = 0.0
+    else:
+        grad = (f(*((xk+epsilon,)+args)) - f0)/epsilon
         # if len(xk.shape)>1:
         #     for k in range(xk.shape[1]):
         #         ei[i,k] = epsilon

@@ -20,7 +20,7 @@ distributions_to_test = []
 #                               }) 
 
 
-# distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
+distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
 
 # # minimal example
 # distributions_to_test.append({'dist'      :Gaussian })
@@ -32,10 +32,6 @@ distributions_to_test = []
 
 # distributions_to_test.append({'dist'      :ChiP,
 #                               'support'   : (0,np.inf), 
-#                               'tolerance':1e-01})
-
-
-# distributions_to_test.append({'dist'      :Delta,
 #                               'tolerance':1e-01})
 
 
@@ -55,9 +51,9 @@ distributions_to_test = []
 #                               'tolerance':1e-01})
 
 
-distributions_to_test.append({'dist'      :ISA,
-                              'tolerance':1e-01                            
-                              })
+# distributions_to_test.append({'dist'      :ISA,
+#                               'tolerance':1e-01                            
+#                               })
 
 # distributions_to_test.append({'dist'      :Kumaraswamy,
 #                               'support': (0,1),
@@ -94,8 +90,8 @@ distributions_to_test.append({'dist'      :ISA,
 # distributions_to_test.append({'dist'      :PCauchy,
 #                               'tolerance':1e-01})
 
-distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
-                              'tolerance':1e-01})
+# distributions_to_test.append({'dist'      :ProductOfExponentialPowerDistributions,
+#                               'tolerance':1e-01})
 
 
 # distributions_to_test.append({'dist'      :SkewedGaussian,
