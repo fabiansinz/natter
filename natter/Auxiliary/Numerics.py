@@ -1,6 +1,6 @@
 from __future__ import division
 #from scipy.maxentropy import maxentutils
-from scipy import misc
+from scipy import misc, maxentropy
 from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like, any, abs,mean
 from numpy.fft import fft, ifft
 from scipy import special
@@ -73,6 +73,8 @@ def logsumexp(a, axis=None):
         # Use the scipy.maxentropy version.
         if hasattr(misc,'logsumexp'):
             return misc.logsumexp(a)
+        elif hasattr(maxentropy,'logsumexp'):
+            return maxentropy.logsumexp(a)
         else:
             axis = 0
     a = asarray(a)
