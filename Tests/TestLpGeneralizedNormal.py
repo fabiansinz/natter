@@ -9,7 +9,7 @@ import os
 
 class TestLpGeneralizedNormal(unittest.TestCase):
 
-    matpath = os.path.abspath('./Tests/')
+    matpath = os.path.abspath('../Tests/')
 
     Tol = 1e-10
     TolParam = {'p':.1,'s':.45,'n':0}
