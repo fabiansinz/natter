@@ -20,19 +20,19 @@ distributions_to_test = []
 #                               }) 
 
 
-distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
+# distributions_to_test.append({'dist'      :Gaussian({'n':1,'sigma':np.eye(1)})}) 
 
 # # minimal example
 # distributions_to_test.append({'dist'      :Gaussian })
 
 
 # distributions_to_test.append({'dist'      :EllipticallyContourGamma,
-#                               'nsamples':1e6, # we need an awful lot of samples
+#                               'nsamples':1e7, we need an awful lot of samples
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :ChiP,
-#                               'support'   : (0,np.inf), 
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :ChiP,
+                              'support'   : (0,np.inf), 
+                              'tolerance':1e-01})
 
 
 # distributions_to_test.append({'dist'      :ExponentialPower,
