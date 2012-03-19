@@ -1,9 +1,9 @@
 from __future__ import division
-from numpy import log,pi,sum,ones,sqrt,logspace
+from numpy import log,pi,sum,ones,sqrt,logspace, zeros
 from numpy.random import randn
 from numpy.linalg import norm
 import unittest
-from scipy.optimize import check_grad, approx_fprime
+from scipy.optimize import check_grad
 import numpy as np
 from config_dictionaries import distributions_to_test
 from natter.Distributions import *
@@ -11,6 +11,24 @@ from natter.Auxiliary.Numerics import logsumexp
 from copy import deepcopy as cp
 from natter.Auxiliary.Errors import AbstractError
 from natter.Distributions import Gaussian
+
+
+def approx_fprime(xk,f,epsilon,*args):
+    f0 = f(*((xk,)+args))
+    grad = zeros(xk.shape, float)
+    ei = zeros(xk.shape, float)
+    for i in range(xk.shape[0]):
+        if len(xk.shape)>1:
+            for k in range(xk.shape[1]):
+                ei[i,k] = epsilon
+                grad[i,k] = (f(*((xk+ei,)+args)) - f0)/epsilon
+                ei[i,k] = 0.0
+        else:
+            ei[i] = epsilon
+            grad[i] = (f(*((xk+ei,)+args)) - f0)/epsilon
+            ei[i] = 0.0
+    return grad
+
 
 def test_loglik():
     """
@@ -218,7 +236,7 @@ def check_dldtheta(dic):
     d = dic['dist']
     havedldtheta = True
     try:
-        data = d.sample(1)
+        data = d.sample(2)
         theta0 = d.primary2array()
         d.dldtheta(data)
     except AbstractError:
@@ -233,7 +251,10 @@ def check_dldtheta(dic):
             gv = d.dldtheta(data)
             return np.sum(gv,axis=1)
         theta0 = d.primary2array()
-        err    = check_grad(f,df,theta0)
+        df_num = approx_fprime(theta0,f,epsilon=1e-08)
+        df_ana = df(theta0)
+        err = df_num - df_ana
+        # err    = check_grad(f,df,theta0)
         assert (err<dic['tolerance']).all()
     else:
         assert True
@@ -257,7 +278,7 @@ def check_dldx(dic):
     d = dic['dist']
     havedldx=True
     try:
-        data = d.sample(1)
+        data = d.sample(2)
         d.dldx(data)
     except AbstractError:
         havedldx=False
@@ -266,11 +287,15 @@ def check_dldx(dic):
         def f(X):
             data_copy.X = X.reshape(data_copy.X.shape)
             return np.sum(d.loglik(data_copy))
-        def df(X):
-            data_copy.X = X.reshape(data_copy.X.shape)
-            return d.dldx(data_copy)
-        X0 = data.X.flatten()
-        err = check_grad(f,df,X0)
+        # def df(X):
+        #     data_copy.X = X.reshape(data_copy.X.shape)
+        #     return d.dldx(data_copy)
+        X0 = data.X
+        df_num = approx_fprime(X0,f,epsilon=1e-08)
+        df_ana = d.dldx(data)
+        err = df_num - df_ana
+
+        # err = check_grad(f,df,X0)
         assert (err<dic['tolerance']).all()
     else:
         assert True
