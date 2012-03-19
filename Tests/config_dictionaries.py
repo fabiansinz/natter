@@ -5,7 +5,7 @@ should be tested with the generic test suite.
 from natter.Distributions import *
 import numpy as np
 
-OODLES = 1e6
+OODLES = int(1e6)
 
 distributions_to_test = []
 
@@ -67,8 +67,8 @@ distributions_to_test = []
 #                               'support': (0,np.inf),
 #                               'tolerance':1e-01})
 
-distributions_to_test.append({'dist'      :LpGeneralizedNormal,
-                              'tolerance':1e-01})
+# distributions_to_test.append({'dist'      :LpGeneralizedNormal,
+#                               'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :LpNestedSymmetric,
 #                               'tolerance':1e-01})
@@ -79,9 +79,13 @@ distributions_to_test.append({'dist'      :LpGeneralizedNormal,
 # distributions_to_test.append({'dist'      :MixtureOfGaussians,
 #                               'tolerance':1e-01})
 
-# distributions_to_test.append({'dist'      :MixtureOfLogNormals,
-#                               'support': (0,np.inf),
-#                               'tolerance':1e-01})
+distributions_to_test.append({'dist'      :MixtureOfLogNormals,
+                              'support': (0,np.inf),
+                              'nsamples' :5*OODLES,
+                              'proposal_high'  : Gamma(s=25.), # proposal distribution for importance sampling with low variance (optional)
+                              'proposal_low'  : Gamma(s=1.), # proposal with high variance, also for importance sampling
+
+                              'tolerance':1e-01})
 
 # distributions_to_test.append({'dist'      :NakaRushton,
 #                               'support': (0,np.inf),
