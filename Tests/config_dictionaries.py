@@ -42,7 +42,7 @@ distributions_to_test.append({'dist'      :Gamma,
 distributions_to_test.append({'dist'      :GammaP,
                               'nsamples':1e07,    #we need oodles and oodles of samples
                               'support': (0,np.inf),
-                              'tolerance':5*1e-01})
+                              'tolerance':5*1e-01,
                               'proposal_high'  : Gamma(s=10.), # proposal distribution for importance sampling with low variance (optional)
                               'proposal_low'  : Gamma(s=1.) # proposal with high variance, also for importance sampling
                              })
@@ -107,12 +107,8 @@ distributions_to_test.append({'dist'      :ISA,
 #                               'tolerance':1e-01})
 
 
-<<<<<<< HEAD
-# distributions_to_test.append({'dist'      :EllipticallyContourGamma,
-#                               'nsamples':1e7, #we need an awful lot of samples
-=======
+
 # PROBLEMATIC WEAVE SCIPY BUG
 # distributions_to_test.append({'dist'      :EllipticallyContourGamma,
 #                               'nsamples':1e7, we need an awful lot of samples
->>>>>>> 70615ad3016f983218a8abb98bb6415d3f05dd00
 #                               'tolerance':1e-01})
