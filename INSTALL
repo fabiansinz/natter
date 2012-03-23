@@ -1,0 +1,6 @@
+natter uses setuptools for the build and installation process. Run
+ python setup.py build
+to compile the toolbox and then
+ python setup.py install
+for the installation. For dependencies and further information take
+a look at the documentation in the doc subfolder.
