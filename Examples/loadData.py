@@ -32,4 +32,3 @@ myIter = DataSampler.directoryIterator(DATADIR, numSamples, patchSize, loadFunc,
 # The sample method now calls the iterator numSamples times and creates the data
 # object with all the sampled patches
 dat = DataSampler.sample(myIter, numSamples)
-raw_input()
