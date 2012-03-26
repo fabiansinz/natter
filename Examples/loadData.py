@@ -1,7 +1,7 @@
 # Loading from files
 from natter.DataModule import DataLoader
 print "Loading a simple Data module from an ascii file"
-FILENAME = 'hateren4x4_train_No1.dat'
+FILENAME = 'hateren4x4_train_No1.dat.gz'
 dat = DataLoader.load(FILENAME)
 print dat
 

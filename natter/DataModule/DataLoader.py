@@ -1,4 +1,5 @@
 from sys import stdin, stdout
+import gzip, bz2, zipfile
 from natter.DataModule import Data
 from scipy import io
 #import cPickle as pickle #temporarily removed due to bugs in cPickle
@@ -7,7 +8,7 @@ from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
 
-def load(path):
+def load(path, **kwargs):
     """
 
     tries to load data from a specified file by determining the file
@@ -25,6 +26,11 @@ def load(path):
      with pickle (because cPickle (binary file, latest protocol) caused
      MemoryErrors for files > 1GB on loading)
 
+     *npz* are interpreted as numpy zip file. If the variable name is not
+     given using varname parameter the user is asked to select one variable.
+
+     *gz* are read as gzip compressed ascii file.
+
     :param path: Path to the data file.
     :type path: string
     :returns: Data object with the data from the specified file.
@@ -33,13 +39,18 @@ def load(path):
     """
     pathjunks = path.split('.')
     if pathjunks[-1] == 'mat':
-        return matlab(path)
+        return matlab(path, **kwargs)
     elif pathjunks[-1] == 'pydat':
         return pydat(path)
     elif pathjunks[-1] == 'dat':
         return ascii(path)
     elif pathjunks[-1] == 'npz':
-        return loadnpz(path)
+        return loadnpz(path, **kwargs)
+    elif pathjunks[-1] == 'gz':
+        return ascii(path, open_file=gzip.open)
+    else:
+        raise ValueError('Could not determine file type. Please use one of the '+\
+                         'supported file formats. See documentation for details.')
 
 def matlab(path, varname=None):
     """
@@ -69,7 +80,7 @@ def matlab(path, varname=None):
                     thekey = k
         return Data(dat[thekey],'Matlab variable ' + thekey + ' from ' + path)
 
-def ascii(path):
+def ascii(path, open_file=open):
     """
     Loads data from an ascii file.
 
@@ -79,7 +90,7 @@ def ascii(path):
     :rtype: natter.DataModule.Data
 
     """
-    f = open(path,'r')
+    f = open_file(path,'r')
     X = []
     for l in f:
         X.append([float(elem) for elem in l.rstrip().lstrip().split()])
@@ -182,4 +193,3 @@ def loadnpz(path, varname=None, transpose=None):
         return Data(dat.T,'npz data from ' + path)
     else:
         return Data(dat,'npz data from ' + path)
-
