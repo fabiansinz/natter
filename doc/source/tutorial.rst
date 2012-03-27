@@ -8,3 +8,4 @@ Contents:
    
    tutorial_GettingStarted.rst
    tutorial_Distributions.rst
+   tutorial_ExamplesSinzEtAl2012.rst

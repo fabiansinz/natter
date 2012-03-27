@@ -7,9 +7,6 @@ from scipy.special import gammaln
 from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros, eye, outer
 from numpy.random import randn
 from mdp.utils import random_rot
-from scipy import weave
-from scipy.weave import converters
-from scipy.weave.build_tools import CompileError
 from copy import deepcopy
 from scipy.optimize import fmin_bfgs
 
@@ -188,6 +185,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
             """
             X = data.X
             try:
+                from scipy import weave
+                from scipy.weave import converters
                 weave.inline(code,
                              ['W', 'X', 'WXXT', 'n','m'],
                              type_converters=converters.blitz,

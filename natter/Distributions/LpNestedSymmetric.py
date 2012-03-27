@@ -53,7 +53,7 @@ class LpNestedSymmetric(Distribution):
         
         # set default parameters
         self.name = 'Lp-Nested Symmetric Distribution'
-        self.param = {'n':3, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:3))',[.5,1.0])}
+        self.param = {'n':3, 'rp':Gamma(),'f':LpNestedFunction('(0,0,(1,1:3))',[1.0,1.5])}
 
         if param != None:
             for k in param.keys():
@@ -304,7 +304,8 @@ def recsample(key,r,L,m,ret):
     alpha = array([float(L.n[key + (i,)])/L.p[L.pdict[key]] for i in range(L.l[key])])
     p = L.p[L.pdict[key]]
 
-    tmp = squeeze(array([r*elem**(1/p) for elem in dirichlet(alpha,m).transpose()]))
+    # tmp = squeeze(array([r*elem**(1/p) for elem in dirichlet(alpha,m).transpose()]))
+    tmp = array([r*elem**(1/p) for elem in dirichlet(alpha,m).transpose()])
     for i in range(L.l[key]):
         I = key + (i,)
         if L.n[I] > 1:

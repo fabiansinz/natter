@@ -134,7 +134,7 @@ def fill_dict_with_defaults(dic):
         elif RD['support'][0]==0 and RD['support'][1]==np.inf:
             RD['proposal_low']=Gamma({'u':1.,'s':2.})
         else:
-            RD['proposal_low']=Gaussian({'n':n,'sigma':np.eye(n)*0.2})
+            RD['proposal_low']=Gaussian({'n':n,'sigma':np.eye(n)*0.8})
     if not 'proposal_high'  in dic.keys():
         if RD['support'][1]-RD['support'][0]<np.inf:
             RD['proposal_high']=Uniform({'n':n,

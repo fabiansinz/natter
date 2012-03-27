@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.1'
+version = '0.1.0'
 
 setup(name='natter',
       version=version,
@@ -11,7 +11,7 @@ setup(name='natter',
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
       author='Fabian Sinz, Sebastian Gerwinn, Lucas Theis, Philipp Lies',
-      author_email='',
+      author_email='natter@bethgelab.org',
       url='',
       license='',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),

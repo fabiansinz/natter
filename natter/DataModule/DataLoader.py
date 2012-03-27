@@ -1,4 +1,5 @@
 from sys import stdin, stdout
+import gzip, bz2, zipfile
 from natter.DataModule import Data
 from scipy import io
 #import cPickle as pickle #temporarily removed due to bugs in cPickle
@@ -7,16 +8,17 @@ from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
 
-def load(path):
+def load(path, **kwargs):
     """
-    
+
     tries to load data from a specified file by determining the file
     type from its extension.
 
     *mat* are interpreted as matlab files. In this case it tries to
     load the largest variable. If you know the variables name, use the
     loading method *matlab* for which you can specify the variable
-    name.
+    name. Uses scipy.io and with scipy <=0.10 only compatible with matlab
+    file format < v7.3.
 
     *dat* are interpreted as ascii files.
 
@@ -24,21 +26,31 @@ def load(path):
      with pickle (because cPickle (binary file, latest protocol) caused
      MemoryErrors for files > 1GB on loading)
 
+     *npz* are interpreted as numpy zip file. If the variable name is not
+     given using varname parameter the user is asked to select one variable.
+
+     *gz* are read as gzip compressed ascii file.
+
     :param path: Path to the data file.
     :type path: string
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
     pathjunks = path.split('.')
     if pathjunks[-1] == 'mat':
-        return matlab(path)
+        return matlab(path, **kwargs)
     elif pathjunks[-1] == 'pydat':
         return pydat(path)
     elif pathjunks[-1] == 'dat':
         return ascii(path)
     elif pathjunks[-1] == 'npz':
-        return loadnpz(path)
+        return loadnpz(path, **kwargs)
+    elif pathjunks[-1] == 'gz':
+        return ascii(path, open_file=gzip.open)
+    else:
+        raise ValueError('Could not determine file type. Please use one of the '+\
+                         'supported file formats. See documentation for details.')
 
 def matlab(path, varname=None):
     """
@@ -52,7 +64,7 @@ def matlab(path, varname=None):
     :type varname: string
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
     dat = io.loadmat(path,struct_as_record=True)
     if varname:
@@ -68,32 +80,32 @@ def matlab(path, varname=None):
                     thekey = k
         return Data(dat[thekey],'Matlab variable ' + thekey + ' from ' + path)
 
-def ascii(path):
+def ascii(path, open_file=open):
     """
-    Loads data from an ascii file. 
+    Loads data from an ascii file.
 
-    :param path: Path to the .mat file.
+    :param path: Path to the ascii file.
     :type path: string
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
-    f = open(path,'r')
+    f = open_file(path,'r')
     X = []
     for l in f:
         X.append([float(elem) for elem in l.rstrip().lstrip().split()])
     f.close()
     return Data(array(X),'Ascii file read from ' + path)
-    
+
 def pydat(path):
     """
     Loads a natter Data object which was stored with pickle.
 
-    :param path: Path to the .mat file.
+    :param path: Path to the .pydat file.
     :type path: string
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
     f = open(path,'r')
     dat = pickle.load(f)
@@ -105,13 +117,13 @@ def libsvm(path,n=1):
     Loads data from a file in libsvm sparse format. The dimensionality
     of the data must be specified in advance.
 
-    :param path: Path to the .mat file.
+    :param path: Path to the libsvm file.
     :type path: string
     :param n: Dimensionality of the data.
     :type n: int
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
     f = open(path,'r')
     L = f.readlines()
@@ -151,15 +163,15 @@ def loadnpz(path, varname=None, transpose=None):
     :type transpose: bool
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
-    
+
     """
     fin = np.load(path)
-    if varname:
+    if varname is not None:
         if fin.keys().count(varname) > 0:
             dat = atleast_2d(fin[varname])
         else:
             raise ValueError, 'Given variable name "%s" does not exist in file "%s".'%(varname,path)
-            
+
     else:
         stdout.write('Variables in "%s":\n'%(path))
         for var in fin.keys():
@@ -170,15 +182,14 @@ def loadnpz(path, varname=None, transpose=None):
             dat = atleast_2d(fin[var])
         else:
             raise ValueError, 'Given variable name "%s" does not exist in file "%s".'%(var,path)
-        
+
     if transpose == None:
         if dat.shape[0] > dat.shape[1]:
             transpose = True
         else:
             transpose = False
-        
+
     if transpose:
         return Data(dat.T,'npz data from ' + path)
     else:
         return Data(dat,'npz data from ' + path)
-
