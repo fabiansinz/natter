@@ -4,13 +4,14 @@ from natter.DataModule import Data
 from CompleteLinearModel import CompleteLinearModel
 from natter.Transforms import LinearTransform
 from scipy.special import gammaln
-from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros, eye
+from numpy import log,sum,array,dot,kron,ones,vstack,hstack,pi,sqrt,where,tril,diag,zeros, eye, outer
 from numpy.random import randn
 from mdp.utils import random_rot
 from scipy import weave
 from scipy.weave import converters
+from scipy.weave.build_tools import CompileError
 from copy import deepcopy
-
+from scipy.optimize import fmin_bfgs
 
 
 
@@ -31,10 +32,6 @@ class EllipticallyContourGamma(CompleteLinearModel):
     """
 
     def __init__(self,  *args,**kwargs):
-        """
-        
-        """
-
         # parse parameters correctly
         param = None
         if len(args) > 0:
@@ -135,10 +132,14 @@ class EllipticallyContourGamma(CompleteLinearModel):
         
     def loglik(self,data):
         """
-        
-        Arguments:
-        - `self`:
-        - `data`:
+        Computes the log likelihood of the given data and returns it
+        for each data point individually.
+
+        :param data: data
+        :type data: natter.DataModule.Data
+
+        :returns: array of log-likelihood values for each data point in data.
+        :rtype: numpy.array
         """
         n,m = data.size()
         squareData = self.param['W']*data
@@ -186,11 +187,18 @@ class EllipticallyContourGamma(CompleteLinearModel):
             }
             """
             X = data.X
-            weave.inline(code,
-                         ['W', 'X', 'WXXT', 'n','m'],
-                         type_converters=converters.blitz,
-                         compiler = 'gcc')
-            WXXT = WXXT[self.Wind[0],self.Wind[1],:]
+            try:
+                weave.inline(code,
+                             ['W', 'X', 'WXXT', 'n','m'],
+                             type_converters=converters.blitz,
+                             compiler = 'gcc')
+                WXXT = WXXT[self.Wind[0],self.Wind[1],:]
+            except Exception, e:
+                print "Failed to compile inline code.\nTraceback: %s\n\nFalling back to slow mode!"%(e)
+            WXXT    = zeros((len(v),m))
+            for k in xrange(m):
+                WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
+                    
             #print "difference norm: ",norm(WXXT-WXXT2)
 
             
@@ -207,4 +215,21 @@ class EllipticallyContourGamma(CompleteLinearModel):
         """
         Estimate the primaray parameters of the distribution based on  gradient descent.
         """
+
+        x0 = self.primary2array()
+        def f(x):
+            old = self.primary2array()
+            self.array2primary(x)
+            L = -sum(self.loglik(data))
+            self.array2primary(old)
+            return L
+        def df(x):
+            old = self.primary2array()
+            self.array2primary(x)
+            g = -self.dldtheta(data)
+            self.array2primary(old)
+            return g
+        xopt = fmin_bfgs(f,x0,fprime=df,disp=0)
+        self.array2primary(xopt)
+        
         
