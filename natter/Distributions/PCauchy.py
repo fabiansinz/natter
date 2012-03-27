@@ -64,7 +64,7 @@ class PCauchy(Distribution):
         
     def array2primary(self,ar):
         self.param['p'] = ar[0]
-        
+        return self
 
     def loglik(self,dat):
         """
