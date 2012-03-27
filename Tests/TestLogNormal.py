@@ -7,8 +7,8 @@ from natter.DataModule import Data
 
 class TestLogNormal(unittest.TestCase):
 
-    Tol = 1e-5
-    TolParam = 5*1e-2
+    Tol = 2e-2
+    TolParam = 1e-1
     
 
     def test_estimate(self):
@@ -34,7 +34,7 @@ class TestLogNormal(unittest.TestCase):
         p = Distributions.LogNormal({'mu':myu ,'s':mys})
         dat = p.sample(100)
         h = 1e-7
-        tol = 1e-4
+        tol = 1e-2
         y = np.array(dat.X) + h
         df = p.dldx(dat)
         df2 = (p.loglik(Data(y)) - p.loglik(dat))/h
