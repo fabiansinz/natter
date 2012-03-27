@@ -9,12 +9,13 @@ import os
 
 class TestLpGeneralizedNormal(unittest.TestCase):
 
-    matpath = os.path.abspath('../Tests/')
+    matpath = "/".join(os.path.abspath(__file__).split('/')[:-1])
 
     Tol = 1e-10
     TolParam = {'p':.1,'s':.45,'n':0}
     def test_loglik(self):
         print 'Testing log-likelihood of p-generalized normal distribution'
+        print __file__
         sys.stdout.flush()
         for k in range(5):
             print '\t--> test case ' + str(k)
