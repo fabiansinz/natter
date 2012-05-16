@@ -415,6 +415,8 @@ def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8,
     #    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
     
     x0, x1 = dat.split(2)
+    x0 = x0.X
+    x1 = x1.X
 
     if kwargs.has_key('U'):
         U = kwargs['U']
@@ -422,7 +424,7 @@ def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8,
         U = _symmetricOrth(np.random.randn(dat.dim(), dat.dim()))
 
     fOld = np.inf
-    fNew = _SSA_objective(U, x0.T, x1.T)
+    fNew = _SSA_objective(U, x0, x1)
     counter = 0
     m_init = 0.0
     m_max = 40.0
@@ -435,17 +437,17 @@ def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8,
     while ((fOld-fNew) > eps and counter < maxIterations) \
           or counter < minIterations:
         fOld = fNew
-        dU = _SSA_gradient(U, x0.T, x1.T)
+        dU = _SSA_gradient(U, x0, x1)
 
         m = m_init
 
         UTemp = _symmetricOrth(U - alpha/(2.**m)*dU)
-        fTemp = _SSA_objective(UTemp, x0.T, x1.T)
+        fTemp = _SSA_objective(UTemp, x0, x1)
 
         while fTemp > fOld and m < m_max:
             m += 1
             UTemp = _symmetricOrth(U - alpha/(2.**m)*dU)
-            fTemp = _SSA_objective(UTemp, x0.T, x1.T)
+            fTemp = _SSA_objective(UTemp, x0, x1)
 
         mset[np.mod(counter,m_history)] = m
         U = UTemp
@@ -467,7 +469,7 @@ def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8,
                   ' was %f. Setting new m_init'%(mset.mean()) +\
                   ' to %i\n'%(m_init)
             
-    return LinearTransform(SSA.U,'2D SSA filter computed on ' + dat.name)
+    return LinearTransform(U,'2D SSA filter computed on ' + dat.name)
 
 
 def mdpWrapper( dat, nodename, output, *args, **kwargs ):
