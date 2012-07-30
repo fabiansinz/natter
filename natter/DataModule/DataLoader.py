@@ -107,7 +107,7 @@ def pydat(path):
     :rtype: natter.DataModule.Data
 
     """
-    f = open(path,'r')
+    f = open(path,'rb')
     dat = pickle.load(f)
     f.close()
     return dat
