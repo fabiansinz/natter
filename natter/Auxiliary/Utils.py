@@ -44,6 +44,7 @@ def save(o,filename):
     """
     Saves object o to file filename via pickle. If filename does not
     have an extension, .pydat is added.
+    Uses highest available pickle protocol version
 
     :param o: pickleable object to save
     :type o: pickleable object
@@ -57,7 +58,7 @@ def save(o,filename):
     else:
         f = open(filename + '.pydat','w')
         
-    pickle.dump(o,f)
+    pickle.dump(o,f,pickle.HIGHEST_PROTOCOL)
     f.close()
 
 def prettyPrintDict(value):
