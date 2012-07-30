@@ -1,4 +1,4 @@
-import pickle
+import cPickle as pickle
 from natter import Auxiliary
 import types
 from natter.Logging.LogTokens import LogToken

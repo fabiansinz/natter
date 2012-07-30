@@ -2,8 +2,8 @@ from sys import stdin, stdout
 import gzip, bz2, zipfile
 from natter.DataModule import Data
 from scipy import io
-#import cPickle as pickle #temporarily removed due to bugs in cPickle
-import pickle
+import cPickle as pickle #cPickle bug seems to be fixed
+#import pickle
 from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
