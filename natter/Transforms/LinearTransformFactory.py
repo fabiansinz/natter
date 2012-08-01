@@ -241,22 +241,21 @@ def DCACQuadraturePairs2D(patch_size, num_quadrature_pairs=None):
     frequency and orientation are paired up, such that filters 1&2, 3&4, ... are quadrature
     pairs. Filter 0 is the DC component. If num_quadrature_pairs is not None then the
     DC component plus the #num_quadrature_pairs lowest quadrature pairs are returned.
-    Only implemented for uneven dimensional data.
+    Note that for even patch_size there is no set of quadrature pairs with full rank.
 
     :param patch_size: Int that determines the image patch size.
     :type patch_size: int
     :param num_quadrature_pairs: Number of quadrature pairs to return
-    :returns: A linear filter containing the DFT basis, DC filter as first component.
+    :type num_quadrature_pairs: int
+    :returns: A linear filter containing rearranged DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
 
     """
     if not type(patch_size) == types.IntType:
         raise TypeError('DCACQuadraturePairs2D requires single integer as parameter, not %s'%(type(patch_size)))
-    if np.mod(patch_size,2) == 0:
-        raise NotImplementedError('Quadrature pairs are only implemented for uneven dimensional data.')
 
     if num_quadrature_pairs is None:
-        num_quadrature_pairs = (patch_size-1)//2
+        num_quadrature_pairs = (patch_size**2-1)//2
 
     R = DFT2(patch_size)
     F = LinearTransform(np.zeros((1+num_quadrature_pairs*2, patch_size**2)), 'DC component + lowest %d quadrature pair Fourier components of %dx%d patches'%(num_quadrature_pairs, patch_size, patch_size))
