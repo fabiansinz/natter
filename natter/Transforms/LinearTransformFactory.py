@@ -262,7 +262,26 @@ def DCACQuadraturePairs2D(patch_size, num_quadrature_pairs=None):
     F.W[0,:] = R.W[0,:]
     Q = _get_lowest_Fourier_components(patch_size, num_quadrature_pairs)
     F.W[1:,:] = Q.W
+
     return F
+
+    #sh = patch_size
+    #num_quadrature_pairs = (sh-1)//2
+    #compnum = (sh**2-1)//2
+    #Aorder = np.zeros((sh,sh))
+    #Aorder[0,1:num_quadrature_pairs+1] = np.arange(1,num_quadrature_pairs+1)
+    #Aorder[0,num_quadrature_pairs+1:] = np.arange(num_quadrature_pairs, 0, -1)
+    #Aorder[1:num_quadrature_pairs+1,0] = np.arange(num_quadrature_pairs+1, 2*num_quadrature_pairs+1)
+    #Aorder[num_quadrature_pairs+1:,0] = np.arange(2*num_quadrature_pairs, num_quadrature_pairs, -1)
+    #Aorder[1:num_quadrature_pairs+1,1:] = np.arange(2*num_quadrature_pairs+1, compnum+1).reshape(num_quadrature_pairs, sh-1)
+    #Aorder[num_quadrature_pairs+1:,1:] = np.arange(compnum, 2*num_quadrature_pairs, -1).reshape(num_quadrature_pairs, sh-1)
+    #ind = np.argsort(Aorder.flatten())
+    #
+    #F2 = DFT2(sh)
+    #F2 = F2[ind,:]
+    #F2.addToHistory('Rearranged filters into quadrature pairs.')
+    #
+    #return F, F2
 
 def SubspaceEnergyWhitening(dat, hasDC=True):
     """
