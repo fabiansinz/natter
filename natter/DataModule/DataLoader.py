@@ -7,6 +7,10 @@ import cPickle as pickle #cPickle bug seems to be fixed
 from natter.Auxiliary import Errors
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
+try:
+    import h5py
+except:
+    h5py = None
 
 def load(path, **kwargs):
     """
@@ -48,6 +52,8 @@ def load(path, **kwargs):
         return loadnpz(path, **kwargs)
     elif pathjunks[-1] == 'gz':
         return ascii(path, open_file=gzip.open)
+    elif pathjunks[-1] == 'hdf5' and not h5py is None:
+        return hdf5(path)
     else:
         raise ValueError('Could not determine file type. Please use one of the '+\
                          'supported file formats. See documentation for details.')
@@ -193,3 +199,46 @@ def loadnpz(path, varname=None, transpose=None):
         return Data(dat.T,'npz data from ' + path)
     else:
         return Data(dat,'npz data from ' + path)
+
+def hdf5( filename ):
+    """hdf5( filename )
+    Loads the Data object from the given file in hdf5 format.
+
+    :param filename: name of the file
+    :type filename: string
+
+    :returns: Data object with the data from the specified file
+    :rtype: natter.DataModule.Data
+    """
+
+    fin = h5py.File(filename, 'r')
+    history = _hdf5GroupToList(fin['history'], 0)[0]
+    dat = Data(X=fin['X'][...], name=str(fin['name'][...]), history=history)
+    return dat
+
+def _hdf5GroupToList( grp, counter ):
+    """ _hdf5GroupToList( grp, counter )
+    Helper function which takes a h5py group object and parses it into a list
+    of stings and lists. Data sets will be converted to stings, subgroups are
+    lists. Important for importing the history of a Data object.
+
+    :param grp: h5py group object to parse
+    :type grp: h5py Group
+    :param counter: first index of the entries. Required to have the correct order again.
+    :type counter: int
+    :returns: list obtained from groups data sets and subgroups and new counter
+    :rtype: list, int
+    """
+    lst = []
+    for ii in xrange(len(grp)):
+        if type(grp[str(counter)]) == h5py._hl.group.Group:
+            tmplist, counter = _hdf5GroupToList( grp[str(counter)], counter+1 )
+            lst += [tmplist]
+        elif type(grp[str(counter)]) == h5py._hl.dataset.Dataset:
+            lst += [str(grp[str(counter)][...])]
+        else:
+            print "Found unknown h5py data type %s. Trying to parse to string."%(type(grp[str(counter)]))
+            lst += [str(grp[str(counter)][...])]
+        counter += 1
+    return lst, counter
+
