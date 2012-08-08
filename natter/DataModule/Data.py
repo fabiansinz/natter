@@ -1,4 +1,5 @@
 from __future__ import division
+import warnings
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
 from matplotlib.pyplot import scatter,text, figure, show
@@ -215,7 +216,11 @@ class Data(LogToken):
         :param hi: New history item.
         :type hi: string or list of strings
         """
-        self.history.append(hi)
+        if type(hi) == str or type(hi) == list:
+            self.history.append(hi)
+        else:
+            warnings.warn('Adding a non-string or non-list object to history is not supported. Converting %s to string "%s"'%(type(hi), str(hi)))
+            self.history.append(str(hi))
 
     def scale(self,s):
         """
