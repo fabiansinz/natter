@@ -529,7 +529,7 @@ class Data(LogToken):
         elif format=='ascii':
             savetxt(filename,self.X,'%.16e')
         elif format=='hdf5':
-            self.savehdf5(filename)
+            savehdf5(self, filename)
 
     def append(self,O):
         """
