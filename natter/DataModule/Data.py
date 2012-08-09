@@ -1,5 +1,6 @@
 from __future__ import division
 import warnings
+import numpy
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
 from matplotlib.pyplot import scatter,text, figure, show
@@ -384,6 +385,21 @@ class Data(LogToken):
             mu = mean(mean(self.X,1))
         self.X -= mu
         self.history.append('Centered on mean ' + str(mu) + ' over samples and dimensions')
+        return mu
+
+    def center_local_mean(self,mu=None):
+        """
+        Centers the data points on the mean over dimensions only.
+
+        :param mu: Mean over samples and dimensions.
+        :type mu: numpy.ndarray
+        :returns: Mean over samples and dimensions.
+        :rtype: numpy.ndarray
+        """
+        if mu == None or type(mu) != numpy.ndarray or mu.size != self.X.shape[0]:
+            mu = self.mean().reshape(-1,1)
+        self.X -= mu
+        self.history.append('Centered on mean ' + str(mu) + ' over dimensions')
         return mu
 
     def makeWhiteningVolumeConserving(self,method='project',D=None):
