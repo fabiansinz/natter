@@ -159,49 +159,51 @@ class EllipticallyContourGamma(CompleteLinearModel):
         n,m = data.size()
         squareData = self.param['W']*data
         squareData.X = sqrt(sum(squareData.X**2,axis=0))
-        if 'q' in self.primary:
-            gradG = self.param['q'].dldtheta(squareData)
-            ret = gradG
-        if 'W' in self.primary:
-            u = self.param['q'].param['u']
-            s = self.param['q'].param['s']
-            W = self.param['W'].W
-            wx2 = squareData.X
-            v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
-            WXXT    = zeros((n,n,m))
-            code = """
-            for (int i=0;i<n;i++){
-               for (int j=0;j<n;j++){
-                  for (int l=0;l<m;l++){
-                     for (int u=0;u<n;u++){
-                        WXXT(i,j,l) += W(i,u)*X(u,l)*X(j,l);
-                    }
-                  }
-               }
-            }
-            """
-            X = data.X
-            try:
-                from scipy import weave
-                from scipy.weave import converters
-                weave.inline(code,
-                             ['W', 'X', 'WXXT', 'n','m'],
-                             type_converters=converters.blitz,
-                             compiler = 'gcc')
-                WXXT = WXXT[self.Wind[0],self.Wind[1],:]
-            except Exception, e:
-                print "Failed to compile inline code.\nTraceback: %s\n\nFalling back to slow mode!"%(e)
-            WXXT    = zeros((len(v),m))
-            for k in xrange(m):
-                WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
-                    
-          
-            
-            gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T
+        for pa in self.primary:
+            if pa == 'q':
+                gradG = self.param['q'].dldtheta(squareData)
+                ret0 = gradG
+            if pa== 'W':
+                u = self.param['q'].param['u']
+                s = self.param['q'].param['s']
+                W = self.param['W'].W
+                wx2 = squareData.X
+                v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
+                WXXT    = zeros((n,n,m))
+                code = """
+                for (int i=0;i<n;i++){
+                   for (int j=0;j<n;j++){
+                      for (int l=0;l<m;l++){
+                         for (int u=0;u<n;u++){
+                            WXXT(i,j,l) += W(i,u)*X(u,l)*X(j,l);
+                        }
+                      }
+                   }
+                }
+                """
+                X = data.X
+                try:
+                    from scipy import weave
+                    from scipy.weave import converters
+                    weave.inline(code,
+                                 ['W', 'X', 'WXXT', 'n','m'],
+                                 type_converters=converters.blitz,
+                                 compiler = 'gcc')
+                    WXXT = WXXT[self.Wind[0],self.Wind[1],:]
+                except Exception, e:
+                    print "Failed to compile inline code.\nTraceback: %s\n\nFalling back to slow mode!"%(e)
+                WXXT    = zeros((len(v),m))
+                for k in xrange(m):
+                    WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
+                        
+              
+                
+                gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T
+                ret0 = gradW
             if len(ret)==0:
-                ret = gradW
+                ret = ret0
             else:
-                ret = vstack((ret,gradW))
+                ret = vstack((ret,ret0))
         return ret
         
                 
