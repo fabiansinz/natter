@@ -11,6 +11,8 @@ The natter toolbox requires the following python modules to be installed:
 
 * Matplotlib (http://matplotlib.sourceforge.net/) version 1.0.0 or higher
 
+* MPMath (http://code.google.com/p/mpmath/) version 0.17 or higher
+
 * Modular toolkit for Data Processing [mdp] (http://mdp-toolkit.sourceforge.net/) version 3.0 and higher
 
 
