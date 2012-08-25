@@ -201,7 +201,7 @@ class Gaussian(Distribution):
             if len(ret)==0:
                 ret = ret0
             else:
-                ret = vstack((ret,retC))
+                ret = vstack((ret,ret0))
         return ret
         
 
