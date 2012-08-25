@@ -1,5 +1,17 @@
+Installing
+==========
+
+Natter uses setuptools for the build and installation process. Therefore, to compile and install the toolbox on your system, unpack the archive file change to the project directory or change to the cloned git repository, and type::
+
+   python setup.py build
+   python setup.py install  
+ 
+  
+The following dependencies should automatically be installed via ``easy_install`` or ``pip``, provided these programs are installed.
+
+
 Dependencies
-============
+------------
 
 The natter toolbox requires the following python modules to be installed:
 
