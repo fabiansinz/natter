@@ -296,25 +296,27 @@ class FiniteMixtureDistribution(Distribution):
         n,m = dat.size()
         ret = array([])
         etas = log(self.param['alpha'][:-1]/(1.0- self.param['alpha'][:-1]))
-        if 'alpha' in self.primary:
-            ret=zeros((K-1,m))
-            dldp = zeros((K,m))
-            dpdeta = zeros((K-1,K))
-            for k in xrange(K-1):
-                dldp[k,:] = exp(self.param['P'][k].loglik(dat)-lp)
-                dpdeta[k,k] = logistic(etas[k])*logistic(-etas[k])
-            dldp[-1,:] = exp(self.param['P'][-1].loglik(dat)-lp)
-            dpdeta[:,-1]= -logistic(etas)*logistic(-etas)
-            ret = dot(dpdeta,dldp)
-        if 'P' in self.primary:
-            ret0 = self.param['P'][0].dldtheta(dat)
-            lp0  = self.param['P'][0].loglik(dat)
-            ret0 = ret0*exp(lp0-lp + log(self.param['alpha'][0]))
-            for k in xrange(1,K):
-                ret1 = self.param['P'][k].dldtheta(dat)
-                lp1  = self.param['P'][k].loglik(dat)
-                ret1 = ret1*exp(lp1-lp + log(self.param['alpha'][k]))
-                ret0 = vstack((ret0,ret1))
+        for pa in self.primary:
+            if pa == 'alpha':
+                ret=zeros((K-1,m))
+                dldp = zeros((K,m))
+                dpdeta = zeros((K-1,K))
+                for k in xrange(K-1):
+                    dldp[k,:] = exp(self.param['P'][k].loglik(dat)-lp)
+                    dpdeta[k,k] = logistic(etas[k])*logistic(-etas[k])
+                dldp[-1,:] = exp(self.param['P'][-1].loglik(dat)-lp)
+                dpdeta[:,-1]= -logistic(etas)*logistic(-etas)
+                ret0 = dot(dpdeta,dldp)
+            if pa == 'P':
+                ret0 = self.param['P'][0].dldtheta(dat)
+                lp0  = self.param['P'][0].loglik(dat)
+                ret0 = ret0*exp(lp0-lp + log(self.param['alpha'][0]))
+                for k in xrange(1,K):
+                    ret1 = self.param['P'][k].dldtheta(dat)
+                    lp1  = self.param['P'][k].loglik(dat)
+                    ret1 = ret1*exp(lp1-lp + log(self.param['alpha'][k]))
+                    ret0 = vstack((ret0,ret1))
+
             if len(ret)==0:
                 ret = ret0
             else:

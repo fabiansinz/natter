@@ -161,12 +161,12 @@ class Gamma(Distribution):
         """
         m = data.size(1)
         grad = zeros((len(self.primary),m))
-        ind =0
-        if 'u' in self.primary:
-            grad[ind,:] = log(data.X) - log(abs(self.param['s'])) - digamma(abs(self.param['u']))
-            ind +=1
-        if 's' in self.primary:
-            grad[ind,:] = data.X/abs(self.param['s']**2) - abs(self.param['u']/self.param['s'])
+        for ind, pa in enumerate(self.primary):
+            if pa == 'u':
+                grad[ind,:] = log(data.X) - log(abs(self.param['s'])) - digamma(abs(self.param['u']))
+                ind +=1
+            if pa == 's':
+                grad[ind,:] = data.X/abs(self.param['s']**2) - abs(self.param['u']/self.param['s'])
         return grad
      
 

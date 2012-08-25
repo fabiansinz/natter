@@ -199,12 +199,13 @@ class TruncatedGaussian(Distribution):
 #        phi = norm.pdf
         phi = lambda z: 1.0/sqrt(2*pi) * exp(-.5* z**2)
         Phi = norm.cdf
-        
-        if 'mu' in self.primary:
-            grad[ind,:] = -1.0/phi(s(dat.X))*phiprime(s(dat.X))/sigma + (phi(s(b))/sigma - phi(s(a))/sigma)/(Phi(s(b)) - Phi(s(a)))
-            ind +=1
-        if 'sigma' in self.primary:
-            grad[ind,:] = -1.0/sigma - 1.0/phi(s(dat.X))*phiprime(s(dat.X)) * s(dat.X)/sigma + (phi(s(b))*s(b)/sigma - phi(s(a))*s(a)/sigma)/(Phi(s(b)) - Phi(s(a)))
+
+        for ind, pa in enumerate(self.primary):
+            if pa == 'mu':
+                grad[ind,:] = -1.0/phi(s(dat.X))*phiprime(s(dat.X))/sigma + (phi(s(b))/sigma - phi(s(a))/sigma)/(Phi(s(b)) - Phi(s(a)))
+                ind +=1
+            if pa == 'sigma':
+                grad[ind,:] = -1.0/sigma - 1.0/phi(s(dat.X))*phiprime(s(dat.X)) * s(dat.X)/sigma + (phi(s(b))*s(b)/sigma - phi(s(a))*s(a)/sigma)/(Phi(s(b)) - Phi(s(a)))
         return grad
 
     

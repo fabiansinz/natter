@@ -91,12 +91,15 @@ class PCauchy(Distribution):
         
         """
 
-        n = float(self.param['n'])
-        p = float(self.param['p'])
-        
-        r = atleast_2d(sum(abs(dat.X)**p,axis=0))
-        return n/p - (n+1)/p**2.0*(digamma((n+1)/p)-digamma(1/p)) + (n+1)/p**2.0*log(1.0 + r)\
-               - (n+1)*sum(abs(dat.X)**p * log(abs(dat.X) + (abs(dat.X ) == 0.0)*1e-12),axis=0) / p / (1.0 + r)
+        if 'p' in self.primary:
+            n = float(self.param['n'])
+            p = float(self.param['p'])
+
+            r = atleast_2d(sum(abs(dat.X)**p,axis=0))
+            return n/p - (n+1)/p**2.0*(digamma((n+1)/p)-digamma(1/p)) + (n+1)/p**2.0*log(1.0 + r)\
+                   - (n+1)*sum(abs(dat.X)**p * log(abs(dat.X) + (abs(dat.X ) == 0.0)*1e-12),axis=0) / p / (1.0 + r)
+        else:
+            return array([])
 
 
     def d2ldtheta2(self,dat):

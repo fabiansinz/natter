@@ -168,9 +168,6 @@ class EllipticallyContourGamma(CompleteLinearModel):
             W = self.param['W'].W
             wx2 = squareData.X
             v = diag(1.0/diag(W))[self.Wind] # d(log(det))/dW
-            # WXXT    = zeros((len(v),m))
-            # for k in xrange(m):
-            #     WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
             WXXT    = zeros((n,n,m))
             code = """
             for (int i=0;i<n;i++){
@@ -198,9 +195,7 @@ class EllipticallyContourGamma(CompleteLinearModel):
             for k in xrange(m):
                 WXXT[:,k]= dot(W,outer(data.X[:,k],data.X[:,k]))[self.Wind]
                     
-            #print "difference norm: ",norm(WXXT-WXXT2)
-
-            
+          
             
             gradW = ((u-n)/wx2  -1/s)*WXXT*(1/wx2)  +kron(ones((m,1)),v).T# kron(ones((m,1)),inv(W.T).flatten()).T
             if len(ret)==0:

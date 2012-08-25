@@ -187,17 +187,19 @@ class Gaussian(Distribution):
         """
         ret = array([])
         n,m = dat.size()
-        if 'mu' in self.primary:
-            ret = dot(self.cholP,dot(self.cholP.T, dat.X -reshape(self.param['mu'].copy(),(n,1))))
-        if 'sigma' in self.primary:
-            v = diag(1.0/diag(self.cholP))[self.I]
-            retC = zeros((len(self.I[0]),m));
-            for i,x in enumerate(dat.X.T):
-                X = x - self.param['mu']
-                X = outer(X,X)
-                retC[:,i] = -dot(self.cholP.T,X).T[self.I]   + v
+        for pa in self.primary:
+            if 'mu' in self.primary:
+                ret0 = dot(self.cholP,dot(self.cholP.T, dat.X -reshape(self.param['mu'].copy(),(n,1))))
+
+            if 'sigma' in self.primary:
+                v = diag(1.0/diag(self.cholP))[self.I]
+                ret0 = zeros((len(self.I[0]),m));
+                for i,x in enumerate(dat.X.T):
+                    X = x - self.param['mu']
+                    X = outer(X,X)
+                    ret0[:,i] = -dot(self.cholP.T,X).T[self.I]   + v
             if len(ret)==0:
-                ret = retC
+                ret = ret0
             else:
                 ret = vstack((ret,retC))
         return ret
