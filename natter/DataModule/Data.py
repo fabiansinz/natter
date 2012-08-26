@@ -389,17 +389,17 @@ class Data(LogToken):
 
     def center_local_mean(self,mu=None):
         """
-        Centers the data points on the mean over dimensions only.
+        Centers the data points on the mean over samples only.
 
-        :param mu: Mean over samples and dimensions.
+        :param mu: Mean over samples which shall be subtracted.
         :type mu: numpy.ndarray
-        :returns: Mean over samples and dimensions.
+        :returns: Mean over samples which was used for subtraction.
         :rtype: numpy.ndarray
         """
         if mu == None or type(mu) != numpy.ndarray or mu.size != self.X.shape[0]:
             mu = self.mean().reshape(-1,1)
         self.X -= mu
-        self.history.append('Centered on mean ' + str(mu) + ' over dimensions')
+        self.history.append('Centered on mean ' + str(mu) + ' over samples')
         return mu
 
     def makeWhiteningVolumeConserving(self,method='project',D=None):
