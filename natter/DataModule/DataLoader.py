@@ -2,7 +2,7 @@ from sys import stdin, stdout
 import gzip, bz2, zipfile
 from natter.DataModule import Data
 from scipy import io
-import cPickle as pickle #cPickle bug seems to be fixed
+import pickle #cPickle bug seems to be fixed
 #import pickle
 from natter.Auxiliary import Errors, hdf5GroupToList
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
