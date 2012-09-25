@@ -6,7 +6,6 @@ from natter.Auxiliary.ImageUtils import shiftImage, bilinearInterpolation
 from numpy.linalg import cholesky
 from os import listdir
 from sys import stdout
-import Image
 from scipy.ndimage.interpolation import rotate, zoom
 #from numpy.fft import fft2
 
@@ -17,7 +16,7 @@ def gratings(p,T,omega,tau):
     Creates a data object that contains gratings on pxp patches. The
     maximal and minimal amplitude of the gratings is 1. The functional
     form of the grating is
-    
+
     :math:`\\cos( \\frac{2*\\pi}{p} \\langle\\mathbf \\omega,\\mathbf n\\rangle + \\frac{2*\\pi}{T} \\tau\\cdot t )`
 
     where :math:`t\in \{0,...,T-1\}` and :math:`\mathbf\omega\in\{0,...p\}^2`.
@@ -28,7 +27,7 @@ def gratings(p,T,omega,tau):
     points and len(tau) the length of tau. The ordering in the data
     object will be the following
 
-    
+
     +---------------------------------------+---------------------------------+-----+
     |            tau[0]                     |            tau[1]               | ... |
     +----------------+----------------+-----+----------------+----------------+-----+
@@ -36,39 +35,39 @@ def gratings(p,T,omega,tau):
     +----------------+----------------+-----+----------------+----------------+-----+
     | 0, 1, ..., T-1 | 0, 1, ..., T-1 | ... | 0, 1, ..., T-1 | 0, 1, ..., T-1 | ... |
     +----------------+----------------+-----+----------------+----------------+-----+
-    
+
     i.e. the first T patches have spatial frequency omega[:,0] and
     temporal frequency tau[0], the next T patches have spatial
     frequency omega[:,1] and spatial frequency tau[0], and so on.
 
     :param p: patch size (patch is pxp)
-    :type p: int 
+    :type p: int
     :param T: patch size (patch is pxp)
-    :type T: int 
+    :type T: int
     :param omega: frequency vectors
     :type omega: numpy.array of shape 2 x m
     :param tau: temporal frequencies
     :type tau: numpy.array of shape 1 x len(tau)
-    :returns: a data object containing the gratings 
+    :returns: a data object containing the gratings
     :rtype: natter.DataModule.Data
     """
 
-    
+
     if len(omega.shape) == 1:
         omega = omega.reshape((2,1))
-    
+
     m = omega.shape[1]
     t = max(tau.shape)
 
-    
+
     # sampling points
     [x,y] = meshgrid(arange(p),arange(p))
     X = vstack((x.reshape((1,p**2),order='F'),y.reshape((1,p**2),order='F'))) # X = 2 X p^2
     X = kron(ones((1,T*m*t)),X) # make T*m*t copies of X
     X = vstack((X,kron(ones((1,m*t)),kron(arange(T),ones((1,p**2))))))
-    
+
     # frequencies
-    W = kron(omega / p,ones((1,T*p**2))) 
+    W = kron(omega / p,ones((1,T*p**2)))
     W = kron(ones((1,t)),W)
     W = vstack((W,kron(tau/T,ones((1,T*m*p**2)))))
 
@@ -103,7 +102,7 @@ def gauss(n,m,mu = None, sigma = None):
     :type sigma: numpy.array
     :returns: Data object with sampled patches
     :rtype: natter.DataModule.Data
-    
+
     """
     if not mu == None:
         mu = reshape(mu,(n,1))
@@ -129,24 +128,24 @@ def img2PatchRand(img, p, N):
     :type N: int
     :returns: Data object with sampled patches
     :rtype: natter.DataModule.Data
-    
+
     """
 
     ny,nx = shape(img)
 
     p1 = p - 1
-  
+
     X = zeros( ( p*p, N))
 
     stdout.flush()
     for ii in xrange(int(N)):
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             xi = floor( rand() * ( nx - p))
             yi = floor( rand() * ( ny - p))
             ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
             X[:,ii] = ptch.flatten('F')
-  
+
     name = "%d %dX%d patches" % (N,p,p)
     return Data(X, name)
 
@@ -156,21 +155,21 @@ def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
 
     - change image all N saccades
     - sigma is std of Gaussian for Brownian motion
-    
+
     """
     if plot:
         # plotting for debugging
         from matplotlib.pyplot import show, figure,cm
-    
+
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     M = len(files)
     t = 0
     I = None
-    
-    
+
+
 
     while True:
         xiold = NaN
@@ -192,7 +191,7 @@ def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
             ax.axis('tight')
 
 
-            
+
         ny,nx = I.shape
         stdout.write('\tLoaded image %s' % (filename,))
         stdout.flush()
@@ -203,12 +202,12 @@ def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
             t = 0
             stayTime = exponential(scale=mu)
 
-                
+
             xi = randint(nx - p)
             yi = randint( ny - p)
 
             while t < sampFreq*stayTime:
-                if plot: 
+                if plot:
                     ax.plot([xiold+p/2.0,xi+p/2.0],[yiold+p/2.0,yi+p/2.0],'o-r')
 
                 ptch = I[ yi:yi+p, xi:xi+p]
@@ -217,7 +216,7 @@ def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
                 tmp = round(sqrt(1.0/sampFreq)*randn(2)*sigma)
                 while yi + tmp[0]+p >= ny or xi + tmp[1] +p >= nx or  yi + tmp[0] < 0 or xi + tmp[1] < 0:
                     tmp = round(sqrt(1.0/sampFreq)*randn(2)*sigma)
-                    
+
                 xiold = xi
                 yiold = yi
                 yi += tmp[0]
@@ -230,11 +229,11 @@ def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
         stdout.write('\tFetched %i patches \n'% (samplecounter,))
         stdout.flush()
 
-        
 
-        
 
-    
+
+
+
 def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
     """
 
@@ -251,14 +250,14 @@ def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
     :type p: int
     :param loadfun: function handle of the load function
     :param samplefunc: function handle of the sampling function
-    
+
     """
     files = listdir(dir)
     M = len(files)
     mpf = ceil(m/M)
 
     # load and sample first image
-    
+
     for i in xrange(M):
         I = loadfunc(dir + files[i])
         print "\tLoading %d %dx%d patches from %i X %i size %s" %(mpf,p,p,I.shape[0],I.shape[1],dir + files[i] )
@@ -266,7 +265,7 @@ def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
         X = samplefunc(I, p, mpf).X
         for j in xrange(X.shape[1]):
             yield X[:,j]
-    return 
+    return
 
 def sampleWithIterator(theIterator,m,transformfunc = None):
     """
@@ -294,7 +293,7 @@ def sampleWithIterator(theIterator,m,transformfunc = None):
             X[:,count] = transformfunc(x)
         else:
             X[:,count] = x
-            
+
         count += 1
         if count == m:
             break
@@ -302,13 +301,13 @@ def sampleWithIterator(theIterator,m,transformfunc = None):
         name = '%i transformed data points sampled with iterator.' % (m, )
     else:
         name = '%i data points sampled with iterator.' % (m, )
-        
+
     return Data(X,name)
-    
+
 def sample(theIterator,m,transformfunc = None):
     """
     See doc for sampleWithIterator.
-    """    
+    """
     return sampleWithIterator(theIterator,m,transformfunc)
 
 def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
@@ -329,7 +328,7 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     :returns: Data object with the sampled image patches
     :rtype: natter.DataModule.Data
 
-    
+
     """
     files = listdir(dir)
     M = len(files)
@@ -339,14 +338,14 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[0] )
     stdout.flush()
     dat = img2PatchRand(loadfunc(dir + files[0]), p, mpf)
-    
+
     for i in xrange(1,M):
         print "Loading %d %dx%d patches from %s" %(mpf,p,p,dir + files[i] )
         stdout.flush()
         dat.append(samplefunc(loadfunc(dir + files[i]), p, mpf))
     return dat
-        
-        
+
+
 # if __name__=="__main__":
 #     from numpy import *
 #     from natter.DataModule import DataSampler
@@ -360,7 +359,7 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
 #     z = fft2(reshape(dat.X[:,1],(n,n),order='F'))
 #     for i in xrange(n):
 #         print "\t".join(["%.2f + i%.2f" % (real(elem), imag(elem)) for elem in z[i,:]])
-        
+
 
 def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F'):
     """
@@ -374,7 +373,7 @@ def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=
     :param p: patch size
     :type p: int
     :param samples_per_file: number of patches to sample from one image
-    :type samples_per_file: int   
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
@@ -382,11 +381,11 @@ def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=
     :type orientation: string
     :returns: Iterator that samples from all files
     :rtype: Iterator
-    
+
     """
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
@@ -396,26 +395,26 @@ def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=
             sample_index = 0
             filename = dir + files[int(rand()*number_files)]
             img = loadfunc(filename)
-            
+
             ny,nx = img.shape
             width_limit = nx - p - borderwidth
             height_limit = ny - p - borderwidth
             sampleImg = False
             stdout.write('\tSampling %i X %i patches from %s\n' % (p,p,filename))
             stdout.flush()
-           
+
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             xi = randint(low=borderwidth, high=width_limit)
             yi = randint(low=borderwidth, high=height_limit)
             ptch = img[ yi:yi+p, xi:xi+p]
             X = ptch.flatten(orientation)
-        
+
         sample_index += 1
         yield X
         if sample_index == samples_per_file:
             sampleImg = True
-  
+
     return
 
 def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', shiftDistribution=None):
@@ -430,7 +429,7 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
     :param p: patch size
     :type p: int
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
-    :type samples_per_file: int    
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
@@ -440,14 +439,14 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
     :type shiftDistribution: natter.Distributions.Distribution
     :returns: Iterator that samples from all files
     :rtype: Iterator
-    
+
     """
     if shiftDistribution == None:
         raise ValueError, 'shiftDistribution cannot be None. Use e.g. Uniform(n=2, low=-1.0, high=1.0)'
 
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
@@ -460,7 +459,7 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
             img2 = empty_like(img)
             shift = shiftDistribution.sample(1).X.flatten()
             img2[borderwidth:-borderwidth, borderwidth:-borderwidth] = shiftImage(img[borderwidth:-borderwidth, borderwidth:-borderwidth], shift)
-            
+
             ny,nx = img.shape
             offset = ceil((shift + abs(shift))/2)
             width_limit = nx - p - borderwidth - abs(ceil(shift[-1]))
@@ -469,20 +468,20 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
             stdout.write('\tSampling %i X %i patches from %s with shift ('%(p,p,filename) \
                          + shift.size*'%.3f, '%tuple(shift) + '\b\b)\n')
             stdout.flush()
-           
+
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             xi = randint(low=borderwidth+offset[-1], high=width_limit)
             yi = randint(low=borderwidth+offset[0], high=height_limit)
             X = img[ yi:yi+p, xi:xi+p].flatten(orientation)
             Y = img2[ yi:yi+p, xi:xi+p].flatten(orientation)
             ptch = hstack((X.flatten(), Y.flatten()))
-        
+
         sample_index += 1
         yield X, Y
         if sample_index == samples_per_file:
             sampleImg = True
-  
+
     return
 
 def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orientation='F'):
@@ -497,12 +496,12 @@ def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orien
     :param p: patch size
     :type p: int
     :param powerspectrum_sample_size: number of patches to sample from sampler for power spectrum
-    :type powerspectrum_sample_size: int   
+    :type powerspectrum_sample_size: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
     :type orientation: string
     :returns: Iterator that samples from all files
     :rtype: Iterator
-    
+
     """
 
     patches = zeros((p**2, powerspectrum_sample_size))
@@ -518,7 +517,7 @@ def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orien
         phi = rand(p,p)*2*pi - pi
         X = fft.ifft2(sqrt(powerspec)*exp(1J*phi), axes=(0,1)).real.flatten(orientation)
         yield X
-  
+
     return
 
 def sampleSequenceWithIterator(theIterator, m):
@@ -532,7 +531,7 @@ def sampleSequenceWithIterator(theIterator, m):
     :param m: number of patch pairs to sample
     :type m: int
     :returns: Data object with 2*m samples
-    :rtype: natter.DataModule.Data    
+    :rtype: natter.DataModule.Data
     """
     count = 1
     x0,y0 = theIterator.next()
@@ -549,7 +548,7 @@ def sampleSequenceWithIterator(theIterator, m):
     return Data(X,'Sequence of %i data pairs sampled with iterator.' % (m, ))
 
 
-def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', rotationDistribution=None, interpolation=Image.BILINEAR):
+def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=0, orientation='F', rotationDistribution=None):
     """
 
     Samples pxp sequences from images in dir. Transformation applied if a rotation
@@ -563,7 +562,7 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
     :param p: patch size
     :type p: int
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
-    :type samples_per_file: int    
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
@@ -571,24 +570,22 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
     :type orientation: string
     :param rotationDistribution: 1D distribution to sample shift steps from
     :type rotationDistribution: natter.Distributions.Distribution
-    :param interpolation: Python Image Library interpolation type for rotation, default Image.BILINEAR
-    :type interpolation: Integer    
     :returns: Iterator that samples from all files
     :rtype: Iterator
-    
+
     """
     if rotationDistribution == None:
         raise ValueError, 'rotationDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
 
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
     # to avoid artifacts from the undefined regions outside of the patch during rotation
-    # we extend the source patch such that there are no undefined pixels 
-    width_ext = ceil(p * (sqrt(2)-1)) 
+    # we extend the source patch such that there are no undefined pixels
+    width_ext = ceil(p * (sqrt(2)-1))
     w = p+2*width_ext
 
     while True:
@@ -596,35 +593,34 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
             sample_index = 0
             filename = dir + files[int(rand()*number_files)]
             img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
-            
+
             ny,nx = img.shape
             width_limit = nx - w
             height_limit = ny - w
             sampleImg = False
             stdout.write('\tSampling %i X %i rotating patch sequences from %s\n'%(p,p,filename))
             stdout.flush()
-           
+
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             xi = randint(low=0, high=width_limit)
             yi = randint(low=0, high=height_limit)
             phi = rotationDistribution.sample(1).X[0,0]
             Xsource = img[ yi:yi+w, xi:xi+w]
-            #Ysource = asarray(Image.fromarray(Xsource).rotate(shift, interpolation))
             Ysource = rotate( Xsource, phi, reshape=False)
-            
+
             X = Xsource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
             Y = Ysource[width_ext:width_ext+p,width_ext:width_ext+p].flatten(orientation)
             ptch = hstack((X.flatten(), Y.flatten()))
-        
+
         sample_index += 1
         yield X, Y
         if sample_index == samples_per_file:
             sampleImg = True
-  
+
     return
 
-def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', scalingDistribution=None, interpolation=Image.BILINEAR, upper_limit=2.0, lower_limit=0.5):
+def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', scalingDistribution=None, upper_limit=2.0, lower_limit=0.5):
     """
 
     Samples pxp sequences from images in dir. Transformation applied is scaling. If scalingDistribution is
@@ -640,7 +636,7 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     :param patch_size: patch size
     :type patch_size: int
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
-    :type samples_per_file: int    
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
@@ -648,37 +644,35 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     :type orientation: string
     :param scalingDistribution: 1D or 2D distribution to sample shift steps from
     :type scalingDistribution: natter.Distributions.Distribution
-    :param interpolation: Python Image Library interpolation type for scaling (default Image.BILINEAR)
-    :type interpolation: Integer
     :param upper_limit: Upper limit for scaling (default 2.0)
     :type upper_limit: Float
     :param lower_limit: Lower limit for scaling (default 0.5)
     :returns: Iterator that samples from all files
     :type lower_limit: Float
     :rtype: Iterator
-    
+
     """
     if scalingDistribution == None:
         raise ValueError, 'scalingDistribution cannot be None. Use e.g. Uniform(n=2, low=0.5, high=2.0)'
     elif scalingDistribution.param['n'] > 2:
         stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
-    
+
 
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
     # to avoid artifacts from the undefined regions outside of the patch during rotation
-    # we extend the source patch such that there are no undefined pixels 
+    # we extend the source patch such that there are no undefined pixels
 
     while True:
         if sampleImg:
             sample_index = 0
             filename = dir + files[int(rand()*number_files)]
             img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
-            
+
             ny,nx = img.shape
             sampleImg = False
             stdout.write('\tSampling %i X %i scaling patch sequences from %s\n'%(patch_size,patch_size,filename))
@@ -687,16 +681,16 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             height_limit_up = floor(ny - upper_limit*patch_size)
             width_limit_low = ceil(upper_limit/2.0*patch_size)
             height_limit_low = ceil(upper_limit/2.0*patch_size)
-            
-           
+
+
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             randSample = scalingDistribution.sample(1).X
             if randSample.size == 1:
                 scale = array((randSample[0,0], randSample[0,0]))
             else:
                 scale = array((randSample[0,0], randSample[1,0]))
-            
+
             if scale[0] > upper_limit:
                 scale[0] = upper_limit
             elif scale[0] < lower_limit:
@@ -705,7 +699,7 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
                 scale[1] = upper_limit
             elif scale[1] < lower_limit:
                 scale[1] = lower_limit
-                
+
             new_width = round(patch_size*scale[0])
             new_height = round(patch_size*scale[1])
 
@@ -716,20 +710,19 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
             xinew = int((xi + patch_size/2) - new_width/2)
 
             #stdout.write('%i %i %i %i %i %i %i\n'%(sample_index, xi, yi, xinew, yinew, new_height, new_width))
-            
+
             Xsource = img[ yinew:yinew+new_height, xinew:xinew+new_width]
-            #Ysource = asarray(Image.fromarray(Xsource).resize((patch_size, patch_size), interpolation))
             Ysource = zoom(Xsource, (patch_size/new_height, patch_size/new_width))
-            
+
             X = img[ yi:yi+patch_size, xi:xi+patch_size].flatten(orientation)
             Y = Ysource.flatten(orientation)
             ptch = hstack((X.flatten(), Y.flatten()))
-        
+
         sample_index += 1
         yield X, Y
         if sample_index == samples_per_file:
             sampleImg = True
-  
+
     return
 
 def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc, borderwidth=0, orientation='F', translationDistribution=None, rotationDistribution=None, scalingDistribution=None, upper_limit=2.0, lower_limit=0.5, debug=False):
@@ -750,28 +743,26 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
     :param patch_size: patch size
     :type patch_size: int
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
-    :type samples_per_file: int    
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
     :type orientation: string
     :param translationDistribution: 2D distribution to sample shift steps from
-    :type translationDistribution: natter.Distributions.Distribution    
+    :type translationDistribution: natter.Distributions.Distribution
     :param rotationDistribution: 1D distribution to sample shift steps from
-    :type rotationDistribution: natter.Distributions.Distribution    
+    :type rotationDistribution: natter.Distributions.Distribution
     :param scalingDistribution: 1D or 2D distribution to sample shift steps from
     :type scalingDistribution: natter.Distributions.Distribution
-    :param interpolation: Python Image Library interpolation type for scaling (default Image.BILINEAR)
-    :type interpolation: Integer
     :param upper_limit: Upper limit for scaling (default 2.0)
     :type upper_limit: Float
     :param lower_limit: Lower limit for scaling (default 0.5)
     :returns: Iterator that samples from all files
     :type lower_limit: Float
     :rtype: Iterator
-    
-    """    
+
+    """
 
     if translationDistribution == None:
         raise ValueError, 'translationDistribution cannot be None. Use e.g. Uniform(n=2, low=-5.0, high=5.0)'
@@ -785,24 +776,24 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
         raise ValueError, 'scalingDistribution cannot be None. Use e.g. Uniform(n=1, low=0.0, high=360.0)'
     elif scalingDistribution.param['n'] > 2:
         stdout.write('WARNING: scalingDistribution has more dimensions than needed. Using only first 2.\n')
-    
+
 
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
     seed = zeros(2)
     pw = patch_size
-    ph = patch_size    
+    ph = patch_size
 
     while True:
         if sampleImg:
             sample_index = 0
             filename = dir + files[int(rand()*number_files)]
             img = loadfunc(filename)[borderwidth:-borderwidth, borderwidth:-borderwidth]
-            
+
             ny,nx = img.shape
             sampleImg = False
             stdout.write('\tSampling %i X %i patch sequences from %s\n'%(patch_size,patch_size,filename))
@@ -838,14 +829,14 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
         if scale[1] > upper_limit:
             scale[1] = upper_limit
         elif scale[1] < lower_limit:
-            scale[1] = lower_limit        
+            scale[1] = lower_limit
 
         randSample = translationDistribution.sample(1).X
         if randSample.size == 1:
             shift = array((randSample[0,0], randSample[0,0]))
         else:
             shift = array((randSample[0,0], randSample[1,0]))
-        
+
         R = array(((cos(alpha), sin(alpha)),(-sin(alpha),cos(alpha))))
         S = array(((scale[0], 0),(0, scale[1])))
 
@@ -862,18 +853,18 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
             sampleImg = True
             print 'Ran out of image. Restart.'
             continue
-        
+
         prev_patch = patch
         patch = bilinearInterpolation(img, grid_vectors_abs)
-        
+
         sample_index += 1
         if debug:
             yield prev_patch, patch, grid_vectors_abs, img
         else:
             yield prev_patch, patch
-        
+
         if sample_index == samples_per_file:
-            sampleImg = True    
+            sampleImg = True
 
 
 def sequenceFromMovieData( mov, p, borderwidth=0, orientation='F', timelag=1 ):
@@ -881,7 +872,7 @@ def sequenceFromMovieData( mov, p, borderwidth=0, orientation='F', timelag=1 ):
     Samples pxp patches from the 3D array mov with given timelag
 
     :param mov: 3D array with dimensions h x w x t
-    
+
     """
     h, w, t = mov.shape
 
@@ -910,7 +901,7 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
     :param p: patch size
     :type p: int
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
-    :type samples_per_file: int    
+    :type samples_per_file: int
     :param loadfunc: function handle of the load function
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
@@ -920,7 +911,7 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
     :type shiftDistribution: natter.Distributions.Distribution
     :returns: Iterator that samples from all files
     :rtype: Iterator
-    
+
     """
     if shiftDistribution == None:
         raise ValueError, 'shiftDistribution cannot be None. Use e.g. Uniform(n=2, low=-1.0, high=1.0)'
@@ -937,7 +928,7 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
 
     if dir[-1] != '/':
         dir += '/'
-        
+
     files = listdir(dir)
     number_files = len(files)
     sampleImg = True
@@ -950,10 +941,10 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
             img2 = empty_like(img)
             shift = shiftDistribution.sample(1).X.flatten()
             img2[borderwidth:-borderwidth, borderwidth:-borderwidth] = shiftImage(img[borderwidth:-borderwidth, borderwidth:-borderwidth], shift)
-            
+
             ny,nx = img.shape
             offset = ceil((shift + abs(shift))/2)
-            width_ext = ceil(p * (sqrt(2)-1)) 
+            width_ext = ceil(p * (sqrt(2)-1))
             w = p+2*width_ext
             width_limit = nx - abs(ceil(shift[-1])) - w - upper_limit*p
             height_limit = ny - abs(ceil(shift[0])) - w - upper_limit*p
@@ -963,9 +954,9 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
             stdout.write('\tSampling %i X %i patches from %s with shift ('%(p,p,filename) \
                          + shift.size*'%.3f, '%tuple(shift) + '\b\b)\n')
             stdout.flush()
-           
+
         ptch = array([NaN])
-        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0): 
+        while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
             xi = randint(low=width_min+offset[-1], high=width_limit)
             yi = randint(low=height_min+offset[0], high=height_limit)
             phi = rotationDistribution.sample(1).X[0,0]
@@ -974,7 +965,7 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
                 scale = array((randSample[0,0], randSample[0,0]))
             else:
                 scale = array((randSample[0,0], randSample[1,0]))
-            
+
             if scale[0] > upper_limit:
                 scale[0] = upper_limit
             elif scale[0] < lower_limit:
@@ -983,12 +974,12 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
                 scale[1] = upper_limit
             elif scale[1] < lower_limit:
                 scale[1] = lower_limit
-                
+
             new_width = round(p*scale[0])
             new_height = round(p*scale[1])
 
             yinew = int((yi + p/2) - new_height/2 - width_ext)
-            xinew = int((xi + p/2) - new_width/2 - width_ext)            
+            xinew = int((xi + p/2) - new_width/2 - width_ext)
             X = img[ yi:yi+p, xi:xi+p].flatten(orientation)
 
             if phi == 0.0:
@@ -1001,12 +992,12 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
                 Y = Ysource[width_ext:new_height+width_ext,width_ext:new_width+width_ext].flatten(orientation)
             else:
                 Y = zoom( Ysource[width_ext:new_height+width_ext,width_ext:new_width+width_ext], (p/new_height, p/new_width)).flatten(orientation)
-            
+
             ptch = hstack((X.flatten(), Y.flatten()))
-        
+
         sample_index += 1
         yield X, Y
         if sample_index == samples_per_file:
             sampleImg = True
-  
+
     return
