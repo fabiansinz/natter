@@ -4,7 +4,7 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
 
 .. toctree::
    :maxdepth: 2
-   
+
    Auxiliary_Decorators.rst
    Auxiliary_Entropy.rst
    Auxiliary_ImageUtils.rst
@@ -15,8 +15,8 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    Auxiliary_Utils.rst
 """
 
-from Utils import save, debug , profileFunction
-import Errors 
+from Utils import save, debug , profileFunction, savehdf5
+import Errors
 import Optimization
 import Plotting
 import Numerics
@@ -31,5 +31,5 @@ def prettyPrintDict(d):
     for k ,v in d.items():
         s += str(k) + ": " + str(v) + "\n"
     return s
-        
-        
+
+

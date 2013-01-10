@@ -1,4 +1,4 @@
-import pickle
+import cPickle as pickle
 from natter import Auxiliary
 import types
 from natter.Logging.LogTokens import LogToken
@@ -83,7 +83,7 @@ def load(path):
     :returns: The loaded object.
     :rtype: natter.Transforms.Transform
     """
-    f = open(path,'r')
+    f = open(path,'rb')
     ret = pickle.load(f)
     f.close()
     return ret

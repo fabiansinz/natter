@@ -1,4 +1,4 @@
-import pickle
+import cPickle as pickle
 import os
 import cProfile
 # import lsprofcalltree
@@ -7,7 +7,10 @@ from natter.Auxiliary.Errors import SpecificationError
 from numpy.linalg import cholesky
 from numpy import array, eye, dot, tile
 from numpy.random import randn
-
+try:
+    import h5py
+except:
+    h5py = None
 
 def parseParameters(args,kwargs):
     """
@@ -44,21 +47,71 @@ def save(o,filename):
     """
     Saves object o to file filename via pickle. If filename does not
     have an extension, .pydat is added.
+    Uses highest available pickle protocol version
 
     :param o: pickleable object to save
     :type o: pickleable object
     :param filename: name of the file
     :type filename: string
-    
+
     """
     tmp = filename.split('.')
     if tmp[-1] == 'pydat':
         f = open(filename,'w')
     else:
         f = open(filename + '.pydat','w')
-        
-    pickle.dump(o,f)
+
+    pickle.dump(o,f,pickle.HIGHEST_PROTOCOL)
     f.close()
+
+def savehdf5( dat, filename ):
+    """savehdf5( dat, filename )
+    Saves the Data object in hdf5 format. Requires h5py and hdf5>1.8.3 installed.
+    Adds .hdf5 to the end of the filename if filename does not end on .hdf5
+
+    :param dat: natter Data object
+    :type dat: natter.DataModule.Data
+    :param filename: name of the file
+    :type filename: string
+    """
+    if h5py is None:
+        raise NotImplementedError('The module h5py could not be loaded, savehdf is therefore not available.')
+
+    if filename.split('.')[-1].lower() != 'hdf5':
+        filename += '.hdf5'
+
+    fout = h5py.File(filename, 'w')
+    fout.create_dataset('X', data=dat.X)
+    fout.create_dataset('name', data=dat.name)
+    hist = fout.create_group('history')
+    saveListToHDF5(hist, dat.history, 0)
+    fout.close()
+
+def saveListToHDF5(fout, lst, counter):
+    """saveListToHDF5(fout, lst, couter)
+    Helper function to recursively save the embedded lists of the Data history
+    to the hdf5 file in a recoverable way.
+
+    :param fout: h5py stream (writable)
+    :type fout: h5py.File or hpy5.Group object
+    :param lst: list object which shall be stored
+    :type lst: list
+    :param counter: Counter of the history object, to keep order
+    :type counter: int
+    :returns: New counter
+    ;rtype: int
+    """
+    for item in lst:
+        if type(item) == str:
+            fout.create_dataset('%i'%(counter), data=item)
+        elif type(item) == list:
+            grp = fout.create_group('%i'%(counter))
+            counter = saveListToHDF5(grp, item, counter+1)
+        else:
+            print 'Unknown data type "%s" found. Casting to string.'%(type(item))
+            fout.create_dataset('%i'%(counter), data=str(item))
+        counter += 1
+    return counter
 
 def prettyPrintDict(value):
     """
@@ -67,7 +120,7 @@ def prettyPrintDict(value):
     :param value: dictionary to transform into a string
     :type value: dictionary
     :returns: string representation of the dictionary 'key : value' separated by lines
-    :rtype: string 
+    :rtype: string
     """
     s = "\n"
     s+= 40*"=" + "\n"
@@ -94,13 +147,13 @@ def debug():
     Invokes a debugger at the point where it is called, but only if
     the Ipython-shell is available.
     """
-    
+
     if HaveIpython:
         Tracer()
     else:
         return
-    
-    
+
+
 
 
 
@@ -113,7 +166,7 @@ def profileFunction(f):
 
     :param f: function handle of the function to profile.
     :type f: python-function
-       
+
     """
     filename = '/tmp/profile.prof'
     p = cProfile.Profile()

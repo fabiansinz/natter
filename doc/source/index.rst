@@ -12,13 +12,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
+   install.rst
    tutorial.rst
    Auxiliary.rst
    DataModule.rst
    Distributions.rst
    Logging.rst
    Transforms.rst
-   Dependencies.rst
    License.rst
 
 If you encounter problems or bugs, please let us know at natter@bethgelab.org.

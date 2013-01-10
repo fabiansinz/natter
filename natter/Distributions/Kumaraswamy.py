@@ -155,12 +155,13 @@ class Kumaraswamy(Distribution):
         a = self.param['a']
         b = self.param['b']
         B = self.param['B']
-        
-        if 'a' in self.primary:
-            grad[ind,:] = 1.0/a - b*log(B) + log(dat.X) + (B**a*log(B)-dat.X**a*log(dat.X))*(b-1)/(B**a-dat.X**a)
-            ind +=1
-        if 'b' in self.primary:
-            grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
+
+        for ind,pa in enumerate(self.primary):
+            if pa == 'a':
+                grad[ind,:] = 1.0/a - b*log(B) + log(dat.X) + (B**a*log(B)-dat.X**a*log(dat.X))*(b-1)/(B**a-dat.X**a)
+                ind +=1
+            if pa == 'b':
+                grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
         return grad
      
 

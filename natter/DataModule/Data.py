@@ -1,6 +1,8 @@
 from __future__ import division
+import warnings
+import numpy
 from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
-from  natter.Auxiliary import  Errors, Plotting, save
+from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
 from matplotlib.pyplot import scatter,text, figure, show
 from numpy.linalg import qr, svd
 import types
@@ -9,19 +11,20 @@ from natter.Logging.LogTokens import LogToken
 from scipy.stats import kurtosis
 from numpy.random import randint
 
+
 class Data(LogToken):
     """
     Data
 
-    Class for storage of scalar and multi-variate Data. 
-    
+    Class for storage of scalar and multi-variate Data.
+
     :param X: Array that holds the Data points. Each column is a single Data sample. 1d arrays will be converted to 2d.
     :type X: numpy.array
-    :param name: User specified name of the Data object. 
+    :param name: User specified name of the Data object.
     :type name: string
-    :param history: User specified history of X when creating a new Data object. *history* is a list of strings describing previous processing steps. Instead of string, the single list items can be list of strings as well. 
+    :param history: User specified history of X when creating a new Data object. *history* is a list of strings describing previous processing steps. Instead of string, the single list items can be list of strings as well.
     :type history: list
-        
+
     """
     def __init__(self,X=None,name='No Name',history = None):
         if X == None:
@@ -45,7 +48,7 @@ class Data(LogToken):
         if len(self.history) > 0:
             s += '\nHistory:\n'
             s += _displayHistoryRec(self.history,1)
-            
+
         s += 30*'-' + '\n'
         return s
 
@@ -80,7 +83,7 @@ class Data(LogToken):
 
         :param dat: other dataset which is faded into this one. It must have the same dimension as this dataset.
         :type dat: natter.DataModule.Data
-        :param h: mask of the same dimension as a single vector in dat. All entries must be between zero and one. 
+        :param h: mask of the same dimension as a single vector in dat. All entries must be between zero and one.
         :type h: numpy.array
         """
 
@@ -96,7 +99,7 @@ class Data(LogToken):
         """
         Stacks the current dataset with a copy of the dataset dat. Both must
         have the same number of examples.
-        
+
 
         :param dat: Other data object with the same number of examples
         :type dat: natter.DataModule.Data
@@ -104,13 +107,13 @@ class Data(LogToken):
 
         if dat.numex() != self.numex():
             raise Errors.DimensionalityError('Number of examples of two datasets do not match!')
-        
+
         self.X = vstack((self.X,dat.copy().X))
-        
+
         self.addToHistory(['Stacked with dataset %s with history' % (dat.name), list(dat.history)])
 
         return self
-     
+
     def setHistory(self,h):
         """
         Replace the history of the Data object.
@@ -144,7 +147,7 @@ class Data(LogToken):
         self.scale(1.0/self.norm(p).X)
         self.history[-1] = 'normalized Data with p='+str(p)
         return self
-        
+
     def __repr__(self):
         return self.__str__()
 
@@ -169,7 +172,7 @@ class Data(LogToken):
     def __iadd__(self,o):
         self.append(o)
         return self
-    
+
 
     def plot(self,ax=None,**kwargs):
         """
@@ -185,7 +188,7 @@ class Data(LogToken):
             if ax is None:
                 fig = figure()
                 ax = fig.add_axes([.1,.1,.8,.8])
-                
+
             ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
             return ax
 
@@ -206,7 +209,7 @@ class Data(LogToken):
         :rtype: int
         """
         return size(self.X,0)
-            
+
     def addToHistory(self,hi):
         """
         Adds a new item to the Data object's history.
@@ -214,7 +217,11 @@ class Data(LogToken):
         :param hi: New history item.
         :type hi: string or list of strings
         """
-        self.history.append(hi)
+        if type(hi) == str or type(hi) == list:
+            self.history.append(hi)
+        else:
+            warnings.warn('Adding a non-string or non-list object to history is not supported. Converting %s to string "%s"'%(type(hi), str(hi)))
+            self.history.append(str(hi))
 
     def scale(self,s):
         """
@@ -237,7 +244,7 @@ class Data(LogToken):
             s = s.X
         else:
             name = 'array'
-            
+
         sh = s.shape
         if len(sh) == 1 or sh[0] == 1 or sh[1] == 1:
             if sh[0] == self.X.shape[0]:
@@ -301,7 +308,7 @@ class Data(LogToken):
         elif type(key[1]) == types.IntType or type(key[1]) == int64:
             tmp2 = reshape(tmp2,(tmp2.shape[0],1))
         return Data(tmp2,self.name,tmp)
-        
+
     def plotPatches(self,m=-1, plotNumbers=False, orientation='F', **kwargs):
         """
         If the Data objects holds patches flattened into vectors
@@ -309,7 +316,7 @@ class Data(LogToken):
         *m* is specified, only the first *m* patches are plotted.
 
         :param m: Number of patches to be plotted.
-        :type m: int 
+        :type m: int
         """
         fig = figure()
         if m == -1:
@@ -318,7 +325,7 @@ class Data(LogToken):
             nx = kwargs.pop('nx')
         else:
             nx = int(ceil(sqrt(m)))
-        
+
         ptchSz = int(sqrt(size(self.X,0)))
         Plotting.plotPatches(self.X[:,:m], (nx, ceil(m/nx)), ptchSz, orientation=orientation, **kwargs)
 
@@ -354,11 +361,11 @@ class Data(LogToken):
         :type bias: Bool
         :returns: Marginal kurtoses
         :rtype: numpy.array
-        
+
         """
         return kurtosis(self.X,axis=1,bias=bias)
 
-    
+
 
     def center(self,mu=None):
         """
@@ -378,6 +385,21 @@ class Data(LogToken):
             mu = mean(mean(self.X,1))
         self.X -= mu
         self.history.append('Centered on mean ' + str(mu) + ' over samples and dimensions')
+        return mu
+
+    def center_local_mean(self,mu=None):
+        """
+        Centers the data points on the mean over dimensions only.
+
+        :param mu: Mean over samples and dimensions.
+        :type mu: numpy.ndarray
+        :returns: Mean over samples and dimensions.
+        :rtype: numpy.ndarray
+        """
+        if mu == None or type(mu) != numpy.ndarray or mu.size != self.X.shape[0]:
+            mu = self.mean().reshape(-1,1)
+        self.X -= mu
+        self.history.append('Centered on mean ' + str(mu) + ' over dimensions')
         return mu
 
     def makeWhiteningVolumeConserving(self,method='project',D=None):
@@ -403,11 +425,11 @@ class Data(LogToken):
 
         :param method: Rescaling method as described above.
         :type method: string
-        :param D: Singular values of the covariance matrix (with or without projecting out the DC, depending on *method*). If *D* is specified the no covariance matrix is computed and D is used to recompute the rescaling coefficient. 
+        :param D: Singular values of the covariance matrix (with or without projecting out the DC, depending on *method*). If *D* is specified the no covariance matrix is computed and D is used to recompute the rescaling coefficient.
         :type D: numpy.array
         :returns: The singular values of the respective covariance matrix.
         :rtype: numpy.array
-        
+
         """
         if not type(method) == types.StringType:
             if D == None:
@@ -437,7 +459,7 @@ class Data(LogToken):
 
         s = exp(-.5/len(D)*sum(log(D)))
 
-            
+
         self.X *= s
         self.history.append('made whitening volume conserving with method "' + method + '"')
         return D
@@ -461,14 +483,14 @@ class Data(LogToken):
         :returns: The derivatives
         :rtype: numpy.array
         """
-        
+
         p =float(p)
         r = (self.norm(p).X)**(1-p)
         x = array(self.X)
         for k in range(len(x)):
-            x[k] = r*sign(x[k])*abs(x[k])**(p-1.0) 
+            x[k] = r*sign(x[k])*abs(x[k])**(p-1.0)
         return x
-        
+
     def size(self,dim = (0,1)):
         """
         Returns the size of the data matrix *X*. Works just like numpy.size.
@@ -495,7 +517,7 @@ class Data(LogToken):
                 return sh[dim]
         else:
             raise Errors.DimensionalityError('Data matrices cannot have more than two dimensions!')
-        
+
     def copy(self):
         """
         Makes a deep copy of the Data object and returns it.
@@ -510,15 +532,25 @@ class Data(LogToken):
         Save the Data object to a file.
 
         :param filename: Filename
-        :type filename: string 
+        :type filename: string
         :param format: format in which the data is to be saved (default is 'pickle'). Other choices are 'ascii'
         :type format: string
-        
+
         """
+        ext = filename.split('.')[-1].lower()
+        if ext == 'pydat' or ext == 'pickle':
+            format = 'pickle'
+        elif ext == 'txt' or ext == 'ascii':
+            format = 'ascii'
+        elif ext == 'hdf5':
+            format = 'hdf5'
+
         if format=='pickle':
             save(self,filename)
         elif format=='ascii':
             savetxt(filename,self.X,'%.16e')
+        elif format=='hdf5':
+            savehdf5(self, filename)
 
     def append(self,O):
         """
@@ -548,7 +580,7 @@ class Data(LogToken):
         Splits the data set into #pieces pieces along axis #axis.
         By default along axis 1 (i.e. along the examples).
         Returns tuple of data sets. See numpy.split for details.
-        
+
         :param pieces: Number of pieces to split data into
         :type pieces: int
         :param axis: Axis along which to split, default 1
@@ -563,7 +595,6 @@ class Data(LogToken):
             splitset.history.append('Splitted into %i pieces, this is piece %d'%(len(datasets), ii+1))
             result.append(splitset)
         return result
-
 
     ############ LogToken functions ########################################
     def ascii(self):
@@ -606,13 +637,13 @@ class Data(LogToken):
         :type n: int
         :param m: number of samples per dataset
         :type m: int
-        
+
         """
         ne = self.X.shape[1]
         for k in xrange(n):
             ind= randint(ne,size=(m,))
             yield self[:,ind]
-        return 
+        return
 
 def _displayHistoryRec(h,recDepth=0):
     s = ""
