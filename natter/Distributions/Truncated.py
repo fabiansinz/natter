@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array,where
+from numpy import log, exp, mean, zeros, sqrt, pi,squeeze, any, isnan,min,array,where,NaN,amax
 from scipy.stats import truncnorm, norm
 from scipy.optimize import fmin_l_bfgs_b
 from natter.Auxiliary.Utils import parseParameters
@@ -88,7 +88,10 @@ class Truncated(Distribution):
         # raw_input()
         u  = self.param['q'].cdf(Data(array([self.param['a'],self.param['b']])))
         
-        return self.param['q'].loglik(dat) - log(u[1] - u[0])
+        ret = self.param['q'].loglik(dat) - log(u[1] - u[0])
+        ind = where((dat.X > self.param['b'])+(dat.X < self.param['a']))[1]
+        ret[ind] = NaN
+        return ret
     
     
     def pdf(self,dat):
