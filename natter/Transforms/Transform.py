@@ -3,6 +3,7 @@ from natter import Auxiliary
 import types
 from natter.Logging.LogTokens import LogToken
 
+
 class Transform(LogToken):
     '''
     Mother class of all transformations.
@@ -19,7 +20,7 @@ class Transform(LogToken):
         Transform.
         """
         raise Auxiliary.Errors.AbstractError('Abstract method logDetJacobian() not implemented in ' + self.name)
-        
+
 
     def addToHistory(self,hi):
         """
@@ -49,7 +50,7 @@ class Transform(LogToken):
         """
         raise Auxiliary.Errors.AbstractError('Abstract method apply() not implemented in ' + self.name)
 
-            
+
     def save(self,filename):
         """
         Save the filter object to the specified file.
@@ -67,10 +68,10 @@ class Transform(LogToken):
         :returns: ascii preprentation the Transform object
         :rtype: string
         """
-        
+
         return self.__str__()
 
-        
+
 
 
 
@@ -83,9 +84,20 @@ def load(path):
     :returns: The loaded object.
     :rtype: natter.Transforms.Transform
     """
-    f = open(path,'rb')
-    ret = pickle.load(f)
-    f.close()
+    tmp = path.split('.')
+    if tmp[-1] == 'pydat':
+        f = open(path,'rb')
+        ret = pickle.load(f)
+        f.close()
+    else:
+        print "Unknown file type. Trying pydat format."
+        try:
+            f = open(path,'rb')
+            ret = pickle.load(f)
+            f.close()
+        except:
+            print "Loading failed."
+            ret = None
     return ret
 
 def displayHistoryRec(h,recDepth=0):

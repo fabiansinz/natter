@@ -2,9 +2,9 @@ from sys import stdin, stdout
 import gzip, bz2, zipfile
 from natter.DataModule import Data
 from scipy import io
-import cPickle as pickle #cPickle bug seems to be fixed
+import pickle #cPickle bug seems to be fixed
 #import pickle
-from natter.Auxiliary import Errors
+from natter.Auxiliary import Errors, hdf5GroupToList
 from numpy import any, size, max, zeros, concatenate, shape, ndarray, array, atleast_2d
 import numpy as np
 try:
@@ -212,33 +212,9 @@ def hdf5( filename ):
     """
 
     fin = h5py.File(filename, 'r')
-    history = _hdf5GroupToList(fin['history'], 0)[0]
+    history = hdf5GroupToList(fin['history'], 0)[0]
     dat = Data(X=fin['X'][...], name=str(fin['name'][...]), history=history)
     return dat
 
-def _hdf5GroupToList( grp, counter ):
-    """ _hdf5GroupToList( grp, counter )
-    Helper function which takes a h5py group object and parses it into a list
-    of stings and lists. Data sets will be converted to stings, subgroups are
-    lists. Important for importing the history of a Data object.
 
-    :param grp: h5py group object to parse
-    :type grp: h5py Group
-    :param counter: first index of the entries. Required to have the correct order again.
-    :type counter: int
-    :returns: list obtained from groups data sets and subgroups and new counter
-    :rtype: list, int
-    """
-    lst = []
-    for ii in xrange(len(grp)):
-        if type(grp[str(counter)]) == h5py._hl.group.Group:
-            tmplist, counter = _hdf5GroupToList( grp[str(counter)], counter+1 )
-            lst += [tmplist]
-        elif type(grp[str(counter)]) == h5py._hl.dataset.Dataset:
-            lst += [str(grp[str(counter)][...])]
-        else:
-            print "Found unknown h5py data type %s. Trying to parse to string."%(type(grp[str(counter)]))
-            lst += [str(grp[str(counter)][...])]
-        counter += 1
-    return lst, counter
 

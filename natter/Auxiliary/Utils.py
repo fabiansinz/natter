@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle
 import os
 import cProfile
 # import lsprofcalltree
@@ -58,11 +58,19 @@ def save(o,filename):
     tmp = filename.split('.')
     if tmp[-1] == 'pydat':
         f = open(filename,'w')
+        pickle.dump(o,f,pickle.HIGHEST_PROTOCOL)
+        f.close()
+    elif tmp[-1] == 'hdf5':
+        fout = h5py.File(filename, 'w')
+        fout.create_dataset('W', data=o.W)
+        fout.create_dataset('name', data=o.name)
+        hist = fout.create_group('history')
+        saveListToHDF5(hist, o.history, 0)
+        fout.close()
     else:
         f = open(filename + '.pydat','w')
-
-    pickle.dump(o,f,pickle.HIGHEST_PROTOCOL)
-    f.close()
+        pickle.dump(o,f,pickle.HIGHEST_PROTOCOL)
+        f.close()
 
 def savehdf5( dat, filename ):
     """savehdf5( dat, filename )
@@ -178,3 +186,28 @@ def profileFunction(f):
     cmd = "kcachegrind %s" % filename
     os.system(cmd)
 
+def hdf5GroupToList( grp, counter ):
+    """ _hdf5GroupToList( grp, counter )
+    Helper function which takes a h5py group object and parses it into a list
+    of stings and lists. Data sets will be converted to stings, subgroups are
+    lists. Important for importing the history of a Data object.
+
+    :param grp: h5py group object to parse
+    :type grp: h5py Group
+    :param counter: first index of the entries. Required to have the correct order again.
+    :type counter: int
+    :returns: list obtained from groups data sets and subgroups and new counter
+    :rtype: list, int
+    """
+    lst = []
+    for ii in xrange(len(grp)):
+        if type(grp[str(counter)]) == h5py._hl.group.Group:
+            tmplist, counter = _hdf5GroupToList( grp[str(counter)], counter+1 )
+            lst += [tmplist]
+        elif type(grp[str(counter)]) == h5py._hl.dataset.Dataset:
+            lst += [str(grp[str(counter)][...])]
+        else:
+            print "Found unknown h5py data type %s. Trying to parse to string."%(type(grp[str(counter)]))
+            lst += [str(grp[str(counter)][...])]
+        counter += 1
+    return lst, counter
