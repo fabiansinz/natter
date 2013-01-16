@@ -19,7 +19,7 @@ class Histogram(Distribution):
     also possible.
 
     :param param:
-        dictionary which might containt parameters for the Lp-spherically symmetric distribution
+        dictionary which might containt parameters for the histogram distribution
               'b'    :  bin centers
               
               'p'    :  probability mass for each bin center
