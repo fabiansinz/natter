@@ -49,7 +49,7 @@ from MixtureOfLogNormals import MixtureOfLogNormals
 from LpSphericallySymmetric import LpSphericallySymmetric
 from LpGeneralizedNormal import LpGeneralizedNormal
 from LogLogistic import LogLogistic
-from CompleteLinearModel import CompleteLinearModel
+# from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from ExponentialPower import ExponentialPower
 from Gaussian import Gaussian
@@ -58,7 +58,7 @@ from Histogram import Histogram
 from LogNormal import LogNormal
 from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
-from EllipticallyContourGamma import EllipticallyContourGamma
+#from EllipticallyContourGamma import EllipticallyContourGamma
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian
