@@ -233,7 +233,11 @@ class LinearTransform(Transform.Transform):
 
             Ocpy = O.copy()
             Scpy = self.copy()
-            g = lambda x: Scpy.apply(Ocpy.apply(x))
+            def g(x):
+                old_hist = list(x.history)
+                ret  = Scpy.apply(Ocpy.apply(x))
+                ret.history = old_hist
+                return ret
             gdet = None
             if Ocpy.logdetJ != None:
                 gdet = lambda y: Ocpy.logdetJ(y) + Scpy.logDetJacobian()
