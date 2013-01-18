@@ -35,6 +35,9 @@ def load(path, **kwargs):
 
      *gz* are read as gzip compressed ascii file.
 
+     *hdf5* are interpreted as natter.DataModule.Data objects stored
+     in hdf5 files as created with natter.DataModule.Data.save(filename)
+
     :param path: Path to the data file.
     :type path: string
     :returns: Data object with the data from the specified file.
