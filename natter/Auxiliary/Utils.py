@@ -187,7 +187,7 @@ def profileFunction(f):
     os.system(cmd)
 
 def hdf5GroupToList( grp, counter ):
-    """ _hdf5GroupToList( grp, counter )
+    """ hdf5GroupToList( grp, counter )
     Helper function which takes a h5py group object and parses it into a list
     of stings and lists. Data sets will be converted to stings, subgroups are
     lists. Important for importing the history of a Data object.
@@ -202,7 +202,7 @@ def hdf5GroupToList( grp, counter ):
     lst = []
     for ii in xrange(len(grp)):
         if type(grp[str(counter)]) == h5py._hl.group.Group:
-            tmplist, counter = _hdf5GroupToList( grp[str(counter)], counter+1 )
+            tmplist, counter = hdf5GroupToList( grp[str(counter)], counter+1 )
             lst += [tmplist]
         elif type(grp[str(counter)]) == h5py._hl.dataset.Dataset:
             lst += [str(grp[str(counter)][...])]
