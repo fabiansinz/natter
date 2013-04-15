@@ -29,7 +29,7 @@ def fastICA(dat,whitened=True):
     if dat.size(1) > 500000:
         sampsize =  500000.0/dat.size(1)
     ICA = mdp.nodes.FastICANode(input_dim=dat.size(0),limit=1e-5, fine_gaus=1.0, fine_g='gaus', g='gaus',\
-                                mu=1.0,  approach='symm',stabilization=True,sample_size=sampsize,\
+                                mu=1.0,  approach='symm',sample_size=sampsize,\
                                 max_it=1000,max_it_fine=20)
     ICA.whitened = whitened
     ICA.verbose = True
