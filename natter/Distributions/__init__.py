@@ -5,7 +5,7 @@ implements. At the moment it provides the following distributions.
 
 .. toctree::
    :maxdepth: 2
-   
+
    Distributions_ChiP.rst
    Distributions_CompleteLinearModel.rst
    Distributions_Delta.rst
@@ -49,7 +49,7 @@ from MixtureOfLogNormals import MixtureOfLogNormals
 from LpSphericallySymmetric import LpSphericallySymmetric
 from LpGeneralizedNormal import LpGeneralizedNormal
 from LogLogistic import LogLogistic
-# from CompleteLinearModel import CompleteLinearModel
+from CompleteLinearModel import CompleteLinearModel
 from LpNestedSymmetric import LpNestedSymmetric
 from ExponentialPower import ExponentialPower
 from Gaussian import Gaussian
