@@ -5,7 +5,7 @@ implements. At the moment it provides the following distributions.
 
 .. toctree::
    :maxdepth: 2
-   
+
    Distributions_ChiP.rst
    Distributions_CompleteLinearModel.rst
    Distributions_Delta.rst
@@ -58,7 +58,7 @@ from Histogram import Histogram
 from LogNormal import LogNormal
 from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
-from EllipticallyContourGamma import EllipticallyContourGamma
+#from EllipticallyContourGamma import EllipticallyContourGamma
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian

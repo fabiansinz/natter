@@ -66,7 +66,7 @@ class NonlinearTransform(Transform.Transform):
 
             Ocpy = O.copy()
             Scpy = self.copy()
-            g = lambda x: Scpy.f(Ocpy.apply(x))
+            g = lambda x: Scpy.f(Ocpy.f(x))
             gdet = None
             if Scpy.logdetJ != None:
                 gdet = lambda y: self.logdetJ(Ocpy.apply(y)) + Ocpy.logDetJacobian()

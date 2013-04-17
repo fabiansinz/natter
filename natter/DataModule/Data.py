@@ -1,7 +1,7 @@
 from __future__ import division
 import warnings
 import numpy
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
 from matplotlib.pyplot import scatter,text, figure, show
 from numpy.linalg import qr, svd
@@ -299,6 +299,15 @@ class Data(LogToken):
         """
         return mean(self.X,1)
 
+    def median(self):
+        """
+        Computed the median of the data points.
+
+        :returns: median
+        :rtype: numpy.array
+        """
+        return median(self.X,1)
+
     def __getitem__(self,key):
         tmp = list(self.history)
         tmp.append('subsampled')
@@ -369,37 +378,43 @@ class Data(LogToken):
 
     def center(self,mu=None):
         """
-        Centers the data points on the mean over samples and
+        Centers the data points on the mean (or median) over samples and
         dimensions. The motivation for this is that patches of natural
         images are usually sampled randomly from images, which makes
         them have a stationary statistics. Therefore, the mean in each
         dimension should be the same and we get a better estimate if
         we sample over pixels and dimensions.
 
-        :param mu: Mean over samples and dimensions.
+        :param mu: Mean over samples and dimensions or 'median' for median centering.
         :type mu: float
-        :returns: Mean over samples and dimensions.
+        :returns: Mean (or median) over samples and dimensions.
         :rtype: float
         """
         if mu == None:
             mu = mean(mean(self.X,1))
+        elif mu == 'median':
+            mu = median(median(self.X,1))
         self.X -= mu
         self.history.append('Centered on mean ' + str(mu) + ' over samples and dimensions')
         return mu
 
     def center_local_mean(self,mu=None):
         """
-        Centers the data points on the mean over dimensions only.
+        Centers the data points on the mean over samples only.
 
-        :param mu: Mean over samples and dimensions.
+        :param mu: Mean over samples which shall be subtracted or 'median' to subtract median.
         :type mu: numpy.ndarray
-        :returns: Mean over samples and dimensions.
+        :returns: Mean (or median) over samples which was used for subtraction.
         :rtype: numpy.ndarray
         """
-        if mu == None or type(mu) != numpy.ndarray or mu.size != self.X.shape[0]:
+        if mu == None:
+            mu = self.mean().reshape(-1,1)
+        elif mu == 'median':
+            mu = self.median().reshape(-1,1)
+        elif type(mu) != numpy.ndarray or mu.size != self.X.shape[0]:
             mu = self.mean().reshape(-1,1)
         self.X -= mu
-        self.history.append('Centered on mean ' + str(mu) + ' over dimensions')
+        self.history.append('Centered on mean ' + str(mu) + ' over samples')
         return mu
 
     def makeWhiteningVolumeConserving(self,method='project',D=None):

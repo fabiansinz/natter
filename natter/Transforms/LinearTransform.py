@@ -1,9 +1,10 @@
 import Transform
 import NonlinearTransform
 import string
+import cPickle as pickle
 import numpy
 from numpy.linalg import inv, det
-from natter.Auxiliary import Errors, Plotting
+from natter.Auxiliary import Errors, Plotting, hdf5GroupToList
 from natter.DataModule import Data
 from numpy import array,  size, shape, concatenate, dot, log, abs, reshape, arange,  meshgrid, sum, exp, pi, real, prod, floor, zeros, vstack, argmax,  sqrt, ceil, ones, complex_, isscalar
 import types
@@ -12,22 +13,25 @@ from matplotlib.pyplot import text
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
 from sys import stderr
-
+try:
+    import h5py
+except:
+    h5py = None
 
 class LinearTransform(Transform.Transform):
     """
     LinearTransform class
 
     Implements linear transforms of data.
-    
+
     :param W: Matrix for initializing the linear transform.
-    :type W: numpy.array 
+    :type W: numpy.array
     :param name: Name of the linear transform
     :type name: string
     :param history: List of previous operations on the linear transform.
     :type history: List of (lists of) strings.
-    
-        
+
+
     """
 
 
@@ -56,7 +60,7 @@ class LinearTransform(Transform.Transform):
         """
         if orientation == '1D':
             Plotting.plotStripes(inv(self.W),plotNumbers=plotNumbers, **kwargs)
-        else:        
+        else:
             nx = ceil(sqrt(size(self.W,1)))
             ptchSz = sqrt(size(self.W,0))
             Plotting.plotPatches(inv(self.W),nx,ptchSz,contrastenhancement=True, orientation=orientation)
@@ -75,7 +79,7 @@ class LinearTransform(Transform.Transform):
                         col += ptchSz
                     i += 1
 
-    
+
     def plotFilters(self, plotNumbers=False, orientation='F', **kwargs):
         """
         Plots the rows of the linear transform matrix W. Works only if
@@ -89,7 +93,7 @@ class LinearTransform(Transform.Transform):
 
         """
         if orientation == '1D':
-            Plotting.plotStripes(self.W.transpose(), plotNumbers=plotNumbers, **kwargs)       
+            Plotting.plotStripes(self.W.transpose(), plotNumbers=plotNumbers, **kwargs)
         else:
             nx = ceil(sqrt(size(self.W,0)))
             ptchSz = sqrt(size(self.W,1))
@@ -109,7 +113,7 @@ class LinearTransform(Transform.Transform):
                         col += ptchSz
                     i += 1
 
-        
+
     def __invert__(self):
         """
         Overloads the ~ operator. Returns a new LinearTransform object
@@ -117,7 +121,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: A new LinearTransform object representing the inverted matrix W.
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
         sh = shape(self.W)
         if sh[0] == sh[1]:
@@ -137,7 +141,7 @@ class LinearTransform(Transform.Transform):
         :type F: natter.Transforms.LinearTransform
         :returns: A new LinearTransform object with the stacked matrices.
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
         tmp = self.getHistory()
         tmp.append('stacked with ' + F.name)
@@ -146,12 +150,12 @@ class LinearTransform(Transform.Transform):
     def transpose(self):
         """
         Returns a new LinearTransform object with the transposed matrix W.
-        
+
         :returns: A new LinearTransform object representing the transposed matrix W.
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
-        
+
         tmp = list(self.history)
         tmp.append('transposed')
         return LinearTransform(array(self.W).transpose(),self.name,tmp)
@@ -160,12 +164,12 @@ class LinearTransform(Transform.Transform):
     def T(self):
         """
         See transpose().
-        
+
         :returns: A new LinearTransform object representing the transposed matrix W.
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
-        
+
         return self.transpose()
 
     def __call__(self):
@@ -194,17 +198,17 @@ class LinearTransform(Transform.Transform):
 
         It also updates the correct computation of the log-det-Jacobian.
 
-        
+
         :param O: Object this LinearTransform is to be applied to.
         :type O: see above.
         :returns: A new Transform or Data object
         :rtype: Depends on the type of *O*
-        
+
         """
-        
+
         if isinstance(O,Data):
 
-            # copy other history and add own 
+            # copy other history and add own
             tmp = list(O.history)
             tmp.append('multiplied with Transform "' + self.name + '"')
             tmp.append(list(self.history))
@@ -219,17 +223,21 @@ class LinearTransform(Transform.Transform):
 
             # multiply both filters
             return LinearTransform(dot(self.W,O.W),O.name,tmp)
-        
+
         elif isinstance(O,NonlinearTransform.NonlinearTransform):
             # copy other history and add own
             tmp = list(O.history)
             tmp.append('multiplied with Transform "' + self.name + '"')
             tmp.append(list(self.history))
 
-            
+
             Ocpy = O.copy()
             Scpy = self.copy()
-            g = lambda x: Scpy.apply(Ocpy.apply(x))
+            def g(x):
+                old_hist = list(x.history)
+                ret  = Scpy.apply(Ocpy.apply(x))
+                ret.history = old_hist
+                return ret
             gdet = None
             if Ocpy.logdetJ != None:
                 gdet = lambda y: Ocpy.logdetJ(y) + Scpy.logDetJacobian()
@@ -239,7 +247,7 @@ class LinearTransform(Transform.Transform):
             self.history.append('multiplied by %f'%(O))
         else:
             raise TypeError('Transform.__mult__(): Transforms can only be multiplied with scalars, Data or Transform objects')
-            
+
         return self
 
 
@@ -263,11 +271,11 @@ class LinearTransform(Transform.Transform):
 
         :param dat: Data for which the log-det-Jacobian is to be computed.
         :type dat: natter.DataModule.Data
-        :returns: The log-det-Jacobian 
+        :returns: The log-det-Jacobian
         :rtype: float (if dat=None) or numpy.array (if dat!=None)
-        
+
         """
-        
+
         sh = shape(self.W)
         if sh[0] == sh[1]:
             if dat==None:
@@ -284,18 +292,18 @@ class LinearTransform(Transform.Transform):
 
         :returns: New LinearTransform object where the W is the results of the __getitem__ operation.
         :rtype: natter.Transform.LinearTransform
-        
+
         """
-        
+
         tmp = list(self.history)
         tmp.append('subsampled')
-            
+
         tmp2 = array(self.W[key])
         if type(key[0]) == types.IntType:
             tmp2 = reshape(tmp2,(1,len(tmp2)))
         elif len(key) > 1 and type(key[1]) == types.IntType:
             tmp2 = reshape(tmp2,(len(tmp2),1))
-            
+
         return LinearTransform(tmp2,self.name,tmp)
 
 
@@ -305,16 +313,16 @@ class LinearTransform(Transform.Transform):
 
         :returns: A string representation of the LinearTransform object.
         :rtype: string
-        
+
         """
         sh = string.join([str(elem) for elem in list(shape(self.W))],' X ')
-        
+
         s = 30*'-'
         s += '\nLinear Transform (' + sh + '): ' + self.name + '\n'
         if len(self.history) > 0:
             s += Transform.displayHistoryRec(self.history,1)
         s += 30*'-'
-        
+
         return s
 
     def html(self):
@@ -324,7 +332,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: html preprentation the LinearTransform object
         :rtype: string
-        
+
         """
         s = "<table border=\"0\"rules=\"groups\" frame=\"box\">\n"
         s += "<thead><tr><td colspan=\"2\"><tt><b>Linear Transform (%s): %s</b></tt></td></tr></thead>\n" \
@@ -335,25 +343,25 @@ class LinearTransform(Transform.Transform):
             s += Transform.displayHistoryRec(self.history,1)
         s += "</pre></td></tr></table>"
         return s
-    
+
     def getOptimalOrientationAndFrequency(self,delta=.25,weight=False, weightings=None):
         """
         Computes the optimal orientation and spatial frequency for all
         filters (rows). This is done by oversampling the Fourier space
         and computing the maximal absolute response to
-        
+
         :math:`\sum_{\boldsymbol n} \exp(2*\pi*i*\langle\boldsymbol \omega, \boldsymbol x_{\boldsymbol n} \rangle  ) f(\boldsymbol x_{\boldsymbol n})`
-        
+
         :param delta: bin size for oversampling in the Fourier domain
         :type delta: float
         :param weight: Whether the filter is to be weighted with a Gaussian envelope function
         :type weight: bool
         :param weightings: Array that stores the envelope weighting functions if specified
         :type weighting: numpy.array
-        
+
         :returns: The frequency vectors that gives the maximal responses.
         :rtype: numpy.array
-        
+
         """
         stderr.write("\tComputing optimal frequency and orientation ")
         p = sqrt(self.W.shape[1])
@@ -361,7 +369,7 @@ class LinearTransform(Transform.Transform):
 
         wx,wy = meshgrid(arange(-floor(p/2.0),floor(p/2.0)+delta/2.0,delta), arange(0,floor(p/2.0)+delta/2.0,delta) )
         W = vstack((wx.flatten('F'),wy.flatten('F')))
-        
+
         nx,ny = meshgrid(arange(p),arange(p))
         F = zeros((W.shape[1],p**2),dtype=complex_)
         for i in xrange(W.shape[1]):
@@ -382,7 +390,7 @@ class LinearTransform(Transform.Transform):
 
             maxResponse = argmax(tmp) # extract maximal response
             w[:,i] = W[:,maxResponse]
-           
+
 
             patch = array(reshape(self.W[i,:],(p ,p), order='F')) # reshape into patch
 
@@ -391,7 +399,7 @@ class LinearTransform(Transform.Transform):
             gprime = lambda x: _gratingProjection(x,p,nx,ny,patch,True)
 
             w[:,i] =  fmin_l_bfgs_b(g, array(w[:,i]) , fprime=gprime, bounds=( [(-floor(p/2.0),floor(p/2.0)),(0,floor(p/2.0))]))[0]
-            
+
         stderr.write("\n")
         return w
 
@@ -408,7 +416,7 @@ class LinearTransform(Transform.Transform):
 
     def __repr__(self):
         return self.__str__()
-    
+
     def copy(self):
         """
         Makes a deep copy of the LinearTransform and returns it.
@@ -444,7 +452,7 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
         if isinstance(value, LinearTransform):
             self.W += value.W
@@ -455,7 +463,7 @@ class LinearTransform(Transform.Transform):
             self.history.append('added %f'%(value))
         else:
             raise NotImplementedError('Only adding scalars or LinearTransforms implemented yet.')
-        
+
         return self
 
     def __add__(self, value):
@@ -466,8 +474,8 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: sum of linear transforms
         :rtype: natter.Transforms.LinearTransform
-        
-        """       
+
+        """
         result = self.copy()
         result += value
         return result
@@ -480,8 +488,8 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
-        """        
+
+        """
         if isinstance(value, LinearTransform):
             self.W -= value.W
             self.history.append('subtracted transform')
@@ -491,7 +499,7 @@ class LinearTransform(Transform.Transform):
             self.history.append('subtracted %f'%(value))
         else:
             raise NotImplementedError('Only subtracting scalars or LinearTransforms implemented yet.')
-        
+
         return self
 
     def __sub__(self, value):
@@ -502,8 +510,8 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: sum of linear transforms
         :rtype: natter.Transforms.LinearTransform
-        
-        """        
+
+        """
         result = self.copy()
         result -= value
         return result
@@ -516,14 +524,14 @@ class LinearTransform(Transform.Transform):
         :type value: scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
-        """         
+
+        """
         if isscalar(value):
             self.W /= value
             self.history.append('divided by %f'%(value))
         else:
             raise NotImplementedError('Only dividing scalars implemented yet.')
-        
+
         return self
 
     def __div__(self, value):
@@ -534,12 +542,12 @@ class LinearTransform(Transform.Transform):
         :type value: scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
-        """         
+
+        """
         result = self.copy()
         result /= value
         return result
-    
+
     def __imult__(self, value):
         """
         Multiplies given linear transformation or scalar to current transformation (``self *= value``)
@@ -549,8 +557,8 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
-        """       
+
+        """
         if isscalar(value):
             self.W *= value
             self.history.append('multiplied by %f'%(value))
@@ -568,8 +576,8 @@ class LinearTransform(Transform.Transform):
         :type value: natter.Transforms.LinearTransform or scalar (int/float)
         :returns: linear transform on which function was called
         :rtype: natter.Transforms.LinearTransform
-        
-        """          
+
+        """
         result = self.copy()
         result *= value
         return result
@@ -580,7 +588,7 @@ class LinearTransform(Transform.Transform):
 
         :returns: Reshaped copy of given LinearTransform
         :rtype: natter.Transforms.LinearTransform
-        
+
         """
         if kwargs.has_key('order'):
             order = kwargs['order']
@@ -604,6 +612,36 @@ class LinearTransform(Transform.Transform):
         result.W = inv(result.W)
         result.history.append('inverted')
         return result
+
+    @staticmethod
+    def load(path):
+        """
+        Loads a saved LinearTransform object from the specified path.
+
+        :param path: Path to the saved Transform object.
+        :type path: string
+        :returns: The loaded object.
+        :rtype: natter.Transforms.LinearTransform
+        """
+        tmp = path.split('.')
+        if tmp[-1] == 'pydat':
+            f = open(path,'rb')
+            ret = pickle.load(f)
+            f.close()
+        elif tmp[-1] == 'hdf5' and not h5py is None:
+            fin = h5py.File(path, 'r')
+            history = hdf5GroupToList(fin['history'], 0)[0]
+            ret = LinearTransform(W=fin['W'][...], name=str(fin['name'][...]), history=history)
+        else:
+            print "Unknown file type. Trying pydat format."
+            try:
+                f = open(path,'rb')
+                ret = pickle.load(f)
+                f.close()
+            except Exception, e :
+                print "Loading failed with exception ", e.message
+                ret = None
+        return ret
 
 def _gratingProjection(omega,p,nx,ny,f, fprime):
     if not fprime:
@@ -640,6 +678,6 @@ def _fitGauss2Grating(w):
     # pyplot.imshow(tmp,interpolation='nearest',cmap=pyplot.cm.gray)
     # pyplot.show()
     # raw_input()
-    
+
     return reshape(((2*pi)*sqrt(det(C)))**-1*exp(-0.5*sum((dot(inv(C),N-mu)*(N-mu))**2,0) ),nx.shape,order='F')
 

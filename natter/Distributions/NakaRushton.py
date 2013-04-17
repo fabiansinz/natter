@@ -23,10 +23,10 @@ class NakaRushton(Distribution):
     The Naka-Rushton distribution is the radial distribution of a
     Lp-spherically symmetric distribution that gets transformed into a
     (radially truncated if kappa=2) LpGeneralizedNormal with scale s by the
-    Naka-Rushton functio r --> (kappa r**(gamma/2 + delta))/sqrt(sigma**2 + r**gamma)
+    Naka-Rushton function r --> (kappa r**(gamma/2 + delta))/sqrt(sigma**2 + r**gamma)
 
     :param param:
-        dictionary which might containt parameters for the NakaRushton distribution
+        dictionary which contains parameters for the NakaRushton distribution
               'sigma'    :    Shape parameter  1 (default = 1.0)
               
               'kappa'    :    Scale parameter (truncation parameter if gamma=2.0)

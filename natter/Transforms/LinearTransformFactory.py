@@ -29,8 +29,8 @@ def fastICA(dat,whitened=True):
     if dat.size(1) > 500000:
         sampsize =  500000.0/dat.size(1)
     ICA = mdp.nodes.FastICANode(input_dim=dat.size(0),limit=1e-5, fine_gaus=1.0, fine_g='gaus', g='gaus',\
-                                mu=1.0,  approach='symm',stabilization=True,sample_size=sampsize,\
-                                max_it=10000,max_it_fine=20,verbose=True)
+                                mu=1.0,  approach='symm',sample_size=sampsize,\
+                                max_it=1000,max_it_fine=20)
     ICA.whitened = whitened
     ICA.verbose = True
     ICA.train(dat.X.T)
@@ -265,23 +265,35 @@ def DCACQuadraturePairs2D(patch_size, num_quadrature_pairs=None):
 
     return F
 
-    #sh = patch_size
-    #num_quadrature_pairs = (sh-1)//2
-    #compnum = (sh**2-1)//2
-    #Aorder = np.zeros((sh,sh))
-    #Aorder[0,1:num_quadrature_pairs+1] = np.arange(1,num_quadrature_pairs+1)
-    #Aorder[0,num_quadrature_pairs+1:] = np.arange(num_quadrature_pairs, 0, -1)
-    #Aorder[1:num_quadrature_pairs+1,0] = np.arange(num_quadrature_pairs+1, 2*num_quadrature_pairs+1)
-    #Aorder[num_quadrature_pairs+1:,0] = np.arange(2*num_quadrature_pairs, num_quadrature_pairs, -1)
-    #Aorder[1:num_quadrature_pairs+1,1:] = np.arange(2*num_quadrature_pairs+1, compnum+1).reshape(num_quadrature_pairs, sh-1)
-    #Aorder[num_quadrature_pairs+1:,1:] = np.arange(compnum, 2*num_quadrature_pairs, -1).reshape(num_quadrature_pairs, sh-1)
-    #ind = np.argsort(Aorder.flatten())
-    #
-    #F2 = DFT2(sh)
-    #F2 = F2[ind,:]
-    #F2.addToHistory('Rearranged filters into quadrature pairs.')
-    #
-    #return F, F2
+def DCACQuadraturePairs2D_legacy(sh):
+    """
+    Creates a 2D DFT basis for patch_size X patch_size image patches where the filters with identical spatial
+    frequency and orientation are paired up, such that filters 1&2, 3&4, ... are quadrature
+    pairs. Filter 0 is the DC component.
+    Legacy function. Only for backwards compatibility with old data.
+
+    :param sh: Int that determines the image patch size.
+    :type sh: int
+    :returns: A linear filter containing rearranged DFT basis, DC filter as first component.
+    :rtype: natter.Transforms.LinearTransform
+
+    """
+    num_quadrature_pairs = (sh-1)//2
+    compnum = (sh**2-1)//2
+    Aorder = np.zeros((sh,sh))
+    Aorder[0,1:num_quadrature_pairs+1] = np.arange(1,num_quadrature_pairs+1)
+    Aorder[0,num_quadrature_pairs+1:] = np.arange(num_quadrature_pairs, 0, -1)
+    Aorder[1:num_quadrature_pairs+1,0] = np.arange(num_quadrature_pairs+1, 2*num_quadrature_pairs+1)
+    Aorder[num_quadrature_pairs+1:,0] = np.arange(2*num_quadrature_pairs, num_quadrature_pairs, -1)
+    Aorder[1:num_quadrature_pairs+1,1:] = np.arange(2*num_quadrature_pairs+1, compnum+1).reshape(num_quadrature_pairs, sh-1)
+    Aorder[num_quadrature_pairs+1:,1:] = np.arange(compnum, 2*num_quadrature_pairs, -1).reshape(num_quadrature_pairs, sh-1)
+    ind = np.argsort(Aorder.flatten())
+
+    F2 = DFT2(sh)
+    F2 = F2[ind,:]
+    F2.addToHistory('Rearranged filters into quadrature pairs.')
+
+    return F2
 
 def SubspaceEnergyWhitening(dat, hasDC=True):
     """
@@ -553,6 +565,7 @@ def _get_lowest_Fourier_components( patch_width, component_number ):
     origin = np.array((offset,offset))
     center_index = patch_width*offset+offset
     dist = np.sqrt(X**2+Y**2).ravel()[:center_index]
+    dist += np.arange(dist.size)*1e-10 #just to make sure that the ordering is constant over all scales, because otherwise 2 equally distant components are randomly ordered
     order = dist.argsort()
     n = component_number
     if component_number > order.size:
