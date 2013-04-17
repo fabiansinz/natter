@@ -1,9 +1,9 @@
 from __future__ import division
 import warnings
 import numpy
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median
+from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median, histogram2d, meshgrid,amax,linspace
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
-from matplotlib.pyplot import scatter,text, figure, show
+from matplotlib.pyplot import scatter,text, figure, show, contour
 from numpy.linalg import qr, svd
 import types
 import sys
@@ -174,11 +174,12 @@ class Data(LogToken):
         return self
 
 
-    def plot(self,ax=None,**kwargs):
+    def plot(self,ax=None,type='scatter',**kwargs):
         """
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
 
         :param ax: If specified the data is plotted to this axes object.
+        :param type: plot type; possible choice are 'scatter' or 'loghist' (default 'scatter'). 
         :raises: natter.Auxiliary.Errors.DimensionalityError
         :returns: The axes object.
         """
@@ -189,7 +190,18 @@ class Data(LogToken):
                 fig = figure()
                 ax = fig.add_axes([.1,.1,.8,.8])
 
-            ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
+            if type is 'scatter':
+                ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
+            else:
+                mx = amax(abs(self.X[0,:]))
+                my = amax(abs(self.X[1,:]))
+                ex = linspace(-mx,mx,self.X.shape[1]/2000)
+                ey = linspace(-my,my,self.X.shape[1]/2000)
+                
+                H,ex,ey = histogram2d(self.X[0,:],self.X[1,:],bins=(ex,ey))
+                #x,y = meshgrid(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]))
+                ax.contour(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]),log(H),10,**kwargs)
+                
             return ax
 
     def numex(self):
