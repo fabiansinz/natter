@@ -269,8 +269,8 @@ def StGradient(func, X, param0=None, *args):
         ftmax = func(X,1,*args)
         k += 1;
         if k > maxiter:
-             print 'Maxiter reached! Exiting ...\n'
-             break
+            print 'Maxiter reached! Exiting ...\n'
+            break
     param['searchrange'] = b
     if k <= maxiter:
         print "\tMaximal gradient entry is smaller than %.4g! Exiting ...\n" % (tolF,)
