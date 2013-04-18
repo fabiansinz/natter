@@ -6,7 +6,7 @@ dat = DataLoader.load(FILENAME)
 print dat
 
 #------------------------------
-# Sampling 50000 4x4 patches from all images in the DATADIR using the DataSampler
+# Sampling 50000 8x8 patches from all images in the DATADIR using the DataSampler
 from natter.DataModule import DataSampler
 from natter.Auxiliary import ImageUtils
 print "Sample data from images"
