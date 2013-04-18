@@ -1,7 +1,7 @@
 from natter.DataModule import DataLoader
 from natter.Transforms import LinearTransformFactory
 
-dat = DataLoader.load('hateren4x4_train_No1.dat.gz')
+dat = DataLoader.load('hateren8x8_train_No1.dat.gz')
 # Setting the mean of the data set over samples and dimensions to 0 and storing
 # the mean value in mu (1D float)
 mu = dat.center()

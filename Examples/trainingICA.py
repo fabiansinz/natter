@@ -4,7 +4,7 @@ from natter.Distributions import ProductOfExponentialPowerDistributions
 from matplotlib.pyplot import show, figure, legend
 
 # Data loading and preprocessing as in the previous examples
-dat = DataLoader.load('hateren4x4_train_No1.dat.gz')
+dat = DataLoader.load('hateren8x8_train_No1.dat.gz')
 mu = dat.center()
 FDCAC = LinearTransformFactory.DCAC(dat)
 s = dat.makeWhiteningVolumeConserving()
@@ -17,13 +17,13 @@ print "Data after preprocessing:\n", dat
 # Now we create a product of exponential power distributions (an approach that
 # ICA [Independent component analysys] uses)
 p = ProductOfExponentialPowerDistributions(n=dat.dim())
-print "Product of exponential power distributions before fitting:\n", pICA
+print "Product of exponential power distributions before fitting:\n", p
 
 # The primary parameters are the number of distributions n (we take 1 distribution
 # per input dimension) and the set of exponential distributions P.
 # We estimate the parameters of each exponential distribution based on the given data
 p.estimate(dat)
-print "Product of exponential power distributions after fitting:\n", pICA
+print "Product of exponential power distributions after fitting:\n", p
 
 # To inspect the quality of the fit we plot the histogram of the data against
 # the pdf of the exponential distribution. Here, we look only at the first dimension

@@ -4,7 +4,7 @@ from natter.Distributions import LpSphericallySymmetric,ProductOfExponentialPowe
 from natter.Logging import Table
 
 # Data loading and preprocessing as in the previous examples
-dat = DataLoader.load('hateren4x4_train_No1.dat.gz')
+dat = DataLoader.load('hateren8x8_train_No1.dat.gz')
 mu = dat.center()
 FDCAC = LinearTransformFactory.DCAC(dat)
 s = dat.makeWhiteningVolumeConserving()
@@ -17,7 +17,7 @@ print "Training data after preprocessing:\n", dat
 # Now we load a second data set, the test set, and center it using the mean value
 # we obtained from the training set before. The volume conserving transformation
 # is also applied using the same transformation as before
-datTest = DataLoader.load('hateren4x4_test_No1.dat.gz')
+datTest = DataLoader.load('hateren8x8_test_No1.dat.gz')
 datTest.center(mu)
 datTest.makeWhiteningVolumeConserving(D=s)
 datTest = FwPCA*FAC*datTest

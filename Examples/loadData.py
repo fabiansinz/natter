@@ -1,7 +1,7 @@
 # Loading from files
 from natter.DataModule import DataLoader
 print "Loading a simple Data module from an ascii file"
-FILENAME = 'hateren4x4_train_No1.dat.gz'
+FILENAME = 'hateren8x8_train_No1.dat.gz'
 dat = DataLoader.load(FILENAME)
 print dat
 
@@ -22,7 +22,7 @@ loadFunc = ImageUtils.loadHaterenImage
 # img2PatchRand just takes patches from random positions from all over the image
 sampleFunc =  DataSampler.img2PatchRand
 numSamples = 50000
-patchSize = 4
+patchSize = 8
 # The directory iterator samples the same amount of patches from every image in
 # DATADIR. Every time the iterator is called it returns a new patch. For more
 # information on iterators see python documentation. The iterator can easily be
