@@ -12,6 +12,7 @@ from scipy.stats import kurtosis
 from numpy.random import randint
 
 
+
 class Data(LogToken):
     """
     Data
@@ -174,7 +175,7 @@ class Data(LogToken):
         return self
 
 
-    def plot(self,ax=None,type='scatter',**kwargs):
+    def plot(self,ax=None,plottype='scatter',**kwargs):
         """
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
 
@@ -190,17 +191,22 @@ class Data(LogToken):
                 fig = figure()
                 ax = fig.add_axes([.1,.1,.8,.8])
 
-            if type is 'scatter':
+            if plottype is 'scatter':
                 ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
             else:
-                mx = amax(abs(self.X[0,:]))
-                my = amax(abs(self.X[1,:]))
-                ex = linspace(-mx,mx,self.X.shape[1]/2000)
-                ey = linspace(-my,my,self.X.shape[1]/2000)
+                mx = amax(abs(self.X.ravel()))
+                ex = linspace(-mx,mx,self.X.shape[1]/4000)
+                ey = linspace(-mx,mx,self.X.shape[1]/4000)
                 
                 H,ex,ey = histogram2d(self.X[0,:],self.X[1,:],bins=(ex,ey))
-                #x,y = meshgrid(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]))
-                ax.contour(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]),log(H),10,**kwargs)
+                
+                ax.contour(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]),log(H),**kwargs)
+                
+                if ('colors' in kwargs) and (type(kwargs['colors']) == str) and ('label' in kwargs):
+                    ra  = ax.axis()
+                    ax.plot(ra[1]+1,ra[3]+1,color=kwargs['colors'],label=kwargs['label'])
+                    ax.axis(ra)
+                
                 
             return ax
 
