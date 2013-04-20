@@ -4,7 +4,7 @@ from natter.Distributions import LpSphericallySymmetric
 from matplotlib.pyplot import show, figure, legend
 
 # Data loading and preprocessing as in the previous examples
-dat = DataLoader.load('hateren4x4_train_No1.dat.gz')
+dat = DataLoader.load('hateren8x8_train_No1.dat.gz')
 mu = dat.center()
 FDCAC = LinearTransformFactory.DCAC(dat)
 s = dat.makeWhiteningVolumeConserving()
