@@ -22,7 +22,9 @@ def loadHaterenImage(filename):
     fin.close()
     arr = array.array('H', s)
     arr.byteswap()
+    
     return log(nArray(arr, dtype='uint16').reshape(1024,1536))
+    #return nArray(arr, dtype='uint16').reshape(1024,1536)
 
 def loadPhaseScrambledHaterenImage(filename):
     """
@@ -35,11 +37,13 @@ def loadPhaseScrambledHaterenImage(filename):
 
     """
     I = loadHaterenImage(filename)
+    mu = np.mean(I.ravel())
+    I = I-mu
     I2 = randn(I.shape[0],I.shape[1])
     fI2 = fft2(I2)
     fI = fft2(I)
 
-    return real(ifft2(fI2/abs(fI2) * abs(fI)))
+    return real(ifft2(fI2/abs(fI2) * abs(fI)))+mu
 
 def loadBWImage(filename):
     """
