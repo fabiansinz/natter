@@ -3,3 +3,5 @@ For the complete documentation go to the doc subfolder and run
 for the html documentation of the natter toolbox or
  make
 for a list of available documentation formats. sphinx (http://sphinx.pocoo.org/) required.
+
+The license information is contained in LICENSE with the full GPL licence text in GPL.
