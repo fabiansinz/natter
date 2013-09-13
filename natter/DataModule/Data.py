@@ -10,8 +10,7 @@ import sys
 from natter.Logging.LogTokens import LogToken
 from scipy.stats import kurtosis
 from numpy.random import randint
-
-
+from natter.Auxiliary.Utils import _displayHistoryRec
 
 class Data(LogToken):
     """
@@ -48,7 +47,7 @@ class Data(LogToken):
 
         if len(self.history) > 0:
             s += '\nHistory:\n'
-            s += _displayHistoryRec(self.history,1)
+            s += _displayHistoryRec(list(self.history),0)
 
         s += 30*'-' + '\n'
         return s
@@ -655,7 +654,7 @@ class Data(LogToken):
         s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
         s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
         if len(self.history) > 0:
-            s += _displayHistoryRec(self.history,1)
+            s += _displayHistoryRec(list(self.history),0)
         s += "</pre></td></tr></table>"
         return s
 
@@ -678,11 +677,6 @@ class Data(LogToken):
             yield self[:,ind]
         return
 
-def _displayHistoryRec(h,recDepth=0):
-    s = ""
-    for elem in h:
-        if type(elem) == types.ListType:
-            s += (recDepth-1)*'   ' +  _displayHistoryRec(elem,recDepth+1)
-        else:
-            s += recDepth*'   ' + ' |-' + elem + '\n'
-    return s
+
+
+

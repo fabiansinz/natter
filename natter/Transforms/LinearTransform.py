@@ -12,6 +12,8 @@ from matplotlib.pyplot import text
 #from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
+from natter.Auxiliary.Utils import _displayHistoryRec
+
 from sys import stderr
 try:
     import h5py
@@ -320,7 +322,7 @@ class LinearTransform(Transform.Transform):
         s = 30*'-'
         s += '\nLinear Transform (' + sh + '): ' + self.name + '\n'
         if len(self.history) > 0:
-            s += Transform.displayHistoryRec(self.history,1)
+            s += _displayHistoryRec(self.history,0)
         s += 30*'-'
 
         return s

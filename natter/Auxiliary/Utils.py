@@ -7,6 +7,8 @@ from natter.Auxiliary.Errors import SpecificationError
 from numpy.linalg import cholesky
 from numpy import array, eye, dot, tile
 from numpy.random import randn
+import types
+
 try:
     import h5py
 except:
@@ -211,3 +213,33 @@ def hdf5GroupToList( grp, counter ):
             lst += [str(grp[str(counter)][...])]
         counter += 1
     return lst, counter
+
+
+def _flatten(items, seqtypes=(list, tuple)):
+    """
+    From user kindall from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
+    """        
+    return list(flatten(items))
+
+def flatten(container):
+    """
+    From user hexparrot from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
+    """    
+    for i in container:
+        if isinstance(i, list) or isinstance(i, tuple):
+            for j in flatten(i):
+                yield j
+        else:
+            yield i
+
+def _displayHistoryRec(h,recDepth=0):
+    for i,elem in enumerate(h):
+        if type(elem) == types.ListType:
+            h[i] = _displayHistoryRec(elem,recDepth + 1)
+        else:
+            h[i] =  recDepth*'   ' + ' |-' + elem 
+    if recDepth==0:
+        h = _flatten(h)
+        return "   \n".join(h) + "\n"
+    else:
+        return h

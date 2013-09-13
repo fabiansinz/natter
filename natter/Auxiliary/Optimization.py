@@ -259,7 +259,7 @@ def StGradient(func, X, param0=None, *args):
         if bestdelta < b/4.0:
             b /=2
             print "-(%.8f) " % b,
-        elif bestdelta < 3.0*b/4.0:
+        elif bestdelta > 3.0*b/4.0:
             b *=2
             print "+(%.8f) " % b,
         else:
