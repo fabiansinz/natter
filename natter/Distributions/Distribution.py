@@ -8,7 +8,8 @@ import pylab as plt
 import string
 from copy import deepcopy
 from natter.Logging.LogTokens import LogToken
-from scipy.optimize import fmin_l_bfgs_b
+from scipy.optimize import fmin_l_bfgs_b, fmin_bfgs
+from warnings import warn
 
 class Distribution(LogToken):
 
@@ -260,15 +261,30 @@ class Distribution(LogToken):
 
         If not implemented it tries to use primary2array,
         array2primary, primaryBounds, and dldtheta to perform a
-        gradient ascent on the log-likelihood. 
+        gradient ascent on the log-likelihood. However, note that the
+        parameters obtained are not checked against the particular
+        assumptions for the more specialized distributions. For example,
+        if parameters represent a matrix, which is assumed to be positive
+        definite, this is not accounted for within this general purpose
+        gradient based maximum likelihood. Therefore, if used, a warning
+        is printed.
 
         :param dat: data from which the parameters will be estimated
         :type dat: natter.DataModule.Data
         """
+        warningmsg  = """Warning: You are using a general purpose (gradient descend)\
+        fitting procedure. No checking of parameters done, make sure that final\
+        parameters are within allowed range (such as positive definiteness)."""
+        warn(warningmsg)
         f = lambda p: self.array2primary(p).all(dat)
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
-   
-        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
+        noboundmethod = False
+        try:
+            tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
+        except Errors.AbstractError:
+            noboundmethod = True
+        if noboundmethod:
+            tmp = fmin_bfgs(f, self.primary2array(), fprime)[0]
         self.array2primary(tmp)
 
 

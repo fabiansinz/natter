@@ -14,7 +14,7 @@ class TestGaussian(unittest.TestCase):
         self.Gauss = Gaussian({'n':1})
         self.entropy = 0.5*(1+log(2*pi))
         self.Gauss2D = Gaussian({'n':2})
-        self.Gauss2D.primary=['sigma']
+        self.Gauss2D.primary=['mu', 'sigma']
     def test_init(self):
         pass
 
@@ -43,7 +43,7 @@ class TestGaussian(unittest.TestCase):
         self.assertTrue(diff <=1e-05)
 
     def test_dldtheta(self):
-        d = self.Gauss2D.sample(1)
+        d = self.Gauss2D.sample(10)
         def f(X):
             self.Gauss2D.array2primary(X)
             lv = self.Gauss2D.loglik(d);

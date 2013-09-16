@@ -11,6 +11,7 @@ from scipy.linalg import solve_triangular
 from scipy.stats import norm 
 from natter.Auxiliary.Errors import DimensionalityError
 from natter.Auxiliary.Decorators import Squeezer
+from warnings import warn
 
 class Gaussian(Distribution):
     """
@@ -188,16 +189,18 @@ class Gaussian(Distribution):
         ret = array([])
         n,m = dat.size()
         for pa in self.primary:
-            if 'mu' in self.primary:
+            if pa == 'mu':
                 ret0 = dot(self.cholP,dot(self.cholP.T, dat.X -reshape(self.param['mu'].copy(),(n,1))))
 
-            if 'sigma' in self.primary:
+            elif 'sigma' in self.primary:
                 v = diag(1.0/diag(self.cholP))[self.I]
                 ret0 = zeros((len(self.I[0]),m));
                 for i,x in enumerate(dat.X.T):
                     X = x - self.param['mu']
                     X = outer(X,X)
                     ret0[:,i] = -dot(self.cholP.T,X).T[self.I]   + v
+            else:
+                warn('cannot handle parameter %s'%(pa))
             if len(ret)==0:
                 ret = ret0
             else:
