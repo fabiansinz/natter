@@ -11,6 +11,7 @@ import pylab as pl
 from mdp.utils import symrand
 from natter.Auxiliary.Numerics import logsumexp
 from matplotlib.pyplot import show
+import numpy as np
 
 class TestFiniteMixtureDistribution(unittest.TestCase):
 
@@ -71,21 +72,27 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         u2 = self.mog.cdf(self.mog.ppf(u))
         self.assertTrue(all(abs(u-u2)< 1e-6),'ppf and cdf are not consistent!')
 
-    # def test_estimate(self):
-    #     # P = [Gaussian(n=1,mu=2*randn(1),sigma=2*rand(1,1)) for k in xrange(self.K)]
-    #     # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
-    #     P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
-
-    #     mog = FiniteMixtureDistribution(P=P)
-    #     print mog
-    #     mog.histogram(self.dat)
-    #     show()
-    #     mog.estimate(self.dat,method='hybrid')
-    #     print mog
-    #     mog.histogram(self.dat)
-    #     print self.mog
-    #     show()
-    #     raw_input()
+    def test_estimate(self):
+        sigm1 = symrand(2)
+        sigm1 = np.dot(sigm1,sigm1.T)
+        sigm2 = symrand(2)
+        sigm2 = np.dot(sigm2,sigm2.T)
+        P = [Gaussian(n=2,mu=2*randn(2),sigma=sigm1), Gaussian(n=2,mu=2*randn(2),sigma=sigm2)]
+        # P = [Gamma(n=1,u=3*rand(),s=3*rand()) for k in xrange(self.K)]
+        # P = [TruncatedGaussian(a=0.1,b=10,mu=3*randn(1),sigma=3*rand(1,1)) for k in xrange(self.K)]
+        alpha = rand(2)
+        alpha = alpha/sum(alpha)
+        mog = FiniteMixtureDistribution(P=P,alpha=alpha)
+        mog.primary=['alpha','P']
+        dat = mog.sample(500)        
+        arr0 = mog.primary2array()
+        print mog        
+        mog.array2primary(arr0 + np.random.rand(len(arr0))*1e-04)
+        mog.estimate(dat,method='hybrid')
+        err = np.sum(np.abs(arr0 - mog.primary2array()))
+        print mog
+        print  "error: ", err
+        self.assert_(err < 1.0)
 
 
     # def test_ppf(self):

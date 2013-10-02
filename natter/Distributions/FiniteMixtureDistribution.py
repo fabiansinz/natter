@@ -12,7 +12,9 @@ from copy import deepcopy
 from natter.Auxiliary.Utils import parseParameters
 from natter.Auxiliary.Numerics import logsumexp
 from warnings import warn
-from natter.Auxiliary.Decorators import Squeezer,OutputRangeChecker
+from natter.Auxiliary.Decorators import Squeezer
+from natter.Auxiliary import Errors
+import numpy as np
 
 def logistic(eta):
     return exp(eta)/(1+exp(eta))
@@ -241,10 +243,11 @@ class FiniteMixtureDistribution(Distribution):
             ret += (len(self.param['alpha'])-1)*[(-30.0,30.0)]
         if 'P' in self.primary:
             for k in range(len(self.param['P'])):
-                if hasattr(self.param['P'][k],'primaryBounds'):
+#                if hasattr(self.param['P'][k],'primaryBounds'):
+                try:
                     ret += self.param['P'][k].primaryBounds()
-                else:
-                    ret += len(self.param['P'][k].primary())*[(None,None)]
+                except Errors.AbstractError:
+                    ret += len(self.param['P'][k].primary2array())*[(None,None)]
         return ret
             
         
@@ -298,7 +301,8 @@ class FiniteMixtureDistribution(Distribution):
         etas = log(self.param['alpha'][:-1]/(1.0- self.param['alpha'][:-1]))
         for pa in self.primary:
             if pa == 'alpha':
-                ret=zeros((K-1,m))
+                #ret=zeros((K-1,m)) # SG.: Comment this one out: why was
+                #it there anyway?
                 dldp = zeros((K,m))
                 dpdeta = zeros((K-1,K))
                 for k in xrange(K-1):
@@ -307,7 +311,7 @@ class FiniteMixtureDistribution(Distribution):
                 dldp[-1,:] = exp(self.param['P'][-1].loglik(dat)-lp)
                 dpdeta[:,-1]= -logistic(etas)*logistic(-etas)
                 ret0 = dot(dpdeta,dldp)
-            if pa == 'P':
+            elif pa == 'P':
                 ret0 = self.param['P'][0].dldtheta(dat)
                 lp0  = self.param['P'][0].loglik(dat)
                 ret0 = ret0*exp(lp0-lp + log(self.param['alpha'][0]))
@@ -316,7 +320,8 @@ class FiniteMixtureDistribution(Distribution):
                     lp1  = self.param['P'][k].loglik(dat)
                     ret1 = ret1*exp(lp1-lp + log(self.param['alpha'][k]))
                     ret0 = vstack((ret0,ret1))
-
+            else:
+                warn("don't know how to handle parameter %s, ignoring..."%(pa))
             if len(ret)==0:
                 ret = ret0
             else:
@@ -387,7 +392,7 @@ class FiniteMixtureDistribution(Distribution):
             method = 'EM'
             print "\tUsing: %s-method " % (method,)
         if method != 'EM':
-            print "\tMethod %s deprecated or unkown: Using EM!"
+            print "\tMethod %s deprecated or unkown: Using EM!"% (method,)
 
         #--------------- optimize --------------------------
         n,m = dat.size()
@@ -443,7 +448,12 @@ class FiniteMixtureDistribution(Distribution):
             if 'alpha' in self.primary:
                 arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
             #check(arr)
-            optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
+            if all((elem[0] is None) and (elem[1] is None) for elem in bounds):
+                optimize.fmin_bfgs(f,arr,fprime=df,disp=0)                
+            #optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
+            else:
+                optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
+#            optimize.fmin_bfgs(f,arr,fprime=df,disp=0)
 
 
         diff = Inf
