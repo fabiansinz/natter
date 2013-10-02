@@ -475,9 +475,9 @@ class Distribution(LogToken):
             z = squeeze(self.cdf( Data(bincenters)))
             ax.plot(bincenters, z, 'k.-', linewidth=2)
             if plotlegend:
-                plt.legend( ('p.d.f.','c.d.f.','Histogram') )
+                plt.legend( ('p.d.f.','c.d.f.','Histogram') , frameon=False)
         elif plotlegend:
-            plt.legend( ('p.d.f.','Histogram') )
+            plt.legend( ('p.d.f.','Histogram'), frameon=False )
        
         ax.set_xlabel('x')
         ax.set_ylabel('Probability')

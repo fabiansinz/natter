@@ -232,6 +232,9 @@ def flatten(container):
         else:
             yield i
 
+def displayHistoryRec(h):
+    return _displayHistoryRec(deepcopy(h),0)
+
 def _displayHistoryRec(h,recDepth=0):
     for i,elem in enumerate(h):
         if type(elem) == types.ListType:

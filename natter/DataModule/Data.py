@@ -1,7 +1,7 @@
 from __future__ import division
 import warnings
 import numpy
-from numpy import eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median, histogram2d, meshgrid,amax,linspace
+from numpy import any,eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median, histogram2d, meshgrid,amax,linspace, arange, floor, isnan, isinf
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
 from matplotlib.pyplot import scatter,text, figure, show, contour
 from numpy.linalg import qr, svd
@@ -10,7 +10,7 @@ import sys
 from natter.Logging.LogTokens import LogToken
 from scipy.stats import kurtosis
 from numpy.random import randint
-from natter.Auxiliary.Utils import _displayHistoryRec
+from natter.Auxiliary.Utils import displayHistoryRec
 
 class Data(LogToken):
     """
@@ -47,7 +47,7 @@ class Data(LogToken):
 
         if len(self.history) > 0:
             s += '\nHistory:\n'
-            s += _displayHistoryRec(list(self.history),0)
+            s += displayHistoryRec(self.history)
 
         s += 30*'-' + '\n'
         return s
@@ -193,12 +193,13 @@ class Data(LogToken):
             if plottype is 'scatter':
                 ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
             else:
-                mx = amax(abs(self.X.ravel()))
+                ind = ~(any(isnan(self.X),axis=0) | any(isinf(self.X),axis=0))
+                
+                mx = amax(abs(self.X[:,ind].ravel()))
                 ex = linspace(-mx,mx,self.X.shape[1]/4000)
                 ey = linspace(-mx,mx,self.X.shape[1]/4000)
                 
                 H,ex,ey = histogram2d(self.X[0,:],self.X[1,:],bins=(ex,ey))
-                
                 ax.contour(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]),log(H),**kwargs)
                 
                 if ('colors' in kwargs) and (type(kwargs['colors']) == str) and ('label' in kwargs):
@@ -654,7 +655,7 @@ class Data(LogToken):
         s += "<tr><td><tt>Dimensions: </tt></td><td><tt>%i</tt></td></tr>" % (self.X.shape[0],)
         s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
         if len(self.history) > 0:
-            s += _displayHistoryRec(list(self.history),0)
+            s += displayHistoryRec(self.history)
         s += "</pre></td></tr></table>"
         return s
 
@@ -676,7 +677,23 @@ class Data(LogToken):
             ind= randint(ne,size=(m,))
             yield self[:,ind]
         return
+    
+    def cross_validation(self,c=10):
+        """
+        Iterator that returns c pairs of training and test datasets. Each pair
+        is a different partition of the data. 
 
+        :param c: number of training and test dataset pairs
+        :type c: int
 
+        """
+        m = self.X.shape[0]
+        delta = m/c
+        for i in arange(0,m,delta):
+            train_ind = range(int(floor(i))) + range(int(floor(i+delta)),m)
+            test_ind = range(int(floor(i)),int(floor(i+delta)))
+            
+            yield self[:,train_ind], self[:,test_ind] 
+    
 
 

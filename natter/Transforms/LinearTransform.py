@@ -12,7 +12,7 @@ from matplotlib.pyplot import text
 #from matplotlib import pyplot
 from scipy.optimize import fmin_l_bfgs_b
 # from scipy.signal import hanning
-from natter.Auxiliary.Utils import _displayHistoryRec
+from natter.Auxiliary.Utils import displayHistoryRec
 
 from sys import stderr
 try:
@@ -322,7 +322,7 @@ class LinearTransform(Transform.Transform):
         s = 30*'-'
         s += '\nLinear Transform (' + sh + '): ' + self.name + '\n'
         if len(self.history) > 0:
-            s += _displayHistoryRec(self.history,0)
+            s += displayHistoryRec(self.history)
         s += 30*'-'
 
         return s
@@ -342,7 +342,7 @@ class LinearTransform(Transform.Transform):
         s += "<tbody>"
         s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
         if len(self.history) > 0:
-            s += Transform.displayHistoryRec(self.history,1)
+            s += displayHistoryRec(self.history)
         s += "</pre></td></tr></table>"
         return s
 

@@ -2,6 +2,8 @@ import types
 from LogTokens import LogToken, Link, Paragraph
 import textwrap
 import re
+from copy import deepcopy
+
 class ExperimentLog(LogToken):
     """
     Class for storing experiment logs. ExperimentLog is a :doc:`LogToken <Logging_LogTokens>`.
@@ -95,18 +97,18 @@ class ExperimentLog(LogToken):
     def __add__(self,item):
         if type(item) == types.ListType:
             for elem in item:
-                self += elem
+                self += deepcopy(elem)
         if type(item) != types.StringType and not isinstance(item,LogToken):
             raise TypeError('Only Strings, LogTokens or lits of both can be added to the log')
         else:
             if type(item) == types.StringType:
                 item = re.sub("\s+", " ", item)
-            self._log.append(item)
+            self._log.append(deepcopy(item))
         return self
 
     def __div__(self,item):
         self += Paragraph()
-        return self + item
+        return self + deepcopy(item)
 
     def __mul__(self,item):
         if type(item) == types.StringType:
@@ -126,7 +128,7 @@ class ExperimentLog(LogToken):
 
     def __setitem__(self,k,value):
         if isinstance(value,ExperimentLog):
-            self._sublogs[k] = value
+            self._sublogs[k] = deepcopy(value)
         else:
             raise TypeError("Assignment value must be a ExperimentLog")
 

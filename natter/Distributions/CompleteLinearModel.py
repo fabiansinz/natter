@@ -209,13 +209,13 @@ class CompleteLinearModel(Distribution):
     def objective(self, W, nargout,dat,q):
         """
         The objective function to be optimized with
-        Auxiliary.Optimization.StGradient. It computes the mean likelhood
+        Auxiliary.Optimization.StGradient. It computes the mean likelihood
         """
         (n,m) = dat.size()
         if nargout == 1:
-            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2),)
+            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2.),)
         else:
-            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2), \
+            return (sum(q.loglik(Data(array(dot(W,dat.X)))))/m/n/log(2.), \
                         dot(q.dldx(Data(array(dot(W,dat.X)))),\
                                    dat.X.transpose())/m/n/log(2))
 

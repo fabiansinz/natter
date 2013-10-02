@@ -40,6 +40,7 @@ implements. At the moment it provides the following distributions.
 
 
 from Distribution import Distribution
+from Beta import Beta
 from ChiP import ChiP
 from Gamma import Gamma
 from GammaP import GammaP

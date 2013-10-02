@@ -2,7 +2,6 @@ import cPickle as pickle
 from natter import Auxiliary
 import types
 from natter.Logging.LogTokens import LogToken
-from natter.Auxiliary.Utils import _displayHistoryRec
 
 class Transform(LogToken):
     '''
@@ -100,11 +99,3 @@ def load(path):
             ret = None
     return ret
 
-#def displayHistoryRec(h,recDepth=0):
-#    s = ""
-#    for elem in h:
-#        if type(elem) == types.ListType:
-#            s += (recDepth-1)*'   ' +  displayHistoryRec(elem,recDepth+1)
-#        else:
-#            s += recDepth*'   ' + ' |-' + elem + '\n'
-#    return s

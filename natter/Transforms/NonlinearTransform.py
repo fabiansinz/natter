@@ -6,6 +6,8 @@ from natter.Auxiliary import Errors
 from natter.DataModule import Data
 import types
 import copy
+from copy import deepcopy
+from natter.Auxiliary.Utils import displayHistoryRec
 
 class NonlinearTransform(Transform.Transform):
     '''
@@ -50,9 +52,9 @@ class NonlinearTransform(Transform.Transform):
         
         if isinstance(O,Data):
             # copy other history 
-            tmp = list(O.history)
+            tmp = deepcopy(O.history)
             tmp.append('Applied non-linear filter "' + self.name + '"')
-            tmp.append(list(self.history))
+            tmp.append(deepcopy(self.history))
 
             # compute results and add own history
             ret = self.f(O)
@@ -60,9 +62,9 @@ class NonlinearTransform(Transform.Transform):
             return ret
         elif isinstance(O,LinearTransform.LinearTransform):
             # copy other history and add own
-            tmp = list(O.history)
+            tmp = deepcopy(O.history)
             tmp.append('multiplied with Transform "' + self.name + '"')
-            tmp.append(list(self.history))
+            tmp.append(deepcopy(self.history))
 
             Ocpy = O.copy()
             Scpy = self.copy()
@@ -73,9 +75,9 @@ class NonlinearTransform(Transform.Transform):
             return NonlinearTransform(g,O.name,tmp, logdetJ=gdet )
         elif isinstance(O,NonlinearTransform):
             # copy other history and add own
-            tmp = list(O.history)
+            tmp = deepcopy(O.history)
             tmp.append('composed with "' + self.name + '"')
-            tmp.append(list(self.history))
+            tmp.append(deepcopy(self.history))
 
             Scpy = self.copy()
             Ocpy = O.copy()
@@ -130,7 +132,7 @@ class NonlinearTransform(Transform.Transform):
         s = 30*'-'
         s += '\nNonlinear Transform: ' + self.name + '\n'
         if len(self.history) > 0:
-            s += Transform.displayHistoryRec(self.history,1)
+            s += displayHistoryRec(self.history)
         s += 30*'-'
         
         return s
@@ -148,7 +150,7 @@ class NonlinearTransform(Transform.Transform):
         s += "<tbody>"
         s += "<tr><td valign=\"top\"><tt>History: </tt></td><td><pre>"
         if len(self.history) > 0:
-            s += Transform.displayHistoryRec(self.history,1)
+            s += displayHistoryRec(self.history)
         s += "</pre></td></tr></table>"
         return s
 
@@ -162,7 +164,7 @@ class NonlinearTransform(Transform.Transform):
         :rtype: list of (list of ...) strings
         """
         
-        return list(self.history)
+        return deepcopy(self.history)
 
     def __repr__(self):
         return self.__str__()

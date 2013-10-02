@@ -1,7 +1,7 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, abs, sign, exp, mean, squeeze
+from numpy import log, abs, sign, exp, mean, squeeze, any, where, isinf, isnan
 from numpy.random import gamma, randn
 from scipy.special import gammaln,gammainc, gammaincinv
 from scipy.optimize import fminbound
@@ -163,7 +163,8 @@ class ExponentialPower(Distribution):
         :type dat: natter.DataModule.Data
         '''
 
-
+#        ind = ~(any(isinf(dat.X),axis=0) | any(isnan(dat.X),axis=0))
+          
         if 'p' in self.primary:
             func = lambda t: self.__objective(t,dat,'s' in self.primary)
             p = fminbound(func, 0.0, 100.0)

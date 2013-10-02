@@ -1,6 +1,6 @@
 from Distribution import Distribution
 from natter.DataModule import Data
-from numpy import log, exp, zeros, prod
+from numpy import log, exp, zeros, prod, squeeze, array
 from numpy.random import rand
 #rom natter.Auxiliary.Decorators import DataSupportChecker
 from natter.Auxiliary import Errors
@@ -119,7 +119,7 @@ class Uniform(Distribution):
         :rtype:    numpy.array
            
         '''
-        raise Errors.AbstractError, 'cdf not implemented in ' + self.name
+        return array(squeeze(dat.X))
 
 
 #   @DataSupportChecker(1,'low','high')
@@ -134,7 +134,7 @@ class Uniform(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
-        raise Errors.AbstractError, 'ppf not implemented in ' + self.name
+        return Data(X)
 
 
 #   @DataSupportChecker(1,'low','high')
