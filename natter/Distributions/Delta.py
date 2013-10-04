@@ -15,9 +15,9 @@ class Delta(Distribution):
 
 
     :param param:
-        dictionary which might containt parameters for the uniform distribution
+        dictionary which might contain parameters for the uniform distribution
               'n'      :    dimensionality (default=1)
-              'peak'   :    where the delta peak sitz (either 1D for same in all dimensions or nD)
+              'peak'   :    peak location (either 1D for same in all dimensions or nD)
               
     :type param: dict
 
@@ -72,21 +72,6 @@ class Delta(Distribution):
                      str(m) + ' samples from ' + self.name)
         
 
-    def loglik(self, dat):
-        '''
-
-        Computes the loglikelihood of the data points in dat. 
-
-        :param dat: Data points for which the loglikelihood will be computed.
-        :type dat: natter.DataModule.Data
-        :returns:  An array containing the loglikelihoods.
-        :rtype:    numpy.array
-         
-           
-        '''
-        raise NotImplementedError, 'loglik not implemented in ' + self.name
-
-
     def pdf(self,dat):
         '''
 
@@ -100,88 +85,14 @@ class Delta(Distribution):
         '''
         return exp(self.loglik(dat))
 
-        
-#    @DataSupportChecker(1,'low','high')
-    def cdf(self,dat):
-        '''
 
-        Evaluates the cumulative distribution function on the data points in dat. 
-
-        :param dat: Data points for which the c.d.f. will be computed.
-        :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the quantiles.
-        :rtype:    numpy.array
-           
-        '''
-        raise NotImplementedError, 'cdf not implemented in ' + self.name
-
-
-    def ppf(self,X):
-        '''
-
-        Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
-
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
-        :returns:  A Data object containing the values of the ppf.
-        :rtype:    natter.DataModule.Data
-           
-        '''
-        raise NotImplementedError, 'ppf not implemented in ' + self.name
-
-
-    def dldtheta(self,data):
-        """
-        Evaluates the gradient of the Gamma function with respect to the primary parameters.
-
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
-        :returns:   The gradient
-        :rtype:     numpy.array
-        
-        """
-
-        raise NotImplementedError, 'dldtheta not implemented in ' + self.name
-
-
-    def dldx(self,dat):
-        """
-
-        Returns the derivative of the log-likelihood of the Gamma distribution w.r.t. the data in dat. 
-        
-        :param dat: Data points at which the derivatives will be computed.
-        :type dat: natter.DataModule.Data
-        :returns:  A numpy array containing the derivatives.
-        :rtype:    numpy.array
-        
-        """
-        raise NotImplementedError, 'dldx not implemented in ' + self.name
-        
     def estimate(self,dat):
         '''
         Uniform distribution has no parameter hence estimate does nothing        
         '''
         print self.name + ' has no parameter to fit.'
-   
-    
-    def primary2array(self):
-        """
-        converts primary parameters into an array.
-        """
-        ret = zeros(len(self.primary))
-        for ind,key in enumerate(self.primary):
-            ret[ind]=self.param[key]
-        return ret
 
-    def array2primary(self,arr):
-        """
-        Converts the given array into primary parameters.
-            
-        """
-        for ind,key in enumerate(self.primary):
-            self.param[key]=arr[ind]
-            
-    
+
     def __setitem__(self,key,value):
         if key == 'n':
             raise NotImplementedError, 'Changing the dimensionality of ' + self.name + ' is not supported.'

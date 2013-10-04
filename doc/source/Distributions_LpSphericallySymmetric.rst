@@ -12,7 +12,8 @@ form (see [GuptaSong1997]_)
 
 :math:`\varrho` is any radial density on :math:`\mathbb R_+`. In the
 *natter* it is specified via the parameter 'rp' which is another
-Distribution object.
+Distribution object. :math:`p>0` determines the contour lines of the
+joint distribution. :math:`n\in\mathbb N` refers to the dimensionality.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LpSphericallySymmetric

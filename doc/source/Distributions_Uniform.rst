@@ -1,7 +1,7 @@
 Uniform Distribution
 ====================
 
-The multivariate Uniform distribution
+The multivariate Uniform distribution.
 
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
