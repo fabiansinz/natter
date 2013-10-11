@@ -9,8 +9,11 @@ def htmltable(rowlab,collab, S):
     Generates a table in html format from the data in S.
 
     :param rowlab: row labels
+    :type rowlab: list
     :param collab: column labels
+    :type collab: list
     :param S: list of list of entries for the table. Elements must be convertable to strings via str(.)
+    :param S: list
     :returns: html table
     :rtype: string
     """
@@ -19,9 +22,9 @@ def htmltable(rowlab,collab, S):
     s += "<tr><td></td>"
     for colelem in collab:
         s += "<td><b>%s</b></td>" % (str(colelem),)
-    
+
     s += "</tr>"
-        
+
     for i in xrange(len(rowlab)):
         if b:
             s += "<tr style=\"background-color: rgb(221, 221, 221);\"><td><b>%s</b></td>" % (str(rowlab[i]))
@@ -38,27 +41,6 @@ def htmltable(rowlab,collab, S):
     return s
 
 
-def patch2Img_old(X, nx , ny):
-    """
-    Deprecated.
-    """
-    sz = np.shape( X)
-    p = sz[0]
-    n = sz[1]
-    ptchSz = np.sqrt(p)
-    if int(ptchSz) != ptchSz:
-        raise Errors.DimensionalityError('Auxiliary.Plotting.patch2Img: Number of rows is not a square!')
-    ptchSz = int(ptchSz)
-
-    imgTmp = np.array(X.reshape( (ptchSz,n*ptchSz),order="F" ))
-    newSz = (ny*ptchSz, nx*ptchSz)
-    img = np.zeros( newSz);
-    newSz = tuple([ptchSz,ptchSz*( nx*ny - n)])
-    imgTmp = np.concatenate((imgTmp, np.zeros( newSz)),1);
-    for ii in range(ny):
-        img[ ii*ptchSz:(ii+1)*ptchSz, :] = imgTmp[ :, ii*nx*ptchSz:(ii+1)*nx*ptchSz]
-    return img
- 
 def patch2Img(X, nx , ny, orientation='F'):
     """
     Reshapes the patches contained as columns in X and arranges them
@@ -71,7 +53,9 @@ def patch2Img(X, nx , ny, orientation='F'):
     :param ny: column dimension of the grid
     :type ny: int
     :param orientation: how the patches are reshaped (default: 'F' which means matlab or fortran column style)
-    
+    :type orientation: string
+    :returns: 2D images containing the patches as subimages
+    :rtype: numpy.ndarray
     """
     sz = np.shape(X)
     p = sz[0]
@@ -100,11 +84,16 @@ def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation
     :param ptchSz: patch size
     :type ptchSz: int
     :param ax: axis object in which the patches are plotted if ax is not None.
+    :type ax: matplotlib.pyplot.axis
     :param contrastenhancement: boolean that indicates whether the patches should be rescaled for better visibility (default: False)
+    :type contrastenhancement: bool
     :param orientation: how the patches are reshaped (default: 'F' which means matlab or fortran column style)
+    :type orientation: string
+    :param kwargs: Additional parameters directly passed to matplotlib.pyplot.imshow
+    :type kwargs: dict
     """
     A = B.copy()
-    
+
     if type(nx) == types.TupleType:
         if len(nx) == 2:
             ny = int(nx[1])
@@ -115,10 +104,10 @@ def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation
     else:
         nx = int(nx)
         ny = int(nx)
-    
+
     # p = ptchSz**2
     # sz = np.size(A,0)
-    
+
     A -= np.min(np.min(A))
     A /= np.max(np.max(A))
 
@@ -136,7 +125,7 @@ def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation
     if ax == None:
         ax = pyplot
         doShow = True
-        
+
     I = patch2Img(A, nx, ny, orientation)
     if doShow:
         ax.imshow(I,cmap=pyplot.cm.gray,interpolation='nearest', **kwargs)
@@ -151,14 +140,14 @@ def plotPatches( B , nx, ptchSz, ax=None, contrastenhancement=False, orientation
         ax.axis('tight')
         ax.axis('off')
         #ax.show()
-    
-    
+
+
 def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameScale=True, plotNumbers=False, **kwargs):
     """
     plot columns of A as 1D line plots in an array of NX=(h,w) subsplots. Takes all arguments that pyplot.plot takes.
-    
-    :param U: Filter matrix
-    :type U: 2D numpy.ndarray
+
+    :param U: 2D Filter matrix
+    :type U: numpy.ndarray
     :param h: number of subplot rows. Will be estimated if not given.
     :type h: integer
     :param w: number of subplot columns. Will be estimated if not given.
@@ -172,6 +161,7 @@ def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameS
     :param plotNumbers: Plot the subplot number as title of the subplot. Default False.
     :type plotNumbers: bool
     :param kwargs: All arguments which pyplot.plot() accepts
+    :type kwargs: dict
     """
 
     if h == None or w == None:
@@ -179,7 +169,7 @@ def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameS
             [h, w] = findShape(U.shape[1])
         except:
             [h, w] = findShape(U.shape[1]+1)
-            
+
     if clearFigure:
         pyplot.clf()
 
@@ -190,7 +180,7 @@ def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameS
     else:
         ymax = max(U.max(), pyplot.ylim()[1])
         ymin = min(U.min(), pyplot.ylim()[0])
-        
+
     for ii in xrange(int(h)):
         for jj in xrange(int(w)):
             pyplot.subplot(h,w,ind[ii*w+jj])
@@ -200,7 +190,7 @@ def plotStripes( U, h = None, w = None, clearFigure=True, orientation='C', sameS
                 pyplot.plot(U[:,ii*w+jj], **kwargs)
                 if sameScale:
                     pyplot.ylim((ymin, ymax))
-    
+
 
 def findShape( s ):
     """
@@ -208,7 +198,6 @@ def findShape( s ):
     a vector with length s can be reshaped into a hXw 2D matrix. If h != w then
     w>h, so the matrix will be in landscape format. Throws a ValueError if s
     is prime.
-
 
     :param s: integer to be factorized
     :type s: int
@@ -227,18 +216,25 @@ def findShape( s ):
 
 def savefig( filename, bb='tight' ):
     """
-    Saves thes current figure to filename in png and eps format with 300 dpi.
+    Saves the current figure to filename in png and eps format with 300 dpi.
 
     :param filename: filename of the file the figure is saved to.
+    :type filename: string
     :param bb: bbox_inches parameter of pyplot.savefig.
+    :type bb: string
     """
     print 'Saving figure %s'%(filename)
     pyplot.savefig('%s.png'%(filename), bbox_inches=bb, dpi=300)
     pyplot.savefig('%s.eps'%(filename), bbox_inches=bb, dpi=300)
-    
+
 def imsave( filename, image ):
     """
-    See savefig.
+    Saves the given 2D array to filename in png and eps format
+
+    :param filename: filename of the file the array is saved to.
+    :type filename: string
+    :param image: 2D array
+    :type image: numpy.ndarray
     """
     print 'Saving image %s'%(filename)
     pyplot.imsave('%s.png'%(filename), image)

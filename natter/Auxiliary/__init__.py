@@ -27,6 +27,14 @@ from LpNestedFunction import LpNestedFunction
 
 
 def prettyPrintDict(d):
+    """
+    Prints the dictionary in a nicely formatted way.
+
+    :param d: the dictionary
+    :type d: dict
+    :returns: formated string
+    :rtype: string
+    """
     s = ""
     for k ,v in d.items():
         s += str(k) + ": " + str(v) + "\n"
