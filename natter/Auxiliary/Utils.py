@@ -185,7 +185,7 @@ def debug():
 #    os.system(cmd)
 
 def hdf5GroupToList( grp, counter ):
-    """ hdf5GroupToList( grp, counter )
+    """
     Helper function which takes a h5py group object and parses it into a list
     of stings and lists. Data sets will be converted to stings, subgroups are
     lists. Important for importing the history of a Data object.
@@ -229,9 +229,28 @@ def flatten(container):
             yield i
 
 def displayHistoryRec(h):
+    """
+    Converts the history record of a natter object to a formated, printable string.
+    Creates a deep copy to not alter the content and starts at depth level 0.
+
+    :param h: Hisory of a natter object
+    :type h: list
+    :returns: Formated string containing the history
+    :rtype: string
+    """
     return _displayHistoryRec(deepcopy(h),0)
 
 def _displayHistoryRec(h,recDepth=0):
+    """
+    Converts the history record of a natter object to a formated, printable string.
+
+    :param h: Hisory of a natter object
+    :type h: list
+    :param recDepth: Depth of the current branch of the history, for formatting
+    :type recDepth: int
+    :returns: Formated string containing the history
+    :rtype: string
+    """
     for i,elem in enumerate(h):
         if type(elem) == types.ListType:
             h[i] = _displayHistoryRec(elem,recDepth + 1)
