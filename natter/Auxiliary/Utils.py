@@ -75,7 +75,7 @@ def save(o,filename):
         f.close()
 
 def savehdf5( dat, filename ):
-    """savehdf5( dat, filename )
+    """
     Saves the Data object in hdf5 format. Requires h5py and hdf5>1.8.3 installed.
     Adds .hdf5 to the end of the filename if filename does not end on .hdf5
 
@@ -98,7 +98,7 @@ def savehdf5( dat, filename ):
     fout.close()
 
 def saveListToHDF5(fout, lst, counter):
-    """saveListToHDF5(fout, lst, couter)
+    """
     Helper function to recursively save the embedded lists of the Data history
     to the hdf5 file in a recoverable way.
 
@@ -163,30 +163,26 @@ def debug():
     else:
         return
 
-
-
-
-
-def profileFunction(f):
-    """
-    profiles the execution of a function via lsprofcalltree for later
-    inspection with kcachegrind. kcachegrind is directly called with
-    the corresponding profile.
-    NOTE: this only works for linux systems where kcachegrind is installed.
-
-    :param f: function handle of the function to profile.
-    :type f: python-function
-
-    """
-    filename = '/tmp/profile.prof'
-    p = cProfile.Profile()
-    p.runcall(f)
-    k = lsprofcalltree.KCacheGrind(p)
-    data = open(filename, 'w+')
-    k.output(data)
-    data.close()
-    cmd = "kcachegrind %s" % filename
-    os.system(cmd)
+#def profileFunction(f):
+#    """
+#    profiles the execution of a function via lsprofcalltree for later
+#    inspection with kcachegrind. kcachegrind is directly called with
+#    the corresponding profile.
+#    NOTE: this only works for linux systems where kcachegrind is installed.
+#
+#    :param f: function handle of the function to profile.
+#    :type f: python-function
+#
+#    """
+#    filename = '/tmp/profile.prof'
+#    p = cProfile.Profile()
+#    p.runcall(f)
+#    k = lsprofcalltree.KCacheGrind(p)
+#    data = open(filename, 'w+')
+#    k.output(data)
+#    data.close()
+#    cmd = "kcachegrind %s" % filename
+#    os.system(cmd)
 
 def hdf5GroupToList( grp, counter ):
     """ hdf5GroupToList( grp, counter )
@@ -218,13 +214,13 @@ def hdf5GroupToList( grp, counter ):
 def _flatten(items, seqtypes=(list, tuple)):
     """
     From user kindall from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
-    """        
+    """
     return list(flatten(items))
 
 def flatten(container):
     """
     From user hexparrot from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
-    """    
+    """
     for i in container:
         if isinstance(i, list) or isinstance(i, tuple):
             for j in flatten(i):
@@ -240,7 +236,7 @@ def _displayHistoryRec(h,recDepth=0):
         if type(elem) == types.ListType:
             h[i] = _displayHistoryRec(elem,recDepth + 1)
         else:
-            h[i] =  recDepth*'   ' + ' |-' + elem 
+            h[i] =  recDepth*'   ' + ' |-' + elem
     if recDepth==0:
         h = _flatten(h)
         return "   \n".join(h) + "\n"

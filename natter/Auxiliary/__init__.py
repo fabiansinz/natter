@@ -15,7 +15,7 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    Auxiliary_Utils.rst
 """
 
-from Utils import save, debug , profileFunction, savehdf5, hdf5GroupToList
+from Utils import save, debug, savehdf5, hdf5GroupToList
 import Errors
 import Optimization
 import Plotting
