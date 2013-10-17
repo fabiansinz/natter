@@ -7,7 +7,7 @@ This module provides helper functions for optimization
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.Optimization
-   :members:	fminboundnD, goldenMinSearch, goldenMaxSearch, StGradient, checkGrad
+   :members:	fminboundnD, _xtransform, goldenMinSearch, goldenMaxSearch, StGradient, _projectOntoSt, checkGrad
 
 
 

@@ -1,8 +1,8 @@
 from natter.Distributions import Gaussian
-from scipy.optimize import fmin_bfgs, fmin_ncg
+from scipy.optimize import fmin_bfgs
 from numpy import zeros
 from natter.DataModule import Data
-from numpy.linalg import cholesky, inv
+from numpy.linalg import inv
 
 def laplaceApproximation(listOfDist,initPoint=None):
     """
@@ -19,7 +19,10 @@ def laplaceApproximation(listOfDist,initPoint=None):
 
     :param listOfDist: List of distributions from which the product is build.
     :type listOfDist: list of natter.Distributions
-    
+    :param initPoint: Initial point of the laplace Approximation
+    :type initPoint: numpy.ndarray
+    :returns: laplace approximated distribution
+    :rtype: natter.Distributions.Gaussian
     """
 
     # chech argument
@@ -55,4 +58,4 @@ def laplaceApproximation(listOfDist,initPoint=None):
     laplaceApprox['mu'] = xmin
     laplaceApprox['sigma'] = inv(Hopt)
     return laplaceApprox
-    
+
