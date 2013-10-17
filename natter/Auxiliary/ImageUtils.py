@@ -16,13 +16,13 @@ def loadHaterenImage(filename):
     :rtype: numpy.ndarray
 
     """
-    
+
     fin = open( filename, 'rb' )
     s = fin.read()
     fin.close()
     arr = array.array('H', s)
     arr.byteswap()
-    
+
     return log(nArray(arr, dtype='uint16').reshape(1024,1536))
     #return nArray(arr, dtype='uint16').reshape(1024,1536)
 
@@ -59,7 +59,7 @@ def loadBWImage(filename):
 
 def loadAsciiImage(filename):
     """
-    Loads an images stored as ascii numbers in a file. 
+    Loads an images stored as ascii numbers in a file.
 
     :param filename: filename of the image
     :type filename: string
@@ -76,7 +76,7 @@ def loadAsciiImage(filename):
 
 def loadPixelScambledAsciiImage(filename):
     """
-    Same as loadAsciiImage only that the pixels are randomly shuffled over rows and columns. 
+    Same as loadAsciiImage only that the pixels are randomly shuffled over rows and columns.
 
     :param filename: filename of the image
     :type filename: string
@@ -98,7 +98,7 @@ def shiftImage( img, shift ):
     :type img: numpy.ndarray
     :returns: image
     :rtype: numpy.ndarray
-    
+
     """
     if img.ndim == 1:
         return shift1DImage(img, shift)
@@ -106,16 +106,18 @@ def shiftImage( img, shift ):
         return shift2DImage(img, shift)
     else:
         raise ValueError('Neither 1D nor 2D image.')
-    
+
 def shift1DImage( img, shift ):
     """
     shifts 1D image by #shift pixels to the right by using Fourier shift theorem
 
-    :param img: 1D image
+    :param img: original 1D image
     :type img: numpy.ndarray
-    :returns: 1D image
+    :param shift: shift amplitude (in pixels) to the right
+    :type shift: float
+    :returns: shifted 1D image
     :rtype: numpy.ndarray
-    
+
     """
     if np.array(shift).size == 1:
         dx = -shift
@@ -133,19 +135,22 @@ def shift1DImage( img, shift ):
 def shift2DImage( img, shift ):
     """
     shifts 2D image by #shift[0] pixels vertically down and  #shift[1] pixels horizontally
-    to the right by using Fourier shift theorem
+    to the right by using Fourier shift theorem. If shift is a scalar the image is shifted
+    #shift pixels down and to the right.
 
     :param img: 2D image
     :type img: numpy.ndarray
+    :param shift: shift amplitude (in pixels)
+    :type shift: numpy.ndarray
     :returns: 2D image
     :rtype: numpy.ndarray
-    
+
     """
     if np.array(shift).size == 1:
         dy = shift
         dx = shift
     elif np.array(shift).size == 2:
-        dy, dx = shift           
+        dy, dx = shift
     else:
         raise ValueError('Shift is not a scalar nor a 2x1 vector.')
 
@@ -155,12 +160,12 @@ def shift2DImage( img, shift ):
         result[ii,:] = shift1DImage(img[ii,:], dx)
     for ii in xrange(w):
         result[:,ii] = shift1DImage(result[:,ii], dy)
-    
+
     return result
 
 def bilinearInterpolation( img, vec, patch=None ):
     """
-    computes the pixel values at all positions in vec (2xn matrix) by bilinear interpolation
+    Computes the pixel values at all positions in vec (2xn matrix) by bilinear interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
 
@@ -172,7 +177,7 @@ def bilinearInterpolation( img, vec, patch=None ):
     :type patch: numpy.ndarray
     :returns: Array of pixel values
     :rtype: numpy.ndarray
-    
+
     """
     if patch is None:
         res = np.empty((vec.shape[1]))
@@ -190,7 +195,7 @@ def bilinearInterpolation( img, vec, patch=None ):
 
 def nearestNeighbor( img, vec, patch=None ):
     """
-    computes the pixel values at all positions in vec (2xn matrix) by nearest neighbor interpolation
+    Computes the pixel values at all positions in vec (2xn matrix) by nearest neighbor interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
 
@@ -215,7 +220,7 @@ def nearestNeighbor( img, vec, patch=None ):
 
 def bicubicInterpolation( img, vec, patch=None ):
     """
-    computes the pixel values at all positions in vec (2xn matrix) by bicubic interpolation
+    Computes the pixel values at all positions in vec (2xn matrix) by bicubic interpolation
     on img. If patch is given, result is written into patch. If patch is None or shape does
     not match a new matrix is created. In all cases, the result is also returned.
 
@@ -227,7 +232,6 @@ def bicubicInterpolation( img, vec, patch=None ):
     :type patch: numpy.ndarray
     :returns: Array of pixel values
     :rtype: numpy.ndarray
-    
     """
     if patch is None:
         res = np.empty((vec.shape[1]))
@@ -255,7 +259,7 @@ def bicubicInterpolation( img, vec, patch=None ):
                      ( 0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0),\
                      ( -6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1),\
                      ( 4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1)))
-    
+
     for ii in xrange(res.size):
         win = img[root[1,ii]:root[1,ii]+2,root[0,ii]:root[0,ii]+2]
         grad[0] = img[root[1,ii],root[0,ii]+1]-img[root[1,ii],root[0,ii]]
@@ -271,7 +275,7 @@ def bicubicInterpolation( img, vec, patch=None ):
         grad[10] = grad[3]-grad[2]
         grad[11] = img[root[1,ii]+2,root[0,ii]+2]-img[root[1,ii]+2,root[0,ii]+1] - grad[3]
         x = np.hstack((win[0,:], win[1,:], grad))
-        alpha = np.dot(Ainv, x)        
+        alpha = np.dot(Ainv, x)
         res[ii] = 0.0
         for jj in xrange(3):
             for kk in xrange(3):
