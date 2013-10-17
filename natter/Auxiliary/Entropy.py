@@ -13,7 +13,8 @@ def logSurfacePSphere(n,p):
     :param p: p of the Lp-norm
     :type p: float
     :returns: log surface area
-    
+    :rtype: float
+
     """
     return n*log(2.) + n*gammaln(1./p) - gammaln(n/p) - (n-1)*log(p)
 
@@ -29,6 +30,7 @@ def LpEntropy(dat,p=None):
     :param p: p of the Lp-spherically symmetric source (default: None)
     :type p: float
     :returns: entropy in nats
+    :rtype: float
     """
     # estimate p with a pCauchy distribution
     n = dat.dim()
@@ -63,12 +65,12 @@ def marginalEntropy(dat,method='JK',bins=None):
     entropy from a normalized histogram is asymptotically linear in
     the negative logarithm of the bin width. We correct for that by
     adding the logarithm of the bin width using the formula
-    
+
     .. math::
        h \mbox{ approx.} H_\delta + \log \delta
-       
-       H_\delta = - \sum p_i \log p_i 
-       
+
+       H_\delta = - \sum p_i \log p_i
+
     The method for regularizing the histogram can be specified by the
     parameter *method*. Its default value is 'JK' which corresponds to
     a jackknifed maximum likelihood estimator. Other possible values
@@ -76,16 +78,16 @@ def marginalEntropy(dat,method='JK',bins=None):
 
     * 'MM' : Miller-Madow regularization of the histogram (see [Miller1955]_).
     * 'MLE' : simple maximum likelihood estimation without regularization.
-    * 'CAE' : coverage adjusted regularization of the histogram. 
-    
+    * 'CAE' : coverage adjusted regularization of the histogram.
+
     :param dat: Data for which the marginal entropies will be computed.
-    :type name: DataModule.Data
-    :param method: Specifies the method which is used to estimate the marginal entropy.
+    :type name: natter.DataModule.Data
+    :param method: Specifies the method which is used to estimate the marginal entropy. (default=JK)
     :type method: string
+    :param bins: number of bins to be used (default=None)
+    :type bins: int
     :returns:   An numpy array containing the marginal entropies.
-
-
-    
+    :rtype: numpy.ndarray
     """
 
     n,m = dat.size()
@@ -124,13 +126,14 @@ def marginalEntropyJK(x,bins):
     :param bins: number of bins to be used
     :type bins: int
     :returns: entropy in nats
+    :rtype: float
     """
     n = len(x)
     N,c = histogram(x,bins=bins)
-    
+
     hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
     N = N[where(N)]
-  
+
     H = 0
     for k in xrange(len(N)):
         Ntmp = array(N)
@@ -168,6 +171,7 @@ def marginalEntropyCAE(x,bins):
     :param bins: number of bins to be used
     :type bins: int
     :returns: entropy in nats
+    :rtype: float
     """
     n = len(x)
     N,c = histogram(x,bins=bins)
@@ -175,7 +179,7 @@ def marginalEntropyCAE(x,bins):
     N = N[where(N)]
     C = 1 - len(where(N==1))/(n+1)
     N = C*N/n
-  
+
     return -sum( N *log(N) / (1-(1-N)**n)) + log(hn)
 
 def marginalEntropyMM(x,bins):
@@ -188,10 +192,11 @@ def marginalEntropyMM(x,bins):
     :param bins: number of bins to be used
     :type bins: int
     :returns: entropy in nats
+    :rtype: float
     """
     n = len(x)
     N,c = histogram(x,bins=bins)
     hn = c[int(bins/2)]-c[int(bins/2)-1]; # get bin width
     N = N[where(N)]
-  
+
     return - 1/n * dot(N ,log(1/n*N)) + (len(N) - 1)/ 2 / n  + log(hn)

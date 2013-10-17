@@ -1,5 +1,3 @@
-import types
-
 
 class InitializationError(Exception):
     """
@@ -10,7 +8,7 @@ class InitializationError(Exception):
 
     def __str__(self):
         return repr(self.value)
-    
+
 
 class AbstractError(Exception):
     """
@@ -34,7 +32,7 @@ class DimensionalityError(Exception):
 
 class UpdateError(Exception):
     """
-    Error that is raised if updates in a learning process fail. 
+    Error that is raised if updates in a learning process fail.
     """
     def __init__(self,value):
         self.value = value
@@ -51,7 +49,7 @@ class DataLoadingError(Exception):
 
     def __str__(self):
         return repr(self.value)
-       
+
 class SpecificationError(Exception):
     """
     Error that is raised if parameters are not specified properly.
@@ -59,4 +57,4 @@ class SpecificationError(Exception):
     def __init__(self,value):
         Exception.__init__(self)
 
-        
+
