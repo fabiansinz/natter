@@ -9,8 +9,6 @@ from sys import stdout
 from scipy.ndimage.interpolation import rotate, zoom
 #from numpy.fft import fft2
 
-
-
 def gratings(p,T,omega,tau):
     """
     Creates a data object that contains gratings on pxp patches. The
@@ -153,9 +151,24 @@ def img2PatchRand(img, p, N):
 def eyeMovementGenerator(dir,loadfunc, p,N,sigma, mu, sampFreq,plot=False):
     """
 
-    - change image all N saccades
-    - sigma is std of Gaussian for Brownian motion
+    Simulates eye movements on the image.
 
+    :param dir: Directory containing the images
+    :type dir: string
+    :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
+    :param p: patchsize
+    :type p: int
+    :param N: number of saccades per image
+    :type N: int
+    :param sigma: std of Gaussian for Brownian motion
+    :type sigma: float
+    :param mu: mean of the time between saccades
+    :type mu: float
+    :param sampFreq: sampling frequency of the patches
+    :type sampFreq: float
+    :param plot: plot the eye movements for debugging (default=False)
+    :type plot: bool
     """
     if plot:
         # plotting for debugging
@@ -248,8 +261,10 @@ def directoryIterator(dir,m,p,loadfunc,samplefunc=img2PatchRand):
     :type m: int
     :param p: patchsize
     :type p: int
-    :param loadfun: function handle of the load function
+    :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param samplefunc: function handle of the sampling function
+    :type samplefunc: function handle
 
     """
     files = listdir(dir)
@@ -277,6 +292,7 @@ def sampleWithIterator(theIterator,m,transformfunc = None):
     :param m: number of patches to sample
     :type m: int
     :param transformfunc: function that get applied to a patch once it is sampled.
+    :type transformfunc: function handle
     """
     count = 1
     x0 = theIterator.next()
@@ -323,12 +339,12 @@ def sampleFromImagesInDir(dir, m, p, loadfunc, samplefunc=img2PatchRand):
     :type m: int
     :param p: patchsize
     :type p: int
-    :param loadfun: function handle of the load function
+    :param loadfunc: function handle of the load function
+    :param loadfunc: function handle
     :param samplefunc: function handle of the sampling function
+    :param samplefunc: function handle
     :returns: Data object with the sampled image patches
     :rtype: natter.DataModule.Data
-
-
     """
     files = listdir(dir)
     M = len(files)
@@ -375,13 +391,13 @@ def randPatchWithBorderIterator(dir, p, samples_per_file, loadfunc, borderwidth=
     :param samples_per_file: number of patches to sample from one image
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
     :type orientation: string
     :returns: Iterator that samples from all files
     :rtype: Iterator
-
     """
     if dir[-1] != '/':
         dir += '/'
@@ -431,6 +447,7 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
@@ -439,7 +456,6 @@ def randShiftSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, bord
     :type shiftDistribution: natter.Distributions.Distribution
     :returns: Iterator that samples from all files
     :rtype: Iterator
-
     """
     if shiftDistribution == None:
         raise ValueError, 'shiftDistribution cannot be None. Use e.g. Uniform(n=2, low=-1.0, high=1.0)'
@@ -497,6 +513,8 @@ def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orien
     :type p: int
     :param powerspectrum_sample_size: number of patches to sample from sampler for power spectrum
     :type powerspectrum_sample_size: int
+    :param patchSampler: Iterator to sample patches from
+    :type patchSampler: Iterator
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
     :type orientation: string
     :returns: Iterator that samples from all files
@@ -564,6 +582,7 @@ def randRotationSequenceWithBorderIterator(dir, p, samples_per_file, loadfunc, b
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
@@ -638,6 +657,7 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
@@ -647,8 +667,8 @@ def randScalingSequenceWithBorderIterator(dir, patch_size, samples_per_file, loa
     :param upper_limit: Upper limit for scaling (default 2.0)
     :type upper_limit: Float
     :param lower_limit: Lower limit for scaling (default 0.5)
-    :returns: Iterator that samples from all files
     :type lower_limit: Float
+    :returns: Iterator that samples from all files
     :rtype: Iterator
 
     """
@@ -745,6 +765,7 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
@@ -758,10 +779,9 @@ def slidingWindowWithBorderIterator(dir, patch_size, samples_per_file, loadfunc,
     :param upper_limit: Upper limit for scaling (default 2.0)
     :type upper_limit: Float
     :param lower_limit: Lower limit for scaling (default 0.5)
-    :returns: Iterator that samples from all files
     :type lower_limit: Float
+    :returns: Iterator that samples from all files
     :rtype: Iterator
-
     """
 
     if translationDistribution == None:
@@ -872,6 +892,17 @@ def sequenceFromMovieData( mov, p, borderwidth=0, orientation='F', timelag=1 ):
     Samples pxp patches from the 3D array mov with given timelag
 
     :param mov: 3D array with dimensions h x w x t
+    :type mov: numpy.ndarray
+    :param p: patch size
+    :type p: int
+    :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
+    :type borderwidth: int
+    :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
+    :type orientation: string
+    :param timelag: number of frames between the consecutive time steps (default=1)
+    :type timelag: int
+    :returns: Iterator that samples from all files
+    :rtype: Iterator
 
     """
     h, w, t = mov.shape
@@ -903,12 +934,21 @@ def randShiftRotationScalingSequenceWithBorderIterator(dir, p, samples_per_file,
     :param samples_per_file: number of patches to sample from one image. All samples have same shift.
     :type samples_per_file: int
     :param loadfunc: function handle of the load function
+    :type loadfunc: function handle
     :param borderwidth: width of the border of the source image which cannot be used for sampling. Default 0.
     :type borderwidth: int
     :param orientation: 'C' (C/Python, row-major) or 'F' (FORTRAN/MATLAB, column-major) vectorized patches
     :type orientation: string
-    :param shiftDistribution: 2D distribution to sample shift steps from
-    :type shiftDistribution: natter.Distributions.Distribution
+    :param translationDistribution: 2D distribution to sample shift steps from
+    :type translationDistribution: natter.Distributions.Distribution
+    :param rotationDistribution: 1D distribution to sample shift steps from
+    :type rotationDistribution: natter.Distributions.Distribution
+    :param scalingDistribution: 1D or 2D distribution to sample shift steps from
+    :type scalingDistribution: natter.Distributions.Distribution
+    :param upper_limit: Upper limit for scaling (default 2.0)
+    :type upper_limit: Float
+    :param lower_limit: Lower limit for scaling (default 0.5)
+    :type lower_limit: Float
     :returns: Iterator that samples from all files
     :rtype: Iterator
 
