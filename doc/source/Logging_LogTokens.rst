@@ -3,4 +3,4 @@ LogTokens
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. automodule:: natter.Logging.LogTokens
-   :members: LogToken, Table, Paragraph, Link, LogList, PyInfo, Git, Image
+   :members: LogToken, PyInfo, Git, Svn, Table, Paragraph, Link, Image, LogList
