@@ -2,7 +2,6 @@ import Transform
 import NonlinearTransform
 import string
 import cPickle as pickle
-import numpy
 from numpy.linalg import inv, det
 from natter.Auxiliary import Errors, Plotting, hdf5GroupToList
 from natter.DataModule import Data
@@ -58,7 +57,7 @@ class LinearTransform(Transform.Transform):
         :param orientation: matlab style column major ('F', default) or C/Python style row major ('C') reshaping, or no reshaping/1D plotting ('1D')
         :type orientation: string
         :param kwargs: See natter.Auxiliary.Plotting.plotStripes
-
+        :type kwargs: dict
         """
         if orientation == '1D':
             Plotting.plotStripes(inv(self.W),plotNumbers=plotNumbers, **kwargs)
@@ -92,7 +91,7 @@ class LinearTransform(Transform.Transform):
         :param orientation: matlab style column major ('F', default) or C/Python style row major ('C') reshaping, or no reshaping/1D plotting ('1D')
         :type orientation: string
         :param kwargs: See natter.Auxiliary.Plotting.plotStripes
-
+        :type kwargs: dict
         """
         if orientation == '1D':
             Plotting.plotStripes(self.W.transpose(), plotNumbers=plotNumbers, **kwargs)
@@ -292,6 +291,8 @@ class LinearTransform(Transform.Transform):
         Mimics the __getitem__ routine on W. The only exception is
         that calls F[1,:] still return 2D arrays.
 
+        :param key: index of W
+        :type key: int
         :returns: New LinearTransform object where the W is the results of the __getitem__ operation.
         :rtype: natter.Transform.LinearTransform
 
