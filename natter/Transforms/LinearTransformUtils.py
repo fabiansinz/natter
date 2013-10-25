@@ -1,7 +1,7 @@
 from __future__ import division
 from numpy.fft import fft2, fftshift,fft
-from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, zeros, sin,where,zeros,percentile
-from scipy.optimize import fmin_bfgs, fmin_cg
+from numpy import reshape, sqrt, argmax, arange,ceil, max, abs, arctan2, meshgrid, array, imag, real, pi, mean, vstack, cos, dot, sin,where,percentile, zeros
+from scipy.optimize import fmin_bfgs
 # from numpy.random import randn
 
 
@@ -12,9 +12,11 @@ def getTuningCurve(R,fundamental_freq=1):
 
     :param R: Array containing the responses to a grating moving with the fundamental frequency in each row.
     :type R: numpy.array
+    :param fundamental_freq: Fundamental frequency number
+    :type fundamental_freq: int
     :returns: the values for the tuning curve
     :rtype: numpy.array
-    
+
     """
 
     ret = zeros((R.shape[0],))
@@ -31,13 +33,14 @@ def bestMatchingGratings(F):
     :param F: filters
     :type F: natter.Transform.LinearTransform
     :returns: list of dictionaries containing the parameters
+    :rtype: list
     """
     W = F.W
     N = sqrt(W.shape[1])
     f = arange(-ceil(N/2),ceil(N/2))
     Nx,Ny = meshgrid(arange(N),arange(N))
     Nxy = vstack( (Nx.flatten('F'), Ny.flatten('F')) )
-    
+
     ret = []
     for k in xrange(W.shape[0]):
         w = reshape(W[k,:],(N,N),order='F')
@@ -52,7 +55,7 @@ def bestMatchingGratings(F):
         # extract maximal frequency
         z = fftshift(fft2(w))
         az = abs(z)
-        
+
         j = argmax(max(az,0),0)
         i = argmax(az[:,j])
         omega = array([f[j],f[i]])
@@ -70,11 +73,11 @@ def bestMatchingGratings(F):
         # raw_input()
         omega = x0[:2]
         phi = x0[2]
-        
+
         ret.append({'frequency':omega,\
                     'phase': phi, \
                     'center': mu})
-        
+
     return ret
 
 
@@ -88,7 +91,7 @@ def _doptfunc(x,w,Nxy,mu,N):
     tmp2 = Nxy - reshape(mu,(2,1))
     ret[:2] = -2*mean( (tmp-cos(2*pi/N *dot(x[:2],tmp2) + x[2]))* \
                        sin(2*pi/N *dot(x[:2],tmp2) + x[2])*2*pi/N*tmp2 ,1)
-    
+
     ret[2] = -2*mean( (tmp-cos(2*pi/N *dot(x[:2],tmp2)  + x[2]))* \
                        sin(2*pi/N *dot(x[:2],tmp2)  + x[2]))
     return ret
