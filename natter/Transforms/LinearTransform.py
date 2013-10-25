@@ -31,8 +31,6 @@ class LinearTransform(Transform.Transform):
     :type name: string
     :param history: List of previous operations on the linear transform.
     :type history: List of (lists of) strings.
-
-
     """
 
 
@@ -122,7 +120,6 @@ class LinearTransform(Transform.Transform):
 
         :returns: A new LinearTransform object representing the inverted matrix W.
         :rtype: natter.Transforms.LinearTransform
-
         """
         sh = shape(self.W)
         if sh[0] == sh[1]:

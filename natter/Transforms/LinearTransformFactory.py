@@ -22,9 +22,8 @@ def fastICA(dat,whitened=True):
     :type whitened: bool
     :returns: A linear filter containing the fast ICA demixing matrix.
     :rtype: natter.Transforms.LinearTransform
-
-
     """
+
     sampsize = 1
     if dat.size(1) > 500000:
         sampsize =  500000.0/dat.size(1)
@@ -53,9 +52,8 @@ def wPCA(dat,m=None):
     :type m: int
     :returns: A linear filter containing the whitening matrix.
     :rtype: natter.Transforms.LinearTransform
-
-
     """
+
     if m==None:
         m = dat.size(0)
     wPCA = mdp.nodes.WhiteningNode(input_dim=dat.size(0),output_dim=m)
@@ -73,9 +71,8 @@ def DCAC(dat):
     :type dat: natter.DataModule.Data
     :returns: A linear filter containing the DC/AC matrix.
     :rtype: natter.Transforms.LinearTransform
-
-
     """
+
     return DCnonDC(dat)
 
 def DCnonDC(dat):
@@ -86,9 +83,8 @@ def DCnonDC(dat):
     :type dat: natter.DataModule.Data
     :returns: A linear filter containing the DC/AC matrix.
     :rtype: natter.Transforms.LinearTransform
-
-
     """
+
     n = dat.size(0)
     P = np.eye(n)
     P[:,0] = 1
@@ -104,8 +100,6 @@ def SYM(dat):
     :type dat: natter.DataModule.Data
     :returns: A linear filter containing the whitening matrix.
     :rtype: natter.Transforms.LinearTransform
-
-
     """
 
     C = np.cov(dat.X)
@@ -121,8 +115,8 @@ def oRND(dat):
     :type dat: natter.DataModule.Data
     :returns: A linear filter containing the matrix.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     return LinearTransform(mdp.utils.random_rot(dat.size(0)),'Random rotation matrix',['sampled from a Haar distribution'])
 
 
@@ -134,8 +128,8 @@ def stRND(sh):
     :type sh: tuple of int
     :returns: A linear filter containing the matrix.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     return LinearTransform( Auxiliary.Optimization._projectOntoSt(np.random.randn(sh[0],sh[1])),'Random Stiefel Matrix')
 
 
@@ -147,7 +141,6 @@ def DCT2(sh):
     :type sh: tuple of int
     :returns: A linear filter containing the DCT basis.
     :rtype: natter.Transforms.LinearTransform
-
     """
 
     cos = np.cos
@@ -177,8 +170,8 @@ def DFT(sh):
     :type sh: int
     :returns: A linear filter containing the DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     if not type(sh) == types.IntType:
         raise TypeError('DFT requires single integer as parameter, not %s'%(type(sh)))
 
@@ -197,8 +190,8 @@ def DFT2(sh):
     :type sh: tuple of int
     :returns: A linear filter containing the DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     if not type(sh) == types.IntType:
         raise TypeError('DFT2 requires single integer as parameter, not %s'%(type(sh)))
 
@@ -220,8 +213,8 @@ def DCACQuadraturePairs1D(sh):
     :type sh: int
     :returns: A linear filter containing the DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     if not type(sh) == types.IntType:
         raise TypeError('DCACQuadraturePairs1D requires single integer as parameter, not %s'%(type(sh)))
     if np.mod(sh,2) == 0:
@@ -249,8 +242,8 @@ def DCACQuadraturePairs2D(patch_size, num_quadrature_pairs=None):
     :type num_quadrature_pairs: int
     :returns: A linear filter containing rearranged DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     if not type(patch_size) == types.IntType:
         raise TypeError('DCACQuadraturePairs2D requires single integer as parameter, not %s'%(type(patch_size)))
 
@@ -276,8 +269,8 @@ def DCACQuadraturePairs2D_legacy(sh):
     :type sh: int
     :returns: A linear filter containing rearranged DFT basis, DC filter as first component.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     num_quadrature_pairs = (sh-1)//2
     compnum = (sh**2-1)//2
     Aorder = np.zeros((sh,sh))
@@ -307,8 +300,8 @@ def SubspaceEnergyWhitening(dat, hasDC=True):
     :type hasDC: bool
     :returns: A linear filter containing the whitening matrix.
     :rtype: natter.Transforms.LinearTransform
-
     """
+
     var = dat.X.var(1)
     if hasDC:
         if np.mod(dat.dim(),2) == 0:
@@ -326,10 +319,16 @@ def SubspaceEnergyWhitening(dat, hasDC=True):
     F = LinearTransform(W, 'Quadrature pair subspace energy equalization filter computed on ' + dat.name )
     return F
 
-def _symmetricOrth(  A ):
+def _symmetricOrth( A ):
     """
     Loewdin/symmetric orthogonalization
+
+    :param A: Square matrix
+    :type A: numpy.ndarray
+    :returns: Orthonormal matrix with smallest Frobenius norm to input matrix
+    :rtype: numpy.ndarray
     """
+
     if A is None:
         return A
     U,d,V = np.linalg.svd(np.dot(A.T, A))
@@ -340,6 +339,11 @@ def _invsqrtm( A ):
     """
     Inverse symmetric matrix square root
     Computed using svd decomposition of A
+
+    :param A: Square matrix
+    :type A: numpy.ndarray
+    :returns: inverse square root
+    :rtype: numpy.ndarray
     """
     U,d,V = np.linalg.svd(A)
     return np.dot(U, np.dot(np.diag(np.sqrt(1/d)),U.T))
@@ -348,15 +352,29 @@ def _sqrtm( A ):
     """
     Symmetric matrix square root
     Computed using svd decomposition of A
+
+    :param A: Square matrix
+    :type A: numpy.ndarray
+    :returns: matrix square root
+    :rtype: numpy.ndarray
     """
     U,d,V = np.linalg.svd(A)
     return np.dot(U, np.dot(np.diag(np.sqrt(d)),U.T))
 
 def _SSA_gradient( U, x0, x1 ):
     """
-    gradient of the SSA objective
-    will be removed in future releases as soon as SSA is part of the
+    Gradient of the SSA objective
+    will be removed in future releases if SSA becomes part of the
     MDP toolbox
+
+    :param U: Filter matrix
+    :type U: numpy.ndarray
+    :param x0: Data set at time t=0
+    :type x0: numpy.ndarray
+    :param x1: Data set at time t=1
+    :type x1: numpy.ndarray
+    :returns: SSA gradient
+    :rtype: numpy.ndarray
     """
     subspace_dim = 2
     kx, n = x0.shape
@@ -402,8 +420,17 @@ def _SSA_gradient( U, x0, x1 ):
 def _SSA_objective( U, x0, x1 ):
     """
     objective of the SSA objective
-    will be removed in future releases as soon as SSA is part of the
+    will be removed in future releases if SSA becomes part of the
     MDP toolbox
+
+    :param U: Filter matrix
+    :type U: numpy.ndarray
+    :param x0: Data set at time t=0
+    :type x0: numpy.ndarray
+    :param x1: Data set at time t=1
+    :type x1: numpy.ndarray
+    :returns: SSA objective
+    :rtype: float
     """
     subspace_dim = 2
     kx, n = x0.shape
@@ -424,6 +451,21 @@ def SSA( dat, verbose=5, maxIterations=1000, minIterations=0, alpha=1, eps=1e-8,
 
     :param dat: Data set with sequence
     :type dat: natter.DataModule.Data
+    :param verbose: Number of iterations between debug outputs (default=5)
+    :type verbose: int
+    :param maxIterations: Maximum number of iterations
+    :type maxIterations: int
+    :param minIterations: Minimum number of iterations
+    :type minIterations: Minimum number of iterations
+    :param alpha: Initial gradient step length
+    :type alpha: float
+    :param eps: Threshold for stopping the optimization
+    :type eps: float
+    :param args: Compatibility for old version. Not used anymore.
+    :type args: list
+    :param kwargs: Compatibility for old version. Not used anymore.
+    :type kwargs: dict
+
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
@@ -506,8 +548,12 @@ def mdpWrapper( dat, nodename, output, *args, **kwargs ):
     :type dat: natter.DataModule.Data
     :param nodename: name of the mdp node (without "Node"), case sensitive!
     :type nodename: String
-    :param output:
-    :type output:
+    :param output: Output parameter of the mdp node
+    :type output: numpy.ndarray
+    :param args: Compatibility for old version. Not used anymore.
+    :type args: list
+    :param kwargs: Parameters passed directly to mdp node
+    :type kwargs: dict
     :returns: A linear filter containing the SSA filters
     :rtype: natter.Transforms.LinearTransform
     """
@@ -553,6 +599,13 @@ def _get_lowest_Fourier_components( patch_width, component_number ):
     Returns the #component_number lowest quadrature pair Fourier components
     for patch_width-by-patch_width image patches, ordered by spatial
     frequency.
+
+    :param patch_width: edge length of the 2D Fourier components
+    :type patch_width: int
+    :param component_number: Number of quadrature pairs to return
+    :type component_number: int
+    :returns: Matrix containing the n quadrature pairs with lowest spatial frequency
+    :rtype: numpy.ndarray
     """
     R = DFT2(patch_width)
 
