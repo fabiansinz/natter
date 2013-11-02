@@ -1,5 +1,5 @@
 The LaplaceApproximation Submodule
-========================
+==================================
 
 This module provides the Laplace Approximation for a list of distributions.
 
