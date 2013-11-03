@@ -12,4 +12,4 @@ s.t. :math:`\sum_{i=1}^K \alpha_i=1` and :math:`\alpha_i \ge 0`.
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. moduleauthor:: Sebastian Gerwinn <sebastian@bethgelab.org>
 .. autoclass:: natter.Distributions.FiniteMixtureDistribution
-   :members: estimate, parameters
+   :members:

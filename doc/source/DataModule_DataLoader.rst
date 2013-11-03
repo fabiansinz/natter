@@ -10,5 +10,5 @@ loaded from the extension of the file.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.DataModule.DataLoader
-   :members: load, matlab, ascii, pydat, libsvm, loadnpz, hdf5
+   :members:
 

@@ -16,4 +16,4 @@ create a CompleteLinearModel with ISA as a base class.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ISA
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members:

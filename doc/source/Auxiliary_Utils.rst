@@ -8,6 +8,6 @@ This module provides further utility functions.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.Utils
-   :members:	parseParameters, save, savehdf5, saveListToHDF5, prettyPrintDict, debug, hdf5GroupToList, _flatten, flatten, displayHistoryRec, _displayHistoryRec
+   :members:
 
 

@@ -15,4 +15,4 @@ considered in binning. The same holds true for the rightmost bin.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Histogram
-   :members: sample,  pdf, ppf,  all, copy, parameters
+   :members:

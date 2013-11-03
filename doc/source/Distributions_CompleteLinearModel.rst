@@ -12,4 +12,4 @@ another Distribution object.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.CompleteLinearModel
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members:

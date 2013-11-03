@@ -13,4 +13,4 @@ on the Naka-Rushton distribution).
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.NakaRushton
-   :members: sample, loglik, pdf, cdf, dldtheta, estimate, all, copy, parameters
+   :members:

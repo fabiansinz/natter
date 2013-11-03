@@ -3,4 +3,4 @@ ExperimentLog
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Logging.ExperimentLog
-   :members: addSection, html, ascii, latex, write
+   :members:

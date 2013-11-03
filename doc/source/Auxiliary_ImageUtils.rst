@@ -7,7 +7,7 @@ This module provides helper functions for loading and manipulating images.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.ImageUtils
-   :members:	
+   :members:
 
 
 

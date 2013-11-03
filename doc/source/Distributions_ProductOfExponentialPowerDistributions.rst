@@ -13,4 +13,4 @@ being an exponential power distribution
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ProductOfExponentialPowerDistributions
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members:

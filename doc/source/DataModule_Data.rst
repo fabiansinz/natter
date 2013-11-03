@@ -13,5 +13,5 @@ are joined.
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 
 .. autoclass:: natter.DataModule.Data
-   :members: rectify, abs, fade, stack, setHistory, norm, normalize, __pow__, plot, numex, dim, addToHistory, scale, scaleCopy, mean, median, plotPatches, var, kurtosis, center, center_local_mean, makeWhiteningVolumeConserving, cov, dnormdx, size, copy,  append, shape, split, ascii, html, bootstrap, cross_validation
+   :members:
 

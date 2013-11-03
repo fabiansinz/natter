@@ -19,4 +19,4 @@ another Distribution object.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LpNestedSymmetric
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members:

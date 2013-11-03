@@ -11,4 +11,4 @@ where  :math:`u > 0` refers to the shape parameter and :math:`s>0` to the scale 
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Gamma
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters
+   :members:

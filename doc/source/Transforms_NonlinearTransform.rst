@@ -8,7 +8,7 @@ the results of) LinearTransform and Data objects.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Transforms.NonlinearTransform
-   :members:   apply, logDetJacobian,  __call__,  __str__, copy,addToHistory
+   :members:
 
 
 

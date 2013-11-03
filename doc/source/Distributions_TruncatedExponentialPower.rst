@@ -12,4 +12,4 @@ where :math:`\Xi` is the c.d.f. of the ExponentialPower distribution.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.TruncatedExponentialPower
-   :members: sample, loglik, pdf, cdf, ppf, dldtheta, estimate, all, copy, parameters
+   :members:

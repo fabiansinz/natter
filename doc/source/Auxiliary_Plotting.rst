@@ -7,4 +7,4 @@ This module provides helper functions for plotting.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.Plotting
-   :members:	htmltable, patch2Img, plotPatches, plotStripes, findShape, savefig, imsave
+   :members:
