@@ -14,4 +14,4 @@ contour line of the distribution, and :math:`s>0` is the scale parameter.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ChiP
-   :members: sample, loglik, pdf, estimate, all, copy, parameters
+   :members: sample, loglik, estimate, cdf, ppf

@@ -3,12 +3,12 @@ from Distribution import Distribution
 from numpy import zeros, eye, kron, dot, reshape,ones, log,pi, sum, diag,  where,  tril, hstack, squeeze, array,vstack,outer,sqrt
 from numpy.linalg import cholesky, inv, solve
 from numpy.random import randn
-from natter.DataModule import Data 
+from natter.DataModule import Data
 #from natter.Auxiliary import debug
 from scipy import optimize
 from copy import deepcopy
 from scipy.linalg import solve_triangular
-from scipy.stats import norm 
+from scipy.stats import norm
 from natter.Auxiliary.Errors import DimensionalityError
 from natter.Auxiliary.Decorators import Squeezer
 from warnings import warn
@@ -17,26 +17,26 @@ class Gaussian(Distribution):
     """
     Gaussian Distribution
 
-    Base class for the Gaussian distribution.  
+    Base class for the Gaussian distribution.
 
     The constructor is either called with a dictionary, holding
     the parameters (see below) or directly with the parameter
     assignments (e.g. myDistribution(n=2,b=5)). Mixed versions are
     also possible.
 
-    
+
     :param param:
         dictionary which might containt parameters for the Gaussian
               'n'    :    dimensionality (default=2)
-              
+
               'sigma':    covariance matrix (default = eye(dimensionality))
-              
+
               'mu'   :    mean  (default = zeros(dimensionality))
 
     :type param: dict
 
     Primary parameters are ['mu','sigma'].
-        
+
     """
 
     def __init__(self, *args,**kwargs):
@@ -57,7 +57,7 @@ class Gaussian(Distribution):
                 for k,v in kwargs.items():
                     if k != 'param':
                         param[k] = v
-        
+
         # set default parameters
         self.name = 'Gaussian Distribution'
         self.param = {'n':2}
@@ -72,7 +72,7 @@ class Gaussian(Distribution):
         self.I =  where(tril(ones((self.param['n'],self.param['n'])))>0)
         # internally, we represent the covariance in terms of the
         # cholesky factor of the precision matrix
-        self.cholP = cholesky(inv(self.param['sigma'])) 
+        self.cholP = cholesky(inv(self.param['sigma']))
 
     def parameters(self,keyval=None):
         """
@@ -86,9 +86,9 @@ class Gaussian(Distribution):
 
         :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
         :type keyval: string
-        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned.
         :rtype: dict or list
-           
+
         """
         if keyval == None:
             return deepcopy(self.param)
@@ -96,7 +96,7 @@ class Gaussian(Distribution):
             return self.param.keys()
         elif keyval == 'values':
             return self.param.value()
-        
+
     def sample(self,m):
         """
 
@@ -114,19 +114,19 @@ class Gaussian(Distribution):
 
         # return Data(dot(cholesky(self.param['sigma']),randn(self.param['n'],m)) + kron(reshape(self.param['mu'],(self.param['n'],1)),ones((1,m))), \
         #             str(m) + " samples from a " + str(self.param['n']) + "-dimensional Gaussian")
-        
+
 
     def loglik(self,dat):
         '''
 
-        Computes the loglikelihood of the data points in dat. 
+        Computes the loglikelihood of the data points in dat.
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the loglikelihoods.
         :rtype:    numpy.array
-         
-           
+
+
         '''
 
         n = self.param['n']
@@ -136,7 +136,7 @@ class Gaussian(Distribution):
         Y = sum(dot(self.cholP.T,X)**2,axis=0)
         return -n/2*log(2*pi) +sum(log(diag(abs(self.cholP)))) - .5*Y
 
-    
+
     def primary2array(self):
         """
         :returns: array containing primary parameters. If 'sigma' is in the primary parameters, then the cholesky factor of the precision matrix is filled in the array.
@@ -157,7 +157,7 @@ class Gaussian(Distribution):
         :returns: bounds on the primary parameters
         :rtype: list of tuples containing the single lower and upper bounds
         """
-        
+
         n = self.param['n']
         if 'mu' in self.primary:
             self.param['mu'] = arr[:n]
@@ -177,14 +177,19 @@ class Gaussian(Distribution):
         if key == 'CholP':
             self.cholP = value
             self.param['sigma'] = solve(self.cholP.T,solve(self.cholP,eye(self.param['n'])))
-            
+
     def dldtheta(self,dat):
         """
         Calculates the gradient with respect to the primary
         parameters. Note: if 'sigma' is in the primary parameters the
         gradient is calculated with respect to the cholesky factor of
         the inverse covariance matrix.
-        
+
+        :param dat: Data set
+        :type dat: natter.DataModule.Data
+        :returns: Gradient
+        :rtype: natter.ndarray
+
         """
         ret = array([])
         n,m = dat.size()
@@ -206,7 +211,7 @@ class Gaussian(Distribution):
             else:
                 ret = vstack((ret,ret0))
         return ret
-        
+
 
     def estimate(self,dat,method=None):
         '''
@@ -216,6 +221,8 @@ class Gaussian(Distribution):
 
         :param dat: Data points on which the Gaussian distribution will be estimated.
         :type dat: natter.DataModule.Data
+        :param method: Estimation method
+        :type method: string
         '''
 
         if method==None:
@@ -223,7 +230,7 @@ class Gaussian(Distribution):
         if method=="analytic":
             if 'sigma' in self.primary:
                 self.param['sigma'] = dat.cov()
-                self.cholP = cholesky(inv(self.param['sigma'])) 
+                self.cholP = cholesky(inv(self.param['sigma']))
             if 'mu' in self.primary:
                 self.param['mu'] = dat.mean()
         else:
@@ -235,14 +242,14 @@ class Gaussian(Distribution):
                 return -sum(self.dldtheta(dat),axis=1)
             arr0 = self.primary2array()
             optimize.fmin_bfgs(f,arr0,df)
-                
-            
-        
-    
+
+
+
+
     def cdf(self,dat):
         '''
 
-        Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat.
 
         Works only for n=1.
 
@@ -250,7 +257,7 @@ class Gaussian(Distribution):
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the quantiles.
         :rtype:    numpy.array
-           
+
         '''
         if self.param['n'] == 1:
             return squeeze(norm.cdf(dat.X,loc=self.param['mu'],scale=sqrt(self.param['sigma'])))
@@ -267,7 +274,7 @@ class Gaussian(Distribution):
         :type X: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
-           
+
         '''
         if self.param['n'] == 1:
             return Data(norm.ppf(u,loc=self.param['mu'],scale=sqrt(self.param['sigma'][0,0])),"Percentiles from a Gaussian distribution")

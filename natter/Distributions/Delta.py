@@ -18,16 +18,16 @@ class Delta(Distribution):
         dictionary which might contain parameters for the uniform distribution
               'n'      :    dimensionality (default=1)
               'peak'   :    peak location (either 1D for same in all dimensions or nD)
-              
+
     :type param: dict
 
     No primary parameters.
-        
+
     """
     maxCount = 10000
     Tol = 10.0**-20.0
 
-    
+
     def __init__(self, *args,**kwargs):
         # parse parameters correctly
         param = None
@@ -46,7 +46,7 @@ class Delta(Distribution):
                 for k,v in kwargs.items():
                     if k != 'param':
                         param[k] = v
-        
+
         # set default parameters
         self.name = 'Delta Distribution'
         self.param = {'peak':0.0, 'n':1}
@@ -55,7 +55,7 @@ class Delta(Distribution):
                 self.param[k] = param[k]
         self.param['peak'] =  array(self.param['peak']).reshape(self.param['n'],1)
         self.primary = []
-        
+
     def sample(self,m):
         """
 
@@ -70,25 +70,11 @@ class Delta(Distribution):
         """
         return Data( ones((self.param['n'],m))*self.param['peak'], \
                      str(m) + ' samples from ' + self.name)
-        
-
-    def pdf(self,dat):
-        '''
-
-        Evaluates the probability density function on the data points in dat. 
-
-        :param dat: Data points for which the p.d.f. will be computed.
-        :type dat: natter.DataModule.Data
-        :returns:  An array containing the values of the density.
-        :rtype:    numpy.array
-           
-        '''
-        return exp(self.loglik(dat))
 
 
     def estimate(self,dat):
         '''
-        Uniform distribution has no parameter hence estimate does nothing        
+        Uniform distribution has no parameter hence estimate does nothing
         '''
         print self.name + ' has no parameter to fit.'
 

@@ -28,11 +28,11 @@ class ChiP(Distribution):
 
     :param param: dictionary which might containt parameters for the Gamma distribution
         'n'    :    Degrees of freedom (the dimensionality of the p-generalized Normal)
-      
+
         'p'    :    Exponent (default p=2.0 yields a Chi distribution)
-              
+
         's'    :    Scale parameter (default = (gamma(1.0/p)/gamma(3.0/p))**(p/2.0) )
-              
+
     :type param: dict
 
     Primary parameters are ['s'].
@@ -61,7 +61,7 @@ class ChiP(Distribution):
 
         :param dat: Data for estimating self
         :type dat: natter.DataModule.Data
-        
+
         '''
 
         self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']
@@ -70,7 +70,7 @@ class ChiP(Distribution):
     def loglik(self,dat):
         """
 
-        Computes the loglikelihood of the data points in dat. 
+        Computes the loglikelihood of the data points in dat.
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
@@ -88,18 +88,18 @@ class ChiP(Distribution):
             self.param[key] = value
         else:
             raise KeyError("Parameter %s not defined for %s" % (key,self.name))
-    
+
 
     def cdf(self,dat):
         '''
 
-        Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat.
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the probabilities.
         :rtype:    numpy.array
-           
+
         '''
         return self.baseDist.cdf(dat)
 
@@ -109,15 +109,15 @@ class ChiP(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param U: Percentiles for which the ppf will be computed.
+        :type U: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
-           
+
         '''
- 
+
         return self.baseDist.ppf(U)
-    
+
     def sample(self,m):
         '''
            Samples m examples from the distribution.
@@ -126,7 +126,7 @@ class ChiP(Distribution):
            :type m: int
            :returns: Samples from the ChiP distribution
            :rtype: natter.DataModule.Data
-           
+
         '''
         dat = self.baseDist.sample(m)
         dat.name = dat.name.replace('GammaP','ChiP')

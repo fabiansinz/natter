@@ -11,4 +11,4 @@ where :math:`\mu > 0` refers to the mean and :math:`\Sigma` to the positive defi
 
 .. moduleauthor:: Sebastian Gerwinn <sebastian@bethgelab.org>
 .. autoclass:: natter.Distributions.Gaussian
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters
+   :members: parameters, sample, loglik, primary2array, array2primary, dldtheta, estimate, cdf, ppf

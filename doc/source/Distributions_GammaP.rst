@@ -11,4 +11,4 @@ where :math:`u,p > 0` refer to the shape parameters, and :math:`s>0` is the scal
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.GammaP
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters
+   :members: parameters, loglik, dldx, dldtheta, d2ldtheta2, pdf, cdf, ppf, sample, estimate, primaryBounds

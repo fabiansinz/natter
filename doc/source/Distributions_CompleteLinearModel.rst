@@ -1,7 +1,7 @@
 Complete linear model
 =====================
 
-The density of the complete linear model has the form 
+The density of the complete linear model has the form
 
 .. math::
 
@@ -12,4 +12,4 @@ another Distribution object.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.CompleteLinearModel
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members: parameters, loglik, estimate, sample, objective

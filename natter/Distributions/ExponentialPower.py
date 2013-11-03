@@ -20,19 +20,19 @@ class ExponentialPower(Distribution):
     :param param:
         dictionary which might containt parameters for the Exponential Power distribution
               'p'    :    Exponent (default = 1.0)
-              
+
               's':    Scale parameter (default = 1.0)
-              
+
     :type param: dict
 
     Primary parameters are ['p','s'].
-        
+
     """
 
-    
+
     maxCount = 10000
     Tol = 10.0**-20.0
-    
+
     def __init__(self, *args,**kwargs):
                 # parse parameters correctly
         param = None
@@ -51,7 +51,7 @@ class ExponentialPower(Distribution):
                 for k,v in kwargs.items():
                     if k != 'param':
                         param[k] = v
-        
+
         # set default parameters
 
         self.name = 'Exponential Power Distribution'
@@ -61,19 +61,19 @@ class ExponentialPower(Distribution):
                 self.param[k] = float(param[k])
         self.primary = ['p','s']
 
-        
+
 
     def loglik(self,dat):
         '''
 
-        Computes the loglikelihood of the data points in dat. 
+        Computes the loglikelihood of the data points in dat.
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the loglikelihoods.
         :rtype:    numpy.array
-         
-           
+
+
         '''
         return squeeze(log(self.param['p']) - log(2.0) - 1.0/self.param['p']*log(self.param['s']) \
                -gammaln(1.0/self.param['p']) - abs(dat.X)**self.param['p']/self.param['s'])
@@ -82,13 +82,13 @@ class ExponentialPower(Distribution):
     def dldx(self,dat):
         """
 
-        Returns the derivative of the log-likelihood of the ExponentialPower distribution w.r.t. the data in dat. 
-        
+        Returns the derivative of the log-likelihood of the ExponentialPower distribution w.r.t. the data in dat.
+
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the derivatives.
         :rtype:    numpy.array
-        
+
         """
         return squeeze(- sign(dat.X) * abs(dat.X)**(self.param['p']-1) *self.param['p'] / self.param['s'])
 
@@ -103,36 +103,37 @@ class ExponentialPower(Distribution):
         :param m: Number of samples to draw.
         :type name: int.
         :returns:  A Data object containing the samples
+        :rtype: natter.DataModule.Data
 
         """
         z = gamma(1.0/self.param['p'],self.param['s'],(1,m))**(1.0/self.param['p'])
         return Data(sign(randn(1,m))*z, str(m) + ' samples from an exponential power distribution.')
-        
-    
+
+
 
     def pdf(self,dat):
         '''
 
-        Evaluates the probability density function on the data points in dat. 
+        Evaluates the probability density function on the data points in dat.
 
         :param dat: Data points for which the p.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the values of the density.
         :rtype:    numpy.array
-           
+
         '''
         return exp(self.loglik(dat))
 
     def cdf(self,dat):
         '''
 
-        Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat.
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the probabilities.
         :rtype:    numpy.array
-           
+
         '''
         return squeeze(.5 + 0.5*sign(dat.X)*gammainc(1/self.param['p'],abs(dat.X)**self.param['p'] / self.param['s']))
 
@@ -144,9 +145,9 @@ class ExponentialPower(Distribution):
 
         :param u:  Points at which the p.p.f. will be computed.
         :type dat: numpy.array
-        :returns:  Data object with the resulting points in the domain of this distribution. 
+        :returns:  Data object with the resulting points in the domain of this distribution.
         :rtype:    natter.DataModule.Data
-           
+
         '''
         q = 1/self.param['p']
         s = self.param['s']
@@ -164,7 +165,7 @@ class ExponentialPower(Distribution):
         '''
 
 #        ind = ~(any(isinf(dat.X),axis=0) | any(isnan(dat.X),axis=0))
-          
+
         if 'p' in self.primary:
             func = lambda t: self.__objective(t,dat,'s' in self.primary)
             p = fminbound(func, 0.0, 100.0)
@@ -174,11 +175,11 @@ class ExponentialPower(Distribution):
 
         if 's' in self.primary:
             self.param['s'] = self.param['p'] * mean(abs(dat.X)**self.param['p'])
-        
+
 
     def __objective(self,p,dat,est_s):
         self.param['p'] = p
         if est_s:
             self.param['s'] = p * mean(abs(dat.X)**p)
-            
+
         return self.all(dat)

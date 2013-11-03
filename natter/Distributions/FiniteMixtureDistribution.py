@@ -35,11 +35,11 @@ class FiniteMixtureDistribution(Distribution):
         dictionary which might containt parameters for the Gamma distribution
               'P'    :    List of compatible Distribution objects determining the single mixture components.
 
-              'alpha'   :    Numpy array containing the mixture proportions. It must sum to one. 
-              
+              'alpha'   :    Numpy array containing the mixture proportions. It must sum to one.
+
     :type param: dict
 
-    Primary parameters are ['P','alpha'].  
+    Primary parameters are ['P','alpha'].
 
     """
 
@@ -51,18 +51,18 @@ class FiniteMixtureDistribution(Distribution):
         if param is not None:
             for k,v in param.items():
                 self[k] = v
-        
+
         if not self.param.has_key('P'):
             self.param['P'] = [Gaussian(n=1,mu=randn(1)*3.0) for dummy in xrange(3)]
 
-        
+
         K = len(self.param['P'])
         if not self.param.has_key('alpha'):
             self['alpha'] = ones(K)/K
         self.name = "Finite mixture of %s distributions" % (", ".join(unique(array([p.name for p in self['P']],dtype=object))),)
         self.primary = ['alpha','P']
 
-        
+
     def parameters(self,keyval=None):
         """
 
@@ -75,16 +75,16 @@ class FiniteMixtureDistribution(Distribution):
 
         :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
         :type keyval: string
-        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned.
         :rtype: dict or list
-           
+
         """
         if keyval == None:
             return deepcopy(self.param)
         elif keyval== 'keys':
             return self.param.keys()
         elif keyval == 'values':
-            return self.param.values()   
+            return self.param.values()
 
 
     def __setitem__(self,k,v):
@@ -97,6 +97,8 @@ class FiniteMixtureDistribution(Distribution):
 
         :param m: Number of samples to draw.
         :type name: int.
+        :param components: Components of the mixture
+        :type components: list
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -132,14 +134,14 @@ class FiniteMixtureDistribution(Distribution):
     def loglik(self,dat):
         '''
 
-        Computes the loglikelihood of the data points in dat. 
+        Computes the loglikelihood of the data points in dat.
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the loglikelihoods.
         :rtype:    numpy.array
-         
-           
+
+
         '''
         self._checkAlpha()
         n,m = dat.size()
@@ -150,14 +152,14 @@ class FiniteMixtureDistribution(Distribution):
 
     def pdf(self,dat):
         '''
-        
-        Evaluates the probability density function on the data points in dat. 
-        
+
+        Evaluates the probability density function on the data points in dat.
+
         :param dat: Data points for which the p.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the values of the density.
         :rtype:    numpy.array
-        
+
         '''
         return exp(self.loglik(dat))
 
@@ -171,13 +173,15 @@ class FiniteMixtureDistribution(Distribution):
 
         NOTE: ppf works only for one dimensional mixture distributions.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :param bounds: a tuple of two array of the same size of u that specifies the initial upper and lower boundaries for the bisection method.
-        :type bounds: tuple of two numpy.array 
+        :type bounds: tuple of two numpy.array
+        :param maxiter: Maximum number of iterations
+        :type maxiter: int
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
-           
+
         '''
 
         ret = Data(u,'Percentiles from ' + self.name)
@@ -249,8 +253,8 @@ class FiniteMixtureDistribution(Distribution):
                 except Errors.AbstractError:
                     ret += len(self.param['P'][k].primary2array())*[(None,None)]
         return ret
-            
-        
+
+
     def array2primary(self,arr):
         """
         Converts an array into the primary parameters of the
@@ -272,7 +276,7 @@ class FiniteMixtureDistribution(Distribution):
             else:
                 self.param['alpha'][0:K-1]= logistic(arr[0:K-1])
                 self.param['alpha'][-1]=1-sum(self.param['alpha'][0:K-1])
-                
+
             arr = arr[K-1::]
         if 'P' in self.primary:
             for k in xrange(K):
@@ -280,7 +284,7 @@ class FiniteMixtureDistribution(Distribution):
                 self.param['P'][k].array2primary(arr[0:lp])
                 arr = arr[lp::]
 
-        
+
 
     def dldtheta(self,dat):
         """
@@ -327,25 +331,25 @@ class FiniteMixtureDistribution(Distribution):
             else:
                 ret = vstack((ret,ret0))
         return ret
-    
-    
+
+
     def cdf(self,dat):
         """
 
-        Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat.
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the quantiles.
         :rtype:    numpy.array
-           
+
         """
         u = self.param['P'][0].cdf(dat)*self.param['alpha'][0]
-        
+
         for k in xrange(1,len(self.param['P'])):
             u += self.param['P'][k].cdf(dat)*self.param['alpha'][k]
         return u
-            
+
     def mixturePosterior(self,dat):
         """
         Returns the posterior p(k|x) over the inidicator variable for
@@ -383,8 +387,12 @@ class FiniteMixtureDistribution(Distribution):
         :type dat: natter.DataModule.Data
         :param method: method to fit the distribution. The choice is between 'EMGradient', 'gradient' or 'hybrid'
         :type method: string
+        :param maxiter: maximum number of iterations
+        :type maxiter: int
+        :param tol: Optimization threshold
+        :type tol: float
 
-           
+
         """
 
         K = len(self.param['P'])
@@ -449,7 +457,7 @@ class FiniteMixtureDistribution(Distribution):
                 arr = arr[K-1:] # because alpha are reparametrized and only the first K-1 are returned
             #check(arr)
             if all((elem[0] is None) and (elem[1] is None) for elem in bounds):
-                optimize.fmin_bfgs(f,arr,fprime=df,disp=0)                
+                optimize.fmin_bfgs(f,arr,fprime=df,disp=0)
             #optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
             else:
                 optimize.fmin_l_bfgs_b(f,arr,df,disp=0,bounds=bounds)
@@ -475,6 +483,6 @@ class FiniteMixtureDistribution(Distribution):
                 sys.stdout.write("\n\tEM maxiter reached! EM might not have converged!")
         sys.stdout.write("\n")
         sys.stdout.flush()
-                
-            
+
+
 

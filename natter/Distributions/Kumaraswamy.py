@@ -19,22 +19,22 @@ class Kumaraswamy(Distribution):
     :param param:
         dictionary which might containt parameters for the Kumaraswamy distribution
               'a'    :    Shape parameter  1 (default = 1.0)
-              
+
               'b'    :    Scale parameter  2 (default = 1.0)
 
               'B'    :    Upper bound on the range. The distribution is defined on the interval [0,B]. Default is B=1.0.
-              
+
     :type param: dict
 
     Primary parameters are ['a','b'].
-        
+
     """
 
-    
+
     def __init__(self, *args,**kwargs):
         # parse parameters correctly
         param = parseParameters(args,kwargs)
-        
+
         # set default parameters
         self.name = 'Kumaraswamy Distribution'
         self.param = {'a':1.0,'b':1.0,'B':1.0}
@@ -45,7 +45,7 @@ class Kumaraswamy(Distribution):
 
 
 
-        
+
     def sample(self,m):
         """
 
@@ -59,7 +59,7 @@ class Kumaraswamy(Distribution):
 
         """
         return Data(self.param['B']*beta.rvs(1,self.param['b'],size=m)**(1/self.param['a']),'%i samples from %s' % (m,self.name))
-        
+
     def primaryBounds(self):
         """
         Provide bounds on the primary parameters. Returns
@@ -68,20 +68,20 @@ class Kumaraswamy(Distribution):
         :returns: bounds on the primary parameters
         :rtype: list of tuples containing the single lower and upper bounds
         """
-        
+
         return len(self.primary)*[(1e-6,None)]
 
     def loglik(self,dat):
         '''
 
-        Computes the loglikelihood of the data points in dat. 
+        Computes the loglikelihood of the data points in dat.
 
         :param dat: Data points for which the loglikelihood will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the loglikelihoods.
         :rtype:    numpy.array
-         
-           
+
+
         '''
         a = self.param['a']
         b = self.param['b']
@@ -94,27 +94,27 @@ class Kumaraswamy(Distribution):
     def pdf(self,dat):
         '''
 
-        Evaluates the probability density function on the data points in dat. 
+        Evaluates the probability density function on the data points in dat.
 
         :param dat: Data points for which the p.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  An array containing the values of the density.
         :rtype:    numpy.array
-           
+
         '''
         return exp(self.loglik(dat))
-        
+
 
     def cdf(self,dat):
         '''
 
-        Evaluates the cumulative distribution function on the data points in dat. 
+        Evaluates the cumulative distribution function on the data points in dat.
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the probabilities.
         :rtype:    numpy.array
-           
+
         '''
         a = self.param['a']
         b = self.param['b']
@@ -127,11 +127,11 @@ class Kumaraswamy(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
-           
+
         '''
         a = self.param['a']
         b = self.param['b']
@@ -146,7 +146,7 @@ class Kumaraswamy(Distribution):
 
         :param data: Data on which the gradient should be evaluated.
         :type data: DataModule.Data
-        
+
         """
 
         m = dat.size(1)
@@ -163,7 +163,7 @@ class Kumaraswamy(Distribution):
             if pa == 'b':
                 grad[ind,:] = 1.0/b - a*log(B) + log(B**a - dat.X**a)
         return grad
-     
+
 
 
 
@@ -180,15 +180,20 @@ class Kumaraswamy(Distribution):
 
         f = lambda p: self.array2primary(p).all(dat)
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
-        
-   
+
+
 #        tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime, bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
         tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=len(self.primary)*[(1e-6,None)],factr=10.0)[0]
         self.array2primary(tmp)
-    
+
     def primary2array(self):
         """
-        converts primary parameters into an array.
+        Converts primary parameters into an array. This is the default
+        method which works for scalar parameters. For multivariate
+        parameters, this methods needs to be overwritten.
+
+        :returns: The primary parameters in an array.
+        :rtype: numpy.array
         """
         ret = zeros(len(self.primary))
         for ind,key in enumerate(self.primary):
@@ -197,11 +202,13 @@ class Kumaraswamy(Distribution):
 
     def array2primary(self,arr):
         """
-        Converts the given array into primary parameters.
+        Converts the given array into primary parameters. This is the
+        default method which works for scalar parameters. For
+        multivariate parameters, this methods needs to be overwritten.
 
-        :returns: The object itself.
-        :rtype: natter.Distributions.Kumaraswamy
-            
+        :param arr: Array with the primary parameters
+        :type arr: numpy.array
+        :returns: the distribution object
         """
         ind = 0
         if 'a' in self.primary:
@@ -210,8 +217,8 @@ class Kumaraswamy(Distribution):
         if 'b' in self.primary:
             self.param['b'] = arr[ind]
             ind += 1
-            
+
         return self
-            
-    
-    
+
+
+

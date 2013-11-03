@@ -1,7 +1,7 @@
 Exponential Power Distribution
 ==============================
 
-This distribution class implements the exponential power distribution 
+This distribution class implements the exponential power distribution
 
 .. math::
 
@@ -12,4 +12,4 @@ where  :math:`p > 0` refers to the shape parameter and :math:`s>0` to the scale 
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.ExponentialPower
-   :members: sample, loglik, pdf, dldx, estimate, all, copy, parameters
+   :members: loglik, dldx, sample, pdf, cdf, ppf, estimate
