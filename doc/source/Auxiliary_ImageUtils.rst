@@ -7,7 +7,7 @@ This module provides helper functions for loading and manipulating images.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 
 .. automodule:: natter.Auxiliary.ImageUtils
-   :members:	loadHaterenImage, loadPhaseScrambledHaterenImage,  loadBWImage, loadAsciiImage, loadPixelScambledAsciiImage,  shiftImage, shift1DImage, shift2DImage, bilinearInterpolation,  nearestNeighbor, bicubicInterpolation
+   :members:	
 
 
 

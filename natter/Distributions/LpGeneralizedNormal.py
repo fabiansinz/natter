@@ -104,13 +104,13 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
 
         '''
 
-    z = gamma(1 / self.param['p'], self.param['s'], (self.param['n'], m))
-    z = abs(z) ** (1 / self.param['p'])
-    return Data(z * sign(randn(self.param['n'], m)), 'Samples from ' + self.name, \
-                ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
+        z = gamma(1 / self.param['p'], self.param['s'], (self.param['n'], m))
+        z = abs(z) ** (1 / self.param['p'])
+        return Data(z * sign(randn(self.param['n'], m)), 'Samples from ' + self.name, \
+                         ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
 
 
-def __setitem__(self,key,value):
+    def __setitem__(self,key,value):
         if key in self.parameters('keys'):
             if key == 's':
                 self.param['s'] = value
