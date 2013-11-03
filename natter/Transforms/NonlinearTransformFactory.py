@@ -14,13 +14,13 @@ def ElementWise(g):
     Creates a non-linear filter that applies the function g to each
     dimension of the data the filter is applied to. g must take a numpy.array and return a numpy array.
 
-    
-    
-    :param g: Function handle that specifies the tranformation on each dimension. 
+
+
+    :param g: Function handle that specifies the tranformation on each dimension.
     :type g: function handle
     :returns: A non-linear filter that changes applies g dimensionwise
     :rtype: natter.Transforms.NonlinearTransform
-    
+
     """
     def tr(dat):
         ret = dat.copy()
@@ -39,14 +39,14 @@ def MarginalHistogramEqualization(psource,ptarget=None):
     *Important*: The ISA models must have one-dimensional subspaces!
 
     If ptarget is omitted, it will be set to a N(0,I) Gaussian by default.
-    
+
     :param psource: Source distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
     :type psource: natter.Distributions.ISA
-    :param psource: Target distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
-    :type psource: natter.Distributions.ISA
+    :param ptarget: Target distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
+    :type ptarget: natter.Distributions.ISA
     :returns: A non-linear filter that changes for marginal distributions of the data from the respective psource into the respective ptarget
     :rtype: natter.Transforms.NonlinearTransform
-    
+
     """
     from natter.Distributions import ISA, Gaussian
 
@@ -54,10 +54,10 @@ def MarginalHistogramEqualization(psource,ptarget=None):
         raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: psource must be an ISA model')
     else:
         psource = psource.copy()
-        
+
     if not ptarget == None and not isinstance(ptarget,ISA):
         raise TypeError('Transform.TransformFactory.MarginalHistogramEqualization: ptarget must be an ISA model')
-    
+
 
     for ss in psource['S']:
         if len(ss) != 1:
@@ -74,7 +74,7 @@ def MarginalHistogramEqualization(psource,ptarget=None):
 
     name = 'Marginal Histogram Equalization Transform: %s --> %s' % (psource['P'][0].name, ptarget['P'][0].name)
     return NonlinearTransform(g,name,logdetJ=gdet)
-    
+
 
 def RadialFactorization(psource):
     """
@@ -88,7 +88,7 @@ def RadialFactorization(psource):
     :type psource: natter.Distributions.LpSphericallySymmetric
     :returns: A non-linear filter that maps samples from psource into samples from a Lp-generalized Normal.
     :rtype: natter.Transforms.NonlinearTransform
-    
+
     """
     if not isinstance(psource,LpSphericallySymmetric):
         raise TypeError('Transform.TransformFactory.RadialFactorization: psource must be a Lp-spherically symmetric distribution')
@@ -108,8 +108,8 @@ def RadialTransformation(psource,ptarget):
     :type ptarget: natter.Distributions.LpSphericallySymmetric
     :returns: A non-linear filter that maps samples from psource into samples from ptarget.
     :rtype: natter.Transforms.NonlinearTransform
-    
-    
+
+
     """
     if ptarget.param['p'] != psource.param['p']:
         raise ValueError('Values of p must agree')
@@ -137,14 +137,14 @@ def logDetJacobianRadialTransform(dat,psource,ptarget,p):
     :type p: float
     :returns: log-determinant
     :rtype: float
-    
+
     """
     r = dat.norm(p)
     r2 = ptarget.ppf(psource.cdf(r))
     n = dat.size(0)
     return squeeze((n-1)*log(r2.X) - (n-1)*log(r.X) + psource.loglik(r) - ptarget.loglik(r2))
 
-    
+
 
 #################################################
 
@@ -158,13 +158,13 @@ def LpNestedNonLinearICA(p):
     :type p: natter.Distributions.LpNestedSymmetric
     :returns: non-linear transform
     :rtype: natter.Transforms.NonlinearTransform
-    
+
     """
     L = p.param['f'].copy()
     rp = p.param['rp'].copy()
 
     return _getLpNestedNonLinearICARec(rp,L,())
-    
+
 def _getLpNestedNonLinearICARec(rp,L,mind):
     p = L.p[L.pdict[()]]
     s = (special.gamma(1.0/p) / special.gamma(3.0/p))**(p/2.0)
@@ -182,7 +182,7 @@ def _getLpNestedNonLinearICARec(rp,L,mind):
 
 
     return F
-    
+
 def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     """
     Computes the log-determinant of the transformation between two
@@ -201,7 +201,7 @@ def logDetJacobianLpNestedTransform(dat,psource,ptarget,L):
     :type L: natter.Auxiliary.LpNestedFunction
     :returns: log-determinant
     :rtype: float
-    
+
     """
     r = L(dat)
     r2 = ptarget.ppf(psource.cdf(r))
@@ -216,7 +216,7 @@ def SSA2D( linearfilter=None, data=None, *args, **kwargs ):
     LinearTransformFactory.SSA() method. The SSA2D filter computes the
     sum of the squared responses of 1st and 2nd, 3rd and 4th, ...
     component thus returns n/2 dimensions.
-    
+
     :param linearfilter: the linear filter stage of the nonlinear filter
     :type linearfilter: natter.Transforms.LinearTransform
     :param data: Alternatively data on which the linear filter is learned
@@ -224,7 +224,7 @@ def SSA2D( linearfilter=None, data=None, *args, **kwargs ):
 
     :returns: bib-linear transform
     :rtype: natter.Transforms.NonlinearTransform
-    
+
     """
     if linearfilter is None and not data is None:
         U = SSA(data, *args, **kwargs)
@@ -235,12 +235,12 @@ def SSA2D( linearfilter=None, data=None, *args, **kwargs ):
 
     if mod(U.W.shape[0], 2) == 1:
         raise Errors.DimensionalityError('Transform must have even dimension number')
-        
+
     g = ElementWise( lambda x: x**2 )
     g.name = 'Elementwise squaring'
     M = LinearTransform( eye(U.W.shape[0]).reshape(U.W.shape[0]//2, 2, U.W.shape[0]).sum(1), name='Summing over 2D subspaces' )
     nonlinearfilter = M*g*U
     nonlinearfilter.name = '2D SSA filter'
-    
+
     return nonlinearfilter
-    
+
