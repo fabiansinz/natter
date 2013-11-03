@@ -42,8 +42,8 @@ def MarginalHistogramEqualization(psource,ptarget=None):
     
     :param psource: Source distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
     :type psource: natter.Distributions.ISA
-    :param psource: Target distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
-    :type psource: natter.Distributions.ISA
+    :param ptarget: Target distribution which must be a natter.Distributions.ISA model with one-dimensional subspaces
+    :type ptarget: natter.Distributions.ISA
     :returns: A non-linear filter that changes for marginal distributions of the data from the respective psource into the respective ptarget
     :rtype: natter.Transforms.NonlinearTransform
     

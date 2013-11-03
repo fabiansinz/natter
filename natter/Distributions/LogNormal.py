@@ -87,7 +87,7 @@ class LogNormal(Distribution):
         Samples m samples from the current GammaP distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
@@ -177,9 +177,7 @@ class LogNormal(Distribution):
 
         :param dat: Data points on which the Gamma distribution will be estimated.
         :type dat: natter.DataModule.Data
-        :param prange: Range to be search in for the optimal *p*.
-        :type prange:  tuple
-        
+
         '''
 
 

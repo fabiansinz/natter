@@ -12,7 +12,9 @@ from scipy.optimize import fmin_l_bfgs_b, fmin_bfgs
 from warnings import warn
 
 class Distribution(LogToken):
-
+    """
+    Parent class of all distributions.
+    """
     def __init__(self, *args,**kwargs):
                 # parse parameters correctly
         param = None
@@ -73,7 +75,7 @@ class Distribution(LogToken):
         Samples m samples from the current distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
@@ -333,8 +335,14 @@ class Distribution(LogToken):
         must exhibit the following behaviour:
 
         1) if compute_derivative ==False, it returns the value of the score function at param and dat
-        2) if compute_derivative ==False, it returns the derivative w.r.t the primary parameters of the score function at param and dat
-        
+        2) if compute_derivative ==True, it returns the derivative w.r.t the primary parameters of the score function at param and dat
+
+        :param param: parameters at which the score is computed
+        :type param: numpy.ndarray
+        :param dat: data points at which the score is computed
+        :type dat: natter.DataModule.Data
+        :param compute_derivative: See above
+        :returns: the score for score matching
         """
         raise Errors.AbstractError('Abstract method score not implemented in ' + self.name)
 
@@ -468,7 +476,7 @@ class Distribution(LogToken):
         :param cdf: boolean that indicates whether the cdf should be plotted or not (default: False)
         :param ax: axes object the histogram is plotted into if it is not None.
         :param plotlegend: boolean indicating whether a legend should be plotted (default: True)
-        :param bin: number of bins to be used. If None (default), the bins are automatically determined. 
+        :param bins: number of bins to be used. If None (default), the bins are automatically determined.
         """
         
         sh = shape(dat.X)

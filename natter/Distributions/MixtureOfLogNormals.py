@@ -98,7 +98,7 @@ class MixtureOfLogNormals(Distribution):
         Samples m samples from the current mixture of log-Normals.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -185,7 +185,7 @@ class MixtureOfLogNormals(Distribution):
         :param dat: Data points on which the Mixture of Dirichlet distributions will be estimated.
         :type dat: natter.DataModule.Data
         :param errTol: Stopping criterion for the iteration
-        :type method: float
+        :type errTol: float
         :param maxiter: maximal number of EM iterations
         :param maxiter: int
         

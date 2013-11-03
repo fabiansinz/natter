@@ -210,6 +210,15 @@ class CompleteLinearModel(Distribution):
         """
         The objective function to be optimized with
         Auxiliary.Optimization.StGradient. It computes the mean likelihood
+
+        :param W: current matrix W
+        :type W: numpy.ndarray
+        :param nargout: number of output arguments. If 1, returns objective, otherwise the derivative as well
+        :param dat: data points at which the objective is evaluated
+        :type dat: natter.DataModule.Data
+        :param q: base distribution
+        :type q: natter.Distributions.Distribution
+        :returns: value of the objective and the derivative (if nargout != 1)
         """
         (n,m) = dat.size()
         if nargout == 1:

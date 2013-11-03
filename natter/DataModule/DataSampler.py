@@ -507,8 +507,6 @@ def circulantPinkNoiseIterator(p, powerspectrum_sample_size, patchSampler, orien
 
     The images are vectorized in FORTRAN/MATLAB style by default.
 
-    :param dir: Directory to sample images from
-    :type dir: string
     :param p: patch size
     :type p: int
     :param powerspectrum_sample_size: number of patches to sample from sampler for power spectrum

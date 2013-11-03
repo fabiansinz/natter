@@ -114,8 +114,8 @@ class GammaP(Gamma):
         Evaluates the gradient of the gammap loglikelihood with
         respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """        
         u = self.param['u']
@@ -140,8 +140,8 @@ class GammaP(Gamma):
         parameters (it only computes the repeated second derivative,
         i.e. the diagonal terms of the Hessian).
 
-        :param data: Data on which the derivative should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the derivative should be evaluated.
+        :type dat: DataModule.Data
         
         """        
         u = self.param['u']
@@ -191,8 +191,8 @@ class GammaP(Gamma):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param U: Percentiles for which the ppf will be computed.
+        :type U: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
@@ -206,7 +206,7 @@ class GammaP(Gamma):
         Samples m samples from the current GammaP distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 

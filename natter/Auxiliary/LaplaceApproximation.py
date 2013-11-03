@@ -25,7 +25,7 @@ def laplaceApproximation(listOfDist,initPoint=None):
     :rtype: natter.Distributions.Gaussian
     """
 
-    # chech argument
+    # check argument
     for dist in listOfDist:
         OK = hasattr(dist,'dldx')
         OK = OK and hasattr(dist,'dldx2')

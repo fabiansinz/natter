@@ -101,7 +101,7 @@ class ExponentialPower(Distribution):
         Samples m samples from the current ExponentialPower distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
 
         """
@@ -143,7 +143,7 @@ class ExponentialPower(Distribution):
         of the current distribution.
 
         :param u:  Points at which the p.p.f. will be computed.
-        :type dat: numpy.array
+        :type u: numpy.array
         :returns:  Data object with the resulting points in the domain of this distribution. 
         :rtype:    natter.DataModule.Data
            

@@ -62,7 +62,7 @@ class Delta(Distribution):
         Samples m samples from the delta.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -88,7 +88,10 @@ class Delta(Distribution):
 
     def estimate(self,dat):
         '''
-        Uniform distribution has no parameter hence estimate does nothing        
+        Uniform distribution has no parameter hence estimate does nothing.
+
+        :param dat: dummy data object parameter for function consistency
+
         '''
         print self.name + ' has no parameter to fit.'
 

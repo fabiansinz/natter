@@ -17,6 +17,12 @@ from natter.Auxiliary import Errors
 import numpy as np
 
 def logistic(eta):
+    """
+    Logistic function.
+
+    :param eta: input to the logistic function
+    :type eta: float or numpy.ndarray
+    """
     return exp(eta)/(1+exp(eta))
 
 class FiniteMixtureDistribution(Distribution):
@@ -96,7 +102,7 @@ class FiniteMixtureDistribution(Distribution):
         Samples m samples from the current finite mixture distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -171,10 +177,12 @@ class FiniteMixtureDistribution(Distribution):
 
         NOTE: ppf works only for one dimensional mixture distributions.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :param bounds: a tuple of two array of the same size of u that specifies the initial upper and lower boundaries for the bisection method.
-        :type bounds: tuple of two numpy.array 
+        :type bounds: tuple of two numpy.array
+        :param maxiter: maximum number of iterations
+        :type maxiter: int
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
@@ -223,6 +231,13 @@ class FiniteMixtureDistribution(Distribution):
 
 
     def primary2array(self):
+        """
+        Converts primary parameters into an array.
+
+        :returns: array with primary parameters
+        :rtype: numpy.ndarray
+        """
+
         ret = array([])
         if 'alpha' in self.primary:
             ret = hstack((ret,log(self.param['alpha'][:-1])-log(1.0- self.param['alpha'][:-1])))
@@ -350,6 +365,11 @@ class FiniteMixtureDistribution(Distribution):
         """
         Returns the posterior p(k|x) over the inidicator variable for
         the mixture components given the data points in dat.
+
+        :param dat: data points at which the posterior is computed
+        :type dat: natter.numpy.ndarray
+        :returns: posterior over the mixture components
+        :rtype: numpy.ndarray
         """
         n,m = dat.size()
         K = len(self.param['P'])
@@ -383,6 +403,8 @@ class FiniteMixtureDistribution(Distribution):
         :type dat: natter.DataModule.Data
         :param method: method to fit the distribution. The choice is between 'EMGradient', 'gradient' or 'hybrid'
         :type method: string
+        :param maxiter: maximum number of iterations
+        :param tol: convergence tolerance
 
            
         """

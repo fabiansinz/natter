@@ -220,6 +220,9 @@ def _flatten(items, seqtypes=(list, tuple)):
 def flatten(container):
     """
     From user hexparrot from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
+
+    :param container: tuple or list to be flattened
+    :type container: tuple or list
     """
     for i in container:
         if isinstance(i, list) or isinstance(i, tuple):

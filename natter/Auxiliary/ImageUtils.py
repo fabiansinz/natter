@@ -96,6 +96,7 @@ def shiftImage( img, shift ):
 
     :param img: image (either 1D or 2D)
     :type img: numpy.ndarray
+    :param shift: the magnitude of the shift
     :returns: image
     :rtype: numpy.ndarray
 

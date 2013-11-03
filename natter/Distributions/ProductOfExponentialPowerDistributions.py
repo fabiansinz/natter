@@ -65,7 +65,7 @@ class ProductOfExponentialPowerDistributions(Distribution):
         Samples m samples from the current productof  Exponential Power distributions.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
 
         """
@@ -153,6 +153,13 @@ class ProductOfExponentialPowerDistributions(Distribution):
         return ret
         
     def primary2array(self):
+        """
+        Converts primary parameters into an array.
+
+        :returns: array with primary parameters
+        :rtype: numpy.ndarray
+        """
+
         ret = array([])
         if 'P' in self.primary:
             for p in self.param['P']:
@@ -160,6 +167,15 @@ class ProductOfExponentialPowerDistributions(Distribution):
         return ret
 
     def array2primary(self,ar):
+        """
+        Converts the given array into primary parameters.
+
+        :param ar: array containing primary parameters
+        :type ar: numpy.ndarray
+        :returns: The object itself.
+        :rtype: natter.Distributions.Kumaraswamy
+
+        """
         if len(ar) > 0:
             for i,p in enumerate(self.param['P']):
                 l = len(p.primary2array())

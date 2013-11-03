@@ -70,7 +70,7 @@ class Dirichlet(Distribution):
         Samples m samples from the current Dirichlet distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
@@ -166,10 +166,6 @@ def dirichlet_fit_s(dat,a,bar_p=None,maxiter=100,tol=1e-6):
 
         DIRICHLET_FIT_S   Maximum-likelihood Dirichlet precision.
 
-        DIRICHLET_FIT_S(data,a) returns the MLE (a) for the matrix DATA,
-        subject to a constraint on A/sum(A).
-        Each row of DATA is a probability vector.
-        A is a row vector providing the initial guess for the parameters.
 
         A is decomposed into S*M, where M is a vector such that sum(M)=1,
         and only S is changed by this function.  In other words, A/sum(A)
@@ -179,6 +175,19 @@ def dirichlet_fit_s(dat,a,bar_p=None,maxiter=100,tol=1e-6):
         \"Estimating a Dirichlet distribution\" by T. Minka.
 
         Written for Matlab by Tom Minka, ported to Python by Fabian Sinz
+
+        :param dat: data points for the fit
+        :type dat: natter.DataModule.Data
+        :param a:  vector providing the initial guess for the parameters.
+        :type a: numpy.ndarray
+        :param bar_p: mean log of the data points
+        :type bar_p: numpy.ndarray
+        :param maxiter: maximum number of iterations
+        :type maxiter: int
+        :param tol: convergence tolerance
+        :type tol: float
+        :returns: estimate of the parameter array
+        :rtype: numpy.ndarray
         """
 
 
@@ -243,18 +252,27 @@ def dirichlet_fit_s(dat,a,bar_p=None,maxiter=100,tol=1e-6):
 
 def dirichlet_fit_m(dat, a, bar_p=None, niter=1000,tol=1e-6):
         """
-        DIRICHLET_FIT_M   Maximum-likelihood Dirichlet mean.
+        dirichlet_fit_m   Maximum-likelihood Dirichlet mean.
         
-        DIRICHLET_FIT_M(data,a) returns the MLE (a) for the matrix DATA,
-        subject to a constraint on sum(A).
-        Each row of DATA is a probability vector.
-        A is a row vector providing the initial guess for the parameters.
-        A is decomposed into S*M, where M is a vector such that sum(M)=1,
+        dirichlet_fir_m(data,a) returns the MLE (a) for dat,
+        subject to a constraint on sum(a).
+
+        a is decomposed into S*M, where M is a vector such that sum(M)=1,
         and only M is changed by this function.  In other words, sum(A)
         is unchanged by this function.
-        
+
         The algorithm is a generalized Newton iteration, described in
         \"Estimating a Dirichlet distribution\" by T. Minka.
+
+
+        :param dat: data points for the estimation
+        :type dat: natter.DataModule.Data
+        :param a: a is a r initial guess for the parameters
+        :type a: numpy.ndarray
+        :param bar_p: mean log of the data points
+        :type bar_p: numpy.ndarray
+        :param niter: number of iterations
+        :param tol: convergence tolerance
 
         Written for Matlab by Tom Minka, ported to Python by Fabian Sinz
         """
@@ -288,8 +306,14 @@ def dirichlet_fit_m(dat, a, bar_p=None, niter=1000,tol=1e-6):
 
 
 def dirichletMomentMatch(p):
-    """ Each column of p is a multivariate observation on the probability
-        simplex. Written for Matlab (fastfit) by Tom Minka, ported to
+    """
+        :param p: data for moment matching. Each column of p is a multivariate observation on the probability simplex.
+        :type p: numpy.ndarray
+        :returns: estimate for the parameters of a Dirichlet distribution
+        :rtype p: numpy.ndarray
+
+
+        Written for Matlab (fastfit) by Tom Minka, ported to
         Python by Fabian Sinz.
     """
     

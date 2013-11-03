@@ -37,7 +37,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'natter - a natural image statistics toolbox'
-copyright = u'2010, Fabian Sinz, Sebastian Gerwinn & Lucas Theis'
+copyright = u'2010, Fabian Sinz, Philipp Lies, Sebastian Gerwinn & Lucas Theis'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

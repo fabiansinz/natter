@@ -61,7 +61,7 @@ class ChiP(Distribution):
 
         :param dat: Data for estimating self
         :type dat: natter.DataModule.Data
-        
+
         '''
 
         self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']
@@ -109,8 +109,8 @@ class ChiP(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param U: Percentiles for which the ppf will be computed.
+        :type U: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            

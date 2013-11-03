@@ -139,7 +139,7 @@ class MixtureOfGaussians(Distribution):
         Samples m samples from the current mixture of Gaussians.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -228,7 +228,7 @@ class MixtureOfGaussians(Distribution):
         :param dat: Data points on which the Mixture of Dirichlet distributions will be estimated.
         :type dat: natter.DataModule.Data
         :param errTol: Stopping criterion for the iteration
-        :type method: float
+        :type errTol: float
         :param maxiter: maximal number of EM iterations
         :param maxiter: int
         
@@ -326,7 +326,9 @@ class MixtureOfGaussians(Distribution):
         It uses a Newton-Raphson method with preinitialization.
         
         :param u:  Points at which the p.p.f. will be computed.
-        :type dat: numpy.array
+        :type u: numpy.array
+        :param maxiter: maximum number of iterations
+        :param tol: convergence tolerance
         :returns:  Data object with the resulting points in the domain of this distribution. 
         :rtype:    natter.DataModule.Data
            

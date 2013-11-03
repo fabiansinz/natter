@@ -188,7 +188,7 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
     :param f: function to be minimized
     :type f: python function
     :param xi: left interval border
-    :type x1: float
+    :type xi: float
     :param xf: right interval border
     :type xf: float
     :param t: convergence tolerance
@@ -239,6 +239,8 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
 def goldenMaxSearch(f, xi, xf, t=1.0e-9,verbose=False):
     """
     See goldenMinSearch.
+
+    For parameters see goldenMinSearch.
     """
     g = lambda x: -1.0*f(x)
     return goldenMinSearch(g, xi,xf,t,verbose)
@@ -338,8 +340,8 @@ def checkGrad(f,x,tol,*args):
     in the following way
 
 
-    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ... )     (VAL,)     = FUNC(X, 1,  ...) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X.
-    :type func: python function
+    :param f: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ... )     (VAL,)     = FUNC(X, 1,  ...) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X.
+    :type f: python function
     :param x: value where the derivative is to be checked.
     :type x: numpy.ndarray
     :param tol: specifies the tolerance threshold on the supremum norm of the difference between the gradients.

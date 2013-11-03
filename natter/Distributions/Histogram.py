@@ -73,6 +73,17 @@ class Histogram(Distribution):
         return ptmp[ind]
 
     def loglik(self,dat):
+        '''
+
+        Computes the loglikelihood of the data points in dat.
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+
+
+        '''
         return self.pdf(dat)
 
     @Squeezer(1)
@@ -81,8 +92,8 @@ class Histogram(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
@@ -97,7 +108,7 @@ class Histogram(Distribution):
         Samples m samples from the current Histogram distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
@@ -118,7 +129,6 @@ class Histogram(Distribution):
         :param cdf: boolean that indicates whether the cdf should be plotted or not (default: False)
         :param ax: axes object the histogram is plotted into if it is not None.
         :param plotlegend: boolean indicating whether a legend should be plotted (default: True)
-        :param bin: number of bins to be used. If None (default), the bins are automatically determined. 
         """
 
 

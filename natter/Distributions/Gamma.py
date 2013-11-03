@@ -76,7 +76,7 @@ class Gamma(Distribution):
         Samples m samples from the current Gamma distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
