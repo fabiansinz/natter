@@ -33,7 +33,7 @@ class FiniteMixtureDistribution(Distribution):
 
     :param param:
         dictionary which might containt parameters for the Gamma distribution
-              'P'    :    List of compatible Distribution objects determining the single mixture components.
+              'P'    :    List of compatible Distribution objects each of the elements determining the single mixture components.
 
               'alpha'   :    Numpy array containing the mixture proportions. It must sum to one.
 
@@ -91,17 +91,18 @@ class FiniteMixtureDistribution(Distribution):
         self.param[k] = deepcopy(v)
 
     def sample(self,m,components=None):
-        """
-
-        Samples m samples from the current finite mixture distribution.
+        """Samples m samples from the current finite mixture
+        distribution. Optionally an array of length `m` can be given
+        as additional argument, in which the drawn mixutre components
+        are stored. Thus the entry k contains the index of the mixutre
+        component, which was drawn to draw the actual k-th datapoint.
 
         :param m: Number of samples to draw.
         :type name: int.
-        :param components: Components of the mixture
-        :type components: list
+        :param components: Array to store the drawn  indices of the components 
+        :type components: numpy.ndarray of length m
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
-
 
         """
         dim = self['P'][0].sample(1).dim()
@@ -227,6 +228,12 @@ class FiniteMixtureDistribution(Distribution):
 
 
     def primary2array(self):
+        """
+        Converts primary parameters into an array. 
+        :returns: The primary parameters in an array.
+        :rtype: numpy.array
+        """
+        
         ret = array([])
         if 'alpha' in self.primary:
             ret = hstack((ret,log(self.param['alpha'][:-1])-log(1.0- self.param['alpha'][:-1])))

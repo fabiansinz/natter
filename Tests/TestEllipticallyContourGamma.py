@@ -1,6 +1,6 @@
 from __future__ import division
 from natter.Distributions import EllipticallyContourGamma,Gaussian
-from numpy import log,pi,sum,ones,sqrt,logspace,exp,eye
+from numpy import log, pi, sum, ones, sqrt, logspace, exp, eye
 from natter.Transforms import LinearTransform
 from numpy.random import randn
 from numpy.linalg import norm
@@ -14,8 +14,7 @@ class TestEllipticallyContourGamma(unittest.TestCase):
     def setUp(self):
         self.n =2
         self.W = LinearTransform(eye(self.n))
-        self.ECG = EllipticallyContourGamma({'n': self.n,
-                                             'W': self.W})
+        self.ECG = EllipticallyContourGamma(n=self.n,W= self.W)
         self.Gaussian = Gaussian({'n':self.n})
         self.data = self.Gaussian.sample(1000)
         

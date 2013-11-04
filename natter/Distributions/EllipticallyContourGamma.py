@@ -30,6 +30,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
 
     def __init__(self,  *args,**kwargs):
         # parse parameters correctly
+        print "args: ", args
+        print "kwargs: ", kwargs
         param = None
         if len(args) > 0:
             param = args[0]

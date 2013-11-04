@@ -27,12 +27,9 @@ class ChiP(Distribution):
     distribution and not a Chi^2.
 
     :param param: dictionary which might containt parameters for the Gamma distribution
-        'n'    :    Degrees of freedom (the dimensionality of the p-generalized Normal)
-
-        'p'    :    Exponent (default p=2.0 yields a Chi distribution)
-
-        's'    :    Scale parameter (default = (gamma(1.0/p)/gamma(3.0/p))**(p/2.0) )
-
+        'n'    :    Degrees of freedom, has be to >0 (the dimensionality of the p-generalized Normal)
+        'p'    :    Exponent, also has to be >0 (default p=2.0 yields a Chi distribution) 
+        's'    :    Scale parameter, has to be >0 (default = (gamma(1.0/p)/gamma(3.0/p))**(p/2.0) )
     :type param: dict
 
     Primary parameters are ['s'].

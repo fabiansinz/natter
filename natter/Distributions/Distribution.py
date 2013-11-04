@@ -280,6 +280,7 @@ class Distribution(LogToken):
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
         noboundmethod = False
         try:
+            bounds = self.primaryBounds()
             tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
         except Errors.AbstractError:
             noboundmethod = True
