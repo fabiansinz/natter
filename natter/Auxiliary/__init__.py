@@ -9,7 +9,6 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    Auxiliary_Entropy.rst
    Auxiliary_Errors.rst
    Auxiliary_ImageUtils.rst
-   Auxiliary_LaplaceApproximation.rst
    Auxiliary_LpNestedFunction.rst
    Auxiliary_Numerics.rst
    Auxiliary_Optimization.rst
