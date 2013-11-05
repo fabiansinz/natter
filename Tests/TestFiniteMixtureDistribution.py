@@ -84,7 +84,7 @@ class TestFiniteMixtureDistribution(unittest.TestCase):
         alpha = alpha/sum(alpha)
         mog = FiniteMixtureDistribution(P=P,alpha=alpha)
         mog.primary=['alpha','P']
-        dat = mog.sample(500)        
+        dat = mog.sample(50000)        
         arr0 = mog.primary2array()
         print mog        
         mog.array2primary(arr0 + np.random.rand(len(arr0))*1e-04)

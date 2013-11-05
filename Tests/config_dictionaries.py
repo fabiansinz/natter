@@ -63,7 +63,7 @@ distributions_to_test.append({'dist'      :Kumaraswamy,
 
 distributions_to_test.append({'dist'      :LogLogistic,
                               'support': (0,np.inf),
-                              'tolerance':1e-01})
+                              'tolerance':2e-01})
 
 distributions_to_test.append({'dist'      :LogNormal,
                               'support': (0,np.inf),
@@ -122,8 +122,3 @@ distributions_to_test.append({'dist'      :Uniform,
                               'tolerance':1e-01})
 
 
-distributions_to_test.append({'dist'      :EllipticallyContourGamma,
-                              'nsamples': 10*OODLES, #we need an awful lot of samples
-                              'proposal_high'  : Gaussian({'n':2,'sigma':np.eye(2)*30}), # proposal distribution for importance sampling with low variance (optional)
-                              'proposal_low'  : Gaussian({'n':2,'sigma':np.eye(2)*2}), # proposal with high variance, also for importance sampling
-                              'tolerance':2e-01})
