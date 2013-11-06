@@ -13,4 +13,4 @@ that is truncated).
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Truncated
-   :members: sample, loglik, pdf, cdf, ppf,  all, copy, parameters
+   :members:

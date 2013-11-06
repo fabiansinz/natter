@@ -6,7 +6,7 @@ try:
 except ImportError, err:
     print "scipy doesn't have maxentropy (maybe scipy > 0.10). Using scipy.misc"
     maxentropy = None
-from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like, any, abs,mean
+from numpy import asarray, log, exp, array, where, float64, shape, reshape,  pi, min,max, ndarray, zeros, atleast_1d, hstack, arange, remainder, isreal, all, conj, atleast_2d, zeros_like, any, abs
 from numpy.fft import fft, ifft
 from scipy import special
 from scipy.special import  gammaincc
@@ -14,7 +14,7 @@ from scipy.special import gamma as gammafunc, digamma
 import types
 from Errors import DimensionalityError
 from scipy.integrate import quad
-from mpmath import meijerg 
+from mpmath import meijerg
 from sys import stdout
 
 def owensT(h,a):
@@ -23,13 +23,15 @@ def owensT(h,a):
 
     :math:`T(h,a)=(2\pi)^{-1}\int_{0}^{a} \\frac{\exp(-\\frac{1}{2} h^2 (1+x^2))}{1+x^2} dx , (-\infty < h, a < +\infty).`
 
-    Uses scipy.integrate.quad to evaluate the integral. 
+    Uses scipy.integrate.quad to evaluate the integral.
 
+    :param h: parameter h of Owen's T-function
     :type h: numpy.array
+    :param a: parameter a of Owen's T-function
     :type a: numpy.array
     :returns: function values (array of |h| X |a|)
     :rtype:   numpy.array
-    
+
     """
     f = lambda x,hh: (2*pi)**-1 * exp(-.5*hh**2*(1+x**2))/(1+x**2)
 
@@ -62,15 +64,19 @@ def owensT(h,a):
         for j in xrange(m):
             ret[i,j] = quad(f,0.0,a[j],args=(h[i]))[0]
     return ret
-        
-        
+
+
 
 def logsumexp(a, axis=None):
     """
     Evaluates :math:`\log(\sum_i \exp(a_i) )` in a bit smarter manner.
+    If axis is None (default) then tries to use scipy's logsumexp, otherwise
+    computed logsumexp manually along first axis.
 
     :param a: positions where logsumexp will be evaluated
     :type a:  numpy.array
+    :param axis: along which axis logsumexp shall be computed, default=None
+    :type axis: int
     :returns: function values
     :rtype:   numpy.array
     """
@@ -93,19 +99,21 @@ def logsumexp(a, axis=None):
 def inv_digamma(y,niter=5):
     """
     Inverse of the digamma function with an algorithm by Tom Minka.
-    
+
     A different algorithm is provided by Paul Fackler:
     http://www.american.edu/academic.depts/cas/econ/gaussres/pdf/loggamma.src
 
     :param y: Values where the inverse digamma will be evaluated
     :type y:  numpy.array
+    :param niter: Number of iterations, default=5
+    :type niter: int
     :returns: function values
-    :rtype:   numpy.array 
+    :rtype:   numpy.array
     """
     # Newton iteration to solve digamma(x)-y = 0
     s = shape(y)
     y = y.flatten()
-    
+
     x = exp(y)+.5
     i = where(y <= -2.22)
     x[i] = -1.0/(y[i] - digamma(1.0))
@@ -146,22 +154,27 @@ def trigamma(x):
         return  reshape(array([special.polygamma(1,e) for e in x.flatten()]),s)
 
 
-            
-    
+
+
 def totalDerivativeOfIncGamma(x,a,b,da,db):
     """
     Computes the total derivative for the (non-normalized) incomplete gamma function, i.e.
 
-    d/dx gamma(f(x))*gammainc(f(x),g(x))
+    d/dx gamma(a(x))*gammainc(a(x),b(x))
 
-    :param y: Positions where the function is to be computed.
-    :param f: function handle for f
-    :param g: function handle for g
-    :param df: function handle for df/dx
-    :param dg: function handle for dg/dx
+    :param x: Positions where the function is to be computed.
+    :type x: numpy.ndarray
+    :param a: function handle for a
+    :type a: python function
+    :param b: function handle for b
+    :type b: python function
+    :param da: function handle for da/dx
+    :type da: python function
+    :param db: function handle for db/dx
+    :type db: python function
     :returns: derivative values
-    :rtype:   numpy.array
-    
+    :rtype:   numpy.ndarray
+
     """
     return digamma(a(x))*gammafunc(a(x))*da(x) + exp(-b(x))*b(x)**(a(x)-1)*db(x) \
      - (meijerg([[],[1,1],],[[0,0,a(x)],[]],b(x)) + log(b(x))*gammaincc(a(x),b(x))*gammafunc(a(x)))  * da(x)
@@ -176,13 +189,13 @@ def dct(x,n=None):
     http://en.wikipedia.org/wiki/Discrete_cosine_transform
     http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
 
-    :param x: 1D array 
+    :param x: 1D array
     :type x: numpy.ndarray
     :param n: length of array, default None
     :type n: int
     :returns: 1D array
     :rtype: numpy.array
-    
+
     """
     x = atleast_1d(x)
 
@@ -221,13 +234,13 @@ def idct(x,n=None):
     http://en.wikipedia.org/wiki/Discrete_cosine_transform
     http://users.ece.utexas.edu/~bevans/courses/ee381k/lectures/
 
-    :param x: 1D array 
+    :param x: 1D array
     :type x: numpy.ndarray
     :param n: length of array, default None
     :type n: int
     :returns: 1D array
     :rtype: numpy.array
-    
+
     """
 
     x = atleast_1d(x)
@@ -281,7 +294,7 @@ def dct2(x):
     :returns: 2D image
     :rtype: numpy.ndarray
 
-    """   
+    """
     a = dct(dct(x).transpose()).transpose()
     return a
 
@@ -290,14 +303,20 @@ def invertMonotonicIncreasingFunction(f,y,xl,xu,tol=1e-6,maxiter = 10000):
     Inverts a monotonically increasing function.
 
     :param f: function to be inverted
+    :type f: python function
     :param y: desired output values
+    :type y: numpy.ndarray
     :param xl: lower bounds for input x
     :type xl: numpy.ndarray
     :param xu: upper bounds for input x
     :type xu: numpy.ndarray
     :param tol: convergence tolerance
+    :type tol: float
     :param maxiter: maximal number of iterations
-    
+    :type maxiter: int
+    :returns: inverted function
+    :rtype: numpy.ndarray
+
     """
     yu = f(xu) - y
     while any(yu < 0.0):
@@ -331,9 +350,9 @@ def invertMonotonicIncreasingFunction(f,y,xl,xu,tol=1e-6,maxiter = 10000):
         stdout.write('\tWarning in invertMonotonicIncreasingFunction: Inversion might not have been converged.\n')
         stdout.write('\tmax |xu-xl|=%.3g\t\tmax |ym|=%.3g\n' % (max(abs(xu-xl)),max(abs(ym))))
         stdout.flush()
-        
-    
+
+
     return 0.5*(xu+xl)
-        
-    
-    
+
+
+

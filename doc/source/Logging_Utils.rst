@@ -1,6 +1,6 @@
-LogTokens
+Utils
 ==================================
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
-.. automodule:: natter.Logging.LogTokens
+.. automodule:: natter.Logging.Utils
    :members:

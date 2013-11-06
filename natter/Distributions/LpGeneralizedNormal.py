@@ -74,11 +74,14 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
             return self.param.value()
 
     def estimate(self,dat,prange=(.1,5.0)):
-        '''ESTIMATE(DAT,[PRANGE=(.1,5.0)]])
-        
-        estimates the parameters from the data in DAT. The optional
+        '''Estimates the parameters from the data in DAT. The optional
         second argument specifys a list of parameters that should be
         estimated. PRANGE, when specified, defines the search range for p.
+
+        :param dat: data object with data points
+        :type dat: natter.DataModule.Data
+        :param prange: range of p-values to search in
+        :type prange: tuple of floats
         '''
         if 'p' in self.primary:
             f = lambda t: self.__pALL(t,dat)
@@ -88,16 +91,24 @@ class LpGeneralizedNormal(LpSphericallySymmetric):
         self.param['s'] = self.param['p']*mean(sum(abs(dat.X)**self.param['p'],0))  / self.param['n']
         self.param['rp'].param['s'] = self.param['s']
         self.param['rp'].param['u'] = float(self.param['n'])/self.param['p']
-        
-    def sample(self,m):
-        '''SAMPLE(M)
 
-           samples M examples from the distribution.
+    def sample(self, m):
+
         '''
-        z = gamma(1/self.param['p'],self.param['s'],(self.param['n'],m))
-        z = abs(z)**(1/self.param['p'])
-        return Data(z * sign(randn(self.param['n'],m)),'Samples from ' + self.name, \
-                      ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
+        Samples m examples from the distribution.
+
+        :param m: number of patches to sample
+        :type m: int
+        :returns: Samples from the ChiP distribution
+        :rtype: natter.DataModule.Data
+
+        '''
+
+        z = gamma(1 / self.param['p'], self.param['s'], (self.param['n'], m))
+        z = abs(z) ** (1 / self.param['p'])
+        return Data(z * sign(randn(self.param['n'], m)), 'Samples from ' + self.name, \
+                         ['sampled ' + str(m) + ' examples from Lp-generalized Normal'])
+
 
     def __setitem__(self,key,value):
         if key in self.parameters('keys'):

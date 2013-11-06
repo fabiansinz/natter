@@ -10,4 +10,4 @@ The Transformed distribution is a univariate density with the pdf
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Transformed
-   :members: sample, loglik, pdf, cdf, ppf,  all, copy, parameters
+   :members:

@@ -105,14 +105,14 @@ class LpNestedSymmetric(Distribution):
         Samples m samples from the current LpNestedSymmetric distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
         """
         ret = zeros((self.param['f'].n[()],m))
         r = beta(float(self.param['f'].n[()]),1.0,(1,m))
-        recsample((),r,self.param['f'],m,ret)
+        _recsample((),r,self.param['f'],m,ret)
         
         ret = Data(ret,'Samples from ' + self.name)
         ret.scale(self.param['rp'].sample(m).X/self.param['f'].f(ret).X)
@@ -239,6 +239,13 @@ class LpNestedSymmetric(Distribution):
 
 
     def primary2array(self):
+        """
+        Converts primary parameters into an array.
+
+        :returns: array with primary parameters
+        :rtype: numpy.ndarray
+        """
+
         ret = array([])
         for k in self.primary:
             if k == 'f':
@@ -249,6 +256,15 @@ class LpNestedSymmetric(Distribution):
         return ret
 
     def array2primary(self,ar):
+        """
+        Converts the given array into primary parameters.
+
+        :param ar: array containing primary parameters
+        :type ar: numpy.ndarray
+        :returns: The object itself.
+        :rtype: natter.Distributions.Kumaraswamy
+
+        """
         for k in self.primary:
             if k == 'f':
                 l = len(self.param['f'].p)
@@ -300,7 +316,7 @@ class LpNestedSymmetric(Distribution):
         return (self.all(dat) , df)
         
 
-def recsample(key,r,L,m,ret):
+def _recsample(key,r,L,m,ret):
     alpha = array([float(L.n[key + (i,)])/L.p[L.pdict[key]] for i in range(L.l[key])])
     p = L.p[L.pdict[key]]
 
@@ -309,11 +325,11 @@ def recsample(key,r,L,m,ret):
     for i in range(L.l[key]):
         I = key + (i,)
         if L.n[I] > 1:
-            recsample(I,tmp[i,:],L,m,ret)
+            _recsample(I,tmp[i,:],L,m,ret)
         else:
             ret[L.i(I),:] = tmp[i,:]*sign(rand(1,m)-.5)
         
-def sortMultiIndices(x,y):
+def _sortMultiIndices(x,y):
     for k in range(min(len(x),len(y))):
         if x[k] < y[k]:
             return -1

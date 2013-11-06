@@ -15,4 +15,4 @@ the standard normal distribution.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.SkewedGaussian
-   :members: sample, loglik, pdf, cdf
+   :members:

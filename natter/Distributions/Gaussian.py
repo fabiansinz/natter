@@ -103,7 +103,7 @@ class Gaussian(Distribution):
         Samples m samples from the current Gaussian distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -151,13 +151,11 @@ class Gaussian(Distribution):
 
     def array2primary(self,arr):
         """
-        Provide bounds on the primary parameters. Returns
-        None, if the parameter is unbounded in that direction.
+        Takes an array containing primary parameters and stores them in the object.
 
-        :returns: bounds on the primary parameters
-        :rtype: list of tuples containing the single lower and upper bounds
+        :param arr: array with primary parameters
         """
-        
+
         n = self.param['n']
         if 'mu' in self.primary:
             self.param['mu'] = arr[:n]
@@ -184,6 +182,11 @@ class Gaussian(Distribution):
         parameters. Note: if 'sigma' is in the primary parameters the
         gradient is calculated with respect to the cholesky factor of
         the inverse covariance matrix.
+
+        :param dat: data points at which the derivative is computed
+        :type dat: natter.DataModule.Data
+        :returns: derivatives
+        :rtype: numpy.ndarray
         
         """
         ret = array([])
@@ -216,6 +219,8 @@ class Gaussian(Distribution):
 
         :param dat: Data points on which the Gaussian distribution will be estimated.
         :type dat: natter.DataModule.Data
+        :param method: method that is used to estimate the parameters (choices are 'analytic', and 'numeric')
+        :type method: string
         '''
 
         if method==None:
@@ -263,8 +268,8 @@ class Gaussian(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            

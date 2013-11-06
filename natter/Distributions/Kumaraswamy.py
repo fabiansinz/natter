@@ -52,7 +52,7 @@ class Kumaraswamy(Distribution):
         Samples m samples from the current Kumaraswamy distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -127,8 +127,8 @@ class Kumaraswamy(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
@@ -144,8 +144,8 @@ class Kumaraswamy(Distribution):
         """
         Evaluates the gradient of the Kumaraswamy loglikelihood with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """
 
@@ -188,7 +188,9 @@ class Kumaraswamy(Distribution):
     
     def primary2array(self):
         """
-        converts primary parameters into an array.
+        Converts primary parameters into an array.
+
+        :returns: array with primary parameters
         """
         ret = zeros(len(self.primary))
         for ind,key in enumerate(self.primary):
@@ -199,6 +201,8 @@ class Kumaraswamy(Distribution):
         """
         Converts the given array into primary parameters.
 
+        :param arr: array containing primary parameters
+        :type arr: numpy.ndarray
         :returns: The object itself.
         :rtype: natter.Distributions.Kumaraswamy
             

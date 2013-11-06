@@ -13,12 +13,6 @@ import scipy
 from os import chdir
 import sys
 
-from os import path, chdir
-from time import time, strftime, localtime
-import sys
-import numpy
-import scipy
-
 class LogToken:
     """
     Abstract class each LogToken inherits from. Forces LogTokens to
@@ -53,7 +47,7 @@ class LogToken:
         raise AbstractError("Method ascii not implemented in this ProtocolToken!")
 
     def __log__(self,type='ascii'):
-        return getattr(self,type)()        
+        return getattr(self,type)()
 
 
 
@@ -64,7 +58,7 @@ class PyInfo(LogToken):
     Represents information about the state of a python.
     """
 
-    
+
     def __init__(self):
         info = {}
         info['Python Version'] = sys.version
@@ -74,7 +68,7 @@ class PyInfo(LogToken):
         random.seed(info['Random Seed'])
         info['Random Seed'] = str(info['Random Seed'])
         self.info = info
-        
+
     def ascii(self):
         """
         :returns: An ascii representation of the python info.
@@ -84,7 +78,7 @@ class PyInfo(LogToken):
         return "\n".join(["%s: %s" % (k,v) for k,v in self.info.items()])
 
 
-    
+
     def html(self):
         """
         :returns: A html representation of the python info.
@@ -98,7 +92,7 @@ class Git(LogToken):
     Represents information about the state of a git directory.
     """
 
-    
+
     def __init__(self,gitdir='./'):
         self.gitdir = gitdir
         self.boolPretty = {True:'yes', False:'no'}
@@ -109,11 +103,11 @@ class Git(LogToken):
         pr2 = Popen(['head', '-1'], stdin=pr1.stdout, stdout=PIPE)
         pr3 = Popen(['cut', '-d', ' ', '-f', '2'], stdin=pr2.stdout, stdout=PIPE)
         self.commit = pr3.communicate()[0][:-1]
-        
+
         # check if project contains uncommitted changes
         pr1 = Popen(['git', 'status', '--porcelain'], stdout=PIPE)
         pr2 = Popen(['egrep', '^.M'], stdin=pr1.stdout, stdout=PIPE)
-				
+
         if pr2.communicate()[0]:
             self.modified = True
         else:
@@ -128,7 +122,7 @@ class Git(LogToken):
 
         return "Git directory: %s\ncommit: %s\nuncommited changes: %s" % (self.gitdir, self.commit, self.boolPretty[self.modified])
 
-    
+
     def html(self):
         """
         :returns: A html representation of the git directory.
@@ -144,7 +138,7 @@ class Svn(LogToken):
     Represents information about the state of a svn directory.
     """
 
-    
+
     def __init__(self,svndir='./'):
         self.boolPretty = {True:'yes', False:'no'}
         olddir = os.path.abspath('./')
@@ -162,7 +156,7 @@ class Svn(LogToken):
 
         return "\nSVN information:\n %s\n" % (''.join(self.svninfo),)
 
-    
+
     def html(self):
         """
         :returns: A html representation of the git directory.
@@ -180,9 +174,9 @@ class Table(LogToken):
     >>> t = Table((1,2),('a','b'))
     >>> t[1,'b'] = 1.2
 
-    Cell contents can be floats, strings or LogTokens again. 
+    Cell contents can be floats, strings or LogTokens again.
     """
-    
+
     def __init__(self,rows = (), cols = ()):
         self._content = {}
         self._cols = cols
@@ -192,7 +186,7 @@ class Table(LogToken):
             self._content[rk] = {}
             for ck in cols:
                 self._content[rk][ck] = ""
-                
+
 
     def __getitem__(self,k):
         if k[0] in self._rows and k[1] in self._cols:
@@ -231,7 +225,7 @@ class Table(LogToken):
                     m = len(self._content[rk][ck].ascii())
                 else:
                     raise TypeError("Data type of (%s,%s) not known" % (str(rk),str(ck)))
-                    
+
                 if m > n:
                     n = m
 
@@ -242,8 +236,8 @@ class Table(LogToken):
         ret = hLine(cm,n) + "\n"
         ret += "|" + n*" " + "|" + "|".join([lrfill(str(elem),n) for elem in self._cols]) + "|\n"
         ret += hLine(cm,n) + "\n"
-        
-        
+
+
         for rk in self._rows:
             row = [str(rk)]
             for ck in self._cols:
@@ -269,7 +263,7 @@ class Table(LogToken):
         s += "<tr><td></td>"
         for colelem in self._cols:
             s += "<td><b>%s</b></td>" % (str(colelem),)
-    
+
         s += "</tr>"
 
         for rk in self._rows:
@@ -287,7 +281,7 @@ class Table(LogToken):
                     s += self._content[rk][ck]
                 elif isinstance(self._content[rk][ck],LogToken):
                     s += self._content[rk][ck].html()
-                    
+
                 s += "</td>"
 
             s += "</tr>"
@@ -300,10 +294,10 @@ class Table(LogToken):
         :returns: A latex representation of the table.
         :rtype: string
         """
-        
+
         s = "\\begin{center}\\begin{tabular}{|%s|}\\hline" % ("|".join((len(self._cols)+1)*['l']))
         s += "&" + "&".join([str(elem) for elem in self._cols]) + "\\\\ \\hline\\hline"
-    
+
 
         for rk in self._rows:
             s += "\\bf %s " % (str(rk),)
@@ -315,13 +309,13 @@ class Table(LogToken):
                     s += self._content[rk][ck]
                 elif isinstance(self._content[rk][ck],LogToken):
                     s += self._content[rk][ck].latex()
-                    
+
 
             s += "\\\\\\hline"
 
         s+= "\\end{tabular}\\end{center}"
         return s
-        
+
 
 ##############################################
 
@@ -342,9 +336,9 @@ class Paragraph(LogToken):
         :returns: A wiki representation of the paragraph.
         :rtype: string
         """
-        
+
         return "\n\n"
-    
+
     def html(self):
         """
         :returns: A html representation of the paragraph.
@@ -368,7 +362,7 @@ class Link(LogToken):
 
     >>> l = Link('myfile.html')
     >>> l2 = Link('myfile.html','This is a link to a file')
-    
+
     """
 
     def __init__(self,target, name=None):
@@ -377,7 +371,7 @@ class Link(LogToken):
             self._name = target
         else:
             self._name = name
-        
+
     def ascii(self):
         """
         :returns: An ascii representation of the link.
@@ -387,7 +381,7 @@ class Link(LogToken):
             return self._name
         else:
             return self._name.ascii()
-            
+
 
     def wiki(self):
         """
@@ -398,8 +392,8 @@ class Link(LogToken):
             return "[%s %s]" % (self._target,self._name)
         else:
             return "[%s %s]" % (self._target,self._name.wiki())
-            
-    
+
+
     def html(self):
         """
         :returns: An html representation of the link.
@@ -409,7 +403,7 @@ class Link(LogToken):
             return "<a href=\"%s\">%s</a>" % (self._target,self._name)
         else:
             return "<a href=\"%s\">%s</a>" % (self._target,self._name.html())
-            
+
 
     def latex(self):
         """
@@ -429,12 +423,12 @@ class Image(LogToken):
     filename. For example:
 
     >>> I = Image('whatever.png')
-    
+
     """
 
     def __init__(self,name):
         self._name = name
-        
+
     def ascii(self):
         """
         :returns: An ascii representation of the image.
@@ -448,7 +442,7 @@ class Image(LogToken):
         :rtype: string
         """
         return "%s" % (self._name,)
-    
+
     def html(self):
         """
         :returns: An html representation of the image.
@@ -475,7 +469,7 @@ class LogList(LogToken):
     enumerated with arabic numbers.
 
     :param etype: Enumeration format. Possible values are: items, arabic
-    :type etype: string 
+    :type etype: string
     """
 
     def __init__(self,etype='items'):
@@ -506,13 +500,13 @@ class LogList(LogToken):
                 counter += 1
             elif self._type == 'items':
                 symbol = "* "
-                
+
             if type(elem) == types.StringType:
                 s += "%s%s\n" % (symbol,textwrap.fill(elem,80))
             elif isinstance(elem,LogToken):
                 s += "%s%s\n" % (symbol,elem.ascii())
         return s
-    
+
     def html(self):
         """
         :returns: A html representation of the list.
@@ -523,18 +517,18 @@ class LogList(LogToken):
             s += "<ul>"
         elif self._type == 'arabic':
             s += "<ol>"
-            
+
         for elem in self._list:
             if type(elem) == types.StringType:
                 s += "<li>%s</li>\n" % (elem, )
             elif isinstance(elem,LogToken):
                 s += "<li>%s</li>\n" % (elem.html(), )
-                
+
         if self._type == "items":
             s += "</ul>"
         elif self._type == 'arabic':
             s += "</ol>"
-            
+
         return s + "<br>"
 
     def latex(self):
@@ -547,14 +541,14 @@ class LogList(LogToken):
             s += "\\being{itemize}"
         elif self._type == 'arabic':
             s += "\\begin{enumerate}"
-            
+
         for elem in self._list:
             if type(elem) == types.StringType:
                 s += "\\item %s\n" % (elem, )
             elif isinstance(elem,LogToken):
                 s += "\\item %s\n" % (elem.html(), )
-                
-            
+
+
         if self._type == "items":
             return s + "\\end{itemize}"
         elif self._type == 'arabic':

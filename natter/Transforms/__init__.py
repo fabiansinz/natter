@@ -9,6 +9,7 @@ factories.
 
    Transforms_LinearTransform.rst
    Transforms_LinearTransformFactory.rst
+   Transforms_LinearTransformUtils.rst
    Transforms_NonlinearTransform.rst
    Transforms_NonlinearTransformFactory.rst
    Transforms_Transform.rst

@@ -1,9 +1,9 @@
 from __future__ import division
 import warnings
 import numpy
-from numpy import any,eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median, histogram2d, meshgrid,amax,linspace, arange, floor, isnan, isinf
+from numpy import any,eye, array, shape, size, sum, abs, ndarray, mean, reshape, ceil, sqrt, var, cov, exp, log,sign, dot, hstack, savetxt, vstack, where, int64, split, atleast_2d, median, histogram2d, amax,linspace, arange, floor, isnan, isinf
 from  natter.Auxiliary import  Errors, Plotting, save, savehdf5
-from matplotlib.pyplot import scatter,text, figure, show, contour
+from matplotlib.pyplot import text, figure
 from numpy.linalg import qr, svd
 import types
 import sys
@@ -100,7 +100,6 @@ class Data(LogToken):
         Stacks the current dataset with a copy of the dataset dat. Both must
         have the same number of examples.
 
-
         :param dat: Other data object with the same number of examples
         :type dat: natter.DataModule.Data
         """
@@ -179,9 +178,14 @@ class Data(LogToken):
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
 
         :param ax: If specified the data is plotted to this axes object.
-        :param plottype: plot type; possible choice are 'scatter' or 'loghist' (default 'scatter'). 
+        :type ax: matplotlib.pyplot.Axis
+        :param plottype: plot type; possible choice are 'scatter' or 'loghist' (default 'scatter').
+        :type plottype: string
+        :param kwargs: arguments passed directly to matplotlib.pyplot.Axis.scatter function
+        :type kwargs: dict
         :raises: natter.Auxiliary.Errors.DimensionalityError
         :returns: The axes object.
+        :rtype: matplotlib.pyplot.Axis
         """
         if not len(self.X) == 2:
             raise Errors.DimensionalityError('Data object must have dimension 2 for plotting!')
@@ -194,20 +198,19 @@ class Data(LogToken):
                 ax.scatter(self.X[0],self.X[1],s=.1,**kwargs)
             else:
                 ind = ~(any(isnan(self.X),axis=0) | any(isinf(self.X),axis=0))
-                
+
                 mx = amax(abs(self.X[:,ind].ravel()))
                 ex = linspace(-mx,mx,self.X.shape[1]/4000)
                 ey = linspace(-mx,mx,self.X.shape[1]/4000)
-                
+
                 H,ex,ey = histogram2d(self.X[0,:],self.X[1,:],bins=(ex,ey))
                 ax.contour(.5*(ex[1:]+ex[:-1]),.5*(ey[1:]+ey[:-1]),log(H),**kwargs)
-                
+
                 if ('colors' in kwargs) and (type(kwargs['colors']) == str) and ('label' in kwargs):
                     ra  = ax.axis()
                     ax.plot(ra[1]+1,ra[3]+1,color=kwargs['colors'],label=kwargs['label'])
                     ax.axis(ra)
-                
-                
+
             return ax
 
     def numex(self):
@@ -291,7 +294,7 @@ class Data(LogToken):
 
         :param s: Scale factors
         :type s: numpy.array or natter.DataModule.Data
-        :param indices: Indices into selected dimensions that are to be rescaled with *s*
+        :param indices: Indices into selected dimensions that are to be rescaled with *s* (default=None)
         :type indices: list or tuple of int
         :returns: The copied and rescaled Data object.
         :rtype: natter.DataModule.Data
@@ -344,6 +347,14 @@ class Data(LogToken):
 
         :param m: Number of patches to be plotted.
         :type m: int
+        :param plotNumbers: flag for plotting patch number (default=False)
+        :type plotNumbers: bool
+        :param orientation: Reshape the image vectors C-Style ('C') or Fortran/Matlab-style ('F'). (Default='F')
+        :type orientation: string
+        :param kwargs: parameter set directly passed to plotPatches() function
+        :type kwargs: dict
+        :returns: Figure handle
+        :rtype: matplotlib.pyplot.Figure
         """
         fig = figure()
         if m == -1:
@@ -385,10 +396,9 @@ class Data(LogToken):
         estimator of scipy.stats.
 
         :param bias: If False, then the calculations are corrected for statistical bias.
-        :type bias: Bool
+        :type bias: bool
         :returns: Marginal kurtoses
         :rtype: numpy.array
-
         """
         return kurtosis(self.X,axis=1,bias=bias)
 
@@ -670,30 +680,28 @@ class Data(LogToken):
         :type n: int
         :param m: number of samples per dataset
         :type m: int
-
         """
         ne = self.X.shape[1]
         for k in xrange(n):
             ind= randint(ne,size=(m,))
             yield self[:,ind]
         return
-    
+
     def cross_validation(self,c=10):
         """
         Iterator that returns c pairs of training and test datasets. Each pair
-        is a different partition of the data. 
+        is a different partition of the data.
 
         :param c: number of training and test dataset pairs
         :type c: int
-
         """
         m = self.X.shape[0]
         delta = m/c
         for i in arange(0,m,delta):
             train_ind = range(int(floor(i))) + range(int(floor(i+delta)),m)
             test_ind = range(int(floor(i)),int(floor(i+delta)))
-            
-            yield self[:,train_ind], self[:,test_ind] 
-    
+
+            yield self[:,train_ind], self[:,test_ind]
+
 
 

@@ -1,5 +1,5 @@
 from __future__ import division
-from sys import stdout 
+from sys import stdout
 from numpy import shape, isfinite, abs, pi, arcsin, reshape, zeros, Inf, max, dot, real,sin,  min,array, float64
 #from numpy.linalg import svd
 from scipy.linalg import sqrtm, inv
@@ -10,15 +10,16 @@ from natter.Auxiliary import Errors
 def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     """
 
-    Multidimensional gradient free optimization with box constraints on the variables. 
+    Multidimensional gradient free optimization with box constraints on the variables.
 
-    
+
     I ported this function from a Matlab function someone else posted
     in the internet. Unfortunately, I cannot find the source anymore.
     Who was it and reference him. If you were the author, please
     contact me and you get acknowledged (fabee@bethgelab.org).
 
     :param f: function to be minimized (takes a vector x and args)
+    :type f: python function
     :param x0: starting value
     :type x0: numpy.ndarray
     :param LB: lower bounds
@@ -26,13 +27,17 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     :param UB: upper bounds
     :type UB: numpy.ndarray
     :param tol: convergence tolerance
+    :type tol: float
     :param args:  additional parameters for the function f
-    
+    :type args: list
+
+    :returns: optimized x
+    :rtype: numpy.ndarray
     """
     xsize = shape(x0);
     x0 = x0.flatten()
     n=len(x0);
-    
+
     if (n!=len(LB)) or (n!=len(UB)):
         raise Errors.DimensionalityError('x0 is incompatible in size with either LB or UB.')
 
@@ -88,7 +93,7 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
             x0u[k] = x0[i]
             k+=1
 
-            
+
     if k<=n:
         x0u = x0u[:k]
 
@@ -96,10 +101,10 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     if len(x0u) == 0:
         # All variables were fixed. quit immediately, setting the
         # appropriate parameters, then return.
-  
+
         # undo the variable transformations into the original space
         x = _xtransform(x0u,LB,UB,BoundClass,n)
-  
+
         # final reshape
         x = reshape(x,xsize);
         return x
@@ -111,12 +116,35 @@ def fminboundnD(f,x0,LB,UB,tol=1e-3,*args):
     xu = fmin(f2,x0u,xtol=tol,*args)
     # undo the variable transformations into the original space
     x = _xtransform(xu,LB,UB,BoundClass,n)
-    
+
     # final reshape
     return reshape(x,xsize);
 
 def _xtransform(x,LB,UB,BoundClass,n):
-    # converts unconstrained variables into their original domains
+    """
+
+    Converts unconstrained variables into their original domains
+    Helper function to fminboundnD.
+
+    I ported this function from a Matlab function someone else posted
+    in the internet. Unfortunately, I cannot find the source anymore.
+    Who was it and reference him. If you were the author, please
+    contact me and you get acknowledged (fabee@bethgelab.org).
+
+    :param x: unconstrained value
+    :type x: numpy.ndarray
+    :param LB: lower bounds
+    :type LB: numpy.ndarray
+    :param UB: upper bounds
+    :type UB: numpy.ndarray
+    :param BoundClass: Bound class (list of ints indicating kind of bound)
+    :type BoundClass: list
+    :param n: length of x
+    :type n: int
+
+    :returns: transformed x
+    :rtype: numpy.ndarray
+    """
 
     xtrans = zeros((n,))
     k=0
@@ -146,7 +174,7 @@ def _xtransform(x,LB,UB,BoundClass,n):
 
 def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
     """
-    
+
     Performs a golden search to find the minimum of FUNC. which takes
     a single real number, in the interval [XI,XF]. It returns the
     interval borders XI and XF after they have been narrowed down, as
@@ -155,29 +183,36 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
 
     This example has also been taken from a Matlab example on the
     internet and I cannot find the source anymore. Please contact me
-    if you are the author and you get acknowledged.
+    (fabee@bethgelab.org) if you are the author and you get acknowledged.
 
     :param f: function to be minimized
+    :type f: python function
     :param xi: left interval border
+    :type xi: float
     :param xf: right interval border
+    :type xf: float
     :param t: convergence tolerance
-    :verbose: create output during optimization
-    
+    :type t: float
+    :param verbose: create output during optimization
+    :type verbose: bool
+    :returns: List containing upper and lower interval border and iteration number
+    :rtype: list
+
     """
     # constants
     A = 0.6180339887
-    
+
     n = 0
-    
+
     x1 = xi
     x2 = xf
 
     x3 = x1 + A * (x2-x1)
     x4 = x2 - A * (x2-x1)
-    
+
     fx3 = f(x3)
     fx4 = f(x4)
-    
+
     while abs(x2-x1) > t:
         #print n, x1, x2, abs(x2-x1)
         n+=1
@@ -191,7 +226,7 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
             x2 = x3
             x3 = x4
             x4 = x2 - A * (x2-x1)
-        
+
         fx3 = f(x3)
         fx4 = f(x4)
         if verbose:
@@ -203,27 +238,36 @@ def goldenMinSearch(f, xi, xf, t=1.0e-9, verbose=False):
 
 def goldenMaxSearch(f, xi, xf, t=1.0e-9,verbose=False):
     """
-    See goldenMinSearch. 
+    See goldenMinSearch.
+
+    For parameters see goldenMinSearch.
     """
     g = lambda x: -1.0*f(x)
     return goldenMinSearch(g, xi,xf,t,verbose)
 
 def StGradient(func, X, param0=None, *args):
     """
-    Performs gradient ascent on the special orthogonal group as described in 
-   
+    Performs gradient ascent on the special orthogonal group as described in
+
     J. Manton, \"Optimization algorithms exploiting unitary
     constraints,\" Signal Processing, IEEE Transactions on, vol. 50,
     2002, pp. 635-650.
 
-    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ARGS), (DF,) = FUNC(X, 1, ARGS) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X. 
+    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ARGS), (DF,) = FUNC(X, 1, ARGS) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X.
+    :type func: python function
 
     :param X: starting value
+    :type X: numpy.ndarray
     :param param0: Dictionary that lets you set optimization parameters like the termination threshold on the supremums norm of the gradient (tolF), the maximum number of iterations (SOmaxiter) or the searchrange for the linesearch (searchrange). The default values for it are param0 = {'tolF':1e-8, 'SOmaxiter':20, 'searchrange':10}
+    :type: dict
 
     :param args: are arguments that are passed down to FUNC (see above).
+    :type args: list
+
+    :returns: optimized X
+    :rtype: numpy.ndarray
     """
-    
+
     bestdelta = Inf
     Z = Inf
     param = {'tolF':1e-10, 'SOmaxiter':20, 'searchrange':10.0,'lsTol':1e-7,'linesearch':'brent'}
@@ -243,7 +287,7 @@ def StGradient(func, X, param0=None, *args):
         if k == 1:
             print "\tPermforming Linesearch with parameters"
             print "\t\t" + "\n\t\t".join( [str(elem[0]) + ': ' + str(elem[1]) for elem in param.items()] ) + "\n"
-        
+
         print "\tLinesearch %i" % (k,),
         if param['linesearch'] == 'golden':
             F = lambda t: func(_projectOntoSt(X+t*Z),1,*args)[0]
@@ -254,7 +298,7 @@ def StGradient(func, X, param0=None, *args):
             bestdelta = fminbound(F,0,b,(),param['lsTol'])
             if not type(bestdelta) == float64:
                 bestdelta = bestdelta[0]
-            
+
 
         if bestdelta < b/4.0:
             b /=2
@@ -264,7 +308,7 @@ def StGradient(func, X, param0=None, *args):
             print "+(%.8f) " % b,
         else:
             print ".(%.8f) " % b,
-  
+
         X = _projectOntoSt(X+bestdelta*Z)
         ftmax = func(X,1,*args)
         k += 1;
@@ -279,19 +323,33 @@ def StGradient(func, X, param0=None, *args):
 def _projectOntoSt(C):
     # (u,d,v) = svd(C,full_matrices=False)
     # return dot(u,v)
+    """
+    Helper function to StGradient. Projects the given vector onto
+    the inverse square root of its covariance matrix.
+
+    :param C: vector to project
+    :type C: numpy.ndarray
+    :returns: projected vector
+    :rtype: numpy.ndarray
+    """
     return real( dot(  inv(sqrtm(dot(C,C.T)))  ,C) )
-    
+
 def checkGrad(f,x,tol,*args):
     """
     Checks if the gradient returned by FUNC if correct. FUNC is called
     in the following way
 
 
-    :param func: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ... )     (VAL,)     = FUNC(X, 1,  ...) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X. 
+    :param f: is a function that it called in the following way: (VAL, DF) = FUNC(X, 2, ... )     (VAL,)     = FUNC(X, 1,  ...) i.e. the second argument is either 2 in which case it returns the function value at X in SO(n), or the second argument equals one in which case it only returns the function value at X.
+    :type f: python function
     :param x: value where the derivative is to be checked.
+    :type x: numpy.ndarray
     :param tol: specifies the tolerance threshold on the supremum norm of the difference between the gradients.
+    :type tol: float
     :param args: args are passed down to func.
-
+    :type args: list
+    :returns: if gradient is within tolerance
+    :rtype: bool
     """
     h = 1e-6
     df2 = Inf*x

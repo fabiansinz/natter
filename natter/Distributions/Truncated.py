@@ -56,7 +56,7 @@ class Truncated(Distribution):
         distribution. Needs the base distribution to implement ppf.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -128,8 +128,8 @@ class Truncated(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            

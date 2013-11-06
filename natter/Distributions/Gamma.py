@@ -17,9 +17,9 @@ class Gamma(Distribution):
 
     :param param:
         dictionary which might containt parameters for the Gamma distribution
-              'u'    :    Shape parameter  (default = 1.0)
+              'u'    :    Shape parameter, has to be >0  (default = 1.0)
               
-              's'    :    Scale parameter (default = 1.0)
+              's'    :    Scale parameter, has to be >) (default = 1.0)
               
     :type param: dict
 
@@ -76,7 +76,7 @@ class Gamma(Distribution):
         Samples m samples from the current Gamma distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 

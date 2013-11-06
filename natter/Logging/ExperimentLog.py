@@ -26,7 +26,7 @@ class ExperimentLog(LogToken):
 
     >>> p.addSection('Results')
     >>> p['Results'] += 'The following section summarizes our results!'
-    
+
     A new experiment log is initialized with an empty parameter list
     or the name of the log.
 
@@ -64,7 +64,7 @@ class ExperimentLog(LogToken):
                        \\usepackage{babel}
                        \\title{%s}
                        \\begin{document}
-                       
+
                        """
     _LATEX_FOOTER = """\\end{document}"""
 
@@ -118,8 +118,8 @@ class ExperimentLog(LogToken):
         else:
             raise TypeError("Multplication operator for logs (adding links) can only be used with PATH or (PATH,LINKNAME)")
         return self
-            
-        
+
+
     def __getitem__(self,k):
         if k in self._sections:
             return self._sublogs[k]
@@ -149,12 +149,14 @@ class ExperimentLog(LogToken):
         for k in self._sections:
             s += 80*"-" + "\n"
             s += self._sublogs[k].ascii()
-            
+
 
         return s
 
     def html(self, title=True):
         """
+        :param title: make a title row (default=False)
+        :type: bool
         :returns: A html representation of the experiment log.
         :rtype: string
         """
@@ -177,13 +179,15 @@ class ExperimentLog(LogToken):
 
     def latex(self, depth=0):
         """
+        :param depth: Depth of the latex sections (0=section, 1=subsection, ...; default=0)
+        :type depth: int
         :returns: A latex representation of the experiment log.
         :rtype: string
         """
         sections = {0:"\\section", 1:"\\subsection" , 2:"\\subsubsection", 3:"\\paragraph", 4:"\\subparagraph"}
 
         joinfunc = lambda x: x if type(x) == types.StringType else x.latex()
-        
+
         s = "%s{%s}" % (sections[depth],self._name)
         s += "\n".join([joinfunc(elem) for elem in self._log])
 
@@ -193,7 +197,7 @@ class ExperimentLog(LogToken):
 
     def __repr__(self):
         return self.__str__()
-        
+
     def write(self,filename,format='html'):
         """
         Writes the experiment log to a file.

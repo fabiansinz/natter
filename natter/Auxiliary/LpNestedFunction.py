@@ -11,29 +11,32 @@ from matplotlib.pyplot import figure, show,draw
 import Plotting
 from Errors import SpecificationError
 from Numerics import digamma
+
 class LpNestedFunction:
+    """
+    Represents an LpNestedFunction. The tree structure is
+    passed by the context-sensitive expression tree. The grammar for tree is
+
+    * tree = (p_index, list)
+    * list = index_into_data, list | index_into_data| tree, list| tree
+
+    p_index is the index into the second argument p, which stores
+    the p of the respective inner node of the
+    tree. index_into_data is the index of a single dimension of
+    the data points (you can also use slices with the standard
+    python notation that in a:b is [a,a+1,...,b-1]). You can get a
+    good feeling of how the expression can look like by looking at
+    the default argument.
+    """
 
     def __init__(self, tree=None, p=None):
         """
-        Constructs an LpNestedFunction object. The tree structure is
-        passed by the context-sensitive expression tree. The grammar for tree is
-
-        * tree = (p_index, list)
-        * list = index_into_data, list | index_into_data| tree, list| tree
-
-        p_index is the index into the second argument p, which stores
-        the p of the respective inner node of the
-        tree. index_into_data is the index of a single dimension of
-        the data points (you can also use slices with the standard
-        python notation that in a:b is [a,a+1,...,b-1]). You can get a
-        good feeling of how the expression can look like by looking at
-        the default argument.
-
-        :param tree: A string with a valid tree expression as described above. 
+        Constructs an Lp-nested function
+        :param tree: A string with a valid tree expression as described above.
         :type tree: string
         :param p:   An array containing the initial values of the p exponents at the inner nodes. It must have the appropriate dimension such that each *p_index* is covered.
         :type p: numpy.array
-        
+
         """
         if tree == None:
             tree = "(0,0,(1,1,(3,2,3,4,5),6,7),8:11,11,(2,12:16,16,(4,17,18,19:22,22),23),24)"
@@ -52,7 +55,7 @@ class LpNestedFunction:
         self.iByI = {}
         getLeavesFromSubtree((),self,self.iByI)
 
-            
+
     def f(self,dat):
         """
         Computes the value of the Lp-nested funtion at the vectors in
@@ -63,19 +66,19 @@ class LpNestedFunction:
         :type dat: natter.DataModule.Data
         :returns: A Data object containing the function values
         :rtype: natter.DataModule.Data
-        
+
         """
         return Data(computerec(self.tree,dat.X,self.p))
 
     def dfdx(self,dat):
         """
         Computes the derivative of the Lp-nested function at the data points in dat.
-        
+
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the derivatives.
         :rtype:    numpy.array
-        
+
         """
         ret = 0.0*dat.X.copy()
         self.__dfdxRec((),dat,ret)
@@ -87,13 +90,13 @@ class LpNestedFunction:
         the data points in dat.
 
         IMPORTANT: The derivative will only give correct results if
-        each inner node has its own p. 
-        
+        each inner node has its own p.
+
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
         :returns:  A numpy array containing the derivatives.
         :rtype:    numpy.array
-        
+
         """
 
         # test whether each p has only one inner node
@@ -105,11 +108,19 @@ class LpNestedFunction:
         ret = ones((len(self.p),dat.numex()))*Inf
         self.__dfdpRec((),dat,ret)
         return ret
-        
+
 
     def __dfdpRec(self,I,dat,df):
         """
         Private function used by dfdp
+        :param I: Node list
+        :type I: list
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :param df: array for return value
+        :type df: numpy.ndarray
+        :returns: List with (function value of this node and list of children)
+        :rtype: list
         """
         l = self.l[I] # get no of children
         tmp = zeros((l,dat.size(1))) # stores the function values of the children
@@ -131,7 +142,7 @@ class LpNestedFunction:
 
         # compute the derivative for this inner node
         df[ip,:] = vI/pI * (vI**-pI * sum(tmp**pI * log(tmp),0) - log(vI))
-        
+
 
         # multiply additional factors for all children nodes
         if self.l.has_key(I):
@@ -143,20 +154,28 @@ class LpNestedFunction:
             return (vI,children + [I])
         else:
             return (vI,children)
-            
-        
+
+
 
 
     def __dfdxRec(self,I,dat,df):
         """
         Private function used by dfdx
+        :param I: Node list
+        :type I: list
+        :param dat: Data points at which the derivatives will be computed.
+        :type dat: natter.DataModule.Data
+        :param df: array for return value
+        :type df: numpy.ndarray
+        :returns: List with (function value of this node and list of children)
+        :rtype: list
         """
         l = self.l[I] # get no of children
         tmp = zeros((l,dat.size(1))) # stores the function values of the children
         pI = self.p[self.pdict[I]] # p of the current node
         for k in range(l):
             Ik = I + (k,)
-            i = self.i(Ik) 
+            i = self.i(Ik)
             if self.n[Ik] == 1: # if Ik is a leaf
                 tmp[k,:] = abs(dat.X[i,:].copy()) # the function value (= absolute value)
                 df[i,:] = sign(dat.X[i,:].copy()) # the derivative of the absolute value
@@ -166,7 +185,7 @@ class LpNestedFunction:
         for k in range(l):
             Ik = I + (k,)
             for i in self.iByI[Ik]:
-                df[i,:] *= f**(1.0-pI)  * tmp[k,:]**(pI-1.0) 
+                df[i,:] *= f**(1.0-pI)  * tmp[k,:]**(pI-1.0)
         return f
 
     def logSurface(self):
@@ -175,7 +194,7 @@ class LpNestedFunction:
 
         :returns: The logarithm of the surface area.
         :rtype: float
-        
+
         """
         ret = self.n[()]*log(2)
 
@@ -198,7 +217,7 @@ class LpNestedFunction:
 
         :returns: The logarithm of the surface area.
         :rtype: float
-        
+
         """
         ret = zeros((len(self.p),))
         for I in self.l.keys():
@@ -211,7 +230,7 @@ class LpNestedFunction:
                 ret[ip] += digamma((tmp+self.n[I + (k+1,)])/p) *  (tmp+self.n[I + (k+1,)])/p**2
                 ret[ip] -= digamma(tmp/p) * tmp/p**2.0
                 ret[ip] -= digamma(self.n[I + (k+1,)]/p) * self.n[I + (k+1,)]/p**2.0
-                
+
                 tmp += self.n[I + (k+1,)]
         return ret
 
@@ -225,7 +244,7 @@ class LpNestedFunction:
         :type I: tuple of int
         :returns: index or multiindex
         :rtype: int or tuple of int
-        
+
         """
         tmp = self.tree
         for k in I:
@@ -249,17 +268,37 @@ class LpNestedFunction:
         depth = height
         eldiam = .25*ptchsz
         deltad = depth / ( max(array([len(k) for k in self.n.keys()])) + 2.0)
-        
+
         fig = figure()
         fig.clf()
         ax = fig.add_axes([0,0,1,1], xlim=(0,depth), ylim=(0,height))
         self.__plotGraphRec((),(ptchsz,.5*height),ptchsz,eldiam,0.0,height,deltad,F.W,ax,fig)
         draw()
         show()
-        
+
     def __plotGraphRec(self,mind,root,ptchsz,eldiam,h0,h1,dd,W,ax,fig):
         """
         Private function used by plotGraph
+        :param mind: index
+        :type mind: int
+        :param root: center of the ellipse
+        :type root: list
+        :param ptchsz: patch size
+        :type ptchsz: int
+        :param eldiam: diameter of the ellipse
+        :type eldiam: float
+        :param h0: height of branch
+        :type h0: float
+        :param h1: height of branch
+        :type h1: float
+        :param dd: distance
+        :type dd: float
+        :param W: array of matches
+        :type W: numpy.ndarray
+        :param ax: axis to plot on
+        :type ax: matplotlib.pyplot.axis
+        :param fig: figure to plot on
+        :type fig: matplotlib.pyplot.figure
         """
 
         # add ellipse for this node
@@ -275,7 +314,7 @@ class LpNestedFunction:
             else:
                 nodes.append(mind + (k,))
 
-        # do we have leaves? If yes, there will be an extra branch for them 
+        # do we have leaves? If yes, there will be an extra branch for them
         if len(leaves) > 0:
             l = 1.0 + len(nodes)
         else:
@@ -318,6 +357,17 @@ class LpNestedFunction:
 
 
     def __call__(self,dat):
+        """
+        Computes the value of the Lp-nested funtion at the vectors in
+        dat. Alternatively you can directly call the object on the
+        data, i.e. use *L(dat)* instead of *L.f(dat)*.
+
+        :param dat: Data on which the LpNestedFunction will be evaluated.
+        :type dat: natter.DataModule.Data
+        :returns: A Data object containing the function values
+        :rtype: natter.DataModule.Data
+
+        """
         return self.f(dat)
 
     def __getitem__(self,key):
@@ -359,17 +409,31 @@ def ax2fig(limits,ax):
     """
     Transform limits=[left, bottom, width, height] for a sub-axes
     rectangle into axes relative coordinates.
+    :param limits: rectange shape in axis coordinates
+    :type limits: list
+    :param ax: subaxis where the rectange coordinates reside
+    :type ax: matplotlib.pyplot.axis
+    :returns: rectange shape in global coordinates
+    :rtype: list
     """
     (xmin,xmax) = ax.get_xlim()
     (ymin,ymax) = ax.get_ylim()
     dx = xmax-xmin
     dy = ymax-ymin
     return [limits[0]/dx,limits[1]/dy,limits[2]/dx,limits[3]/dy]
-    
+
 
 def computerec(tree,X,p):
     """
     Compute the Lp-nested function recursively
+    :param tree: Lp-nested tree
+    :type tree: list
+    :param X: values to evaluate
+    :type X: numpy.ndarray
+    :param p: p-values of the Lp-nested function
+    :type p: numpy.ndarray
+    :returns: Lp-nested function result
+    :rtype: float
     """
     ret = zeros((size(X,1),))
     for k in range(1,len(tree)):
@@ -458,6 +522,8 @@ def parseNoLeaves(tree,mind,ret):
 def parsetree(s):
     """
     Function to parse the string representation of an Lp-nested tree.
+
+    :param s: string representation of Lp-nested function
     """
     l = [elem.rstrip().lstrip() for elem in parseexpr(s.lstrip().rstrip()[1:-1])]
     ret = []
@@ -474,7 +540,9 @@ def parsetree(s):
 
 def parseexpr(s):
     """
-    Helper function to parse the string representation of an Lp-nested tree. 
+    Helper function to parse the string representation of an Lp-nested tree.
+
+    :param s: string representation of Lp-nested tree
     """
     k = 0
     bc = 0
@@ -522,12 +590,14 @@ def tostrrec(tree,p):
         ss[k] = fs + ss[k]
     ss[0] = ps  + ' +-- ' + ss[0]
     s = string.join(ss,'\n' + fs2 + '\n')
-    return s  
+    return s
 
 def listtostr(l):
     """
     Helper function to display index list with consecutive indices
     more compact.
+
+    :param l: list with consecutive indices
     """
     list(l).sort()
     s = "[" + str(l[0])
@@ -545,10 +615,12 @@ def listtostr(l):
     else:
         s += "]"
     return s
-        
+
 def extractp(tree):
     """
     Extracts the different p indices of an Lp-nested function.
+
+    :param tree: Lp-nested tree
     """
     ret = [tree[0]]
     for k in range(len(tree)):

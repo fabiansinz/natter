@@ -101,8 +101,8 @@ class TModelRadial(Distribution):
         """
         Evaluates the gradient of the skewed Gaussian loglikelihood with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: natter.DataModule.Data
         
         """        
         alpha = self.param['alpha']

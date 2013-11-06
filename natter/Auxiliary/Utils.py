@@ -75,7 +75,7 @@ def save(o,filename):
         f.close()
 
 def savehdf5( dat, filename ):
-    """savehdf5( dat, filename )
+    """
     Saves the Data object in hdf5 format. Requires h5py and hdf5>1.8.3 installed.
     Adds .hdf5 to the end of the filename if filename does not end on .hdf5
 
@@ -98,7 +98,7 @@ def savehdf5( dat, filename ):
     fout.close()
 
 def saveListToHDF5(fout, lst, counter):
-    """saveListToHDF5(fout, lst, couter)
+    """
     Helper function to recursively save the embedded lists of the Data history
     to the hdf5 file in a recoverable way.
 
@@ -163,33 +163,29 @@ def debug():
     else:
         return
 
-
-
-
-
-def profileFunction(f):
-    """
-    profiles the execution of a function via lsprofcalltree for later
-    inspection with kcachegrind. kcachegrind is directly called with
-    the corresponding profile.
-    NOTE: this only works for linux systems where kcachegrind is installed.
-
-    :param f: function handle of the function to profile.
-    :type f: python-function
-
-    """
-    filename = '/tmp/profile.prof'
-    p = cProfile.Profile()
-    p.runcall(f)
-    k = lsprofcalltree.KCacheGrind(p)
-    data = open(filename, 'w+')
-    k.output(data)
-    data.close()
-    cmd = "kcachegrind %s" % filename
-    os.system(cmd)
+#def profileFunction(f):
+#    """
+#    profiles the execution of a function via lsprofcalltree for later
+#    inspection with kcachegrind. kcachegrind is directly called with
+#    the corresponding profile.
+#    NOTE: this only works for linux systems where kcachegrind is installed.
+#
+#    :param f: function handle of the function to profile.
+#    :type f: python-function
+#
+#    """
+#    filename = '/tmp/profile.prof'
+#    p = cProfile.Profile()
+#    p.runcall(f)
+#    k = lsprofcalltree.KCacheGrind(p)
+#    data = open(filename, 'w+')
+#    k.output(data)
+#    data.close()
+#    cmd = "kcachegrind %s" % filename
+#    os.system(cmd)
 
 def hdf5GroupToList( grp, counter ):
-    """ hdf5GroupToList( grp, counter )
+    """
     Helper function which takes a h5py group object and parses it into a list
     of stings and lists. Data sets will be converted to stings, subgroups are
     lists. Important for importing the history of a Data object.
@@ -218,13 +214,16 @@ def hdf5GroupToList( grp, counter ):
 def _flatten(items, seqtypes=(list, tuple)):
     """
     From user kindall from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
-    """        
+    """
     return list(flatten(items))
 
 def flatten(container):
     """
     From user hexparrot from http://stackoverflow.com/questions/10823877/what-is-the-fastest-way-to-flatten-arbitrarily-nested-lists-in-python
-    """    
+
+    :param container: tuple or list to be flattened
+    :type container: tuple or list
+    """
     for i in container:
         if isinstance(i, list) or isinstance(i, tuple):
             for j in flatten(i):
@@ -233,14 +232,33 @@ def flatten(container):
             yield i
 
 def displayHistoryRec(h):
+    """
+    Converts the history record of a natter object to a formated, printable string.
+    Creates a deep copy to not alter the content and starts at depth level 0.
+
+    :param h: Hisory of a natter object
+    :type h: list
+    :returns: Formated string containing the history
+    :rtype: string
+    """
     return _displayHistoryRec(deepcopy(h),0)
 
 def _displayHistoryRec(h,recDepth=0):
+    """
+    Converts the history record of a natter object to a formated, printable string.
+
+    :param h: Hisory of a natter object
+    :type h: list
+    :param recDepth: Depth of the current branch of the history, for formatting
+    :type recDepth: int
+    :returns: Formated string containing the history
+    :rtype: string
+    """
     for i,elem in enumerate(h):
         if type(elem) == types.ListType:
             h[i] = _displayHistoryRec(elem,recDepth + 1)
         else:
-            h[i] =  recDepth*'   ' + ' |-' + elem 
+            h[i] =  recDepth*'   ' + ' |-' + elem
     if recDepth==0:
         h = _flatten(h)
         return "   \n".join(h) + "\n"

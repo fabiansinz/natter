@@ -48,7 +48,7 @@ class LogLogistic(Distribution):
         Samples m samples from the current LogLogistic distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -173,8 +173,8 @@ class LogLogistic(Distribution):
         Evaluates the gradient of the log-logistic loglikelihood with
         respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """        
         beta = self.param['beta']
@@ -195,8 +195,8 @@ class LogLogistic(Distribution):
         parameters (it only computes the repeated second derivative,
         i.e. the diagonal terms of the Hessian).
 
-        :param data: Data on which the derivative should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the derivative should be evaluated.
+        :type dat: DataModule.Data
         
         """        
         beta = self.param['beta']

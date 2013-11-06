@@ -30,6 +30,8 @@ class EllipticallyContourGamma(CompleteLinearModel):
 
     def __init__(self,  *args,**kwargs):
         # parse parameters correctly
+        print "args: ", args
+        print "kwargs: ", kwargs
         param = None
         if len(args) > 0:
             param = args[0]
@@ -92,6 +94,12 @@ class EllipticallyContourGamma(CompleteLinearModel):
 
         
     def primary2array(self):
+        """
+        Converts primary parameters to an array.
+
+        :returns: array with primary parameters
+        :rtype: numpy.ndarray
+        """
         ret = array([])
         if 'q' in self.primary:
             ret = self.param['q'].primary2array()
@@ -102,14 +110,18 @@ class EllipticallyContourGamma(CompleteLinearModel):
                 ret = hstack((ret,self.param['W'].W[self.Wind].flatten()))
         return ret
 
-    def sample(self,nsamples=1):
+    def sample(self,m):
         """
         Sample from an elliptically contoured Gamma distribution.
         
         To do so, we first sample from a Gaussian distribution with
         the appropiate Covariance matrix, normalize and then draw a
         radius from the radial-Gamma distribution.
-        
+
+        :param m: number of samples
+        :type m: int
+        :returns: samples from the distribution
+        :rtype: natter.DataModule.Data
         """
 
         WX = dot(self.param['W'].W,randn(self.param['W'].W.shape[0],nsamples))
@@ -118,7 +130,10 @@ class EllipticallyContourGamma(CompleteLinearModel):
     
     def array2primary(self,arr):
         """
-        Converts array to primary parameters
+        Converts array to primary parameters.
+
+        :param arr: array with primary parameters
+        :type arr: numpy.ndarray
         """
         if 'q' in self.primary:
             self.param['q'].array2primary(arr[0:2])
@@ -153,7 +168,10 @@ class EllipticallyContourGamma(CompleteLinearModel):
         """
         Calculates the gradient with respect to the primary parameters on the data set given.
 
-        
+        :param data: data points at which the derivative is computed
+        :type data: natter.DataModule.Data
+        :returns: array with derivatives
+        :rtype: numpy.ndarray
         """
         ret = array([])
         n,m = data.size()
@@ -210,6 +228,9 @@ class EllipticallyContourGamma(CompleteLinearModel):
     def estimate(self,data):
         """
         Estimate the primaray parameters of the distribution based on  gradient descent.
+
+        :param data: data points from which the primary parameters are estimated
+        :type data: natter.DataModule.Data
         """
 
         x0 = self.primary2array()

@@ -7,7 +7,9 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
 
    Auxiliary_Decorators.rst
    Auxiliary_Entropy.rst
+   Auxiliary_Errors.rst
    Auxiliary_ImageUtils.rst
+   Auxiliary_LaplaceApproximation.rst
    Auxiliary_LpNestedFunction.rst
    Auxiliary_Numerics.rst
    Auxiliary_Optimization.rst
@@ -15,7 +17,7 @@ The Auxiliary module includes several auxiliary functions for the natter. It con
    Auxiliary_Utils.rst
 """
 
-from Utils import save, debug , profileFunction, savehdf5, hdf5GroupToList
+from Utils import save, debug, savehdf5, hdf5GroupToList
 import Errors
 import Optimization
 import Plotting
@@ -27,6 +29,14 @@ from LpNestedFunction import LpNestedFunction
 
 
 def prettyPrintDict(d):
+    """
+    Prints the dictionary in a nicely formatted way.
+
+    :param d: the dictionary
+    :type d: dict
+    :returns: formated string
+    :rtype: string
+    """
     s = ""
     for k ,v in d.items():
         s += str(k) + ": " + str(v) + "\n"

@@ -1,5 +1,5 @@
 from sys import stdin, stdout
-import gzip, bz2, zipfile
+import gzip
 from natter.DataModule import Data
 from scipy import io
 import pickle #cPickle bug seems to be fixed
@@ -40,6 +40,8 @@ def load(path, **kwargs):
 
     :param path: Path to the data file.
     :type path: string
+    :param kwargs: parameter set directly passed to the loader function
+    :type kwargs: dict
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
 
@@ -95,6 +97,8 @@ def ascii(path, open_file=open):
 
     :param path: Path to the ascii file.
     :type path: string
+    :param open_file: function to use for file opening (default=open)
+    :type open_file: function handle
     :returns: Data object with the data from the specified file.
     :rtype: natter.DataModule.Data
 
@@ -204,7 +208,7 @@ def loadnpz(path, varname=None, transpose=None):
         return Data(dat,'npz data from ' + path)
 
 def hdf5( filename ):
-    """hdf5( filename )
+    """
     Loads the Data object from the given file in hdf5 format.
 
     :param filename: name of the file

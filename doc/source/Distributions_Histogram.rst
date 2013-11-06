@@ -9,4 +9,4 @@ probability mass assigned to each bin.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Histogram
-   :members: sample,  pdf, ppf,  all, copy, parameters
+   :members:

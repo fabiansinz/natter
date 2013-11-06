@@ -171,7 +171,7 @@ class LpSphericallySymmetric(Distribution):
         Samples m samples from the current LpSphericallySymmetric distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
@@ -189,6 +189,13 @@ class LpSphericallySymmetric(Distribution):
 
 
     def primary2array(self):
+        """
+        Converts primary parameters into an array.
+
+        :returns: array with primary parameters
+        :rtype: numpy.ndarray
+        """
+
         ret = array([])
         for k in self.primary:
             if k == 'p':
@@ -200,6 +207,15 @@ class LpSphericallySymmetric(Distribution):
         return ret
 
     def array2primary(self,ar):
+        """
+        Converts the given array into primary parameters.
+
+        :param ar: array containing primary parameters
+        :type ar: numpy.ndarray
+        :returns: The object itself.
+        :rtype: natter.Distributions.Kumaraswamy
+
+        """
         for k in self.primary:
             if k == 'p':
                 self.param['p'] = ar[0]

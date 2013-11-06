@@ -59,7 +59,7 @@ class TruncatedExponentialPower(Distribution):
         Samples m samples from the current TruncatedExponentialPower distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
 
         """
@@ -107,7 +107,7 @@ class TruncatedExponentialPower(Distribution):
         of the current distribution.
 
         :param u:  Points at which the p.p.f. will be computed.
-        :type dat: numpy.array
+        :type u: numpy.array
         :returns:  Data object with the resulting points in the domain of this distribution. 
         :rtype:    natter.DataModule.Data
            
@@ -156,8 +156,8 @@ class TruncatedExponentialPower(Distribution):
         """
         Evaluates the gradient of the Gamma function with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         :returns:   The gradient
         :rtype:     numpy.array
         """

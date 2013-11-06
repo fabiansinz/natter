@@ -57,12 +57,20 @@ class PCauchy(Distribution):
         return dat
 
     def primary2array(self):
+        """
+        :returns: array containing primary parameters. If 'sigma' is in the primary parameters, then the cholesky factor of the precision matrix is filled in the array.
+        """
         if self.param.has_key('p'):
             return array([self.param['p']])
         else:
             return array([])
         
     def array2primary(self,ar):
+        """
+        Takes an array containing primary parameters and stores them in the object.
+
+        :param ar: array with primary parameters
+        """
         self.param['p'] = ar[0]
         return self
 
@@ -134,6 +142,10 @@ class PCauchy(Distribution):
 
         :param dat: Data points on which the NakaRushton distribution will be estimated.
         :type dat: natter.DataModule.Data
+        :param tol: convergence tolerance in the absolute value of the differences in p
+        :type tol: float
+        :param maxiter: maximum number of iterations
+        :type maxiter: int
         '''
 
         if 'p' in self.primary:

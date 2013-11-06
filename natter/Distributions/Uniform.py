@@ -65,7 +65,7 @@ class Uniform(Distribution):
         Samples m samples from the current uniform distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -169,14 +169,16 @@ class Uniform(Distribution):
 #   @DataSupportChecker(1,'low','high')
     def estimate(self,dat):
         '''
-        Uniform distribution has no parameter hence estimate does nothing        
+        Uniform distribution has no parameter hence estimate does nothing.
+
+        :param dat: irrelevant data object for function calling consitency
         '''
         print self.name + ' has no parameter to fit.'
    
     
     def primary2array(self):
         """
-        converts primary parameters into an array.
+        Converts primary parameters into an array.
         """
         ret = zeros(len(self.primary))
         for ind,key in enumerate(self.primary):
@@ -186,7 +188,10 @@ class Uniform(Distribution):
     def array2primary(self,arr):
         """
         Converts the given array into primary parameters.
-            
+
+        :param arr: array with primary parameters
+        :type arr: numpy.ndarray
+
         """
         for ind,key in enumerate(self.primary):
             self.param[key]=arr[ind]
