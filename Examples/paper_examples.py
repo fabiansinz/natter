@@ -49,8 +49,8 @@ elif int(sys.argv[1]) == 1:
 
     #-- load data
     print "Loading a simple Data module from an ascii file"
-    FILENAME_TRAIN = 'hateren8x8_train_No1.dat.gz'
-    FILENAME_TEST = 'hateren8x8_test_No1.dat.gz'
+    FILENAME_TRAIN = 'hateren4x4_train_No1.dat.gz'
+    FILENAME_TEST = 'hateren4x4_test_No1.dat.gz'
 
     dat_train = DataLoader.load(FILENAME_TRAIN)
     dat_test = DataLoader.load(FILENAME_TEST)
@@ -281,7 +281,7 @@ elif int(sys.argv[1]) == 3:
     from natter.Logging.LogTokens import Table
     # ----- loading and preprocessing data ----------
     print "Loading a simple Data module from an ascii file"
-    FILENAME_TRAIN = 'hateren8x8_train_No1.dat.gz'
+    FILENAME_TRAIN = 'hateren4x4_train_No1.dat.gz'
 
     dat = DataLoader.load(FILENAME_TRAIN)
 
