@@ -112,7 +112,7 @@ class ISA(Distribution):
             X[S[k],:] = P[k].sample(m).X
         return Data(X,str(m) + ' samples from a ' + self.name)
 
-    def estimate(self,dat):
+    def estimate(self,dat,**kwargs):
         '''
 
         Estimates the parameters from the data in dat. It is possible
@@ -121,6 +121,7 @@ class ISA(Distribution):
         the Distributions module <tutorial_Distributions>`).
 
         :param dat: Data points on which the ISA model will be estimated.
+        :param **kwargs: Keyword arguments that are passed down to the estimate functions of the marginal distributions.
         :type dat: natter.DataModule.Data
         '''
             
@@ -130,7 +131,7 @@ class ISA(Distribution):
         for i in xrange(len(P)):
             print "\r\tDistribution %d on %d-dimensional subspace ...  "  % (i,len(S[i])) ,
             sys.stdout.flush()
-            P[i].estimate(dat[S[i],:])
+            P[i].estimate(dat[S[i],:],**kwargs)
         print "[Done]"
 
     def dldx(self,dat):
