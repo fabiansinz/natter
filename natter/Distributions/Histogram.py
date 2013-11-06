@@ -1,13 +1,12 @@
 from __future__ import division
 from Distribution import Distribution
 from natter.Auxiliary.Utils import parseParameters
-from numpy import array,sum,argsort,hstack,squeeze,zeros,where,cumsum,shape,linspace
+from numpy import array,sum,argsort,hstack,squeeze,zeros,where,cumsum,shape,linspace,histogram, log, amin
 from numpy.random import rand
 from scipy import searchsorted, histogram
 from natter.Auxiliary.Decorators import Squeezer
 from natter.DataModule import Data
 from matplotlib.pyplot import figure,legend,plot,show
-
 
 class Histogram(Distribution):
     """
@@ -20,13 +19,13 @@ class Histogram(Distribution):
 
     :param param:
         dictionary which might containt parameters for the histogram distribution
-              'b'    :  bin centers
+              'b'    :  bin edges
               
               'p'    :  probability mass for each bin center
 
     :type param: dict
 
-    Primary parameters are ['p'].
+    Primary parameters are ['p','b'].
         
     """
 
@@ -37,18 +36,12 @@ class Histogram(Distribution):
 
         # set default parameters
         self.name = 'Histogram Distribution'
-        self.param = {'p':rand(2),'b':array([-1.0,1.0])}
+        self.param = {'p':None,'b':None}
         if param != None: 
             for k in param.keys():
                 self.param[k] = param[k]
-        self.param['p'] = array(self.param['p'],dtype=float) # make sure it is a float
-        self.param['p'] = self.param['p']/sum(self.param['p'])
 
-        ind = argsort(self.param['b'])
-        self.param['b'] =  self.param['b'][ind] 
-        self.param['p'] =  self.param['p'][ind] 
-
-        self.primary = ['p']
+        self.primary = ['p','b']
 
 
     def pdf(self,dat):
@@ -62,18 +55,79 @@ class Histogram(Distribution):
         :rtype:    numpy.array
            
         '''
-        b = array(self.param['b'])
-        d = (b[1:] - b[:-1])/2.0
-        b[1:] = b[1:]-d
-        b[0] -= d[0]
-        b = hstack((b,b[-1]+2.0*d[-1]))
-        
+        b = self.param['b']
+        p = self.param['p']
+        dt = b[1]-b[0]
         ind = searchsorted(b,squeeze(dat.X))
-        ptmp = hstack((zeros(1),self.param['p']/(b[1:]-b[:-1]),zeros(1)))
+        
+        ptmp = hstack((amin(p),self.param['p'],amin(p)))
+        ptmp = ptmp/sum(ptmp)/dt
         return ptmp[ind]
+    
 
     def loglik(self,dat):
-        return self.pdf(dat)
+        '''
+
+        Computes the loglikelihood of the data points in dat. 
+
+        :param dat: Data points for which the loglikelihood will be computed.
+        :type dat: natter.DataModule.Data
+        :returns:  An array containing the loglikelihoods.
+        :rtype:    numpy.array
+         
+           
+        '''        
+        return log(self.pdf(dat))
+
+    def estimate(self,dat,bins=200, regularize=True):
+        '''
+
+        Estimates the parameters from the data in dat. It is possible to only 
+        selectively fit parameters of the distribution by setting the primary 
+        array accordingly (see :doc:`Tutorial on the Distributions module <tutorial_Distributions>`).
+
+
+        :param dat: Data points on which the ExponentialPower distribution will be estimated.
+        :param bins: If b was not set, bins determines the number of bins.
+        :param regularize: If True, bins with no data point are set to the minimal count greater zero.
+        :type dat: natter.DataModule.Data
+        '''
+        if 'b' in self.primary:
+            p,self.param['b'] = histogram(dat.X.ravel(),bins=bins)
+        else:
+            p,_ = histogram(dat.X.ravel(),bins=self.param['b'])
+
+        if regularize:
+            b = self.param['b']
+            dt = b[1]-b[0]
+            p[p == 0] = amin(p[p>0])
+        self.param['p'] = p/sum(p)/dt 
+    
+        
+    def cdf(self,dat,nonparametric=True):
+        '''
+        Evaluates the cumulative distribution function on the data points in dat. 
+
+        :param dat: Data points for which the c.d.f. will be computed.
+        :type dat: natter.DataModule.Data
+        :param nonparametric: Determines whether the cdf should be estimated non-parametrically. 
+                  This works well if the data points in dat represent a large sample from the whole 
+                  range of values. 
+        :type dat: boolean
+        :returns:  A numpy array containing the probabilities.
+        :rtype:    numpy.array
+           
+        '''  
+        if nonparametric:      
+            u = linspace(0.,1.,dat.numex())[argsort(argsort(dat.X.ravel()))]
+        else:
+            b = self.param['b']
+            dt = b[1]-b[0]
+            P = cumsum(self.param['p'])*dt
+            ind = searchsorted(b,squeeze(dat.X))
+            P = hstack((0,P,1))
+            u =  P[ind]
+        return u
 
     @Squeezer(1)
     def ppf(self,u):
@@ -87,9 +141,11 @@ class Histogram(Distribution):
         :rtype:    natter.DataModule.Data
            
         '''
-        P = cumsum(self.param['p'])
+        b = self.param['b']
+        dt = b[1]-b[0]
+        P = hstack((0,cumsum(self.param['p'])*dt))
         ind = searchsorted(P,u)
-        return Data(self.param['b'][ind],'Function values of the Histogram distribution')
+        return Data(b[ind],'Function values of the Histogram distribution')
 
     def sample(self,m):
         """

@@ -167,7 +167,7 @@ class ExponentialPower(Distribution):
           
         if 'p' in self.primary:
             func = lambda t: self.__objective(t,dat,'s' in self.primary)
-            p = fminbound(func, 0.0, 100.0)
+            p = fminbound(func, 0.0, 100.0, xtol=1e-7   )
             if type(p) == types.TupleType:
                 p = p[0]
             self.param['p'] = p

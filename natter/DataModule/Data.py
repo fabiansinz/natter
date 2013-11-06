@@ -179,7 +179,7 @@ class Data(LogToken):
         Plots a scatter plot of the data points. This method works only for two-dimensional data.
 
         :param ax: If specified the data is plotted to this axes object.
-        :param type: plot type; possible choice are 'scatter' or 'loghist' (default 'scatter'). 
+        :param plottype: plot type; possible choice are 'scatter' or 'loghist' (default 'scatter'). 
         :raises: natter.Auxiliary.Errors.DimensionalityError
         :returns: The axes object.
         """
