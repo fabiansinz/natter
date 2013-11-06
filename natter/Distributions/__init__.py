@@ -59,7 +59,7 @@ from Histogram import Histogram
 from LogNormal import LogNormal
 from NakaRushton import NakaRushton
 from ProductOfExponentialPowerDistributions import ProductOfExponentialPowerDistributions
-#from EllipticallyContourGamma import EllipticallyContourGamma
+from EllipticallyContourGamma import EllipticallyContourGamma
 from ISA import ISA
 from Kumaraswamy import Kumaraswamy
 from TruncatedGaussian import TruncatedGaussian
