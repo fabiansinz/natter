@@ -81,7 +81,7 @@ def marginalEntropy(dat,method='JK',bins=None):
     * 'CAE' : coverage adjusted regularization of the histogram.
 
     :param dat: Data for which the marginal entropies will be computed.
-    :type name: natter.DataModule.Data
+    :type dat: natter.DataModule.Data
     :param method: Specifies the method which is used to estimate the marginal entropy. (default=JK)
     :type method: string
     :param bins: number of bins to be used (default=None)

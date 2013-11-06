@@ -13,23 +13,25 @@ from Errors import SpecificationError
 from Numerics import digamma
 
 class LpNestedFunction:
+    """
+    Represents an LpNestedFunction. The tree structure is
+    passed by the context-sensitive expression tree. The grammar for tree is
+
+    * tree = (p_index, list)
+    * list = index_into_data, list | index_into_data| tree, list| tree
+
+    p_index is the index into the second argument p, which stores
+    the p of the respective inner node of the
+    tree. index_into_data is the index of a single dimension of
+    the data points (you can also use slices with the standard
+    python notation that in a:b is [a,a+1,...,b-1]). You can get a
+    good feeling of how the expression can look like by looking at
+    the default argument.
+    """
 
     def __init__(self, tree=None, p=None):
         """
-        Constructs an LpNestedFunction object. The tree structure is
-        passed by the context-sensitive expression tree. The grammar for tree is
-
-        * tree = (p_index, list)
-        * list = index_into_data, list | index_into_data| tree, list| tree
-
-        p_index is the index into the second argument p, which stores
-        the p of the respective inner node of the
-        tree. index_into_data is the index of a single dimension of
-        the data points (you can also use slices with the standard
-        python notation that in a:b is [a,a+1,...,b-1]). You can get a
-        good feeling of how the expression can look like by looking at
-        the default argument.
-
+        Constructs an Lp-nested function
         :param tree: A string with a valid tree expression as described above.
         :type tree: string
         :param p:   An array containing the initial values of the p exponents at the inner nodes. It must have the appropriate dimension such that each *p_index* is covered.
@@ -520,6 +522,8 @@ def parseNoLeaves(tree,mind,ret):
 def parsetree(s):
     """
     Function to parse the string representation of an Lp-nested tree.
+
+    :param s: string representation of Lp-nested function
     """
     l = [elem.rstrip().lstrip() for elem in parseexpr(s.lstrip().rstrip()[1:-1])]
     ret = []
@@ -537,6 +541,8 @@ def parsetree(s):
 def parseexpr(s):
     """
     Helper function to parse the string representation of an Lp-nested tree.
+
+    :param s: string representation of Lp-nested tree
     """
     k = 0
     bc = 0
@@ -590,6 +596,8 @@ def listtostr(l):
     """
     Helper function to display index list with consecutive indices
     more compact.
+
+    :param l: list with consecutive indices
     """
     list(l).sort()
     s = "[" + str(l[0])
@@ -611,6 +619,8 @@ def listtostr(l):
 def extractp(tree):
     """
     Extracts the different p indices of an Lp-nested function.
+
+    :param tree: Lp-nested tree
     """
     ret = [tree[0]]
     for k in range(len(tree)):

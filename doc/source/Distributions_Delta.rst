@@ -12,4 +12,4 @@ where :math:`\boldsymbol{x}_0` is the location of the delta peak.
 .. moduleauthor:: Philipp Lies <phil@bethgelab.org>
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Delta
-   :members: sample, estimate
+   :members:

@@ -12,7 +12,9 @@ from scipy.optimize import fmin_l_bfgs_b, fmin_bfgs
 from warnings import warn
 
 class Distribution(LogToken):
-
+    """
+    Parent class of all distributions.
+    """
     def __init__(self, *args,**kwargs):
                 # parse parameters correctly
         param = None
@@ -31,7 +33,7 @@ class Distribution(LogToken):
                 for k,v in kwargs.items():
                     if k != 'param':
                         param[k] = v
-
+        
         # set default parameters
 
         if param!=None:
@@ -39,8 +41,8 @@ class Distribution(LogToken):
         else:
             self.param = {}
         self.name = 'Abstract Distribution'
-        self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted
-
+        self.primary = [] # contains the names of the primary parameters, i.e. those that are going to be fitted        
+    
 
     def loglik(self,dat):
         """
@@ -65,7 +67,7 @@ class Distribution(LogToken):
             self.param[key] = value
         else:
             raise KeyError("Parameter %s not defined for %s" % (key,self.name))
-
+        
 
     def sample(self,m):
         """
@@ -73,12 +75,12 @@ class Distribution(LogToken):
         Samples m samples from the current distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :returns:  A Data object containing the samples
         :rtype:    natter.DataModule.Data
 
         """
-
+        
         raise Errors.AbstractError('Abstract method sample not implemented in ' + self.name)
 
 
@@ -93,7 +95,7 @@ class Distribution(LogToken):
         :raises: natter.Auxiliary.Errors.AbstractError if loglik of that distribution is not implemented.
         :returns:  An array containing the values of the density.
         :rtype:    numpy.array
-
+           
         '''
         if hasattr(self,'loglik'):
             return exp(self.loglik(dat))
@@ -107,10 +109,10 @@ class Distribution(LogToken):
 
         :param dat: Data points for which the c.d.f. will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the values of the c.d.f.
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method cdf not implemented in ' + self.name)
 
@@ -123,24 +125,24 @@ class Distribution(LogToken):
 
         :param dat: Data points for which the p.p.f. will be computed.
         :type dat: numpy.ndarray
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the values of the c.d.f.
         :rtype:    natter.DataModule.Data
-
+           
         '''
         raise Errors.AbstractError('Abstract method ppf not implemented in ' + self.name)
 
     def dldx(self,dat):
         '''
         Abstract method that must be implemented by the children of
-        Distribution. Should provide the derivative of the log-likelihood w.r.t. the data points in dat.
+        Distribution. Should provide the derivative of the log-likelihood w.r.t. the data points in dat. 
 
         :param dat: Data points at which the derivative will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the derivatives
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method dldx not implemented in ' + self.name)
 
@@ -148,14 +150,14 @@ class Distribution(LogToken):
         '''
         Abstract method that must be implemented by the children of
         Distribution. Should provide the derivative of the
-        log-likelihood w.r.t. the primary parameters of the distribution and the data points.
+        log-likelihood w.r.t. the primary parameters of the distribution and the data points. 
 
         :param dat: Data points at which the derivative will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the derivatives
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method dldxdtheta not implemented in ' + self.name)
 
@@ -167,10 +169,10 @@ class Distribution(LogToken):
 
         :param dat: Data points at which the derivative will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the derivatives
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method dldx2 not implemented in ' + self.name)
 
@@ -183,10 +185,10 @@ class Distribution(LogToken):
 
         :param dat: Data points at which the derivative will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the derivatives
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method dldx2dtheta not implemented in ' + self.name)
 
@@ -198,10 +200,10 @@ class Distribution(LogToken):
 
         :param dat: Data points at which the derivative will be computed.
         :type dat: natter.DataModule.Data
-        :raises: natter.Auxiliary.Errors.AbstractError
+        :raises: natter.Auxiliary.Errors.AbstractError 
         :returns:  An array containing the derivatives
         :rtype:    numpy.array
-
+           
         '''
         raise Errors.AbstractError('Abstract method dldtheta not implemented in ' + self.name)
 
@@ -213,7 +215,7 @@ class Distribution(LogToken):
 
         :param arr: Array with the primary parameters
         :type arr: numpy.array
-        :returns: the distribution object
+        :returns: the distribution object 
         """
         n=0
         Ls=[]
@@ -280,7 +282,6 @@ class Distribution(LogToken):
         fprime = lambda p: -mean(self.array2primary(p).dldtheta(dat),1) / log(2) / dat.size(0)
         noboundmethod = False
         try:
-            bounds = self.primaryBounds()
             tmp = fmin_l_bfgs_b(f, self.primary2array(), fprime,  bounds=self.primaryBounds(),factr=10.0)[0]
         except Errors.AbstractError:
             noboundmethod = True
@@ -315,9 +316,9 @@ class Distribution(LogToken):
 
         :param keyval: Indicates whether only the keys or the values of the parameter dictionary shall be returned. If keyval=='keys', then only the keys are returned, if keyval=='values' only the values are returned.
         :type keyval: string
-        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned.
+        :returns:  A dictionary containing the parameters of the distribution. If keyval is set, a list is returned. 
         :rtype: dict or list
-
+           
         """
         if keyval == None:
             #return deepcopy(self.param)
@@ -334,8 +335,14 @@ class Distribution(LogToken):
         must exhibit the following behaviour:
 
         1) if compute_derivative ==False, it returns the value of the score function at param and dat
-        2) if compute_derivative ==False, it returns the derivative w.r.t the primary parameters of the score function at param and dat
+        2) if compute_derivative ==True, it returns the derivative w.r.t the primary parameters of the score function at param and dat
 
+        :param param: parameters at which the score is computed
+        :type param: numpy.ndarray
+        :param dat: data points at which the score is computed
+        :type dat: natter.DataModule.Data
+        :param compute_derivative: See above
+        :returns: the score for score matching
         """
         raise Errors.AbstractError('Abstract method score not implemented in ' + self.name)
 
@@ -351,19 +358,19 @@ class Distribution(LogToken):
         """
 
         Computes the average log-loss in bits per component of the current distribution on the data points in dat.
-
+        
         :param dat: Data points at which the derivatives will be computed.
         :type dat: natter.DataModule.Data
         :returns:  The average log-loss in bits per component.
         :rtype:    float
-
-        """
-
+        
+        """        
+        
         return -mean(self.loglik(dat)) / dat.size(0) / log(2.0)
 
     def __str__(self):
         return self.ascii()
-
+    
     def ascii(self):
         """
         Returns an ascii representation of itself. This is required by
@@ -387,7 +394,7 @@ class Distribution(LogToken):
                 s += '\t' + k + ': '
                 ss = str(self[k])
                 s += ss + '\n'
-
+            
         for k in later:
             s += '\t' + k + ': '
             if type(self[k]) == types.ListType:
@@ -431,7 +438,7 @@ class Distribution(LogToken):
                 later.append(k)
             else:
                 s += '<tr><td><tt><i><b>%s</b></i></tt></td><td><tt>%s</tt></td><tr>\n' % (k,str(self[k]))
-
+            
         for k in later:
             s += "<tr><td valign=\"top\"><tt><i><b>%s</b></i></tt></td>" % (k,)
             if type(self[k]) == types.ListType:
@@ -467,19 +474,15 @@ class Distribution(LogToken):
         :param dat: data points that enter the histogram
         :type dat: natter.DataModule.Data
         :param cdf: boolean that indicates whether the cdf should be plotted or not (default: False)
-        :type cdf: boolean
         :param ax: axes object the histogram is plotted into if it is not None.
-        :type ax: matplotlib.pyplot.axis
         :param plotlegend: boolean indicating whether a legend should be plotted (default: True)
-        :type plotlegend: boolean
-        :param bin: number of bins to be used. If None (default), the bins are automatically determined.
-        :type bin: int
+        :param bins: number of bins to be used. If None (default), the bins are automatically determined.
         """
-
+        
         sh = shape(dat.X)
         if len(sh) > 1 and sh[0] > 1:
             raise Errors.DimensionalityError('Cannont plot data with more than one dimension!')
-
+    
         if ax == None:
             fig = plt.figure()
             ax = fig.add_axes([.1,.1,.8,.8])
@@ -499,7 +502,7 @@ class Distribution(LogToken):
                 plt.legend( ('p.d.f.','c.d.f.','Histogram') , frameon=False)
         elif plotlegend:
             plt.legend( ('p.d.f.','Histogram'), frameon=False )
-
+       
         ax.set_xlabel('x')
         ax.set_ylabel('Probability')
         ax.set_xlim(min(x),max(x))

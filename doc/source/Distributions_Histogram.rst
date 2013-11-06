@@ -9,10 +9,10 @@ can have different size, and that the bin node may not lie in the
 center of a bin. For the leftmost and rightmost bin, the bins are
 chosen symmetrically around the bin node. Everything which is outside
 the first bin node minus half its distance to the second is not
-considered in binning. The same holds true for the rightmost bin.
+considered in binning. The same holds true for the rightmost bin. 
 
 
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Histogram
-   :members: pdf, loglik, ppf, sample, histogram
+   :members:

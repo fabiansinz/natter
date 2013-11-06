@@ -13,4 +13,4 @@ The mixture weights need to sum to one, i.e.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.MixtureOfLogNormals
-   :members: sample, loglik, pdf, cdf, ppf, dldx, estimate, all, copy, parameters
+   :members:

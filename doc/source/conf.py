@@ -11,6 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -37,7 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'natter - a natural image statistics toolbox'
-copyright = u'2010, Fabian Sinz, Sebastian Gerwinn & Lucas Theis'
+copyright = u'2010, Fabian Sinz, Philipp Lies, Sebastian Gerwinn & Lucas Theis'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -192,3 +193,10 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+
+# import mock
+
+# MOCK_MODULES = ['numpy', 'matplotlib', 'matplotlib.pyplot', 'numpy.random']
+# for mod_name in MOCK_MODULES:
+#     sys.modules[mod_name] = mock.Mock()

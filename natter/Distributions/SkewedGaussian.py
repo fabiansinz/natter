@@ -52,7 +52,7 @@ class SkewedGaussian(Distribution):
         Samples m samples from the current SkewedGaussian distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -160,8 +160,8 @@ class SkewedGaussian(Distribution):
         """
         Evaluates the gradient of the skewed Gaussian loglikelihood with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """        
         s = lambda y: (y-mu)/sigma

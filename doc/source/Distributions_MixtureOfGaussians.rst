@@ -15,4 +15,4 @@ where :math:`p(x,\boldsymbol \mu_k,\boldsymbol \sigma_k)` is a univariate Gaussi
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.MixtureOfGaussians
-   :members: sample, loglik, pdf, estimate, all, copy, cdf, dldx, parameters
+   :members:

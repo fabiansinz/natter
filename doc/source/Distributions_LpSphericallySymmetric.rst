@@ -17,4 +17,4 @@ joint distribution. :math:`n\in\mathbb N` refers to the dimensionality.
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.LpSphericallySymmetric
-   :members: sample, loglik, pdf, dldx, estimate, all, logSurfacePSphere, copy, parameters
+   :members:

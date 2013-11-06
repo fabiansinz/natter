@@ -12,4 +12,4 @@ The Kumaraswamy distribution is a univariate density on the interval
 
 .. moduleauthor:: Fabian Sinz <fabee@bethgelab.org>
 .. autoclass:: natter.Distributions.Kumaraswamy
-   :members: sample, primaryBounds, loglik, pdf, cdf, ppf, dldtheta, primary2array, array2primary
+   :members:

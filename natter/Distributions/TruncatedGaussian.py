@@ -55,7 +55,7 @@ class TruncatedGaussian(Distribution):
         Samples m samples from the current TruncatedGaussian distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -138,8 +138,8 @@ class TruncatedGaussian(Distribution):
 
         Evaluates the percentile function (inverse c.d.f.) for a given array of quantiles.
 
-        :param X: Percentiles for which the ppf will be computed.
-        :type X: numpy.array
+        :param u: Percentiles for which the ppf will be computed.
+        :type u: numpy.array
         :returns:  A Data object containing the values of the ppf.
         :rtype:    natter.DataModule.Data
            
@@ -179,8 +179,8 @@ class TruncatedGaussian(Distribution):
         """
         Evaluates the gradient of the TruncatedGaussian loglikelihood with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """
 
@@ -222,6 +222,8 @@ class TruncatedGaussian(Distribution):
         """
         Converts the given array into primary parameters.
 
+        :param arr: array with primary parameters
+        :type arr: numpy.ndarray
         :returns: The object itself.
         :rtype: natter.Distributions.TruncatedGaussian
             

@@ -18,7 +18,7 @@ can either be coefficients of :math:`\boldsymbol{x}` or outcomes of
 
 
 .. autoclass:: natter.Auxiliary.LpNestedFunction
-   :members: __init__,f, dfdx,i, plotGraph, copy, dfdp, dlogSurfacedp, __dfdpRec, __dfdxRec, logSurface, __plotGraphRec, __call__, copy
+   :members:
 
 
 

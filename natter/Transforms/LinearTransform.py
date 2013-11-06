@@ -357,7 +357,7 @@ class LinearTransform(Transform.Transform):
         :param weight: Whether the filter is to be weighted with a Gaussian envelope function
         :type weight: bool
         :param weightings: Array that stores the envelope weighting functions if specified
-        :type weighting: numpy.array
+        :type weightings: numpy.array
 
         :returns: The frequency vectors that gives the maximal responses.
         :rtype: numpy.array

@@ -70,7 +70,7 @@ class NakaRushton(Distribution):
         Samples m samples from the current NakaRushton distribution.
 
         :param m: Number of samples to draw.
-        :type name: int.
+        :type m: int.
         :rtype: natter.DataModule.Data
         :returns:  A Data object containing the samples
 
@@ -153,8 +153,8 @@ class NakaRushton(Distribution):
         """
         Evaluates the gradient of the NakaRushton loglikelihood with respect to the primary parameters.
 
-        :param data: Data on which the gradient should be evaluated.
-        :type data: DataModule.Data
+        :param dat: Data on which the gradient should be evaluated.
+        :type dat: DataModule.Data
         
         """
         
@@ -237,6 +237,8 @@ class NakaRushton(Distribution):
         """
         Converts the given array into primary parameters.
 
+        :param arr: array with primary parameters
+        :type arr: numpy.ndarray
         :returns: The object itself.
         :rtype: natter.Distributions.NakaRushton
             
