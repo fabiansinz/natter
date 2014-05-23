@@ -133,14 +133,14 @@ def img2PatchRand(img, p, N):
 
     p1 = p - 1
 
-    X = zeros( ( p*p, N))
+    X = zeros( ( int(p*p), int(N)))
 
     stdout.flush()
     for ii in xrange(int(N)):
         ptch = array([NaN])
         while any( isnan( ptch.flatten())) or any( isinf(ptch.flatten())) or any(ptch.flatten() == 0.0):
-            xi = floor( rand() * ( nx - p))
-            yi = floor( rand() * ( ny - p))
+            xi = int(floor( rand() * ( nx - p)))
+            yi = int(floor( rand() * ( ny - p)))
             ptch = img[ yi:yi+p1+1, xi:xi+p1+1]
             X[:,ii] = ptch.flatten('F')
 
